@@ -1,0 +1,15 @@
+# Ignorar archivos de entorno
+.env
+
+# Ignorar logs
+*.log
+
+# Ignorar carpetas temporales o caches si tienes (opcional)
+tmp/
+cache/
+
+# Ignorar posibles archivos del sistema o editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
