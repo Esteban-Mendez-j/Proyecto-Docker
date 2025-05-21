@@ -33,8 +33,9 @@ services:
       UPLOAD_DIR_PDF: ${UPLOAD_DIR_PDF}
     networks:
       - app-network
+    volumes:
+      - ./Proyecto/uploads:/app/uploads
     
-
   astro:
     build:
       context: ./SearchJobs-front   # Ruta al proyecto Astro
