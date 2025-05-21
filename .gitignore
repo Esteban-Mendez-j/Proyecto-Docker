@@ -1,15 +1,54 @@
-# Ignorar archivos de entorno
+# Archivos de entorno
 .env
 
-# Ignorar logs
+# Logs
 *.log
 
-# Ignorar carpetas temporales o caches si tienes (opcional)
+# Carpetas temporales o caches (opcional)
 tmp/
 cache/
 
-# Ignorar posibles archivos del sistema o editor
+# Archivos del sistema y editores
 .DS_Store
 Thumbs.db
 .idea/
 .vscode/
+
+# Node.js
+/node_modules
+
+# Astro (si usas)
+.astro/
+
+# Backend Java (Maven)
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Backend Java (Gradle) - si usas
+build/
+
+# Archivos específicos de IDEs
+## IntelliJ IDEA
+*.iws
+*.iml
+*.ipr
+
+## Spring Tool Suite (STS)
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+## NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Archivos auxiliares
+HELP.md
+application-local.yml
