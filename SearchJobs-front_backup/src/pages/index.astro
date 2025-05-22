@@ -1,0 +1,137 @@
+---
+import FeatureCard from '../components/FeatureCard.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.jsx';
+import JobCard from '../components/JobCard.astro';
+import Layout from '../layouts/Layout.astro';
+import '../styles/pages/index.css';
+import { API_URL } from '../javascripts/Api.js';
+
+
+interface Job {
+  nvacantes: String;
+  titulo: string;
+  nameEmpresa: string;
+  ciudad: string;
+  tipo: string;
+  experiencia: string;
+  imagenEmpresa: string;
+  totalpostulaciones:Number;
+}
+
+const response = await fetch(`${API_URL}/api/vacantes/Top/listar`,{
+  headers: Astro.request.headers
+});
+console.log(API_URL)
+const data = await response.json();
+
+const res = await fetch(`${API_URL}/api/usuarios/rol`, {
+  headers: Astro.request.headers
+});
+const dataUser = await res.json();
+let rol = dataUser.rolPrincipal;
+
+const featuredJobs: Job[] = data.vacantes || []; 
+const features = [
+  {
+    icon: "search",
+    title: "Búsqueda Inteligente",
+    description: "Encuentra el empleo perfecto con nuestros filtros avanzados y recomendaciones personalizadas.",
+  },
+  {
+    icon: "briefcase",
+    title: "Publicación Sencilla",
+    description: "Empresas pueden publicar vacantes en minutos con nuestro proceso simplificado.",
+  },
+  {
+    icon: "message-circle",
+    title: "Chat en Tiempo Real",
+    description: "Comunícate directamente con empresas o candidatos a través de nuestro chat integrado.",
+  },
+  {
+    icon: "user",
+    title: "Perfiles Profesionales",
+    description: "Crea un perfil atractivo para destacar tus habilidades y experiencia.",
+  },
+];
+---
+
+<Layout title="SearchJobs | Encuentra empleo">
+  <Header client:load/>
+  
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1 class="hero-title">Encuentra empleo o talento de forma fácil y profesional</h1>
+        <p class="hero-subtitle">
+          Conectamos empresas con los mejores talentos a través de una plataforma intuitiva y moderna
+        </p>
+        <div class="hero-cta">
+          <a href="/registro/candidato" class="btn btn-primary">
+            Buscar empleo
+          </a>
+          <a href="/registro/empresa" class="btn btn-outline">
+            Publicar vacante
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Empleos Destacados</h2>
+      <p class="section-subtitle">Descubre las mejores oportunidades laborales seleccionadas para ti</p>
+      
+      <div class="jobs-grid">
+        {featuredJobs.map(job => (
+          <JobCard job={job} rol={rol} />
+        ))}
+      </div>
+      
+      <div class="view-all-container">
+        <a href="/empleos" class="btn btn-secondary">
+          Ver todos los empleos
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="features-section section">
+    <div class="container">
+      <h2 class="section-title">¿Por qué elegir SearchJobs?</h2>
+      <p class="section-subtitle">
+        Nuestra plataforma ofrece herramientas modernas para conectar talento y oportunidades
+      </p>
+      
+      <div class="features-grid">
+        {features.map(feature => (
+          <FeatureCard feature={feature} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section section">
+    <div class="container">
+      <div class="cta-card">
+        <h2 class="cta-title">¿Listo para comenzar?</h2>
+        <p class="cta-description">
+          Únete a miles de profesionales y empresas que ya confían en SearchJobs
+        </p>
+        <div class="cta-buttons">
+          <a href="/registro/candidato" class="btn btn-primary">
+            Registrarse como candidato
+          </a>
+          <a href="/registro/empresa" class="btn btn-outline cta-outline">
+            Registrarse como empresa
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <Footer slot="footer" />
+</Layout>
+
+
+

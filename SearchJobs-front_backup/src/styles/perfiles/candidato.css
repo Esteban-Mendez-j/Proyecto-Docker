@@ -1,0 +1,676 @@
+.candidato-perfil-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  background-color: var(--background);
+  border-radius: var(--radius);
+}
+
+.candidato-perfil {
+  background-color: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  transition: all var(--animation-speed) ease;
+}
+
+.candidato-perfil-header {
+  background: var(--gradient-secondary);
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.candidato-imagen-container {
+  width: 90px; 
+  height: 90px; 
+  border-radius: calc(var(--radius) - 4px); 
+  overflow: hidden;
+  border: 3px solid white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative; 
+  transition: all var(--animation-speed) ease;
+}
+
+.candidato-imagen {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.candidato-header-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.candidato-nombre {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.candidato-cargo {
+  color: var(--text-light);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.candidato-header-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-left: auto;
+  align-items: center;
+}
+
+.candidato-edit-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: white;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all var(--animation-speed) ease;
+}
+
+.candidato-edit-button:hover {
+  background-color: var(--primary);
+  color: white;
+}
+
+.candidato-edit-button svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+}
+
+.candidato-edit-button:hover svg {
+  stroke: white;
+}
+
+.candidato-cv-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  border-radius: calc(var(--radius) - 4px);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--animation-speed) ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  text-decoration: none;
+}
+
+.candidato-cv-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+}
+
+.candidato-cv-button svg {
+  width: 16px;
+  height: 16px;
+  color: white;
+}
+
+.candidato-cv-button.disabled {
+  background: var(--secondary);
+  color: var(--text-light);
+  cursor: not-allowed;
+  box-shadow: none;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.candidato-perfil-content {
+  padding: 1.5rem;
+}
+
+.candidato-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.candidato-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.candidato-info-item svg {
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+  width: 16px;
+  height: 16px;
+}
+
+.candidato-info-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.candidato-info-label {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+.candidato-info-value {
+  font-weight: 500;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.candidato-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.candidato-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.candidato-section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-left: 1rem;
+}
+
+.candidato-section-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  width: 4px;
+  background: var(--gradient-primary);
+  border-radius: 2px;
+}
+
+.candidato-descripcion {
+  color: var(--text-light);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.candidato-timeline {
+  margin-top: 1rem;
+}
+
+.candidato-timeline-item {
+  position: relative;
+  padding-left: 1.5rem;
+  padding-bottom: 1.25rem;
+  margin-bottom: 1rem;
+  border-left: 2px solid var(--border);
+}
+
+.candidato-timeline-item:last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.candidato-timeline-dot {
+  position: absolute;
+  left: -0.4rem;
+  top: 0;
+  width: 0.8rem;
+  height: 0.8rem;
+  background-color: var(--primary);
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.candidato-timeline-title {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.candidato-timeline-subtitle {
+  color: var(--primary);
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.candidato-timeline-period {
+  color: var(--text-light);
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.candidato-timeline-description {
+  color: var(--text-light);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/*Estilos del editar perfil*/
+.candidato-perfil-container {
+  max-width: 800px;
+  margin: 1.5rem auto;
+}
+
+.candidato-editar-form {
+  background: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+}
+
+/* Header styles */
+.candidato-perfil-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  align-items: flex-start;
+}
+
+.candidato-imagen-container {
+  flex: 0 0 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.candidato-imagen {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 0.75rem;
+  border: 2px solid var(--background);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.candidato-imagen-upload {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  cursor: pointer;
+  color: var(--primary);
+  font-weight: 500;
+  font-size: 0.8rem;
+  text-align: center;
+  gap: 0.3rem;
+}
+
+.candidato-header-info {
+  flex: 1;
+  min-width: 250px;
+}
+
+.form-group {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.candidato-nombre-input {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  font-size: 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.candidato-cargo-input {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-light);
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Contact info section */
+.candidato-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.candidato-info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.candidato-info-item svg {
+  width: 16px;
+  height: 16px;
+  color: var(--text-light);
+}
+
+.candidato-info-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-light);
+  margin-bottom: 0.25rem;
+}
+
+.candidato-info-input {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.8);
+  font-size: 0.85rem;
+}
+
+/* CV Upload section */
+.candidato-cv-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.candidato-cv-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--secondary);
+  color: var(--text);
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.85rem;
+  transition: all var(--animation-speed) ease;
+  width: fit-content;
+}
+
+.candidato-cv-button:hover {
+  background-color: #e5e5ea;
+}
+
+.candidato-cv-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.candidato-cv-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+/* Description section */
+.candidato-section {
+  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.candidato-section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+
+.candidato-descripcion-input {
+  width: 100%;
+  min-height: 100px;
+  padding: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  resize: vertical;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Timeline sections */
+.candidato-timeline {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-left: 0.75rem;
+  margin-top: 1rem;
+}
+
+.candidato-timeline::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--border);
+}
+
+.candidato-timeline-item {
+  position: relative;
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.candidato-timeline-dot {
+  position: absolute;
+  left: 0;
+  top: 1.2rem;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px var(--primary);
+  z-index: 1;
+}
+
+.candidato-timeline-input {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.candidato-timeline-textarea {
+  width: 100%;
+  min-height: 70px;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  resize: vertical;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Buttons */
+.candidato-add-button {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.8rem;
+  transition: all var(--animation-speed) ease;
+}
+
+.candidato-add-button:hover {
+  background-color: var(--primary-dark);
+}
+
+.candidato-remove-button {
+  align-self: flex-start;
+  background-color: var(--error);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.8rem;
+  transition: all var(--animation-speed) ease;
+  margin-top: 0.5rem;
+}
+
+.candidato-remove-button:hover {
+  background-color: #e6352b;
+}
+
+/* Form actions */
+.candidato-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.candidato-save-button {
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all var(--animation-speed) ease;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.2);
+}
+
+.candidato-save-button:hover {
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+  transform: translateY(-2px);
+}
+
+.candidato-cancel-button {
+  background-color: var(--secondary);
+  color: var(--primary);
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all var(--animation-speed) ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+.candidato-cancel-button:hover {
+  background-color: #e5e5ea;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .candidato-perfil-container {
+    padding: 0 1rem;
+  }
+  
+  .candidato-editar-form {
+    padding: 1.25rem;
+  }
+  
+  .form-group {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .candidato-nombre-input {
+    font-size: 1rem;
+  }
+  
+  .candidato-form-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .candidato-save-button,
+  .candidato-cancel-button {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .candidato-perfil-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+  
+  .candidato-header-actions {
+    margin-left: 0;
+    margin-top: 1rem;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .candidato-info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .candidato-section-title {
+    justify-content: center;
+    padding-left: 0;
+  }
+  
+  .candidato-section-title::before {
+    display: none;
+  }
+}

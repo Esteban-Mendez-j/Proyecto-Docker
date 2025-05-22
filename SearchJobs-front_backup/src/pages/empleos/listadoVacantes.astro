@@ -1,0 +1,26 @@
+---
+import Footer from "../../components/Footer.astro";
+import Header from "../../components/Header";
+import JobBoard from "../../components/JobBoard";
+import Layout from "../../layouts/Layout.astro";
+import "../../styles/empleos/empleos.css";
+import { API_CLIENT_URL } from '../../javascripts/Api';
+---
+
+<Layout title="Empleos | SearchJobs">
+  <Header client:load />
+
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">Encuentra tu próximo empleo</h1>
+      <p class="page-description">
+        Explora todas las oportunidades laborales disponibles
+      </p>
+    </div>
+
+   
+    <JobBoard client:load fetchUrl=`${API_CLIENT_URL}/api/vacantes/listar` rol="empresa"/>
+    
+  </div>
+  <Footer slot="footer" />
+</Layout>

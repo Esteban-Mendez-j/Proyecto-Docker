@@ -1,0 +1,94 @@
+.pagina {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.pagina h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.pagina p {
+  margin-bottom: 1.5rem;
+  color: #555;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.tabla thead {
+  background-color: #1d4ed8;
+  color: white;
+}
+
+.tabla th,
+.tabla td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.tabla a {
+  color: #3498db;
+  text-decoration: none;
+}
+
+.tabla a:hover {
+  text-decoration: underline;
+}
+
+/* style para botones de seguir paginacion*/
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, sans-serif;
+}
+
+.btn-pagina {
+  padding: 8px 16px;
+  background-color: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 14px;
+}
+
+.btn-pagina:hover {
+  background-color: #005fa3;
+}
+
+.btn-pagina:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+#page-number {
+  font-weight: bold;
+  font-size: 15px;
+  color: #333;
+}
+.cv-link {
+  text-decoration: none;
+  color: #0077cc;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 5px;
+  transition: background-color 0.2s ease;
+}
+
+.cv-link:hover {
+  background-color: #f0f0f0;
+  color: #005fa3;
+}

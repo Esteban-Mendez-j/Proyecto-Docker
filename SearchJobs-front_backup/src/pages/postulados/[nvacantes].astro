@@ -1,0 +1,25 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.jsx';
+import Footer from '../../components/Footer.astro';
+import '../../styles/pages/postulados.css';
+import "../../styles/empleos/empleos.css";
+import Postulados from '../../components/Postulados.jsx';
+
+const { nvacantes } = Astro.params;
+---
+
+<Layout title="SearchJobs | Postulados">
+  <Header client:load />
+
+  <section class="pagina">
+    <h1>Postulados</h1>
+    <p>Lista de candidatos que han aplicado a vacantes.</p>
+ 
+    
+    <Postulados client:load vacanteId={Number(nvacantes)} />
+    
+  </section>
+  <Footer />
+</Layout>
+

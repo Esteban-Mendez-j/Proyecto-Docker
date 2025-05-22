@@ -1,0 +1,82 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.jsx';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="Página no encontrada | SearchJobs">
+  <Header client:load />
+  
+  <div class="container">
+    <div class="error-container">
+      <h1 class="error-code">404</h1>
+      <h2 class="error-title">Página no encontrada</h2>
+      <p class="error-message">Lo sentimos, la página que estás buscando no existe o ha sido movida.</p>
+      <div class="error-actions">
+        <a href="/" class="btn btn-primary">Volver al inicio</a>
+        <a href="/empleos" class="btn btn-outline">Ver empleos</a>
+      </div>
+    </div>
+  </div>
+
+  <Footer slot="footer" />
+</Layout>
+
+<style>
+  .error-container {
+    max-width: 600px;
+    margin: 100px auto;
+    text-align: center;
+    padding: 0 20px;
+  }
+
+  .error-code {
+    font-size: 120px;
+    font-weight: 800;
+    margin-bottom: 0;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    line-height: 1;
+  }
+
+  .error-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+
+  .error-message {
+    font-size: 18px;
+    color: var(--text-light);
+    margin-bottom: 32px;
+  }
+
+  .error-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  @media (max-width: 768px) {
+    .error-code {
+      font-size: 100px;
+    }
+
+    .error-title {
+      font-size: 28px;
+    }
+
+    .error-message {
+      font-size: 16px;
+    }
+
+    .error-actions {
+      flex-direction: column;
+    }
+  }
+</style>
+

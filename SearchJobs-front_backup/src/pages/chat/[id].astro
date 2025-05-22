@@ -1,0 +1,19 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.jsx';
+import Footer from '../../components/Footer.astro';
+import ChatPrincipal from '../../components/ChatPrincipal.jsx';
+
+import '../../styles/pages/chat.css'
+const { params } = Astro;
+const chatId = params.id;
+---
+
+<Layout title="Chat | SearchJobs">
+<Header client:load />
+ 
+  <ChatPrincipal client:only="react" chatId={chatId} />
+
+<Footer slot="footer" />
+</Layout>
+

@@ -1,0 +1,48 @@
+---
+import '../styles/global.css';
+// import { ClientRouter } from "astro:transitions";
+
+export interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { 
+  title = "SearchJobs | Encuentra empleo o talento",
+  description = "Plataforma intuitiva y moderna para conectar empresas con talentos"
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <!-- <ClientRouter/> -->
+    
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body>
+    <slot name="header" />
+    
+    <main>
+      <slot />
+    </main>
+    
+    <slot name="footer" />
+  </body>
+</html>
+
+
+
+
+

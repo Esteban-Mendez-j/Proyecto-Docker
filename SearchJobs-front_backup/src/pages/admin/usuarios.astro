@@ -1,0 +1,125 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.jsx";
+import Footer from "../../components/Footer.astro";
+import AdminSidebar from "../../components/AdminSidebar.astro";
+import UsuariosActivos from "../../components/UsuariosActivos.jsx";
+---
+
+<Layout title="Gestión de Usuarios | SearchJobs">
+  <Header client:load /><br />
+
+  <div class="container px-4 py-6 mx-auto">
+    <div class="flex flex-col gap-6 md:flex-row">
+      <AdminSidebar activeItem="usuarioas" />
+
+      <UsuariosActivos client:only />
+      <tr>
+        <html lang="es">
+          <head>
+            <title>Usuarios activos</title>
+          </head>
+        </html>
+      </tr>
+    </div>
+  </div>
+</Layout>
+
+<Footer slot="footer" />
+
+<script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", () => {
+    const tabActivos = document.getElementById("tab-activos");
+    const tabBaneados = document.getElementById("tab-baneados");
+    const contentActivos = document.getElementById("content-activos");
+    const contentBaneados = document.getElementById("content-baneados");
+
+    tabActivos.addEventListener("click", () => {
+      tabActivos.classList.add("active", "border-blue-600", "text-blue-600");
+      tabActivos.classList.remove("border-transparent", "text-gray-500");
+      tabBaneados.classList.remove(
+        "active",
+        "border-blue-600",
+        "text-blue-600",
+      );
+      tabBaneados.classList.add("border-transparent", "text-gray-500");
+
+      contentActivos.classList.remove("hidden");
+      contentBaneados.classList.add("hidden");
+    });
+
+    tabBaneados.addEventListener("click", () => {
+      tabBaneados.classList.add("active", "border-blue-600", "text-blue-600");
+      tabBaneados.classList.remove("border-transparent", "text-gray-500");
+      tabActivos.classList.remove("active", "border-blue-600", "text-blue-600");
+      tabActivos.classList.add("border-transparent", "text-gray-500");
+
+      contentBaneados.classList.remove("hidden");
+      contentActivos.classList.add("hidden");
+    });
+
+    // Modal para banear usuario
+    const modalBanear = document.getElementById("modal-banear");
+    const usuarioBanearNombre = document.getElementById(
+      "usuario-nombre-banear",
+    );
+    const cancelarBanear = document.getElementById("cancelar-banear");
+    const confirmarBanear = document.getElementById("confirmar-banear");
+    const banearBtns = document.querySelectorAll(".banear-btn");
+
+    banearBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-id");
+        const nombre = btn.getAttribute("data-nombre");
+
+        usuarioBanearNombre.textContent = nombre;
+        modalBanear.classList.remove("hidden");
+      });
+    });
+
+    cancelarBanear.addEventListener("click", () => {
+      modalBanear.classList.add("hidden");
+    });
+
+    confirmarBanear.addEventListener("click", () => {
+      // La lógica para usuario
+      Swal.fire({ text: "Usuario baneado correctamente", icon: "success" });
+      modalBanear.classList.add("hidden");
+    });
+
+    // Modal para desbanear usuario
+    const modalDesbanear = document.getElementById("modal-desbanear");
+    const usuarioDesbanearNombre = document.getElementById(
+      "usuario-nombre-desbanear",
+    );
+    const cancelarDesbanear = document.getElementById("cancelar-desbanear");
+    const confirmarDesbanear = document.getElementById("confirmar-desbanear");
+    const desbanearBtns = document.querySelectorAll(".desbanear-btn");
+
+    desbanearBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-id");
+        const nombre = btn.getAttribute("data-nombre");
+
+        usuarioDesbanearNombre.textContent = nombre;
+        modalDesbanear.classList.remove("hidden");
+      });
+    });
+
+    cancelarDesbanear.addEventListener("click", () => {
+      modalDesbanear.classList.add("hidden");
+    });
+
+    confirmarDesbanear.addEventListener("click", () => {
+      // La lógica para desbanear al usuario
+      Swal.fire({ text: "Usuario desbaneado correctamente", icon: "success" });
+      modalDesbanear.classList.add("hidden");
+    });
+  });
+</script>
+
+<style>
+  .tab-button.active {
+    border-bottom-width: 2px;
+  }
+</style>

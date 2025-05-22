@@ -1,0 +1,101 @@
+/* perfilEmpresa.css */
+
+/* Contenedor principal */
+.perfil-empresa {
+    max-width: 900px;
+    margin: 2rem auto;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #fff;
+    padding-bottom: 2rem;
+  }
+  
+  /* Título con icono */
+  .perfil-empresa > h1 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.8rem;
+    color: #2c3e50;
+    padding: 2rem;
+    margin: 0;
+    background: linear-gradient(90deg, #2979ff, #00c6ff);
+    color: #fff;
+  }
+  
+  /* Sección de información general */
+  .perfil-empresa .info {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #ececec;
+  }
+  
+  .perfil-empresa .info p {
+    margin: 0.6rem 0;
+    font-size: 1rem;
+    color: #444;
+  }
+  
+  .perfil-empresa .info p strong {
+    color: #1d1d1d;
+  }
+  
+  /* Enlaces dentro de info */
+  .perfil-empresa .info a {
+    color: #2979ff;
+    text-decoration: none;
+  }
+  
+  .perfil-empresa .info a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Sección de vacantes */
+  .perfil-empresa .vacantes {
+    padding: 1.5rem 2rem;
+  }
+  
+  .perfil-empresa .vacantes h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.4rem;
+    color: #34495e;
+    margin-bottom: 1rem;
+  }
+  
+  .perfil-empresa .vacantes ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .perfil-empresa .vacantes li {
+    background: #f7f9fc;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    font-weight: 500;
+    color: #2c3e50;
+  }
+  
+  /* Responsive */
+  @media (max-width: 600px) {
+    .perfil-empresa {
+      margin: 1rem;
+    }
+    .perfil-empresa > h1 {
+      padding: 1.5rem 1rem;
+      font-size: 1.5rem;
+    }
+    .perfil-empresa .info,
+    .perfil-empresa .vacantes {
+      padding: 1rem;
+    }
+    .perfil-empresa .vacantes h2 {
+      font-size: 1.2rem;
+    }
+  }
+  

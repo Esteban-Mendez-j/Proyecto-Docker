@@ -1,0 +1,17 @@
+---
+import Footer from "../../../components/Footer.astro";
+import Header from "../../../components/Header.jsx";
+import Layout from "../../../layouts/Layout.astro";
+import "../../../styles/perfiles/candidato.css";
+import HistorialYEstudios from '../../../components/HistorialYEstudios.jsx'
+---
+<Layout title={`Editar Perfil | SearchJobs`}>
+  <Header client:load />
+
+  <HistorialYEstudios client:load />
+  
+
+  <Footer slot="footer" />
+</Layout>
+
+
