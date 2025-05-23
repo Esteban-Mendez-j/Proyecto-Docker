@@ -2,7 +2,7 @@
 services:
   backend:
     build:
-      context: ./Proyecto        
+      context: ./Proyecto_backup        
       dockerfile: Dockerfile
     container_name: springboot-app
     ports:
@@ -20,11 +20,11 @@ services:
     networks:
       - app-network
     volumes:
-      - ./Proyecto/uploads:/app/uploads
+      - ./Proyecto_backup/uploads:/app/uploads
 
   astro:
     build:
-      context: ./SearchJobs-front
+      context: ./SearchJobs-front_backup
       dockerfile: Dockerfile
     container_name: astro-app
     depends_on:
