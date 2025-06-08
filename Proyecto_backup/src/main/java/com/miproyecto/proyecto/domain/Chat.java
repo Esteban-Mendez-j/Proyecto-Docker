@@ -20,7 +20,14 @@ public class Chat {
     private String tituloVacante;
     private Boolean isActive;
     private String vacanteId;
+    private String tipoChat;    
 
+    public String getTipoChat() {
+        return tipoChat;
+    }
+    public void setTipoChat(String tipoChat) {
+        this.tipoChat = tipoChat;
+    }
     public String getTituloVacante() {
         return tituloVacante;
     }

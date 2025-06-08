@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import manejarRespuesta from "../javascripts/ManejarRespuesta";
 import { API_CLIENT_URL } from '../javascripts/Api';
+import Swal from 'sweetalert2';
 
 const ChatList = ({ searchText, Estado , onSelectChat }) => {
   const [userRole, setUserRole] = useState(null);
@@ -71,20 +72,31 @@ const ChatList = ({ searchText, Estado , onSelectChat }) => {
               className="w-full text-left px-4 py-3 hover:bg-blue-50 transition duration-200 group"
             >
               <div className="flex justify-between items-center mb-1">
-                <h3 className="font-semibold text-blue-800 text-sm group-hover:text-blue-900">
-                  {userRole === 'EMPRESA'
-                    ? `Candidato: ${chat.nombreCandidato}`
-                    : `Empresa: ${chat.nombreEmpresa}`}
-                </h3>
+                  {chat.tipoChat === 'Privado' ? (
+                    <h3 className="font-semibold text-blue-800 text-sm group-hover:text-blue-900">
+                      {userRole === 'EMPRESA'
+                        ? `Candidato: ${chat.nombreCandidato}`
+                        : `Empresa: ${chat.nombreEmpresa}`}
+                    </h3>
+                  ) : (
+                    <h3 className="font-semibold text-green-800 text-sm group-hover:text-green-900">
+                      {chat.tituloVacante}
+                    </h3>
+                  )}
+
                 <span className="text-xs text-blue-400">
-                  {new Date(chat.horaUltimoMensaje).toLocaleTimeString([], {
+                  {new Date(chat.horaUltimoMensaje+'Z').toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit',
                   })}
                 </span>
               </div>
               <p className="text-xs text-blue-600">
-                Vacante: <span className="font-medium">{chat.tituloVacante}</span>
+                <span className="font-medium">
+                  {chat.tipoChat === 'Privado'
+                    ? `Vacante: ${chat.tituloVacante}`
+                    : 'Chat grupal'}
+                </span>
               </p>
               <p className="text-sm text-blue-700 truncate">
                 {chat.contentUltimoMensaje || (

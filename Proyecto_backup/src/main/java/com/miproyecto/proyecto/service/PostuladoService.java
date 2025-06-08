@@ -165,6 +165,7 @@ public class PostuladoService {
         ChatDTO chat = chatService.findByVacanteIdAndCandidatoId(
                     postulado.getVacante().getNvacantes(), 
                     postulado.getCandidato().getIdUsuario());
+        System.out.println(chat);
         if (chat != null) {
             chatService.cambiarEstadoChat(chat.getId(), false, "El candidato cancelo la postulacion");
         }

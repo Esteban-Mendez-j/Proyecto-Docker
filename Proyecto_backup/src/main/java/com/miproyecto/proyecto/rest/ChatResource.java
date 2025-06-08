@@ -64,6 +64,23 @@ public class ChatResource {
         return ResponseEntity.ok(chatDTO);
     }
 
+    // Crear un nuevo chat
+    @PostMapping("/vacantes/crear")
+    public ResponseEntity<ChatDTO> crearChatGrupal(@RequestBody ChatDTO response) {
+        System.out.println("chat: hola ");
+        // Verificar que la empresa exista y sea un usuario tipo "empresa"
+        VacanteDTO vacantesDTO =vacanteService.get(0L,Long.parseLong(response.getVacanteId()));
+        System.out.println("dos");
+        UsuarioDTO empresa = usuarioService.get(vacantesDTO.getIdUsuario());
+        System.out.println("tres");
+        if (!empresa.getRoles().contains("EMPRESA")) {
+            throw new IllegalArgumentException("Solo las empresas pueden crear chats");
+        }
+        System.out.println("cuatro");
+        ChatDTO chatDTO = chatService.crearChatPorVacante(response.getVacanteId(), empresa.getIdUsuario().toString());
+        return ResponseEntity.ok(chatDTO);
+    }
+
     // Agregar un mensaje a un chat
     @PostMapping("/{chatId}/mensajes")
     public ResponseEntity<MensajeDTO> agregarMensaje(@PathVariable String chatId,@RequestBody MensajeDTO mensajeDTO) {

@@ -12,6 +12,8 @@ public interface ChatRepository extends MongoRepository<Chat, String> {
     Optional<Chat> findByEmpresaIdAndCandidatoId(String empresaId, String candidatoId);
     
     Optional<Chat> findByVacanteIdAndCandidatoId(String vacanteId, String candidatoId);
+    
+    Optional<Chat> findByVacanteIdAndEmpresaId(String vacanteId, String empresaId);
 
     Optional<Chat> findByVacanteIdAndCandidatoId(Long vacanteId, Long candidatoId);
 

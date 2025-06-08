@@ -1,10 +1,15 @@
 package com.miproyecto.proyecto.rest;
 
 
+import java.nio.file.AccessDeniedException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+
 
 import com.miproyecto.proyecto.model.MensajeDTO;
 import com.miproyecto.proyecto.service.ChatService;
@@ -41,4 +46,17 @@ public class ChatWebsocketController {
             mensajeGuardado
         );
     }
+
+    @MessageMapping("/vacantes/{vacanteId}/chat")
+    @SendTo("/topic/vacantes/{vacanteId}/chat")
+    public MensajeDTO enviarMensajeGrupo(@DestinationVariable String vacanteId, MensajeDTO mensaje) {
+        // Validación: que el usuario pertenezca a la vacante (empresa o postulante)
+        // if (!chatService.usuarioPerteneceAVacante(mensaje.getSenderId(), vacanteId)) {
+        //     throw new AccessDeniedException("No tienes acceso a este chat grupal.");
+        // }
+        MensajeDTO mensajeGuardado = chatService.agregarMensajeAChat(mensaje);
+
+        return mensajeGuardado; // se envía a todos los suscritos
+    }
+
 }

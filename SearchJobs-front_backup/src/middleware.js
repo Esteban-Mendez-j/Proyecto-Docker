@@ -2,9 +2,9 @@ import { API_URL } from './javascripts/Api.js';
 const rutasPorRol = {
   'ROLE_INVITADO': ['/', '/login','/empleos/*','/perfil/empresa/*','/registro', '/registro/candidato','/registro/empresa', '/404'],
   'CANDIDATO': [ '/','/login','/pdf/*', '/perfil/empresa/*','/chat/*','/dashboard/candidato','/empleos/*', '/perfil/candidato/*', '/logout', '/chat/candidato/*', '/postulados', '/404'],
-  'EMPRESA': [ '/','/dashboard/empresa','/pdf/*',  '/chat/*','/perfil/empresa/*', '/logout','/postulados/*', '/chat/empresa/*', '/404', "/empleos/*", '/perfil/candidato/*'],
-  'ADMIN': [ '/','/admin/*','/perfil/*','/pdf/*',  '/logout', '/404', '/empleos/*','/postulados/*', '/perfil/candidato/*'],
-  'SUPER_ADMIN': ['/','/admin/*', '/pdf/*', '/perfil/*','/logout', '/404', '/empleos/*','/postulados/*', '/perfil/candidato/*' ]
+  'EMPRESA': [ '/','/login','/dashboard/empresa','/pdf/*',  '/chat/*','/perfil/empresa/*', '/logout','/postulados/*', '/chat/empresa/*', '/404', "/empleos/*", '/perfil/candidato/*'],
+  'ADMIN': [ '/','/login','/admin/*','/perfil/*','/pdf/*',  '/logout', '/404', '/empleos/*','/postulados/*', '/perfil/candidato/*'],
+  'SUPER_ADMIN': ['/','/admin/*','/login', '/pdf/*', '/perfil/*','/logout', '/404', '/empleos/*','/postulados/*', '/perfil/candidato/*' ]
 };
 
 export async function onRequest(context, next) {

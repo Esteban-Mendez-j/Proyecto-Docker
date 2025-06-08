@@ -14,7 +14,14 @@ public class ChatDTO {
     private String tituloVacante;
     private String ContentUltimoMensaje;
     private LocalDateTime horaUltimoMensaje;
+    private String tipoChat;
 
+    public String getTipoChat() {
+        return tipoChat;
+    }
+    public void setTipoChat(String tipoChat) {
+        this.tipoChat = tipoChat;
+    }
     public String getTituloVacante() {
         return tituloVacante;
     }

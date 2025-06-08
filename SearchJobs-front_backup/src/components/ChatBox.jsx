@@ -3,6 +3,7 @@ import { Client } from "@stomp/stompjs";
 import { manejarRespuesta } from '../javascripts/ManejarRespuesta';
 import { API_CLIENT_URL } from '../javascripts/Api';
 import { WS_CLIENT_URL } from '../javascripts/Api';
+import Swal from 'sweetalert2';
 
 const ChatBox = ({ chatId }) => {
   const [messages, setMessages] = useState([]);
@@ -10,13 +11,31 @@ const ChatBox = ({ chatId }) => {
   const [loading, setLoading] = useState(false);
   const [chatInfo, setChatInfo] = useState(null);
   const [chatChange, setChatChange] = useState(null);
+  const [userRole, setUserRole] = useState(null);
   const stompClient = useRef(null);
   const messagesEndRef = useRef(null);
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const res = await fetch(`${API_CLIENT_URL}/api/usuarios/rol`, {
+          credentials: 'include',
+        });
+        const data = await manejarRespuesta(res);
+        if (!data) return;
+        setUserRole(data.rolPrincipal);
+      } catch (error) {
+        console.error('Error fetching user role:', error);
+      }
+    };
+
+    fetchUserRole();
+  }, []);
 
   useEffect(() => {
     const fetchChatInfo = async () => {
       if(chatId === "candidato" || chatId === "empresa"){return}
-
+      const mensajeGuardado = localStorage.getItem(`chat-mensaje-${chatId}`);
+      setChatChange(mensajeGuardado)
       try {
         const res = await fetch(`${API_CLIENT_URL}/api/chats/${chatId}/info`, {
           credentials: "include",
@@ -40,7 +59,7 @@ const ChatBox = ({ chatId }) => {
   useEffect(() => {
     if (!chatInfo) return;
 
-    const { userId } = chatInfo;
+    const { userId , tipoChat} = chatInfo;
 
     const client = new Client({
       brokerURL: `${WS_CLIENT_URL}/chats`,
@@ -48,17 +67,25 @@ const ChatBox = ({ chatId }) => {
 
       onConnect: () => {
         console.log("✅ Conectado a WebSocket");
-
-        // Escuchar mensajes nuevos
-        client.subscribe(`/user/queue/messages`, (msg) => {
-          const message = JSON.parse(msg.body);
-          setMessages((prev) => [...prev, message]);
-        });
-
+        if (tipoChat === "Grupo") {
+          // CHAT PÚBLICO
+          client.subscribe(`/topic/vacantes/${vacanteId}`, (msg) => {
+            const message = JSON.parse(msg.body);
+            setMessages((prev) => [...prev, message]);
+          });
+        } else {
+          // CHAT PRIVADO
+          client.subscribe(`/user/queue/messages`, (msg) => {
+            const message = JSON.parse(msg.body);
+            setMessages((prev) => [...prev, message]);
+          });
+        }
+        
         // Escuchar cierre de chat
         client.subscribe(`/user/queue/chat-change`, (msg) => {
           const contenido = msg.body;
           setChatChange(contenido);
+          console.log(contenido)
           localStorage.setItem(`chat-mensaje-${chatId}`, contenido);
         });
 
@@ -199,7 +226,7 @@ const ChatBox = ({ chatId }) => {
               className={`flex ${isOwn ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-xs px-5 py-3 rounded-xl shadow-md text-base relative ${
+                className={`max-w-sm px-5 py-3 rounded-xl shadow-md text-base relative break-words overflow-hidden ${
                   isOwn
                     ? "bg-blue-500 text-white rounded-br-none"
                     : "bg-white text-blue-900 rounded-bl-none border border-blue-200"
@@ -207,12 +234,13 @@ const ChatBox = ({ chatId }) => {
               >
                 <p className="mb-4">{msg.content}</p>
                 <span className="absolute bottom-1 right-3 text-xs text-gray-300">
-                  {new Date(msg.time).toLocaleTimeString([], {
+                  {new Date(msg.time + 'Z').toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
                     hour12: true,
                   })}
                 </span>
+
               </div>
             </div>
           );
@@ -251,6 +279,7 @@ const ChatBox = ({ chatId }) => {
           </div>
         </div>
       )}
+
     </div>
   );
 
