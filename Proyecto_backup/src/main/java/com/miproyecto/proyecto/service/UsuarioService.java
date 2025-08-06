@@ -227,16 +227,6 @@ public class UsuarioService {
         return usuarioRepository.existsByTelefonoIgnoreCase(telefono);
     }
 
-    // public Map<String,Object> findUserByEstado(boolean estado, Pageable pageable, String nameList) {
-    //     final Page<Usuario> usuarios =  usuarioRepository.findIsActiveUsuariosByIsActive(estado, pageable);
-    //     final Page<UsuarioDTO> usuariosDTO = usuarios.map(usuario -> mapToDTO(usuario, new VacanteDTO()));
-    //     return mapResponse(usuariosDTO, nameList) ;       
-    // }
-
-
-
-
-
     public Map<String,Object> mapResponse(Page<UsuarioDTO> pageableResponse, String nameList){
         Map<String,Object> response = new HashMap<>();
 

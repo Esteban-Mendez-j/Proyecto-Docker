@@ -142,17 +142,3 @@ public class EmpresaService {
     }
 }
 
-
-    
-//     public List<EmpresaDTO> buscarEmpresasConFiltro(EmpresaDTO filtro) {
-//         Specification<Empresa> spec = UsuarioSpecifications.conFiltros(filtro);
-//         List<Empresa> empresas = empresaRepository.findAll(spec);
-//         return empresas.stream().map(this::convertirADTO).toList();
-//     }
-
-//     private EmpresaDTO convertirADTO(Empresa empresa) {
-//         return null;
-//         // conversión básica o usando MapStruct
-//     }
-// }
-

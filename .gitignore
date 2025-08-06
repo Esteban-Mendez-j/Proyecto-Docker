@@ -1,33 +1,39 @@
 # Archivos de entorno
-.env
+**/.env*
+application-local.yml
 
 # Logs
 *.log
 
-# Carpetas temporales o caches (opcional)
+# Archivos auxiliares
+HELP.md
+
+# Caches y temporales
 tmp/
 cache/
+dist/
+build/
 
 # Archivos del sistema y editores
 .DS_Store
 Thumbs.db
 .idea/
-.vscode/
+**/.vscode/
 
-# Node.js
-/node_modules
-
-# Astro (si usas)
-.astro/
+# Node.js / JavaScript
+**/node_modules/
+**/.next/
+**/.turbo/
+**/.astro/
 
 # Backend Java (Maven)
 target/
 !.mvn/wrapper/maven-wrapper.jar
 
-# Backend Java (Gradle) - si usas
+# Backend Java (Gradle)
 build/
 
-# Archivos específicos de IDEs
+# IDEs
 ## IntelliJ IDEA
 *.iws
 *.iml
@@ -38,17 +44,6 @@ build/
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
-.sts4-cache
-
-## NetBeans
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-# Archivos auxiliares
-HELP.md
-application-local.yml
+.sts4-cache/

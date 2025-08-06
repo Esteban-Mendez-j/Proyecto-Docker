@@ -46,6 +46,14 @@ security:
       generator: SEARCHJOBS-BACKEND
     expiration: ${JWT_EXPIRATION}
 
+springdoc:
+  swagger-ui:
+    path: /documentacion.html
+
+  habilitar-spring-security: true
+  urlsNombrePrimario: Documentacion SearchJobs
+  # springdoc.swagger-ui.operacionesSorter -> ordena la lista de peticiones 
+
 error:
   handling:
     http-status-in-json-response: true

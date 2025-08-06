@@ -99,13 +99,5 @@ public class UsuarioResource {
         usuarioService.delete(idUsuario);
         return ResponseEntity.noContent().build();
     }
-    // @GetMapping("/listar")
-    // public ResponseEntity<Map<String, Object>> listarUsuarios(
-    //     HttpSession session, @PageableDefault(page = 0, size = 10) Pageable pageable) {
-
-    //     Map<String, Object> response = usuarioService.findAllByEstado(true, pageable, "usuarios");
-    //     return ResponseEntity.ok(response);
-    // }
-
   
 }

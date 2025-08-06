@@ -1,16 +1,31 @@
 
 services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_DATABASE: mydb
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+
   backend:
     build:
       context: ./Proyecto_backup        
       dockerfile: Dockerfile
     container_name: springboot-app
+    env_file:
+      - .env
     ports:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_DATASOURCE_PASSWORD: ""
       SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
       MY_SECRET_KEY: ${MY_SECRET_KEY}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
@@ -39,5 +54,9 @@ services:
     networks:
       - app-network
 
+volumes:
+  mysql_data:
+
 networks:
   app-network:
+

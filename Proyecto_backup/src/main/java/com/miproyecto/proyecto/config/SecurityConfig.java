@@ -92,7 +92,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/usuarios/**", "/css/**", 
-                    "/images/**", "/js/**", "/api/empresas/add", "/api/candidatos/add","/api/usuarios/rol",
+                    "/images/**","/documentacion.html","/swagger-ui.html","/swagger-ui/**","/v3/api-docs/**", "/js/**", "/api/empresas/add", "/api/candidatos/add","/api/usuarios/rol",
                     "/api/vacantes/listar", "/api/vacantes/seleccion/{nvacantes}",
                     "/api/vacantes/eliminar/filtro", "/api/apelaciones/**","/api/vacantes/Top/listar","/api/vacantes/listar/filtradas" ,
                     "/api/vacantes/**", "/api/empresas/perfil/**"
