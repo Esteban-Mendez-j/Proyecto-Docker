@@ -29,11 +29,14 @@ import com.miproyecto.proyecto.service.EmpresaService;
 import com.miproyecto.proyecto.service.UsuarioService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.groups.Default;
 
-
+@Tag(name = "Empresas", description = "Operaciones relacionadas con la gestión de empresas")
 @RestController
 @RequestMapping(value = "/api/empresas", produces = MediaType.APPLICATION_JSON_VALUE)
 public class EmpresaResource {
@@ -49,6 +52,15 @@ public class EmpresaResource {
         this.usuarioService = usuarioService;
     }
 
+    @Operation(
+        summary = "Obtener perfil de la empresa",
+        description = "Devuelve la información de una empresa por ID. Si no se proporciona el ID, usa el usuario autenticado.",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Perfil encontrado"),
+            @ApiResponse(responseCode = "401", description = "No autorizado"),
+            @ApiResponse(responseCode = "404", description = "Empresa no encontrada")
+        }
+    )
     @GetMapping("/perfil")
     public ResponseEntity<Map<String, Object>> mostrarPerfil( Model model,HttpSession session,
             @RequestParam(value = "idUsuario", required = false) Long idUsuario) {        
@@ -66,6 +78,14 @@ public class EmpresaResource {
         return ResponseEntity.ok(response); 
     }
 
+    @Operation(
+        summary = "Crear una empresa",
+        description = "Registra una nueva empresa en el sistema.",
+        responses = {
+            @ApiResponse(responseCode = "201", description = "Empresa creada con éxito"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos")
+        }
+    )
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> createEmpresa(@RequestBody @Valid final EmpresaDTO empresaDTO) {
         Map<String, Object> response = new HashMap<>();
@@ -75,6 +95,14 @@ public class EmpresaResource {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(
+        summary = "Obtener empresa por ID",
+        description = "Devuelve los datos de una empresa específica.",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Empresa encontrada"),
+            @ApiResponse(responseCode = "404", description = "Empresa no encontrada")
+        }
+    )
     @GetMapping("/edit/{idEmpresa}")
     public ResponseEntity<EmpresaDTO> getEmpresa(
             @PathVariable(name = "idEmpresa") final Long idEmpresa) {
@@ -82,7 +110,15 @@ public class EmpresaResource {
     }
 
 
-
+    @Operation(
+        summary = "Editar datos de la empresa",
+        description = "Permite actualizar información de la empresa, incluyendo imagen de perfil.",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Empresa actualizada con éxito"),
+            @ApiResponse(responseCode = "400", description = "Error al guardar la imagen o datos inválidos"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+        }
+    )
     @PutMapping(value = "/edit/{idUsuario}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> editCandidato(
             @RequestPart("empresa") @Validated({ValidationGroups.OnUpdate.class, Default.class}) EmpresaDTO empresaDTO,
@@ -123,6 +159,14 @@ public class EmpresaResource {
         }
     }
 
+    @Operation(
+        summary = "Eliminar una empresa",
+        description = "Borra permanentemente los datos de una empresa.",
+        responses = {
+            @ApiResponse(responseCode = "204", description = "Empresa eliminada con éxito"),
+            @ApiResponse(responseCode = "404", description = "Empresa no encontrada")
+        }
+    )
     @DeleteMapping("/delete/{idEmpresa}")
     public ResponseEntity<Void> deleteEmpresa(
             @PathVariable(name = "idEmpresa") final Long idEmpresa) {

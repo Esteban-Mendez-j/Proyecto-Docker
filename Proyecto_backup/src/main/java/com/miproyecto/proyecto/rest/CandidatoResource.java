@@ -32,10 +32,15 @@ import com.miproyecto.proyecto.service.PostuladoService;
 import com.miproyecto.proyecto.service.UsuarioService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.groups.Default;
 
+@Tag(name = "Candidatos", description = "Operaciones relacionadas con la gestión de candidatos")
 
 @RestController
 @RequestMapping(value = "/api/candidatos", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -58,7 +63,16 @@ public class CandidatoResource {
         this.historialLaboralService = historialLaboralService;
         this.usuarioService = usuarioService;
     }
-    
+    @Operation(
+        summary = "Mostrar perfil de candidato",
+        description = "Obtiene la información completa del perfil de un candidato, incluyendo estudios e historial laboral. Si no se especifica un ID de usuario, se obtiene del token JWT en sesión."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Perfil encontrado"),
+        @ApiResponse(responseCode = "401", description = "Token de sesión no encontrado"),
+        @ApiResponse(responseCode = "404", description = "Candidato o postulación no encontrada"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @GetMapping("/perfil")
     public ResponseEntity<Map<String, Object>> mostrarPerfil(
         @RequestParam(name = "idUsuario", required = false) Long idUsuario,
@@ -111,6 +125,11 @@ public class CandidatoResource {
         }
     }
 
+    @Operation(
+        summary = "Crear nuevo candidato",
+        description = "Crea un nuevo registro de candidato a partir de los datos enviados."
+    )
+    @ApiResponse(responseCode = "201", description = "Candidato creado correctamente")
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> createCandidato(@RequestBody  @Valid  CandidatoDTO candidatoDTO) {
         Map<String, Object> response = new HashMap<>();
@@ -120,12 +139,20 @@ public class CandidatoResource {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(
+        summary = "Obtener candidato por ID",
+        description = "Devuelve la información de un candidato específico."
+    )
     @GetMapping("/edit/{idUsuario}")
     public ResponseEntity<CandidatoDTO> getCandidato(
             @PathVariable(name = "idCandidato") final Long idCandidato) {
         return ResponseEntity.ok(candidatoService.get(idCandidato));
     }
 
+    @Operation(
+        summary = "Editar candidato (con archivos)",
+        description = "Permite actualizar los datos de un candidato, incluyendo imagen de perfil y currículum en PDF."
+    )
     @PutMapping(value = "/edit/{idUsuario}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> editCandidato(
             @RequestPart("candidato") @Validated({ValidationGroups.OnUpdate.class, Default.class}) CandidatoDTO candidatoDTO,
@@ -171,7 +198,10 @@ public class CandidatoResource {
         }
     }
 
-
+    @Operation(
+        summary = "Actualizar candidato",
+        description = "Actualiza los datos de un candidato usando su ID."
+    )
     @PutMapping("/edit/{idUsuario}")
     public ResponseEntity<Long> updateCandidato(
             @PathVariable(name = "idCandidato") final Long idCandidato,
@@ -180,6 +210,10 @@ public class CandidatoResource {
         return ResponseEntity.ok(idCandidato);
     }
 
+    @Operation(
+        summary = "Eliminar candidato",
+        description = "Elimina un candidato del sistema usando su ID."
+    )
     @DeleteMapping("/delete/{idCandidato}")
     public ResponseEntity<Void> deleteCandidato(
             @PathVariable(name = "idCandidato") final Long idCandidato) {

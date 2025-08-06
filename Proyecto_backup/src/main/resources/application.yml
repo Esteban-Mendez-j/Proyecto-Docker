@@ -48,11 +48,10 @@ security:
 
 springdoc:
   swagger-ui:
-    path: /documentacion.html
-
-  habilitar-spring-security: true
-  urlsNombrePrimario: Documentacion SearchJobs
-  # springdoc.swagger-ui.operacionesSorter -> ordena la lista de peticiones 
+    path: /documentacion.html 
+    filter: true
+    operations-sorter: method   
+    tags-sorter: alpha 
 
 error:
   handling:

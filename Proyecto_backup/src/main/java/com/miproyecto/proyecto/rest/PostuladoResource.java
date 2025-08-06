@@ -1,16 +1,5 @@
 package com.miproyecto.proyecto.rest;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.miproyecto.proyecto.model.CandidatoResumenDTO;
-import com.miproyecto.proyecto.model.PostuladoDTO;
-import com.miproyecto.proyecto.model.VacanteDTO;
-import com.miproyecto.proyecto.service.CandidatoService;
-import com.miproyecto.proyecto.service.PostuladoService;
-import com.miproyecto.proyecto.service.VacanteService;
-import com.miproyecto.proyecto.util.JwtUtils;
-
-import jakarta.servlet.http.HttpSession;
-
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +22,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.miproyecto.proyecto.model.CandidatoResumenDTO;
+import com.miproyecto.proyecto.model.PostuladoDTO;
+import com.miproyecto.proyecto.model.VacanteDTO;
+import com.miproyecto.proyecto.service.CandidatoService;
+import com.miproyecto.proyecto.service.PostuladoService;
+import com.miproyecto.proyecto.service.VacanteService;
+import com.miproyecto.proyecto.util.JwtUtils;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpSession;
+
+@Tag(name = "Postulados", description = "Operaciones relacionadas con las postulaciones a vacantes")
 @RestController
 @RequestMapping(value = "/api/postulados", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PostuladoResource {
@@ -51,12 +54,17 @@ public class PostuladoResource {
         this.vacanteService = vacanteService;
     }
 
+    @Operation(summary = "Obtener todas las postulaciones", description = "Devuelve la lista completa de postulaciones registradas.")
+    @ApiResponse(responseCode = "200", description = "Lista obtenida correctamente")
     @GetMapping
     public ResponseEntity<List<PostuladoDTO>> getAllPostulados() {
         return ResponseEntity.ok(postuladoService.findAll());
     }
 
-    //Candidatos postulados a una vacante (para empresa)
+    @Operation(
+        summary = "Listar candidatos postulados a una vacante",
+        description = "Permite a una empresa obtener la lista de candidatos que se han postulado a una vacante específica, con filtros opcionales."
+    )
     @GetMapping("/lista")
     public ResponseEntity<Map<String, Object>> listaByNvacantes(
         @RequestParam(name = "nvacantes") Long nvacantes,
@@ -71,15 +79,17 @@ public class PostuladoResource {
         String rolPrincipal = decodedJWT.getClaim("rolPrincipal").asString();
         VacanteDTO vacante = vacanteService.findByIdUsuarioAndNvacante(idUsuario, nvacantes);
         
-        if( vacante == null && rolPrincipal.equalsIgnoreCase("EMPRESA")){
+        if (vacante == null && rolPrincipal.equalsIgnoreCase("EMPRESA")) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         Map<String, Object> response = postuladoService.findByNvacantes(nvacantes, estado, fechaMinima, nombreCandidato, pageable);
         return ResponseEntity.ok(response);
     }
 
-
-    // lista de postulaciones de un candidato (para candidato )
+    @Operation(
+        summary = "Listar postulaciones de un candidato",
+        description = "Devuelve la lista de postulaciones realizadas por el candidato autenticado, con filtros opcionales."
+    )
     @GetMapping("/lista/candidato")
     public ResponseEntity<Map<String, Object>> listaByIdUsuario(
             HttpSession session,
@@ -99,42 +109,35 @@ public class PostuladoResource {
         return ResponseEntity.ok(response);
     }
 
-
-
-
+    @Operation(
+        summary = "Postularse a una vacante",
+        description = "Permite a un candidato autenticado postularse a una vacante, verificando que tenga currículum y que no exista una postulación activa previa."
+    )
     @PostMapping("/add/{nvacantes}")
     public ResponseEntity<Map<String, Object>> addPostulacion(
             @PathVariable Long nvacantes,
             HttpSession session) {
 
         Map<String, Object> response = new HashMap<>();
-
         String jwtToken = (String) session.getAttribute("jwtToken");
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
 
-        // Verificar si ya existe una postulación activa
-        PostuladoDTO postuladoDTO = postuladoService
-                .findByNvacantesAndIdUsuario(nvacantes, idUsuario);
-
+        PostuladoDTO postuladoDTO = postuladoService.findByNvacantesAndIdUsuario(nvacantes, idUsuario);
         if (postuladoDTO != null && postuladoDTO.isActive()) {
             response.put("status", "error");
             response.put("message", "Ya postulaste a esta vacante.");
             return ResponseEntity.badRequest().body(response);
         }
 
-        //  Verificar datos del perfil (currículum obligatorio)
-        CandidatoResumenDTO candidatoResumenDTO = candidatoService
-                .getCandidatoResumen(idUsuario);
-
+        CandidatoResumenDTO candidatoResumenDTO = candidatoService.getCandidatoResumen(idUsuario);
         if (candidatoResumenDTO.getCurriculo() == null) {
             response.put("status", "info");
             response.put("message", "Debes subir tu currículum para postularte.");
             return ResponseEntity.badRequest().body(response);
         }
 
-        //  Si existe postuladoDTO lo reactivamos; de lo contrario creamos uno nuevo
-        if (postuladoDTO != null ) {
+        if (postuladoDTO != null) {
             postuladoService.cambiarEstado(postuladoDTO, true);
         } else {
             PostuladoDTO nuevo = new PostuladoDTO();
@@ -147,13 +150,14 @@ public class PostuladoResource {
         return ResponseEntity.ok(response);
     }
 
-
+    @Operation(summary = "Obtener una postulación por ID", description = "Devuelve los datos de una postulación específica.")
     @GetMapping("/edit/{nPostulacion}")
     public ResponseEntity<PostuladoDTO> getPostulado(
             @PathVariable(name = "nPostulacion") final Long nPostulacion) {
         return ResponseEntity.ok(postuladoService.get(nPostulacion));
     }
 
+    @Operation(summary = "Actualizar una postulación", description = "Modifica los datos de una postulación existente.")
     @PutMapping("/edit/{nPostulacion}")
     public ResponseEntity<Long> updatePostulado(
             @PathVariable(name = "nPostulacion") final Long nPostulacion,
@@ -162,6 +166,7 @@ public class PostuladoResource {
         return ResponseEntity.ok(nPostulacion);
     }
 
+    @Operation(summary = "Cancelar o reactivar una postulación", description = "Cambia el estado de una postulación existente.")
     @PatchMapping("/cancelar/{nPostulacion}")
     public ResponseEntity<Void> cancelarPostulado(
             @PathVariable Long nPostulacion,
@@ -169,6 +174,6 @@ public class PostuladoResource {
             @RequestParam(name = "nvacante") Long nvacantes) {
 
         postuladoService.cancelarPostulacion(nPostulacion, estado, nvacantes);
-        return ResponseEntity.noContent().build();   // 204 No Content
+        return ResponseEntity.noContent().build();
     } 
 }

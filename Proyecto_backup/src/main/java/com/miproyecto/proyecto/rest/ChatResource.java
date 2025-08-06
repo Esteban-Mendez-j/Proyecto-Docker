@@ -10,6 +10,10 @@ import com.miproyecto.proyecto.service.UsuarioService;
 import com.miproyecto.proyecto.service.VacanteService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "Chat", description = "Operaciones relacionadas con la gestión del chat")
 @RestController
 @RequestMapping(value = "/api/chats", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ChatResource {
@@ -37,7 +42,15 @@ public class ChatResource {
     @Autowired
     private VacanteService vacanteService;
   
-   // Crear un nuevo chat
+   @Operation(
+        summary = "Crear un nuevo chat privado",
+        description = "Permite que una empresa cree un chat privado con un candidato para una vacante específica."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Chat creado con éxito"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos o usuario inactivo"),
+        @ApiResponse(responseCode = "403", description = "Solo empresas pueden crear chats")
+    })
     @PostMapping("/crear")
     public ResponseEntity<ChatDTO> crearChat(@RequestBody ChatDTO response) {
         // Verificar que la empresa exista y sea un usuario tipo "empresa"
@@ -64,7 +77,14 @@ public class ChatResource {
         return ResponseEntity.ok(chatDTO);
     }
 
-    // Crear un nuevo chat
+    @Operation(
+        summary = "Crear chat grupal por vacante",
+        description = "Permite que una empresa cree un chat grupal para todos los candidatos de una vacante."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Chat grupal creado con éxito"),
+        @ApiResponse(responseCode = "403", description = "Solo empresas pueden crear chats")
+    })
     @PostMapping("/vacantes/crear")
     public ResponseEntity<ChatDTO> crearChatGrupal(@RequestBody ChatDTO response) {
         System.out.println("chat: hola ");
@@ -81,7 +101,11 @@ public class ChatResource {
         return ResponseEntity.ok(chatDTO);
     }
 
-    // Agregar un mensaje a un chat
+    @Operation(
+        summary = "Agregar mensaje a un chat",
+        description = "Agrega un mensaje a un chat existente identificado por su ID."
+    )
+    @ApiResponse(responseCode = "200", description = "Mensaje agregado con éxito")
     @PostMapping("/{chatId}/mensajes")
     public ResponseEntity<MensajeDTO> agregarMensaje(@PathVariable String chatId,@RequestBody MensajeDTO mensajeDTO) {
         mensajeDTO.setChatId(chatId);
@@ -89,7 +113,10 @@ public class ChatResource {
         return ResponseEntity.ok(mensajeDTOResponse);
     }
 
-    // Obtener información del chat por chatId
+    @Operation(
+        summary = "Obtener información de un chat",
+        description = "Devuelve la información del chat y los datos del usuario autenticado."
+    )
     @GetMapping("/{chatId}/info")
     public ResponseEntity<Map<String, Object>> obtenerInfoChat(
         @PathVariable String chatId, 
@@ -104,14 +131,20 @@ public class ChatResource {
         return ResponseEntity.ok(responseData);
     }
 
-    //mensajes de un chat
+    @Operation(
+        summary = "Listar mensajes de un chat",
+        description = "Devuelve los mensajes de un chat en formato paginado."
+    )
     @GetMapping("/{chatId}/mensajes")
     public ResponseEntity<List<MensajeDTO>> listarMensajes(@PathVariable String chatId, Pageable pageable) {
         List<MensajeDTO> mensajes = chatService.obtenerMensajesDeChat(chatId, pageable);
         return ResponseEntity.ok(mensajes);
     }
 
-    // Listar chats todos
+    @Operation(
+        summary = "Listar todos los chats",
+        description = "Devuelve una lista paginada de todos los chats."
+    )
     @GetMapping("/listar")
     public ResponseEntity<Map<String, Object>> listarChats(
         @PageableDefault(page = 0, size = 10) Pageable pageable) {
@@ -119,6 +152,10 @@ public class ChatResource {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(
+        summary = "Listar chats por usuario",
+        description = "Filtra los chats según el tipo de usuario (empresa o candidato), estado y búsqueda."
+    )
     @PatchMapping("/{tipoUsuario}/{userId}")
     public ResponseEntity<Map<String, Object>> listarChatsPorUsuario(
         @PathVariable String tipoUsuario,        // "empresa" o "candidato"
@@ -140,7 +177,14 @@ public class ChatResource {
     }
 
 
-
+    @Operation(
+        summary = "Cambiar estado de un chat",
+        description = "Permite a la empresa creadora del chat cerrarlo o reabrirlo."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Estado del chat cambiado correctamente"),
+        @ApiResponse(responseCode = "403", description = "Solo la empresa que creó el chat puede cambiar su estado")
+    })
     @PatchMapping("/{chatId}/estado")
     public ResponseEntity<Void> cambiarEstadoChat(@PathVariable String chatId, @RequestParam boolean isActive, HttpSession session) {
         // Verificar que el chat existe
