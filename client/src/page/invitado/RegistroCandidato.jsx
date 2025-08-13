@@ -1,7 +1,8 @@
 import Layout from "../../layouts/layout";
-import "../../style/invitado/registroEmpresa.css"
-export default function RegistroEmpresa (){
-    
+import "../../style/invitado/registroCandidato.css"
+
+export default function RegistroCandidato() {
+
     const sectores = [
         "Tecnologia de la Informacion (TI) / Software",
         "Salud y Medicina",
@@ -24,11 +25,11 @@ export default function RegistroEmpresa (){
         "Otros"
     ];
 
-    return(
+    return (
         <Layout>
             <div className="container">
                 <div className="registro-container">
-                    <h1 className="registroEmpresa-title">Crea tu cuenta de empresa</h1>
+                    <h1 className="registroCandidato-title">Crea tu cuenta de empresa</h1>
                     <p className="subtitle">Completa el formulario para comenzar a publicar vacantes y encontrar talento</p>
 
                     <form id="registroEmpresaForm" className="form">

@@ -7,7 +7,7 @@ export default function Footer() {
 
         <footer className="footer">
             <div className="container">
-                <div className="grid">
+                <div className="footer-grid">
                     <div className="column">
                         <h3 className="title">SearchJobs</h3>
                         <p className="description">Plataforma intuitiva y moderna para conectar empresas con talentos.</p>
