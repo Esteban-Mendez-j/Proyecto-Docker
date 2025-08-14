@@ -1,5 +1,5 @@
 import "../style/invitado/featureCard.css"
-import { icons } from "../assets/icons"
+import { icons } from "./icons"
 
 export default function FeatureCard({ feature }) {
   const { iconName, title, description } = feature;

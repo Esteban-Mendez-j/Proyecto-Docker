@@ -1,8 +1,28 @@
 import Layout from "../../layouts/layout"
 import "../../style/invitado/login.css"
 import "../../services/autenticacion.js"
+import {useState } from "react"
+import { autenticacion } from "../../services/autenticacion.js"
 
 export default function Login (){
+    const [visible, setVisible] = useState(false)
+    const [error , setError] = useState(false)
+
+    function handleClick(){
+        setVisible(visible ? false : true)
+    }
+
+    function handleSubmit(e){
+        const {username, password} = FormData(e.target)
+        const {data, error} = autenticacion(username, password)
+
+        if(error){
+            return setError(true);
+        }
+        e.target.reset();
+        setError(false)
+        console.log(data)
+    }
 
     return(
         <Layout>
@@ -12,9 +32,13 @@ export default function Login (){
                         <h1 className="login-title">Inicio Sesión</h1>
                         <p className="subtitle">Accede a tu cuenta para continuar</p>
                     </div>
-                    <div id="ErrorElement" className="error-box hidden" >
-                    <strong>¡Error!</strong> <span id="ErrorMessage"></span>
-                    </div>  
+
+                    {error && 
+                        <div id="ErrorElement" className="error-box hidden" >
+                            <strong>¡Error!</strong> <span id="ErrorMessage"></span>
+                        </div> 
+                    }
+                     
                     <form className="form" id="loginForm">
                         <div className="form-group">
                             <label htmlFor="identifier" id="identifierLabel">Correo electrónico</label>
@@ -24,6 +48,7 @@ export default function Login (){
                                 name="username"
                                 className="form-control"
                                 placeholder="ejemplo@correo.com"
+                                autoComplete="username"
                                 required
                             />
 
@@ -31,11 +56,12 @@ export default function Login (){
                                 <label htmlFor="password">Contraseña</label>
                                 <div className="password-input">
                                     <input 
-                                        type="password"
+                                        type={visible? "text": "password"}
                                         id="password"
                                         name="password"
                                         className="form-control"
                                         placeholder="Tu contraseña"
+                                        autoComplete="current-password"
                                         required
                                     />
                                     <button
@@ -43,16 +69,26 @@ export default function Login (){
                                         className="password-toggle"
                                         id="passwordToggle"
                                         aria-label="Mostrar contraseña"
+                                        onClick={handleClick}
                                     >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                    </svg>
+                                        {
+                                            visible ? (
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                                </svg>
+                                            ) : (
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                    <circle cx="12" cy="12" r="3"></circle>
+                                                </svg>
+                                            )
+                                        }
                                     </button>                          
                                 </div>
                             </div>
 
-                            <button type="submit" className="btn btn-primary submit-button">
+                            <button type="submit" onSubmit={handleSubmit} className="btn btn-primary submit-button">
                                 Iniciar Sesión
                             </button>
 
