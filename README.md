@@ -19,7 +19,7 @@ Este proyecto es una plataforma de empleo desarrollada con un **frontend en Reac
 > Ejecutar todo el entorno con un solo comando
 
 ```
-docker-compose up --build
+docker-compose up --build -d
 ```
 >Detener todos los contenedores
 ```
