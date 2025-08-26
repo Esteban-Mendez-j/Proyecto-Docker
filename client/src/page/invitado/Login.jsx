@@ -1,28 +1,68 @@
 import Layout from "../../layouts/layout"
 import "../../style/invitado/login.css"
-import "../../services/autenticacion.js"
-import {useState } from "react"
+import {useContext, useEffect, useState } from "react"
 import { autenticacion } from "../../services/autenticacion.js"
+import { useNavigate } from 'react-router-dom';
+import { RoleContext } from "../../services/RoleContext.jsx";
 
 export default function Login (){
     const [visible, setVisible] = useState(false)
-    const [error , setError] = useState(false)
+    const [error , setError] = useState(null)
+    const [data , setData] = useState(null)
+    const {rol , setRol} = useContext(RoleContext)
+    const [loading , setLoading] = useState(false)
+    let navigate = useNavigate();
 
     function handleClick(){
         setVisible(visible ? false : true)
     }
 
-    function handleSubmit(e){
-        const {username, password} = FormData(e.target)
-        const {data, error} = autenticacion(username, password)
-
-        if(error){
-            return setError(true);
+    useEffect(()=>{
+        switch (rol) {
+            case "CANDIDATO":
+                navigate("/dashboard/candidato")
+                break;
+            case "EMPRESA":
+                navigate("/dashboard/empresa")
+                break;
+            case "ADMIN" || "SUPER_ADMIN":
+                navigate("/dashboard/admin")
+                break;
+            case "ROLE_INVITADO":
+                // navigate("/")
+                break;
+            default:
+                break;
         }
+        return;
+    },[])
+    
+    async function handleSubmit(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const username = formData.get("username");
+        const password = formData.get("password");
+
+        if (!username || !password){
+            return setError("Faltan Credenciales");
+        }
+
+        setLoading(true); 
+        const { data, error } = await autenticacion(username, password);
+
+        if (error) {
+            setError(error);
+            setLoading(false);
+            return;
+        }
+
+        setError(null);
+        setLoading(false);
         e.target.reset();
-        setError(false)
-        console.log(data)
+        setRol(data.rolPrincipal)
+        setData(data)
     }
+
 
     return(
         <Layout>
@@ -34,12 +74,12 @@ export default function Login (){
                     </div>
 
                     {error && 
-                        <div id="ErrorElement" className="error-box hidden" >
-                            <strong>¡Error!</strong> <span id="ErrorMessage"></span>
+                        <div id="ErrorElement" className="error-box" >
+                            <strong>¡Error!</strong> <span id="ErrorMessage">{error}</span>
                         </div> 
                     }
                      
-                    <form className="form" id="loginForm">
+                    <form className="form" id="loginForm" onSubmit={handleSubmit}>
                         <div className="form-group">
                             <label htmlFor="identifier" id="identifierLabel">Correo electrónico</label>
                             <input 
@@ -88,7 +128,7 @@ export default function Login (){
                                 </div>
                             </div>
 
-                            <button type="submit" onSubmit={handleSubmit} className="btn btn-primary submit-button">
+                            <button type="submit" className="btn btn-primary submit-button">
                                 Iniciar Sesión
                             </button>
 

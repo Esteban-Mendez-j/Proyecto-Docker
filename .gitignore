@@ -29,6 +29,7 @@ Thumbs.db
 # Backend Java (Maven)
 target/
 !.mvn/wrapper/maven-wrapper.jar
+application-dev.yml
 
 # Backend Java (Gradle)
 build/
