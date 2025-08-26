@@ -1,8 +1,13 @@
+import { useContext } from "react";
 import FeatureCard from "../../components/FeatureCard";
+import useFetch from "../../hooks/useFetch";
 import Layout from "../../layouts/layout";
 import "../../style/invitado/index.css"
+import { RoleContext } from "../../services/RoleContext";
 export default function Index (){
 
+    const {rol, setRol} = useContext(RoleContext)
+    const {data, loading, error} = useFetch("/api/vacantes/Top/listar","GET")
     const features = [
         {
             id: "1",
@@ -62,6 +67,20 @@ export default function Index (){
                         ))}
                     </div> */}
 
+                    
+                    {
+                        data? (
+                            <div className="jobs-grid">
+                                {data.vacantes.map(job =>
+                                    <h1>{job.titulo}</h1>
+                                )}
+                            </div>
+                        ):(
+                            <h1 className="section-subtitle">No hay vacantes Disponibles</h1>
+                        )
+                    }
+                    
+
                     <div className="view-all-container">
                         <a href="/empleos" className="btn btn-secondary">
                             Ver todos los empleos
@@ -85,24 +104,28 @@ export default function Index (){
                 </div>
             </section>
 
-            <section className="cta-section section">
-                <div className="container">
-                    <div className="cta-card">
-                        <h2 className="cta-title">¿Listo para comenzar?</h2>
-                        <p className="cta-description">
-                            Únete a miles de profesionales y empresas que ya confían en SearchJobs
-                        </p>
-                        <div className="cta-buttons">
-                            <a href="/registro/candidato" className="btn btn-primary">
-                                Registrarse como candidato
-                            </a>
-                            <a href="/registro/empresa" className="btn btn-outline cta-outline">
-                                Registrarse como empresa
-                            </a>
+            {
+                rol === "ROLE_INVIDATO" &&
+
+                <section className="cta-section section">
+                    <div className="container">
+                        <div className="cta-card">
+                            <h2 className="cta-title">¿Listo para comenzar?</h2>
+                            <p className="cta-description">
+                                Únete a miles de profesionales y empresas que ya confían en SearchJobs
+                            </p>
+                            <div className="cta-buttons">
+                                <a href="/registro/candidato" className="btn btn-primary">
+                                    Registrarse como candidato
+                                </a>
+                                <a href="/registro/empresa" className="btn btn-outline cta-outline">
+                                    Registrarse como empresa
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            }
         </Layout>
     )
 }

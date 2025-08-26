@@ -5,7 +5,7 @@ import AdminUsuarios from "./page/admin/AdminUsuarios";
 import AdminVacantes from "./page/admin/AdminVacantes";
 import Index from './page/invitado/Index';
 import InfoVacante from "./page/invitado/InfoVacante";
-import Login from './page/invitado/login';
+import Login from "./page/invitado/Login";
 import Registro from "./page/invitado/Registro";
 import RegistroCandidato from "./page/invitado/RegistroCandidato";
 import RegistroEmpresa from './page/invitado/RegistroEmpresa';

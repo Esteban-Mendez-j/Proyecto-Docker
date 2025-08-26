@@ -1,32 +1,22 @@
 import { API_CLIENT_URL } from './Api.js';
-import { useState, useEffect } from 'react';
 
-export function autenticacion(username, password){
-    const [loading , setLoading] = useState(false)
-    const [data , setData] = useState(null)
-    const [error , setError] = useState(null)
+export async function autenticacion(username, password) {
+  try {
+    const res = await fetch(`${API_CLIENT_URL}/api/usuarios/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ username, password }),
+      credentials: "include"
+    });
 
-    useEffect (() =>{
-        if(!username || !password){return}
-        setLoading(true)
-        fetch(`${API_CLIENT_URL}/api/usuarios/login`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: new URLSearchParams({
-                username: username,
-                password: password,
-            }),
-            credentials: "include"
-        })
-        .then(res => res.json())
-        .then(data => {setData(data);})
-        .catch(error => setError(error))
-        .finally(() => setLoading(false))
+    if (!res.ok) {
+        // throw new Error(`Error HTTP: ${res.status}`);
+        return{data: null, error: "Credenciales Invalidas"}
+    }
 
-    }, [username, password])
-
-    return {data, loading, error};
+    const data = await res.json();
+    return { data, error: null };
+  } catch (e) {
+    return { data: null, error: e};
+  }
 }
-    

@@ -106,7 +106,8 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .formLogin(formLogin -> formLogin                       
-				.loginPage("http://localhost:4321/login")
+				// .loginPage("http://localhost:4321/login")
+				.loginPage("http://localhost:5173/login")
                 .loginProcessingUrl("/api/usuarios/login")
                 .failureHandler(customAuthenticationFailureHandler)
                 .successHandler(customSuccessHandler(jwtUtils))
