@@ -1,6 +1,5 @@
 import ResumenVacante from "../../components/ResumenVacante"
 import Layout from "../../layouts/layout"
-// import "../../style/invitado/infoVacante.css"
 
 export default function InfoVacante() {
     const job = {

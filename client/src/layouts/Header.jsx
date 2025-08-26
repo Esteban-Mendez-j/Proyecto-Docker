@@ -1,10 +1,14 @@
+import { useContext } from "react";
 import "../style/invitado/header.css"
+import { RoleContext} from "../services/RoleContext";
 
 export default function Header () {
 
+    const {rol, setRol} = useContext(RoleContext)
+
     const linksByRole = {
         SUPER_ADMIN: [
-            { name: "Inicio", path: "/admin" },
+            { name: "Inicio", path: "/dashboard/admin" },
             { name: "Empleos", path: "/admin/vacantes" },
             { name: "Crear admins", path: "/404" },
             { name: "Usuarios", path: "/admin/usuarios" }
@@ -72,13 +76,13 @@ export default function Header () {
 
                 <nav className="nav" id="mainNav">
                     {/*userRole*/}
-                    {linksByRole["ROLE_INVITADO"].map(link => (
-                        <a key={link.path} href={link.path}>
+                    {linksByRole[rol].map(link => (
+                        <a className="nav-link" key={link.path} href={link.path}>
                             {link.name}
                         </a>
                     ))}
+                    <a className="nav-link register-btn">{rol}</a>
                 </nav>
-                
             </div>
         </header>
     );
