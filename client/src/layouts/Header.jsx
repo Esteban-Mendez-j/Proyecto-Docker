@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import "../style/invitado/header.css"
 import { RoleContext} from "../services/RoleContext";
+import {NavLink} from "react-router-dom";
 
 export default function Header () {
 
@@ -77,11 +78,11 @@ export default function Header () {
                 <nav className="nav" id="mainNav">
                     {/*userRole*/}
                     {linksByRole[rol].map(link => (
-                        <a className="nav-link" key={link.path} href={link.path}>
+                        <NavLink className={({isActive}) => isActive? "selected-link": "nav-link"} key={link.path} to={link.path}>
                             {link.name}
-                        </a>
+                        </NavLink>
                     ))}
-                    <a className="nav-link register-btn">{rol}</a>
+                    <label className="nav-link register-btn">{rol}</label>
                 </nav>
             </div>
         </header>

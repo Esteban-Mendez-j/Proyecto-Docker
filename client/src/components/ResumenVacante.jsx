@@ -1,4 +1,6 @@
-export default function ResumenVacante(job, rol) {
+import Loading from "./Loading"
+
+export default function ResumenVacante({job, rol}) {
 
     return (
         <div>

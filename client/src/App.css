@@ -167,6 +167,7 @@
     text-align: start;
     margin-bottom: 8px;
     font-weight: 500;
+    color: var(--text);
   }
 
   .form-control {
@@ -177,6 +178,7 @@
     font-size: 16px;
     transition: all var(--animation-speed) ease;
     background-color: rgba(255, 255, 255, 0.8);
+    color: var(--text);
   }
 
   .form-control:focus {

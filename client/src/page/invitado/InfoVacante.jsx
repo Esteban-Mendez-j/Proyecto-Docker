@@ -1,8 +1,14 @@
+import { useContext, useEffect, useState } from "react"
 import ResumenVacante from "../../components/ResumenVacante"
+import { useFetch } from "../../hooks/useFetch"
 import Layout from "../../layouts/layout"
+import { API_CLIENT_URL } from "../../services/Api"
+import { RoleContext } from "../../services/RoleContext"
+import { Navigate, useNavigate, useParams } from "react-router-dom"
+import Loding from "../../components/Loading"
 
 export default function InfoVacante() {
-    const job = {
+    const initialJob = {
         comentarioAdmin: "",
         active:"",
         imagenEmpresa: "",
@@ -24,12 +30,29 @@ export default function InfoVacante() {
         estadoPostulacion: "",
         activaPor: "",
     }
-    const rol = "EMPRESA"
-    const API_CLIENT_URL = "localhost:8080"
+    const {id} = useParams()
+    const [job, setJob] = useState(initialJob);
+    const {rol, setRol} = useContext(RoleContext);
+    const {data, error, loading} = useFetch(`/api/vacantes/seleccion/${id}`, "GET");
+    const navigate =  useNavigate();
+    
+    useEffect(() => {
+        if (!data) {return} 
+
+        if (!data.vacanteSeleccionada) {
+            navigate("/404"); // si no hay vacante, redirige al 404
+            return;
+        }
+        setJob(data.vacanteSeleccionada);
+    }, [data]);
+
+
+    if (loading ) {return <Loding/>}
+    if (!data) {return <Navigate to={"/404"} />} 
+
     return (
         <Layout>
             <div className="container px-5 py-10 mx-auto">
-
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-8">
                     {/* Detalles del empleo  */}
                     <div>
@@ -374,8 +397,7 @@ export default function InfoVacante() {
                         </div>
                     </div>
 
-                    <ResumenVacante job={job} rol={rol}/>
-                    
+                    {data && <ResumenVacante job={data.vacanteSeleccionada} rol={rol}/>}
                 </div>
             </div>
         </Layout>
