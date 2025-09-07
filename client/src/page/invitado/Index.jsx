@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import FeatureCard from "../../components/FeatureCard";
-import useFetch from "../../hooks/useFetch";
+import { useFetch } from "../../hooks/useFetch";
 import Layout from "../../layouts/layout";
 import "../../style/invitado/index.css"
 import { RoleContext } from "../../services/RoleContext";
