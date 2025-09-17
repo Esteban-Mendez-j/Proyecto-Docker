@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
+import Loding from "../../components/Loading"
 import ResumenVacante from "../../components/ResumenVacante"
 import { useFetch } from "../../hooks/useFetch"
 import Layout from "../../layouts/layout"
 import { API_CLIENT_URL } from "../../services/Api"
 import { RoleContext } from "../../services/RoleContext"
-import { Navigate, useNavigate, useParams } from "react-router-dom"
-import Loding from "../../components/Loading"
 
 export default function InfoVacante() {
     const initialJob = {
@@ -48,7 +48,7 @@ export default function InfoVacante() {
 
 
     if (loading ) {return <Loding/>}
-    if (!data) {return <Navigate to={"/404"} />} 
+    
 
     return (
         <Layout>

@@ -25,9 +25,7 @@ function Empleos() {
         />
       </div>
     </Layout>
-     
-   
-    
+
   );
 }
 
