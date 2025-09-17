@@ -5,6 +5,8 @@ import InputForm from "../../components/InputForm";
 import "../../style/invitado/registroEmpresa.css"
 import Loading from "../../components/Loading";
 import useVisible from "../../hooks/useVisible";
+import { modalResponse } from "../../services/Modal";
+import { useNavigate } from "react-router-dom";
 export default function RegistroEmpresa (){
     
     const sectores = [
@@ -43,6 +45,7 @@ export default function RegistroEmpresa (){
     const { validarPassword, dataFrom, setDataFrom } = useValidation(initialData);
     const [handleOnClick, visible] = useVisible();
     const [handleOnClick2, visible2] = useVisible();
+    const navigate = useNavigate();
 
     const handleOnChange = (event) => {
         const { name, value } = event.target;
@@ -54,7 +57,7 @@ export default function RegistroEmpresa (){
 
     async function handleSubmit(e) {
         e.preventDefault();
-
+        setError(null);
         if (!validarPassword) {
             setError(prev => ({
                 ...prev,
@@ -62,14 +65,15 @@ export default function RegistroEmpresa (){
             }));
             return;
         }
-
+        const result = await send("/api/empresas/add", "POST", dataFrom);
+        if(result.status === 201){
+            const isOk = await modalResponse(result.mensaje, "success");
+            if(isOk){
+                navigate("/login");
+            }
+        }
     }
 
-    if(loading){
-        return(
-            <Loading/>
-        )
-    }
     return(
         <Layout>
             <div className="container">
@@ -95,7 +99,7 @@ export default function RegistroEmpresa (){
                                 <div className="form-group">
                                     <label htmlFor="nit">NIT / Identificación fiscal <span className="required">*</span></label>
                                     <InputForm
-                                        type={"text"}
+                                        type={"number"}
                                         name={"nit"}
                                         placeholder={"Número de identificación tributaria"}
                                         value={dataFrom.nit}
@@ -106,10 +110,10 @@ export default function RegistroEmpresa (){
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="sectorEmpresa">Sector Empresa <span className="required">*</span></label>
-                                    <select id="sectorEmpresa" name="sectorEmpresa" className= {`form-control ${error?.sectorEmpresa ? "error-input" : ""}`} required onChange={handleOnChange}>
-                                        <option value="" disabled selected>Selecciona tu sector</option>
+                                    <select id="sectorEmpresa" value={dataFrom.sectorEmpresa} name="sectorEmpresa" className= {`form-control ${error?.sectorEmpresa ? "error-input" : ""}`} required onChange={handleOnChange}>
+                                        <option value={""} disabled>Selecciona tu sector</option>
                                         {sectores.map((sector) => (
-                                            <option value={dataFrom.sectorEmpresa}>{sector}</option>
+                                            <option value={sector} selected={dataFrom.sectorEmpresa == sector}>{sector}</option>
                                         ))}
                                     </select>
                                 </div>
@@ -131,7 +135,7 @@ export default function RegistroEmpresa (){
                             <div className="form-group">
                                 <label htmlFor="telefonoEmpresa">Teléfono corporativo <span className="required">*</span></label>
                                 <InputForm
-                                    type={"tel"}
+                                    type={"number"}
                                     name={"telefono"}
                                     placeholder={"Ej: +57 300 123 4567"}
                                     value={dataFrom.telefono}
@@ -253,13 +257,47 @@ export default function RegistroEmpresa (){
                             </div>
 
                             <div className="password-requirements">
-                                <p className="requirements-title">La contraseña debe contener:</p>
+                                <p className="requirements-title">
+                                    La contraseña debe contener:
+                                </p>
                                 <ul>
-                                    <li id="req-length">Al menos 8 caracteres</li>
-                                    <li id="req-uppercase">Al menos una letra mayúscula</li>
-                                    <li id="req-lowercase">Al menos una letra minúscula</li>
-                                    <li id="req-number">Al menos un número</li>
-                                    <li id="req-match">Las contraseñas deben coincidir</li>
+                                    <li
+                                        className={
+                                            dataFrom.contrasena.length >= 8 && dataFrom.contrasena.length <= 15
+                                                ? "valid"
+                                                : ""
+                                        }
+                                    >
+                                        Longitud de 8 a 15 caracteres
+                                    </li>
+                                    <li
+                                        className={/[A-Z]/.test(dataFrom.contrasena) ? "valid" : ""}
+                                    >
+                                        Al menos una letra mayúscula
+                                    </li>
+
+                                    <li
+                                        className={/[a-z]/.test(dataFrom.contrasena) ? "valid" : ""}
+                                    >
+                                        Al menos una letra minúscula
+                                    </li>
+
+                                    <li
+                                        className={/[0-9]/.test(dataFrom.contrasena) ? "valid" : ""}
+                                    >
+                                        Al menos un número
+                                    </li>
+
+                                    <li
+                                        className={
+                                            dataFrom.contrasena &&
+                                                dataFrom.contrasena === dataFrom.contraseñaVerificada
+                                                ? "valid"
+                                                : ""
+                                        }
+                                    >
+                                        Las contraseñas deben coincidir
+                                    </li>
                                 </ul>
                             </div>
 

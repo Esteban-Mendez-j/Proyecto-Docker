@@ -3,8 +3,8 @@ import "../../style/invitado/registroCandidato.css"
 import { useSendForm } from "../../hooks/useFetch"
 import InputFrom from "../../components/InputForm";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Modal } from "../../components/Modal";
+import { Link, useNavigate } from "react-router-dom";
+import { modalResponse } from "../../services/Modal";
 import Loading from "../../components/Loading";
 import useValidation from "../../hooks/useValidation";
 import useVisible from "../../hooks/useVisible";
@@ -32,6 +32,7 @@ export default function RegistroCandidato() {
     const { validarPassword, dataFrom, setDataFrom } = useValidation(initialData);
     const [handleOnClick, visible] = useVisible();
     const [handleOnClick2, visible2] = useVisible();
+    const navigate = useNavigate();
 
     //Actualiza el estado global de los inputs
     const handleOnChange = (event) => {
@@ -44,7 +45,7 @@ export default function RegistroCandidato() {
 
     async function handleSubmit(e) {
         e.preventDefault();
-
+        setError(null);
         if (!validarPassword) {
             setError(prev => ({
                 ...prev,
@@ -52,9 +53,13 @@ export default function RegistroCandidato() {
             }));
             return;
         }
-
         const result = await send("/api/candidatos/add", "POST", dataFrom);
-
+        if(result.status === 201){
+            const isOk = await modalResponse(result.mensaje, "success");
+            if(isOk){
+                navigate("/login");
+            }
+        }
     }
 
     if(loading){
@@ -65,7 +70,6 @@ export default function RegistroCandidato() {
 
     return (
         <Layout>
-            <Modal message={"Proceso realizado"} type={"success"} initialVisible={data? data=="201": false}/> 
             <div className="container">
                 <div className="registro-container">
                     <h1 className="registroCandidato-title">
