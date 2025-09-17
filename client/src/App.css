@@ -258,6 +258,10 @@
   .error-input {
     border: 2px solid red;
   }
+
+  .error-input ~ .password-toggle{
+    top:35%;
+  }
   
   @keyframes float {
     0% {
