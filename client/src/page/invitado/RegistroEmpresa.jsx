@@ -1,5 +1,12 @@
+import { useSendForm } from "../../hooks/useFetch";
+import useValidation from "../../hooks/useValidation";
 import Layout from "../../layouts/layout";
+import InputForm from "../../components/InputForm";
 import "../../style/invitado/registroEmpresa.css"
+import Loading from "../../components/Loading";
+import useVisible from "../../hooks/useVisible";
+import { modalResponse } from "../../services/Modal";
+import { useNavigate } from "react-router-dom";
 export default function RegistroEmpresa (){
     
     const sectores = [
@@ -24,6 +31,49 @@ export default function RegistroEmpresa (){
         "Otros"
     ];
 
+    const initialData = {
+        nombre: "",
+        nit: "",
+        correo: "",
+        contrasena: "",
+        telefono: "",
+        sectorEmpresa: "",
+        contraseñaVerificada: ""
+    }
+    
+    const {send , data, error, setError, loading} = useSendForm();
+    const { validarPassword, dataFrom, setDataFrom } = useValidation(initialData);
+    const [handleOnClick, visible] = useVisible();
+    const [handleOnClick2, visible2] = useVisible();
+    const navigate = useNavigate();
+
+    const handleOnChange = (event) => {
+        const { name, value } = event.target;
+        setDataFrom(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        setError(null);
+        if (!validarPassword) {
+            setError(prev => ({
+                ...prev,
+                contrasena: "Contraseña Invalida"
+            }));
+            return;
+        }
+        const result = await send("/api/empresas/add", "POST", dataFrom);
+        if(result.status === 201){
+            const isOk = await modalResponse(result.mensaje, "success");
+            if(isOk){
+                navigate("/login");
+            }
+        }
+    }
+
     return(
         <Layout>
             <div className="container">
@@ -31,122 +81,223 @@ export default function RegistroEmpresa (){
                     <h1 className="registroEmpresa-title">Crea tu cuenta de empresa</h1>
                     <p className="subtitle">Completa el formulario para comenzar a publicar vacantes y encontrar talento</p>
 
-                    <form id="registroEmpresaForm" className="form">
+                    <form id="registroEmpresaForm" className="form" onSubmit={handleSubmit}>
                         <div className="step-content active" id="step1">
                             <div className="form-group">
-                                <label for="nombreEmpresa">Nombre de la empresa <span className="required">*</span></label>
-                                <input
-                                    type="text"
-                                    id="nombreEmpresa"
-                                    name="nombre"
-                                    className="form-control"
-                                    placeholder="Nombre legal de la empresa"
-                                    required
+                                <label htmlFor="nombreEmpresa">Nombre de la empresa <span className="required">*</span></label>
+                                <InputForm
+                                    type={"text"}
+                                    name={"nombre"}
+                                    placeholder={"Nombre legal de la empresa"}
+                                    value={dataFrom.nombre}
+                                    handleOnChange={handleOnChange}
+                                    error={error}
                                 />
-                                <p className="error-text hidden" id="error-nombre"></p>
                             </div>
 
                             <div className="form-row">
                                 <div className="form-group">
-                                    <label for="nit">NIT / Identificación fiscal <span className="required">*</span></label>
-                                    <input
-                                        type="text"
-                                        id="nit"
-                                        name="nit"
-                                        className="form-control"
-                                        placeholder="Número de identificación tributaria"
-                                        required
+                                    <label htmlFor="nit">NIT / Identificación fiscal <span className="required">*</span></label>
+                                    <InputForm
+                                        type={"number"}
+                                        name={"nit"}
+                                        placeholder={"Número de identificación tributaria"}
+                                        value={dataFrom.nit}
+                                        handleOnChange={handleOnChange}
+                                        error={error}
                                     />
                                     <p className="error-text hidden" id="error-nit"></p>
                                 </div>
                                 <div className="form-group">
-                                    <label for="sectorEmpresa">Sector Empresa <span className="required">*</span></label>
-                                    <select id="sectorEmpresa" name="sectorEmpresa" className="form-control" required>
-                                        <option value="" disabled selected>Selecciona tu sector</option>
+                                    <label htmlFor="sectorEmpresa">Sector Empresa <span className="required">*</span></label>
+                                    <select id="sectorEmpresa" value={dataFrom.sectorEmpresa} name="sectorEmpresa" className= {`form-control ${error?.sectorEmpresa ? "error-input" : ""}`} required onChange={handleOnChange}>
+                                        <option value={""} disabled>Selecciona tu sector</option>
                                         {sectores.map((sector) => (
-                                            <option value={sector}>{sector}</option>
+                                            <option value={sector} selected={dataFrom.sectorEmpresa == sector}>{sector}</option>
                                         ))}
                                     </select>
                                 </div>
                             </div>
 
                             <div className="form-group">
-                                <label for="emailEmpresa">Correo electrónico corporativo <span className="required">*</span></label>
-                                <input
-                                    type="email"
-                                    id="emailEmpresa"
-                                    name="correo"
-                                    className="form-control"
-                                    placeholder="ejemplo@empresa.com"
-                                    required
+                                <label htmlFor="emailEmpresa">Correo electrónico corporativo <span className="required">*</span></label>
+                                <InputForm
+                                    type={"email"}
+                                    name={"correo"}
+                                    placeholder={"ejemplo@empresa.com"}
+                                    value={dataFrom.correo}
+                                    handleOnChange={handleOnChange}
+                                    error={error}
                                 />
                                 <p className="form-hint">Usarás este correo para iniciar sesión</p>
-                                <p className="error-text hidden" id="error-correo"></p>
                             </div>
 
                             <div className="form-group">
-                                <label for="telefonoEmpresa">Teléfono corporativo <span className="required">*</span></label>
-                                <input
-                                    type="tel"
-                                    id="telefonoEmpresa"
-                                    name="telefono"
-                                    className="form-control"
-                                    placeholder="+57 601 123 4567"
-                                    required
+                                <label htmlFor="telefonoEmpresa">Teléfono corporativo <span className="required">*</span></label>
+                                <InputForm
+                                    type={"number"}
+                                    name={"telefono"}
+                                    placeholder={"Ej: +57 300 123 4567"}
+                                    value={dataFrom.telefono}
+                                    handleOnChange={handleOnChange}
+                                    error={error}
                                 />
-                                <p className="error-text hidden" id="error-telefono"></p>
                             </div>
 
                             <div className="form-row">
                                 <div className="form-group">
-                                    <label for="passwordEmpresa">Contraseña <span className="required">*</span></label>
+                                    <label htmlFor="passwordEmpresa">Contraseña <span className="required">*</span></label>
                                     <div className="password-input">
-                                        <input
-                                            type="password"
-                                            id="passwordEmpresa"
-                                            name="passwordEmpresa"
-                                            className="form-control"
-                                            placeholder="Crea una contraseña segura"
-                                            required
-                                        />
-                                        <button type="button" className="password-toggle">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                                <circle cx="12" cy="12" r="3"></circle>
-                                            </svg>
-                                        </button>
+                                        <InputForm
+                                            type={visible ? "text" : "password"}
+                                            name={"contrasena"}
+                                            placeholder={"Crea una contraseña segura"}
+                                            value={dataFrom.contrasena}
+                                            handleOnChange={handleOnChange}
+                                            error={error}
+                                            autoComplete={"new-password"}
+                                        >
+                                            <button
+                                                type="button"
+                                                className="password-toggle"
+                                                id="passwordToggle"
+                                                aria-label="Mostrar contraseña"
+                                                onClick={handleOnClick}
+                                            >
+                                                {visible ? (
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="20"
+                                                        height="20"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    >
+                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                        <circle cx="12" cy="12" r="3"></circle>
+                                                    </svg>
+                                                ) : (
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="20"
+                                                        height="20"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    >
+                                                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                                                    </svg>
+                                                )}
+                                            </button>
+                                        </InputForm>
                                     </div>
                                 </div>
 
                                 <div className="form-group">
-                                    <label for="confirmPasswordEmpresa">Confirmar contraseña <span className="required">*</span></label>
+                                    <label htmlFor="confirmPasswordEmpresa">Confirmar contraseña <span className="required">*</span></label>
                                     <div className="password-input">
-                                        <input
-                                            type="password"
-                                            id="confirmPasswordEmpresa"
-                                            name="confirmPasswordEmpresa"
-                                            className="form-control"
-                                            placeholder="Repite tu contraseña"
-                                            required
-                                        />
-                                        <button type="button" className="password-toggle">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                                <circle cx="12" cy="12" r="3"></circle>
-                                            </svg>
-                                        </button>
+                                        <InputForm
+                                            type={visible2 ? "text" : "password"}
+                                            name={"contraseñaVerificada"}
+                                            placeholder={"Repite tu contraseña"}
+                                            value={dataFrom.contraseñaVerificada}
+                                            handleOnChange={handleOnChange}
+                                            error={error}
+                                            autoComplete={"new-password"}
+                                        >
+                                            <button
+                                                type="button"
+                                                className="password-toggle"
+                                                id="confirmPasswordToggle"
+                                                aria-label="Mostrar contraseña"
+                                                onClick={handleOnClick2}
+                                            >
+                                                {visible2 ? (
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="20"
+                                                        height="20"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    >
+                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                        <circle cx="12" cy="12" r="3"></circle>
+                                                    </svg>
+                                                ) : (
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="20"
+                                                        height="20"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    >
+                                                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                                                    </svg>
+                                                )}
+                                            </button>
+                                        </InputForm>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="password-requirements">
-                                <p className="requirements-title">La contraseña debe contener:</p>
+                                <p className="requirements-title">
+                                    La contraseña debe contener:
+                                </p>
                                 <ul>
-                                    <li id="req-length">Al menos 8 caracteres</li>
-                                    <li id="req-uppercase">Al menos una letra mayúscula</li>
-                                    <li id="req-lowercase">Al menos una letra minúscula</li>
-                                    <li id="req-number">Al menos un número</li>
-                                    <li id="req-match">Las contraseñas deben coincidir</li>
+                                    <li
+                                        className={
+                                            dataFrom.contrasena.length >= 8 && dataFrom.contrasena.length <= 15
+                                                ? "valid"
+                                                : ""
+                                        }
+                                    >
+                                        Longitud de 8 a 15 caracteres
+                                    </li>
+                                    <li
+                                        className={/[A-Z]/.test(dataFrom.contrasena) ? "valid" : ""}
+                                    >
+                                        Al menos una letra mayúscula
+                                    </li>
+
+                                    <li
+                                        className={/[a-z]/.test(dataFrom.contrasena) ? "valid" : ""}
+                                    >
+                                        Al menos una letra minúscula
+                                    </li>
+
+                                    <li
+                                        className={/[0-9]/.test(dataFrom.contrasena) ? "valid" : ""}
+                                    >
+                                        Al menos un número
+                                    </li>
+
+                                    <li
+                                        className={
+                                            dataFrom.contrasena &&
+                                                dataFrom.contrasena === dataFrom.contraseñaVerificada
+                                                ? "valid"
+                                                : ""
+                                        }
+                                    >
+                                        Las contraseñas deben coincidir
+                                    </li>
                                 </ul>
                             </div>
 
@@ -168,7 +319,7 @@ export default function RegistroEmpresa (){
 
                             <div className="checkbox-group">
                                 <input type="checkbox" id="aceptoTerminos" required />
-                                <label for="aceptoTerminos">Acepto los términos y condiciones <span className="required">*</span></label>
+                                <label htmlFor="aceptoTerminos">Acepto los términos y condiciones <span className="required">*</span></label>
                             </div>
 
                             <div className="step-buttons">

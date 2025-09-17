@@ -1,10 +1,11 @@
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import './App.css';
 import AdminIndex from "./page/admin/AdminIndex";
 import AdminUsuarios from "./page/admin/AdminUsuarios";
 import AdminVacantes from "./page/admin/AdminVacantes";
 import ListadoVacantes from "./page/candidato/ListadoVacantes";
 import PerfilCandidato from "./page/candidato/PerfilCandidato";
+import NotFound from "./page/invitado/404";
 import Index from './page/invitado/Index';
 import InfoVacante from "./page/invitado/InfoVacante";
 import Login from "./page/invitado/Login";
@@ -15,7 +16,7 @@ import RegistroEmpresa from './page/invitado/RegistroEmpresa';
 function App() {
 
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/login" element={<Login/>} />
@@ -28,8 +29,9 @@ function App() {
         <Route path="/admin/usuarios" element={<AdminUsuarios/>} />
         <Route path="/empleos" element={<ListadoVacantes/>} />
         <Route path="/perfil/candidato" element={<PerfilCandidato/>} />
+        <Route path="*" element={<NotFound/>} />
       </Routes>
-    </Router>
+    </BrowserRouter>
   )
 }
 

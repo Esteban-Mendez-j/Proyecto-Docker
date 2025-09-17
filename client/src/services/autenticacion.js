@@ -10,7 +10,6 @@ export async function autenticacion(username, password) {
     });
 
     if (!res.ok) {
-        // throw new Error(`Error HTTP: ${res.status}`);
         return{data: null, error: "Credenciales Invalidas"}
     }
 

@@ -4,7 +4,7 @@ import Layout from "../../layouts/layout";
 
 export default function AdminIndex() {
   return (
-    <Layout title="Panel de Administrador | SearchJobs">
+    <Layout >
    
       <br/>
 

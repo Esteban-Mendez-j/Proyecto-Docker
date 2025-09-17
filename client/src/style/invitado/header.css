@@ -39,14 +39,14 @@
     gap: 24px;
 }
 
-.header .nav-link {
+.header .nav-link, .selected-link {
     font-size: 16px;
     font-weight: 500;
     transition: all 0.3s ease;
     position: relative;
 }
 
-.header .nav-link::after {
+.header .nav-link::after, .selected-link::after {
     content: "";
     position: absolute;
     bottom: -4px;
@@ -57,11 +57,17 @@
     transition: width 0.3s ease;
 }
 
-.header .nav-link:hover {
+.selected-link::after{
+    width: 100%;
+}
+
+.header .nav-link:hover,
+.selected-link
+{
     color: var(--primary);
 }
 
-.header .nav-link:hover::after {
+.header .nav-link:hover::after{
     width: 100%;
 }
 

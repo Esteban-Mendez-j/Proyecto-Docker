@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import Swal from 'sweetalert2';
+import Swal from 'sweetalert2'; //Esta importacion se debe cambiar para llamarlo siempre desde modal para evitar errores
 import { API_CLIENT_URL } from '../services/Api';
 import { manejarRespuesta } from '../services/ManejarRespuesta';
 import '../style/invitado/empleos.css';
