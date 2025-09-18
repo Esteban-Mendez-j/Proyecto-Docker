@@ -12,23 +12,32 @@ import Login from "./page/invitado/Login";
 import Registro from "./page/invitado/Registro";
 import RegistroCandidato from "./page/invitado/RegistroCandidato";
 import RegistroEmpresa from './page/invitado/RegistroEmpresa';
+import RouteProtection from "./components/RouteProtection";
 
 function App() {
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Index />} />
+        <Route element={<RouteProtection accessRole={"CANDIDATO"} />}> 
+          <Route path="/perfil/candidato" element={<PerfilCandidato/>} />
+        </Route>
+        <Route element={<RouteProtection accessRole={"ROLE_INVITADO"} />}> 
+          <Route path="/registro" element={<Registro />} />
+          <Route path="/registro/empresa" element={<RegistroEmpresa />} />
+          <Route path="/registro/candidato" element={<RegistroCandidato />} />
+        </Route>
+        <Route element={<RouteProtection accessRole={["ADMIN","SUPER_ADMIN"]} />}> 
+          <Route path="/admin/index" element={<AdminIndex/>} /> 
+          <Route path="/admin/vacantes" element={<AdminVacantes/>} />
+          <Route path="/admin/usuarios" element={<AdminUsuarios/>} />
+        </Route>
+        <Route element={<RouteProtection accessRole={["EMPRESA","CANDIDATO","ROLE_INVITADO"]} />}> 
+          <Route path="/" element={<Index />} />
+        </Route>
         <Route path="/login" element={<Login/>} />
-        <Route path="/registro/empresa" element={<RegistroEmpresa />} />
-        <Route path="/registro/candidato" element={<RegistroCandidato />} />
-        <Route path="/registro" element={<Registro />} />
         <Route path="/empleos/:id" element={<InfoVacante />} />
-        <Route path="/admin/index" element={<AdminIndex/>} /> 
-        <Route path="/admin/vacantes" element={<AdminVacantes/>} />
-        <Route path="/admin/usuarios" element={<AdminUsuarios/>} />
         <Route path="/empleos" element={<ListadoVacantes/>} />
-        <Route path="/perfil/candidato" element={<PerfilCandidato/>} />
         <Route path="*" element={<NotFound/>} />
       </Routes>
     </BrowserRouter>

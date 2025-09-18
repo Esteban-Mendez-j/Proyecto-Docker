@@ -18,9 +18,9 @@ export default function ResumenVacante({job, rol}) {
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                             className="mt-1 mr-3 text-primary"
                         >
                             <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
@@ -46,9 +46,9 @@ export default function ResumenVacante({job, rol}) {
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                             className="mt-1 mr-3 text-primary"
                         >
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
@@ -68,9 +68,9 @@ export default function ResumenVacante({job, rol}) {
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                             className="mt-1 mr-3 text-primary"
                         >
                             <line x1="12" y1="1" x2="12" y2="23"></line>
@@ -91,9 +91,9 @@ export default function ResumenVacante({job, rol}) {
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                             className="mt-1 mr-3 text-primary"
                         >
                             <circle cx="12" cy="12" r="10"></circle>
@@ -113,9 +113,9 @@ export default function ResumenVacante({job, rol}) {
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                             className="mt-1 mr-3 text-primary"
                         >
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
