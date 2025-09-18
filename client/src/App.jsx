@@ -5,6 +5,8 @@ import AdminUsuarios from "./page/admin/AdminUsuarios";
 import AdminVacantes from "./page/admin/AdminVacantes";
 import ListadoVacantes from "./page/candidato/ListadoVacantes";
 import PerfilCandidato from "./page/candidato/PerfilCandidato";
+import Chat from "./page/chat/chat";
+import PublicPerfilEmpresa from "./page/empresa/PublicPerfilEmpresa";
 import NotFound from "./page/invitado/404";
 import Index from './page/invitado/Index';
 import InfoVacante from "./page/invitado/InfoVacante";
@@ -12,7 +14,6 @@ import Login from "./page/invitado/Login";
 import Registro from "./page/invitado/Registro";
 import RegistroCandidato from "./page/invitado/RegistroCandidato";
 import RegistroEmpresa from './page/invitado/RegistroEmpresa';
-
 function App() {
 
   return (
@@ -29,7 +30,10 @@ function App() {
         <Route path="/admin/usuarios" element={<AdminUsuarios/>} />
         <Route path="/empleos" element={<ListadoVacantes/>} />
         <Route path="/perfil/candidato" element={<PerfilCandidato/>} />
+        <Route path="/perfil/empresa/:id" element={<PublicPerfilEmpresa/>} />
+        <Route path="/chat/:id" element={<Chat/>} />
         <Route path="*" element={<NotFound/>} />
+        
       </Routes>
     </BrowserRouter>
   )

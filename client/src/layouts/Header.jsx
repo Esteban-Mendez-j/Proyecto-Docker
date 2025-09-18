@@ -1,7 +1,7 @@
 import { useContext } from "react";
-import "../style/invitado/header.css"
-import { RoleContext} from "../services/RoleContext";
-import {NavLink} from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import { RoleContext } from "../services/RoleContext";
+import "../style/invitado/header.css";
 
 export default function Header () {
 
@@ -9,13 +9,13 @@ export default function Header () {
 
     const linksByRole = {
         SUPER_ADMIN: [
-            { name: "Inicio", path: "/dashboard/admin" },
+            { name: "Inicio", path: "/admin/index" },
             { name: "Empleos", path: "/admin/vacantes" },
             { name: "Crear admins", path: "/404" },
             { name: "Usuarios", path: "/admin/usuarios" }
         ],
         ADMIN: [
-            { name: "Inicio", path: "/admin" },
+            { name: "Inicio", path: "/admin/index" },
             { name: "Empleos", path: "/admin/vacantes" },
             { name: "Usuarios", path: "/admin/usuarios" }
         ],

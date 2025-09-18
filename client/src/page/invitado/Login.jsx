@@ -1,10 +1,10 @@
-import Layout from "../../layouts/layout"
-import "../../style/invitado/login.css"
-import {useContext, useEffect, useState } from "react"
-import { autenticacion } from "../../services/autenticacion.js"
+import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
-import { RoleContext } from "../../services/RoleContext.jsx";
 import useVisible from "../../hooks/useVisible.jsx";
+import Layout from "../../layouts/layout";
+import { autenticacion } from "../../services/autenticacion.js";
+import { RoleContext } from "../../services/RoleContext.jsx";
+import "../../style/invitado/login.css";
 
 export default function Login (){
     const [error , setError] = useState(null)
@@ -21,10 +21,10 @@ export default function Login (){
                 navigate("/dashboard/candidato", {replace:true})
                 break;
             case "EMPRESA":
-                navigate("/dashboard/empresa", {replace:true})
+                navigate("/empleos", {replace:true})
                 break;
             case "ADMIN" || "SUPER_ADMIN":
-                navigate("/dashboard/admin", {replace:true})
+                navigate("/admin/index", {replace:true})
                 break;
             default:
                 break;
