@@ -1,0 +1,395 @@
+.empresa-perfil-container {
+  max-width: 1000px; 
+  margin: 2rem auto; 
+  padding: 3rem 2rem; 
+  background-color: var(--background);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+  
+.empresa-perfil {
+  background-color: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  transition: all var(--animation-speed) ease;
+  position: relative;
+}
+  
+.empresa-perfil-header {
+  background: var(--gradient-secondary);
+  padding: 2.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  position: relative;
+  gap: 2rem;
+}
+  
+.empresa-logo-container {
+  width: 120px;
+  height: 120px;
+  border-radius: calc(var(--radius) - 4px);
+  overflow: hidden;
+  border: 4px solid white;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  transition: all var(--animation-speed) ease;
+}
+  
+.empresa-logo-container::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--radius) - 6px);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+  transition: all var(--animation-speed) ease;
+}
+  
+.empresa-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all var(--animation-speed) ease;
+}
+  
+.empresa-header-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+  
+.empresa-nombre {
+  font-size: 2rem; 
+  font-weight: 800; 
+  margin-bottom: 0;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: all var(--animation-speed) ease;
+  line-height: 1.2;
+}
+  
+.empresa-sector {
+  color: var(--text-light);
+  font-size: 1.1rem; /* Más grande */
+  font-weight: 500;
+  transition: all var(--animation-speed) ease;
+}
+  
+.empresa-edit-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-primary);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: calc(var(--radius) - 4px);
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+  text-decoration: none;
+  transition: all var(--animation-speed) ease;
+  margin-left: auto;
+  position: relative;
+  overflow: hidden;
+}
+  
+.empresa-edit-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(-100%);
+  transition: transform var(--animation-speed) ease;
+}
+  
+.empresa-edit-button:hover::before {
+  transform: translateX(0);
+}
+  
+.empresa-edit-button svg {
+  margin-right: 0.5rem;
+  width: 18px;
+  height: 18px;
+  color: white;
+  transition: all var(--animation-speed) ease;
+}
+
+.empresa-perfil-content {
+  padding: 2.5rem;
+}
+  
+.empresa-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.empresa-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+  
+.empresa-info-item svg {
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+  width: 20px;
+  height: 20px;
+}
+  
+.empresa-info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+  
+.empresa-info-label {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+  
+.empresa-info-value {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+  
+.empresa-info-link {
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 1.1rem;
+  position: relative;
+  transition: color var(--animation-speed) ease;
+  display: inline-block;
+}
+  
+.empresa-info-link::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary);
+  transition: width var(--animation-speed) ease;
+  border-radius: 2px;
+}
+  
+.empresa-info-link:hover::after {
+  width: 100%;
+}
+  
+.empresa-descripcion-section {
+  border-top: 1px solid var(--border);
+  padding-top: 2rem;
+  margin-top: 2rem;
+  position: relative;
+}
+  
+.empresa-section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-left: 1.5rem;
+}
+  
+.empresa-section-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: var(--gradient-primary);
+  border-radius: 3px;
+}
+  
+.empresa-descripcion {
+  color: var(--text-light);
+  line-height: 1.8;
+  font-size: 1.1rem;
+  padding-left: 1.5rem;
+}
+
+/* Estilos para el formulario de edición */
+.empresa-editar-form {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+}
+
+.empresa-nombre-input,
+.empresa-sector-input {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.empresa-nombre-input {
+  font-weight: bold;
+  font-size: 1.8rem;
+}
+
+.empresa-sector-input {
+  color: #666;
+  font-size: 1.2rem;
+}
+
+.empresa-info-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
+
+.empresa-logo-upload {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  cursor: pointer;
+  margin-top: 1rem;
+  color: #3b82f6;
+  font-weight: 500;
+}
+
+.empresa-logo-upload svg {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 0.5rem;
+}
+
+.empresa-descripcion-input {
+  width: 100%;
+  min-height: 150px;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.empresa-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.empresa-save-button {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.empresa-save-button:hover {
+  background-color: #2563eb;
+}
+
+.empresa-cancel-button {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.empresa-cancel-button:hover {
+  background-color: #e5e7eb;
+}
+  
+  /* Estilos responsivos */
+@media (max-width: 768px) {
+  .empresa-perfil-container {
+    padding: 1.5rem;
+    margin: 1rem auto;
+  }
+  
+  .empresa-perfil-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem 1.5rem;
+    gap: 1.5rem;
+  }
+  
+  .empresa-logo-container {
+    margin-right: 0;
+    margin-bottom: 1.5rem;
+    width: 100px;
+    height: 100px;
+  }
+  
+  .empresa-info-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  
+  .empresa-edit-button {
+    margin: 1rem auto 0;
+    width: 100%;
+  }
+  
+  .empresa-perfil-content {
+    padding: 1.5rem;
+  }
+  
+  .empresa-section-title {
+    justify-content: center;
+    padding-left: 0;
+    font-size: 1.25rem;
+  }
+  
+  .empresa-section-title::before {
+    display: none;
+  }
+  
+  .empresa-descripcion {
+    padding-left: 0;
+    text-align: center;
+    font-size: 1rem;
+  }
+}
+  

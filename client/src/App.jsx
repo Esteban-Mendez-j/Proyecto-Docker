@@ -12,6 +12,18 @@ import Login from "./page/invitado/Login";
 import Registro from "./page/invitado/Registro";
 import RegistroCandidato from "./page/invitado/RegistroCandidato";
 import RegistroEmpresa from './page/invitado/RegistroEmpresa';
+import Vacantes from "./page/empresa/Vacantes.jsx";
+import EditarVacantes from "./page/empresa/editarVacantes.jsx";
+import ListadoVacantes from "./page/empresa/listadoVacantes.jsx";
+import PerfilEmpresa from "./page/perfil/empresa/PerfilEmpresa.jsx";
+import EditarPerfilEmpresa from "./page/perfil/empresa/editar.jsx";
+
+
+
+
+
+
+
 
 function App() {
 
@@ -29,7 +41,13 @@ function App() {
         <Route path="/admin/usuarios" element={<AdminUsuarios/>} />
         <Route path="/empleos" element={<ListadoVacantes/>} />
         <Route path="/perfil/candidato" element={<PerfilCandidato/>} />
+        <Route path="/empresa/vacantes" element={<Vacantes />} />
+        <Route path="/empresa/editarvacantes" element={<EditarVacantes />} />
+        <Route path="/empresa/listadovacantes" element={<ListadoVacantes />} />
+        <Route path="/perfil/empresa/PerfilEmpresa" element={<PerfilEmpresa/>} />
+        <Route path="/perfil/empresa/editar" element={<EditarPerfilEmpresa />} />
         <Route path="*" element={<NotFound/>} />
+        
       </Routes>
     </BrowserRouter>
   )
