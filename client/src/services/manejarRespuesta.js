@@ -1,12 +1,7 @@
-import { API_CLIENT_URL } from './Api.js';
-
-
-
-
-
 import Swal from 'sweetalert2';
+import { API_CLIENT_URL } from './Api';
 
-export const manejarRespuesta = async (res) => { 
+export const manejarRespuesta = async (res) => {
   let data;
   try {
     try {
@@ -23,6 +18,8 @@ export const manejarRespuesta = async (res) => {
         await Swal.fire({ text: "No estás autenticado.", icon: 'error' });      
       }
       window.location.href =`${API_CLIENT_URL}/usuarios/cerrarSesion`;
+
+      // window.location.href = "/login";
       data= null
       return;
     }
@@ -34,8 +31,7 @@ export const manejarRespuesta = async (res) => {
     }
 
     if (!res.ok) {
-      await Swal.fire({ text: data.message || "Error desconocido", icon: 'error' });
-      return;
+      await Swal.fire({ text: data.message || "Error desconocido", icon: 'error' });      return;
     }
 
     // Si todo va bien
@@ -43,8 +39,8 @@ export const manejarRespuesta = async (res) => {
 
   } catch (error) {
     console.error("Error de red:", error);
-    await Swal.fire({ text: "Ocurrió un error de red.", icon: 'error' });
-  }
+    await Swal.fire({ text: "Ocurrió un error de red.", icon: 'error' });  }
 };
+
 
 export default manejarRespuesta;
