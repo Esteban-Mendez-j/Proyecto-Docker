@@ -38,8 +38,9 @@ const JobList = ({ jobs, rol, setCurrentPage, currentPage, totalPages, fetchAllJ
       console.error("Error en la solicitud:", error);
       await Swal.fire({ text: "Hubo un problema al intentar eliminar la vacante.", icon: 'error' });    }
   }
-  
-  if (jobs.length === 0) {
+    
+  if (!jobs) {
+    console.log(jobs)
     return (
         <div className="flex flex-col items-center justify-center h-96 text-center p-4">
           <h2 className="text-2xl font-semibold text-gray-700 mb-2">
