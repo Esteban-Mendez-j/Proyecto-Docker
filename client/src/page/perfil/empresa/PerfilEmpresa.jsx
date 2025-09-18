@@ -1,24 +1,17 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Layout from "../../../layouts/layout.jsx";
-
-
+import { API_CLIENT_URL } from "../../../services/Api";
+import { manejarRespuesta } from "../../../services/manejarRespuesta.js";
 import "../../../style/invitado/empresa.css";
 
-
-
-
-import { manejarRespuesta } from "../../../services/manejarRespuesta.js";
-import { API_CLIENT_URL, API_URL } from "../../../services/Api";
-import { useParams } from "react-router-dom";
-
 const PerfilEmpresa = () => {
-  const { id } = useParams();
+  
   const [empresa, setEmpresa] = useState({});
 
   useEffect(() => {
     const fetchEmpresa = async () => {
       try {
-        const apiUrl = `${API_URL}/api/empresas/perfil?idUsuario=${id}`;
+        const apiUrl = `${API_CLIENT_URL}/api/empresas/perfil`;
         const res = await fetch(apiUrl, { headers: { "Content-Type": "application/json" } });
         const data = await manejarRespuesta(res);
         setEmpresa(data.empresa || {});
@@ -26,9 +19,9 @@ const PerfilEmpresa = () => {
         console.error("Error al cargar perfil de empresa:", error);
       }
     };
-
+   
     fetchEmpresa();
-  }, [id]);
+  }, []);
 
   return (
     <Layout title={`${empresa.nombre || "Empresa"} | SearchJobs`}>

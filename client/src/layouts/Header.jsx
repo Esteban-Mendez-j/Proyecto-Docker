@@ -28,10 +28,10 @@ export default function Header () {
         ],
         EMPRESA: [
             { name: "Inicio", path: "/" },
-            { name: "Mis Vacantes", path: "/empleos/listadoVacantes" },
+            { name: "Mis Vacantes", path: "/empresa/listadovacantes" },
             { name: "Publicar oferta", path: "/empleos/Vacantes" },
             { name: "Chats", path: "/chat/empresa" },
-            { name: "Perfil", path: "/perfil/empresa" },
+            { name: "Perfil", path: "/perfil/empresa/PerfilEmpresa" },
 
         ],
         ROLE_INVITADO: [

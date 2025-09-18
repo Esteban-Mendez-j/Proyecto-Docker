@@ -9,12 +9,11 @@ export default function ChatPage() {
   return (
 
     <div className="chat-layout">
-      <Layout />
+    <Layout >
 
-      <main>
         <ChatPrincipal chatId={id} />
-      </main>
 
+    </Layout>
     </div>
   );
 }

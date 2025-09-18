@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import Layout from "../../../layouts/layout";
-import "../../../style/invitado/empresa.css";
+import { API_CLIENT_URL } from "../../../services/Api";
 import { manejarRespuesta } from "../../../services/manejarRespuesta";
-import { API_CLIENT_URL, API_URL } from "../../../services/Api";
+import "../../../style/invitado/empresa.css";
 
 const EditarPerfilEmpresa = () => {
   const [empresa, setEmpresa] = useState({});
@@ -34,7 +34,7 @@ const EditarPerfilEmpresa = () => {
   useEffect(() => {
     const fetchEmpresa = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/empresas/perfil`);
+        const res = await fetch(`${API_CLIENT_URL}/api/empresas/perfil`);
         const data = await manejarRespuesta(res);
         setEmpresa(data.empresa || {});
       } catch (err) {
