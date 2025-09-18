@@ -18,13 +18,13 @@ export default function Login (){
     useEffect(()=>{
         switch (rol) {
             case "CANDIDATO":
-                navigate("/dashboard/candidato", {replace:true})
+                navigate("/", {replace:true})
                 break;
             case "EMPRESA":
-                navigate("/dashboard/empresa", {replace:true})
+                navigate("/", {replace:true})
                 break;
             case "ADMIN" || "SUPER_ADMIN":
-                navigate("/dashboard/admin", {replace:true})
+                navigate("/admin/index", {replace:true})
                 break;
             default:
                 break;

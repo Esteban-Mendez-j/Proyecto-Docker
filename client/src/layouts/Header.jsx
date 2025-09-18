@@ -2,36 +2,37 @@ import { useContext } from "react";
 import "../style/invitado/header.css"
 import { RoleContext} from "../services/RoleContext";
 import {NavLink} from "react-router-dom";
-
+import { API_CLIENT_URL } from "../services/Api";
 export default function Header () {
 
     const {rol, setRol} = useContext(RoleContext)
 
     const linksByRole = {
         SUPER_ADMIN: [
-            { name: "Inicio", path: "/dashboard/admin" },
+            { name: "Inicio", path: "/admin/index" },
             { name: "Empleos", path: "/admin/vacantes" },
             { name: "Crear admins", path: "/404" },
-            { name: "Usuarios", path: "/admin/usuarios" }
+            { name: "Usuarios", path: "/admin/usuarios" },
         ],
         ADMIN: [
-            { name: "Inicio", path: "/admin" },
+            { name: "Inicio", path: "/admin/index" },
             { name: "Empleos", path: "/admin/vacantes" },
-            { name: "Usuarios", path: "/admin/usuarios" }
+            { name: "Usuarios", path: "/admin/usuarios" },
         ],
         CANDIDATO: [
-            { name: "Inicio", path: "/dashboard/candidato" },
+            { name: "Inicio", path: "/" },
             { name: "Chats", path: "/chat/candidato" },
             { name: "Empleos", path: "/empleos" },
             { name: "Postulaciones", path: "/postulados" },
-            { name: "Perfil", path: "/perfil/candidato" }
+            { name: "Perfil", path: "/perfil/candidato" },
         ],
         EMPRESA: [
-            { name: "Inicio", path: "/dashboard/empresa" },
+            { name: "Inicio", path: "/" },
             { name: "Mis Vacantes", path: "/empleos/listadoVacantes" },
             { name: "Publicar oferta", path: "/empleos/Vacantes" },
             { name: "Chats", path: "/chat/empresa" },
-            { name: "Perfil", path: "/perfil/empresa" }
+            { name: "Perfil", path: "/perfil/empresa" },
+
         ],
         ROLE_INVITADO: [
             { name: "Inicio", path: "/" },
@@ -82,6 +83,7 @@ export default function Header () {
                             {link.name}
                         </NavLink>
                     ))}
+                    {rol !== "ROLE_INVITADO" &&<a href={`${API_CLIENT_URL}/usuarios/cerrarSesion`}>Cerrar Sesion</a>}
                     <label className="nav-link register-btn">{rol}</label>
                 </nav>
             </div>

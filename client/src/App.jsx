@@ -16,38 +16,40 @@ import Vacantes from "./page/empresa/Vacantes.jsx";
 import EditarVacantes from "./page/empresa/editarVacantes.jsx";
 import ListadoVacantes from "./page/empresa/listadoVacantes.jsx";
 import PerfilEmpresa from "./page/perfil/empresa/PerfilEmpresa.jsx";
-import EditarPerfilEmpresa from "./page/perfil/empresa/editar.jsx";
-
-
-
-
-
-
-
+import RouteProtection from "./components/RouteProtection";
 
 function App() {
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Index />} />
+        <Route element={<RouteProtection accessRole={"CANDIDATO"} />}> 
+          <Route path="/perfil/candidato" element={<PerfilCandidato/>} />
+        </Route>
+        <Route element={<RouteProtection accessRole={"EMPRESA"} />}> 
+          <Route path="/empresa/vacantes" element={<Vacantes />} />
+          <Route path="/empresa/editarvacantes" element={<EditarVacantes />} />
+          <Route path="/empresa/listadovacantes" element={<ListadoVacantes />} />
+          <Route path="/perfil/empresa/PerfilEmpresa" element={<PerfilEmpresa/>} />
+          <Route path="/perfil/empresa/editar" element={<EditarPerfilEmpresa />} />
+        </Route>
+        <Route element={<RouteProtection accessRole={"ROLE_INVITADO"} />}> 
+          <Route path="/registro" element={<Registro />} />
+          <Route path="/registro/empresa" element={<RegistroEmpresa />} />
+          <Route path="/registro/candidato" element={<RegistroCandidato />} />
+        </Route>
+        <Route element={<RouteProtection accessRole={["ADMIN","SUPER_ADMIN"]} />}> 
+          <Route path="/admin/index" element={<AdminIndex/>} /> 
+          <Route path="/admin/vacantes" element={<AdminVacantes/>} />
+          <Route path="/admin/usuarios" element={<AdminUsuarios/>} />
+        </Route>
+        <Route element={<RouteProtection accessRole={["EMPRESA","CANDIDATO","ROLE_INVITADO"]} />}> 
+          <Route path="/" element={<Index />} />
+        </Route>
         <Route path="/login" element={<Login/>} />
-        <Route path="/registro/empresa" element={<RegistroEmpresa />} />
-        <Route path="/registro/candidato" element={<RegistroCandidato />} />
-        <Route path="/registro" element={<Registro />} />
         <Route path="/empleos/:id" element={<InfoVacante />} />
-        <Route path="/admin/index" element={<AdminIndex/>} /> 
-        <Route path="/admin/vacantes" element={<AdminVacantes/>} />
-        <Route path="/admin/usuarios" element={<AdminUsuarios/>} />
         <Route path="/empleos" element={<ListadoVacantes/>} />
-        <Route path="/perfil/candidato" element={<PerfilCandidato/>} />
-        <Route path="/empresa/vacantes" element={<Vacantes />} />
-        <Route path="/empresa/editarvacantes" element={<EditarVacantes />} />
-        <Route path="/empresa/listadovacantes" element={<ListadoVacantes />} />
-        <Route path="/perfil/empresa/PerfilEmpresa" element={<PerfilEmpresa/>} />
-        <Route path="/perfil/empresa/editar" element={<EditarPerfilEmpresa />} />
         <Route path="*" element={<NotFound/>} />
-        
       </Routes>
     </BrowserRouter>
   )

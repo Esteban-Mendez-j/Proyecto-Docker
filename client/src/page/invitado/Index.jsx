@@ -4,6 +4,9 @@ import { useFetch } from "../../hooks/useFetch";
 import Layout from "../../layouts/layout";
 import "../../style/invitado/index.css"
 import { RoleContext } from "../../services/RoleContext";
+import JobList from "../../components/JobList"
+import JobCard from "../../components/JobCard";
+import { Link } from "react-router-dom";
 export default function Index (){
 
     const {rol, setRol} = useContext(RoleContext)
@@ -45,12 +48,22 @@ export default function Index (){
                             Conectamos empresas con los mejores talentos a través de una plataforma intuitiva y moderna
                         </p>
                         <div className="hero-cta">
-                            <a href="/registro/candidato" className="btn btn-primary">
-                                Buscar empleo
-                            </a>
-                            <a href="/registro/empresa" className="btn btn-outline">
-                                Publicar vacante
-                            </a>
+                            <Link to={rol == "EMPRESA" ? "/empleos":"/empleos"} className="btn btn-primary">
+                                {rol == "EMPRESA" ? "Mis Vacantes":"Buscar Empleo"}
+                            </Link>
+                            {
+                                rol == "EMPRESA" ? (
+                                    <Link to="/Publicar" className="btn btn-outline">
+                                        Publicar vacante
+                                    </Link>
+                            ) : (
+                                    <Link to={rol == "CANDIDATO" ? "/postulaciones" : "/registro/candidato"} class="btn btn-outline">
+                                        Ver Postulaciones
+                                    </Link>
+                                )
+                            }
+                            
+                            
                         </div>
                     </div>
                 </div>
@@ -60,19 +73,12 @@ export default function Index (){
                 <div className="container">
                     <h2 className="section-title">Empleos Destacados</h2>
                     <p className="section-subtitle">Descubre las mejores oportunidades laborales seleccionadas para ti</p>
-
-                    {/* <div className="jobs-grid">
-                        {featuredJobs.map(job => (
-                            <JobCard job={job} rol={rol} />
-                        ))}
-                    </div> */}
-
                     
                     {
                         data? (
                             <div className="jobs-grid">
                                 {data.vacantes.map(job =>
-                                    <h1>{job.titulo}</h1>
+                                    <JobCard job={job}/>
                                 )}
                             </div>
                         ):(
@@ -82,9 +88,9 @@ export default function Index (){
                     
 
                     <div className="view-all-container">
-                        <a href="/empleos" className="btn btn-secondary">
+                        <Link to={rol == "EMPRESA" ? "/empleos":"/empleos"} className="btn btn-secondary">
                             Ver todos los empleos
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </section>
@@ -115,12 +121,12 @@ export default function Index (){
                                 Únete a miles de profesionales y empresas que ya confían en SearchJobs
                             </p>
                             <div className="cta-buttons">
-                                <a href="/registro/candidato" className="btn btn-primary">
+                                <Link to="/registro/candidato" className="btn btn-primary">
                                     Registrarse como candidato
-                                </a>
-                                <a href="/registro/empresa" className="btn btn-outline cta-outline">
+                                </Link>
+                                <Link to="/registro/empresa" className="btn btn-outline cta-outline">
                                     Registrarse como empresa
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>

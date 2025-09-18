@@ -115,7 +115,8 @@ public class SecurityConfig {
 			)
 			.logout(logout -> logout                                   
 				.logoutUrl("/usuarios/cerrarSesion")
-				.logoutSuccessUrl("http://localhost:4321/?logout")
+				// .logoutSuccessUrl("http://localhost:4321/?logout")
+				.logoutSuccessUrl("http://localhost:5173/?logout")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID", "jwtToken")
 				.permitAll()
