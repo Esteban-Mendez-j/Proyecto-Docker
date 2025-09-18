@@ -1,4 +1,4 @@
-import "../style/invitado/featureCard.css"
+import "../style/invitado/featurecard.css";
 import { icons } from "./icons"
 
 export default function FeatureCard({ feature }) {
