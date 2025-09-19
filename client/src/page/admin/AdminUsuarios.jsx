@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import AdminSidebar from "../../components/AdminSidebar";
 import UsuariosActivos from "../../components/UsuariosActivos";
 import Footer from "../../layouts/Footer";
-import Layout from "../../layouts/layout";
+import Layout from "../../layouts/Layout";
 
 export default function AdminUsuarios() {
   const [activeTab, setActiveTab] = useState("activos");

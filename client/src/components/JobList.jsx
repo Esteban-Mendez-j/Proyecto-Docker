@@ -2,6 +2,7 @@ import Swal from 'sweetalert2';
 import { API_CLIENT_URL } from '../services/Api';
 import '../style/invitado/jobcard.css';
 import Paginacion from './Paginacion';
+import { Link } from 'react-router-dom';
 
 
 const JobList = ({ jobs, rol, setCurrentPage, currentPage, totalPages, fetchAllJobs }) => {
@@ -143,7 +144,7 @@ const JobList = ({ jobs, rol, setCurrentPage, currentPage, totalPages, fetchAllJ
             
             {rol === 'empresa' && (
               <div className="apply">
-                <a href={`/empleos/editar/${job.nvacantes}`} className="btn btn-edit">Editar</a>
+                <Link to={`/empresa/editar/vacantes/${job.nvacantes}`} className="btn btn-edit">Editar</Link>
                 <button
                   onClick={() => cambiarEstado(job.nvacantes, !job.activaPorEmpresa)}
                   className={`px-4 py-2 font-semibold rounded-lg shadow ${

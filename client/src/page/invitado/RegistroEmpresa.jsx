@@ -1,6 +1,6 @@
 import { useSendForm } from "../../hooks/useFetch";
 import useValidation from "../../hooks/useValidation";
-import Layout from "../../layouts/layout";
+import Layout from "../../layouts/Layout";
 import InputForm from "../../components/InputForm";
 import "../../style/invitado/registroEmpresa.css"
 import Loading from "../../components/Loading";

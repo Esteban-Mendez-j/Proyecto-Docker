@@ -1,7 +1,5 @@
-// src/pages/Empleos.jsx
-
 import JobBoard from "../../components/JobBoard.jsx";
-import Layout from "../../layouts/layout.jsx";
+import Layout from "../../layouts/Layout.jsx";
 import { API_CLIENT_URL } from "../../services/Api.js";
 import "../../style/invitado/empleos.css";
 

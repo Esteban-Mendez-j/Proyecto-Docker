@@ -1,13 +1,7 @@
-// src/pages/vacantes/CrearVacante.jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Layout from '../../layouts/Layout';
-
 import '../../style/invitado/vacantes.css';
-
-
-
 import { API_CLIENT_URL } from '../../services/Api';
-
 
 export default function CrearVacante() {
   const [formData, setFormData] = useState({

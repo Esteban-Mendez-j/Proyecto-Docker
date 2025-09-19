@@ -1,4 +1,4 @@
-import Layout from "../layouts/layout";
+import Layout from "../layouts/Layout";
 import "../style/invitado/loading.css"
 
 export default function Loading({ message = "Cargando..." }) {

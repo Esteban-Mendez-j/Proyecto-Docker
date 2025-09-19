@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { API_CLIENT_URL } from "../services/Api";
 import { RoleContext } from "../services/RoleContext";
 import "../style/invitado/header.css";
@@ -28,10 +28,10 @@ export default function Header () {
         ],
         EMPRESA: [
             { name: "Inicio", path: "/" },
-            { name: "Mis Vacantes", path: "/empresa/listadovacantes" },
+            { name: "Mis Vacantes", path: "/empresa/listado/vacantes" },
             { name: "Publicar oferta", path: "/empleos/Vacantes" },
             { name: "Chats", path: "/chat/empresa" },
-            { name: "Perfil", path: "/perfil/empresa/PerfilEmpresa" },
+            { name: "Perfil", path: "/perfil/empresa" },
 
         ],
         ROLE_INVITADO: [
@@ -83,7 +83,7 @@ export default function Header () {
                             {link.name}
                         </NavLink>
                     ))}
-                    {rol !== "ROLE_INVITADO" &&<a href={`${API_CLIENT_URL}/usuarios/cerrarSesion`}>Cerrar Sesion</a>}
+                    {rol !== "ROLE_INVITADO" &&<a href={`${API_CLIENT_URL}/usuarios/cerrarSesion`} className="nav-link">Cerrar Sesion</a>}
                     <label className="nav-link register-btn">{rol}</label>
                 </nav>
             </div>

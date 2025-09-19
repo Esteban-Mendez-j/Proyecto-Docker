@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import Layout from "../../../layouts/layout.jsx";
+import Layout from "../../../layouts/Layout.jsx";
 import { API_CLIENT_URL } from "../../../services/Api";
-import { manejarRespuesta } from "../../../services/manejarRespuesta.js";
+import { manejarRespuesta } from "../../../services/ManejarRespuesta.js";
 import "../../../style/invitado/empresa.css";
 
 const PerfilEmpresa = () => {

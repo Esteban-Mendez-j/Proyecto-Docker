@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import FeatureCard from "../../components/FeatureCard";
 import { useFetch } from "../../hooks/useFetch";
-import Layout from "../../layouts/layout";
+import Layout from "../../layouts/Layout";
 import "../../style/invitado/index.css"
 import { RoleContext } from "../../services/RoleContext";
 import JobList from "../../components/JobList"
@@ -57,7 +57,7 @@ export default function Index (){
                                         Publicar vacante
                                     </Link>
                             ) : (
-                                    <Link to={rol == "CANDIDATO" ? "/postulaciones" : "/registro/candidato"} class="btn btn-outline">
+                                    <Link to={rol == "CANDIDATO" ? "/postulaciones" : "/registro/candidato"} className="btn btn-outline">
                                         Ver Postulaciones
                                     </Link>
                                 )

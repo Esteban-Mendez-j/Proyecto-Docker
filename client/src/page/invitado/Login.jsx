@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import useVisible from "../../hooks/useVisible.jsx";
-import Layout from "../../layouts/layout";
+import Layout from "../../layouts/Layout.jsx";
 import { autenticacion } from "../../services/autenticacion.js";
 import { RoleContext } from "../../services/RoleContext.jsx";
 import "../../style/invitado/login.css";

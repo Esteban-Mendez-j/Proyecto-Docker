@@ -1,4 +1,4 @@
-import Layout from "../../layouts/layout";
+import Layout from "../../layouts/Layout";
 import "../../style/invitado/registroCandidato.css"
 import { useSendForm } from "../../hooks/useFetch"
 import InputFrom from "../../components/InputForm";

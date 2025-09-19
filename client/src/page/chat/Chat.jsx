@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import ChatPrincipal from "../../components/ChatPrincipal";
-import Layout from "../../layouts/layout";
+import Layout from "../../layouts/Layout";
 import "../../style/invitado/chat.css";
 
 export default function ChatPage() {

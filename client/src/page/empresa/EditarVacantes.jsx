@@ -1,20 +1,8 @@
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-
-
-
 import '../../style/invitado/editarVacantes.css';
-
 import { API_URL, API_CLIENT_URL } from "../../services/Api";
-
-// import manejarRespuesta from "../../components/js/manejarRespuesta.js";
-// const manejarRespuesta = ()=>{ _s(); }
-
-
-
-
-
 
 const EditarVacantes= () => {
   const { nvacantes } = useParams();
@@ -61,7 +49,7 @@ const EditarVacantes= () => {
       if (!res.ok) throw new Error("Error al guardar los cambios");
 
       alert("Vacante actualizada correctamente");
-      navigate("/empleos/listadoVacantes");
+      navigate("/empresa/listado/vacantes");
     } catch (error) {
       console.error("Error al actualizar:", error);
       alert("No se pudo guardar la vacante");
@@ -239,7 +227,7 @@ const EditarVacantes= () => {
               <button
                 type="button"
                 className="btn btn-cancel"
-                onClick={() => navigate("/empleos/listadoVacantes")}
+                onClick={() => navigate("/empresa/listado/vacantes")}
               >
                 Cancelar
               </button>

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import Loding from "../../components/Loading"
 import ResumenVacante from "../../components/ResumenVacante"
 import { useFetch } from "../../hooks/useFetch"
-import Layout from "../../layouts/layout"
+import Layout from "../../layouts/Layout"
 import { API_CLIENT_URL } from "../../services/Api"
 import { RoleContext } from "../../services/RoleContext"
 

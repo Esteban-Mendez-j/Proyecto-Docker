@@ -1,4 +1,16 @@
+import { useEffect, useState } from "react"
+import { useFetch } from "../hooks/useFetch"
+import { Link } from "react-router-dom";
+
 export default function ResumenVacante({job, rol, curriculo}) {
+
+    const[IdUserSesion ,setIdUserSesion] = useState(null);
+    const {data, error, loading} = useFetch("/api/usuarios/rol", "GET");
+
+    useEffect(()=>{
+        if(!data){return}
+        setIdUserSesion(data.id);
+    }, [data])
 
     return (
         <div>
@@ -26,12 +38,12 @@ export default function ResumenVacante({job, rol, curriculo}) {
                         </svg>
                         <div>
                             <p className="text-sm text-text-light">Empresa</p>
-                            <a
-                                href={`/perfil/empresa/${job.idUsuario}`}
+                            <Link
+                                to={`/perfil/empresa/${job.idUsuario}`}
                                 className="font-medium text-blue-600 no-underline hover:text-blue-700 transition-colors"
                             >
                                 {job.nameEmpresa}
-                            </a>
+                            </Link>
 
                         </div>
                     </div>
@@ -166,26 +178,25 @@ export default function ResumenVacante({job, rol, curriculo}) {
                         )}
                     </>
                 ) : rol === "ROLE_INVITADO" ? (
-                    <a
-                        href="/login"
+                    <Link
+                        to="/login"
                         className="w-full bg-gradient-primary text-white py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
                     >
                         Inicia sesión para postularte
-                    </a>
+                    </Link>
                 ) : rol === "EMPRESA" ? (
 
-                    job.idUsuario == idUsuarioLogueado ? (
-                        <a
+                    job.idUsuario == IdUserSesion ? (
+                        <Link
                             className="w-full bg-gradient-primary text-white py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
-                            href={`/postulados/${id}`}
+                            to={`/postulados/${job.nvacantes}`}
                         >
-                            Ver Postulados
-                        </a>
+                            Ver Postulados 
+                        </Link>
 
                     ) : null
 
                 ) : null}
-
 
             </div>
         </div>

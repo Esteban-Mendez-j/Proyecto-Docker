@@ -1,5 +1,5 @@
 import "../../style/invitado/registro.css"
-import Layout from "../../layouts/layout"
+import Layout from "../../layouts/Layout"
 
 export default function Registro() {
 
