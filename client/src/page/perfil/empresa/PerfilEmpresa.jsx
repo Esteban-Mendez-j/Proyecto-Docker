@@ -12,7 +12,10 @@ const PerfilEmpresa = () => {
     const fetchEmpresa = async () => {
       try {
         const apiUrl = `${API_CLIENT_URL}/api/empresas/perfil`;
-        const res = await fetch(apiUrl, { headers: { "Content-Type": "application/json" } });
+        const res = await fetch(apiUrl, { 
+          headers: { "Content-Type": "application/json" } , 
+          credentials: "include"
+        });
         const data = await manejarRespuesta(res);
         setEmpresa(data.empresa || {});
       } catch (error) {

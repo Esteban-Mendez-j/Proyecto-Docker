@@ -29,7 +29,7 @@ export default function Header () {
         EMPRESA: [
             { name: "Inicio", path: "/" },
             { name: "Mis Vacantes", path: "/empresa/listado/vacantes" },
-            { name: "Publicar oferta", path: "/empleos/Vacantes" },
+            { name: "Publicar oferta", path: "/empresa/vacantes" },
             { name: "Chats", path: "/chat/empresa" },
             { name: "Perfil", path: "/perfil/empresa" },
 
