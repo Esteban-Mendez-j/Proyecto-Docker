@@ -6,7 +6,11 @@ import AdminUsuarios from "./page/admin/AdminUsuarios";
 import AdminVacantes from "./page/admin/AdminVacantes";
 import ListadoVacantes from "./page/candidato/ListadoVacantes";
 import PerfilCandidato from "./page/candidato/PerfilCandidato";
+import PerfilCandidatoEditar from "./page/candidato/PerfilCandidatoEditar.jsx";
+import PostuladosPage from "./page/candidato/Postulados.jsx";
 import Chat from "./page/chat/chat";
+import MisVacantes from "./page/empresa/MisVacantes.jsx";
+import EmpresaPerfil from "./page/empresa/PublicPerfilEmpresa.jsx";
 import Vacantes from "./page/empresa/Vacantes.jsx";
 import EditarVacantes from "./page/empresa/editarVacantes.jsx";
 import NotFound from "./page/invitado/404";
@@ -18,8 +22,6 @@ import RegistroCandidato from "./page/invitado/RegistroCandidato";
 import RegistroEmpresa from './page/invitado/RegistroEmpresa';
 import EditarPerfilEmpresa from "./page/perfil/empresa/EditarPerfilEmpresa.jsx";
 import PerfilEmpresa from "./page/perfil/empresa/PerfilEmpresa.jsx";
-import MisVacantes from "./page/empresa/MisVacantes.jsx";
-import EmpresaPerfil from "./page/empresa/PublicPerfilEmpresa.jsx";
 
 function App() {
 
@@ -28,6 +30,9 @@ function App() {
       <Routes>
         <Route element={<RouteProtection accessRole={"CANDIDATO"} />}> 
           <Route path="/perfil/candidato" element={<PerfilCandidato/>} />
+          <Route path="/postulaciones" element= {<PostuladosPage/>} />
+          
+
         </Route>
         <Route element={<RouteProtection accessRole={"EMPRESA"} />}> 
           <Route path="/empresa/vacantes" element={<Vacantes/>} />
@@ -58,7 +63,10 @@ function App() {
         <Route path="/empleos/:id" element={<InfoVacante />} />
         <Route path="/empleos" element={<ListadoVacantes/>} />
         <Route path="/perfil/empresa/:id" element={<EmpresaPerfil/>} />
-        
+
+        {/* Direccion desprotejida de editar perfil candidato  */}
+        <Route path="/perfil/candidato/editar" element={<PerfilCandidatoEditar/>}/>
+
         <Route path="*" element={<NotFound/>} />
         
       </Routes>

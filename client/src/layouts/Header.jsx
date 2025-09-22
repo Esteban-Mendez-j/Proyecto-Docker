@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { API_CLIENT_URL } from "../services/Api";
 import { RoleContext } from "../services/RoleContext";
 import "../style/invitado/header.css";
@@ -23,7 +23,7 @@ export default function Header () {
             { name: "Inicio", path: "/" },
             { name: "Chats", path: "/chat/candidato" },
             { name: "Empleos", path: "/empleos" },
-            { name: "Postulaciones", path: "/postulados" },
+            { name: "Postulaciones", path: "/postulaciones" },
             { name: "Perfil", path: "/perfil/candidato" },
         ],
         EMPRESA: [
