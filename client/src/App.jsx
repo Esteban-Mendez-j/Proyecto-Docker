@@ -31,8 +31,6 @@ function App() {
         <Route element={<RouteProtection accessRole={"CANDIDATO"} />}> 
           <Route path="/perfil/candidato" element={<PerfilCandidato/>} />
           <Route path="/postulaciones" element= {<PostuladosPage/>} />
-          
-
         </Route>
         <Route element={<RouteProtection accessRole={"EMPRESA"} />}> 
           <Route path="/empresa/vacantes" element={<Vacantes/>} />
