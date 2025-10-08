@@ -72,11 +72,21 @@ public class Vacante {
     @OneToMany(mappedBy = "vacante")
     private Set<Postulado> litarpostulados;
 
+    @OneToMany(mappedBy = "vacanteFavorita")
+    private Set<VacanteFavorita> listaVacnatesFavoritas;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario_id")
     private Empresa idUsuario;
 
+    
+    public Set<VacanteFavorita> getListaVacnatesFavoritas() {
+        return listaVacnatesFavoritas;
+    }
+
+    public void setListaVacnatesFavoritas(Set<VacanteFavorita> listaVacnatesFavoritas) {
+        this.listaVacnatesFavoritas = listaVacnatesFavoritas;
+    }
     public Long getNvacantes() {
         return nvacantes;
     }

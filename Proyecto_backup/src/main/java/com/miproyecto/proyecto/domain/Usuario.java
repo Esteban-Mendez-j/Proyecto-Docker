@@ -76,6 +76,9 @@ public class Usuario {
     @OneToMany(mappedBy = "admin")
     private List<Apelacion> apelacionesComoAdmin;
 
+    @OneToMany(mappedBy = "UsuarioFavorita")
+    private List<VacanteFavorita> listaVacanteFavoritas;
+
         
     public Usuario() {
     }
