@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { API_CLIENT_URL } from "../services/Api"
+import { manejarRespuesta } from "../services/ManejarRespuesta";
 
 export function useFetch(url, method, body, headers= {"Content-Type" : `application/json`}) {
 
@@ -7,25 +8,29 @@ export function useFetch(url, method, body, headers= {"Content-Type" : `applicat
     const [data, setData] = useState(null)
     const [error, setError] = useState(null)
     const fullUrl = `${API_CLIENT_URL}${url}`
-   
-    useEffect(() => {
-        setLoading(true)
-        fetch(fullUrl, {
-            method,
-            headers,
-            body: body ? JSON.stringify(body) : null,
-            credentials: "include"
-        })
-        .then(res => {
-            if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`)
-            return res.json()
-        })
-        .then(json => setData(json))
-        .catch(err => setError(err.message))
-        .finally(() => setLoading(false))
-        
-    }, [fullUrl, method])
 
+    async function peticion() {
+        setLoading(true)
+        try {
+            const res = await fetch(fullUrl, {
+                method,
+                headers,
+                body: body ? JSON.stringify(body) : null,
+                credentials: "include"
+            })
+
+            const json = await manejarRespuesta( res );
+            setData(json)
+        } catch (error) {
+            setError(error.message)
+        }finally{
+            setLoading(false)
+        }
+    }
+    
+    useEffect(() => {
+        peticion()
+    }, [fullUrl])
     return { data, error, loading }
 }
 
@@ -39,14 +44,16 @@ export function useSendForm() {
     async function send(url, method, body, headers = { "Content-Type": "application/json" }) {
         const fullUrl = `${API_CLIENT_URL}${url}`;
         setLoading(true);
+        console.log(headers)
         try {
             const res = await fetch(fullUrl, {
                 method,
-                headers,
-                body: body ? JSON.stringify(body) :  undefined,
+                body: body ? body :  undefined,
                 credentials: "include"
             });
 
+            if(headers){res.headers = headers}
+            
             const json = await res.json();
             if (res.ok) {
                 setData(json); 

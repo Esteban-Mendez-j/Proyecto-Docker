@@ -65,7 +65,7 @@ export default function RegistroEmpresa (){
             }));
             return;
         }
-        const result = await send("/api/empresas/add", "POST", dataFrom);
+        const result = await send("/api/empresas/add", "POST", JSON.stringify(dataFrom));
         if(result.status === 201){
             const isOk = await modalResponse(result.mensaje, "success");
             if(isOk){

@@ -53,7 +53,7 @@ export default function RegistroCandidato() {
             }));
             return;
         }
-        const result = await send("/api/candidatos/add", "POST", dataFrom);
+        const result = await send("/api/candidatos/add", "POST", JSON.stringify(dataFrom));
         if(result.status === 201){
             const isOk = await modalResponse(result.mensaje, "success");
             if(isOk){

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException.Forbidden;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 
 
 @RestControllerAdvice // nota la diferencia con @ControllerAdvice
@@ -27,6 +28,11 @@ public class GlobalException {
     @ExceptionHandler(JWTVerificationException.class)
     public ResponseEntity<?> handleJWT(JWTVerificationException ex) {
         return buildResponse(HttpStatus.UNAUTHORIZED, "El token es inválido");
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<?> handleExpiredJWT(JWTVerificationException ex) {
+        return buildResponse(HttpStatus.UNAUTHORIZED, "Sesion expirada, inicia nuevamente");
     }
 
     @ExceptionHandler(Exception.class)

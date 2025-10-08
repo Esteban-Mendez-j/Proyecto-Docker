@@ -1,36 +1,38 @@
-// src/pages/PerfilCandidato.jsx
 import { useEffect, useState } from "react";
 import Layout from "../../layouts/Layout.jsx";
 import { API_CLIENT_URL } from "../../services/Api.js";
-import { manejarRespuesta } from "../../services/ManejarRespuesta.js";
 import "../../style/invitado/candidato.css";
+import { useFetch } from "../../hooks/useFetch.jsx";
+import Loading from "../../components/Loading.jsx"
+import { modal } from "../../services/Modal.js";
 
 function PerfilCandidato() {
+  const initialData = {
+    nombre: "",
+    apellido: "",
+    correo: "",
+    contrasena: "",
+    telefono: "",
+    identificacion: "",
+    contraseñaVerificada: ""
+  }
+
   const [candidato, setCandidato] = useState(null);
   const [estudios, setEstudios] = useState([]);
   const [historialLaboral, setHistorialLaboral] = useState([]);
+  const { data , error , loading } = useFetch("/api/candidatos/perfil", "GET");
 
   useEffect(() => {
-    const fetchPerfil = async () => {
-      try {
-        const res = await fetch(`${API_CLIENT_URL}/api/candidatos/perfil`, {
-          credentials: "include", // si necesitas enviar cookies (ej. JSESSIONID)
-        });
-        const data = await manejarRespuesta(res);
 
-        setCandidato(data.candidato);
-        setEstudios(data.estudios || []);
-        setHistorialLaboral(data.historialLaboral || []);
-      } catch (error) {
-        console.error("Error cargando perfil:", error);
-      }
-    };
+    if(!data){return}
+    setCandidato(data.candidato);
+    setEstudios(data.estudios || []);
+    setHistorialLaboral(data.historialLaboral || []);
 
-    fetchPerfil();
-  }, []);
+  }, [data, error]);
 
-  if (!candidato) {
-    return <p>Cargando perfil...</p>;
+  if (!data || !candidato || !estudios || !historialLaboral || loading || error) {
+    return <Loading/>;
   }
 
   return (
@@ -61,7 +63,7 @@ function PerfilCandidato() {
               </h1>
               <p className="candidato-cargo">
                 {candidato.experiencia
-                  ? `${candidato.experiencia} años laborando`
+                  ? `${candidato.experiencia > 1?"año":"años"} laborando`
                   : ""}
               </p>
             </div>

@@ -1,5 +1,5 @@
-import Swal from 'sweetalert2';
 import { API_CLIENT_URL } from './Api';
+import {modalResponse, modal} from "./Modal"
 
 export const manejarRespuesta = async (res) => {
   let data;
@@ -11,27 +11,22 @@ export const manejarRespuesta = async (res) => {
     }
     console.log(res.status)
     if (res.status === 401) {
-      if (data.error === "TOKEN_EXPIRED") {
-        await Swal.fire({ text: "Tu sesión ha expirado.", icon: 'error' });       
-        window.location.href=`${API_CLIENT_URL}/usuarios/cerrarSesion`;
-      } else {
-        await Swal.fire({ text: "No estás autenticado.", icon: 'error' });      
+      const responseModal = await modalResponse(data.message, "info")
+      if(responseModal){
+        window.location.href =`${API_CLIENT_URL}/usuarios/cerrarSesion`;
       }
-      window.location.href =`${API_CLIENT_URL}/usuarios/cerrarSesion`;
-
-      // window.location.href = "/login";
       data= null
-      return;
     }
 
     if (res.status === 403) {
-      await Swal.fire({ text: "no autorizado", icon: 'error' });
-      window.location.href = "/404";
-      return;
+      const responseModal = await modalResponse(data.message, "info")
+      if(responseModal){
+        window.location.href = "/NotFount";
+      }
     }
 
-    if (!res.ok) {
-      await Swal.fire({ text: data.message || "Error desconocido", icon: 'error' });      return;
+    if (!res.ok && data) {
+      modal(data.message || "Error desconocido", "error")
     }
 
     // Si todo va bien
@@ -39,7 +34,8 @@ export const manejarRespuesta = async (res) => {
 
   } catch (error) {
     console.error("Error de red:", error);
-    await Swal.fire({ text: "Ocurrió un error de red.", icon: 'error' });  }
+    modal("Ocurrió un error de red.", error)
+  }
 };
 
 

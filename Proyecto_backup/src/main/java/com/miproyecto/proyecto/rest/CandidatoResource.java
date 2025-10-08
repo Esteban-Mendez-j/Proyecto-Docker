@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.model.CandidatoDTO;
 import com.miproyecto.proyecto.model.PostuladoDTO;
@@ -119,8 +121,12 @@ public class CandidatoResource {
             response.put("candidato", candidatoDTO);
             return ResponseEntity.ok(response);
 
-        } catch (Exception e) {
-            response.put("error", "Error interno: " + e.getMessage());
+        }catch (TokenExpiredException expired){
+            response.put("message", "Sesion expirada, inicia nuevamente");
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        } 
+        catch (Exception e) {
+            response.put("message", "Error interno: " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -204,7 +210,7 @@ public class CandidatoResource {
     )
     @PutMapping("/edit/{idUsuario}")
     public ResponseEntity<Long> updateCandidato(
-            @PathVariable(name = "idCandidato") final Long idCandidato,
+            @PathVariable(name = "idUsuario") final Long idCandidato,
             @RequestBody @Valid final CandidatoDTO candidatoDTO) {
         candidatoService.update(idCandidato, candidatoDTO);
         return ResponseEntity.ok(idCandidato);
