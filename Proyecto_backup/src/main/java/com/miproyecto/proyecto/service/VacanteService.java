@@ -186,6 +186,7 @@ public class VacanteService {
             .filter(p -> p.getCandidato().getIdUsuario().equals(idPostulaciones))
             .findFirst()
             .ifPresent(p -> vacanteDTO.setEstadoPostulacion(p.getEstado())); // o p.getEstado().name()
+        vacanteDTO.setNumeroGuardadosFavoritos(vacante.getListaVacnatesFavoritas().size());
         return vacanteDTO;
     }
 

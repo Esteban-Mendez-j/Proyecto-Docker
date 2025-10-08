@@ -67,6 +67,16 @@ public class VacanteDTO {
 
     private String estadoPostulacion;
 
+    private int numeroGuardadosFavoritos;
+
+
+    public int getNumeroGuardadosFavoritos() {
+        return numeroGuardadosFavoritos;
+    }
+
+    public void setNumeroGuardadosFavoritos(int numeroGuardadosFavoritos) {
+        this.numeroGuardadosFavoritos = numeroGuardadosFavoritos;
+    }
 
     public String getEstadoPostulacion() {
         return estadoPostulacion;

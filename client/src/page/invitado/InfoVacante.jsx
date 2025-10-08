@@ -29,6 +29,7 @@ export default function InfoVacante() {
         candidatoPostulado: "",
         estadoPostulacion: "",
         activaPor: "",
+        numeroGuardadosFavoritos: 0,
     }
     const {id} = useParams()
     const [job, setJob] = useState(initialJob);
@@ -265,7 +266,7 @@ export default function InfoVacante() {
                                     </svg>
                                     <div>
                                         <p className="text-sm text-text-light">Sueldo</p>
-                                        <p className="font-medium">{job.sueldo}</p>
+                                        <p className="font-medium">{job.sueldo} COP</p>
                                     </div>
                                 </div>
 
