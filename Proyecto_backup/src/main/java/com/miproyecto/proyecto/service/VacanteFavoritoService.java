@@ -1,9 +1,7 @@
 package com.miproyecto.proyecto.service;
-import com.miproyecto.proyecto.repos.VacanteRepository;
-import com.miproyecto.proyecto.util.NotFoundException;
-
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
@@ -16,6 +14,8 @@ import com.miproyecto.proyecto.model.VacanteDTO;
 import com.miproyecto.proyecto.model.VacanteFavoritaDTO;
 import com.miproyecto.proyecto.repos.UsuarioRepository;
 import com.miproyecto.proyecto.repos.VacanteFavoritaRepository;
+import com.miproyecto.proyecto.repos.VacanteRepository;
+import com.miproyecto.proyecto.util.NotFoundException;
 
 @Service
 public class VacanteFavoritoService {
@@ -80,4 +80,16 @@ public class VacanteFavoritoService {
         vacanteFavorita.setVacanteFavorita(vacanteFavoritaDTO.getVacante());
         return vacanteFavorita;
     }
+    
+    public List<Vacante> findByUsuarioFavorita(Long idUsuario){ {
+        List<Vacante> vacantesfavoritas = vacanteFavoritaRepository.findVacantesFavoritasByUsuario(idUsuario);
+
+        if (vacantesfavoritas.isEmpty()) {
+            throw new NotFoundException("El usuario no tiene vacantes favoritas");
+        }
+
+        
+     return vacanteFavoritaRepository.findVacantesFavoritasByUsuario(idUsuario);
+    }
+}
 }

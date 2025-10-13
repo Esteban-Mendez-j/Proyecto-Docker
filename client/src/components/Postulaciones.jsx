@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { API_CLIENT_URL } from '../services/Api';
-import { manejarRespuesta } from '../services/manejarRespuesta';
+import { manejarRespuesta } from '../services/ManejarRespuesta';
 import Paginacion from './Paginacion';
 
 const Postulaciones = ({ itemsPerPage = 10 }) => {
@@ -87,6 +87,7 @@ const Postulaciones = ({ itemsPerPage = 10 }) => {
   };
 
   return (
+    
     <div>
       {/* Filtros */}
       <div className="mb-6">

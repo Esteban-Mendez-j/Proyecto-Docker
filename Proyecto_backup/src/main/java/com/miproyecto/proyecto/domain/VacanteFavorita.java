@@ -23,7 +23,7 @@ public class VacanteFavorita {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_Fav_usuario", nullable = false)
-    private Usuario UsuarioFavorita;
+    private Usuario usuarioFavorita;
 
     private LocalDate fechaAgregada;
 
@@ -42,13 +42,13 @@ public class VacanteFavorita {
     public void setVacanteFavorita(Vacante vacanteFavorita) {
         this.vacanteFavorita = vacanteFavorita;
     }
-
+//chat gpt recomendo cambairla a miniscula la primera letra, Comentar a esteban y verificar al preguntarle a esteban el porqué esta asi
     public Usuario getUsuarioFavorita() {
-        return UsuarioFavorita;
+        return usuarioFavorita;
     }
 
     public void setUsuarioFavorita(Usuario usuarioFavorita) {
-        UsuarioFavorita = usuarioFavorita;
+        this.usuarioFavorita = usuarioFavorita;
     }
 
     public LocalDate getFechaAgregada() {

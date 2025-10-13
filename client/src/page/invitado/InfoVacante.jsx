@@ -49,6 +49,38 @@ export default function InfoVacante() {
     }, [data]);
 
 
+    //SECCION DE FAVORITOS
+
+
+  const [isFavorite, setIsFavorite] = useState(false);
+
+
+    const toggleFavorito = async (nvacantes) => {
+        try {
+            // Cambia el estado visual inmediatamente
+            setIsFavorite(!isFavorite);
+
+            // Llamada al backend para agregar favorito
+            const response = await fetch(`http://localhost:8080/api/vacantes/favoritas/add/${nvacantes}`, {
+                method: "POST",
+                credentials: "include", // 👈 necesario para enviar la cookie jwtToken
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!response.ok) throw new Error("Error al agregar favorito");
+
+            const data = await response.json();
+            console.log("⭐", data.mensaje);
+
+        } catch (error) {
+            console.error("❌ Error al agregar favorito:", error);
+            console.log("idVacante:", nvacantes);
+        }
+
+};
+
     if (loading ) {return <Loding/>}
     
 
@@ -79,6 +111,29 @@ export default function InfoVacante() {
                                 </div>
                                 <div className="flex-grow">
                                     <a className="mb-2 text-2xl font-bold">{job.titulo}</a>
+                                    
+                                  <button
+                                        className="flex items-center justify-center w-8 h-8 rounded-md bg-gray-100 border border-gray-300 hover:bg-gray-200 transition-colors duration-200 ml-auto"
+                                         onClick={() => toggleFavorito(job.nvacantes)} 
+                                        title="Agregar a favoritos"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            strokeWidth={2}
+                                            stroke="currentColor"
+                                            fill={isFavorite ? "yellow" : "none"}  // 🔸 cambia el color de relleno
+                                            className={`w-5 h-5 transition-colors duration-200 ${isFavorite ? "text-yellow-400" : "text-gray-400"
+                                                }`}
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                d="M11.48 3.499a.562.562 0 011.04 0l2.125 4.308a.563.563 0 00.424.308l4.756.691a.562.562 0 01.312.959l-3.44 3.352a.563.563 0 00-.162.498l.811 4.733a.562.562 0 01-.815.592L12 17.347l-4.26 2.24a.562.562 0 01-.815-.592l.811-4.733a.563.563 0 00-.162-.498L4.134 9.765a.562.562 0 01.312-.959l4.756-.691a.563.563 0 00.424-.308l2.125-4.308z"
+                                            />
+                                        </svg>
+                                    </button>
+
                                     <div className="flex flex-wrap gap-2 mb-3">
                                         <span className="inline-flex items-center text-sm text-text-light">
                                             <svg

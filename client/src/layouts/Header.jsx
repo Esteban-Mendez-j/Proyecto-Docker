@@ -3,7 +3,6 @@ import { NavLink } from "react-router-dom";
 import { API_CLIENT_URL } from "../services/Api";
 import { RoleContext } from "../services/RoleContext";
 import "../style/invitado/header.css";
-import Loading from "../components/Loading";
 export default function Header () {
 
     const {rol, setRol} = useContext(RoleContext)

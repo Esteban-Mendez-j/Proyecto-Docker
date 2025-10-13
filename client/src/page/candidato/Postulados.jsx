@@ -1,6 +1,5 @@
-import Layout from "../../layouts/Layout.jsx"; // en React ya no es .astro
-
 import Postulaciones from "../../components/Postulaciones.jsx";
+import Layout from "../../layouts/Layout.jsx"; // en React ya no es .astro
 import "../../style/invitado/empleos.css";
 import "../../style/invitado/postulados.css";
 

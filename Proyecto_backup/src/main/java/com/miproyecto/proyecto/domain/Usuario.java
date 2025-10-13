@@ -3,7 +3,6 @@ package com.miproyecto.proyecto.domain;
 import java.time.LocalDate;
 import java.util.List;
 
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -76,7 +75,7 @@ public class Usuario {
     @OneToMany(mappedBy = "admin")
     private List<Apelacion> apelacionesComoAdmin;
 
-    @OneToMany(mappedBy = "UsuarioFavorita")
+    @OneToMany(mappedBy = "usuarioFavorita")
     private List<VacanteFavorita> listaVacanteFavoritas;
 
         
