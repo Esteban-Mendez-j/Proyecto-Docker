@@ -11,7 +11,7 @@ public class EmpresaDTO extends UsuarioDTO  {
     @Size(max = 255)
     private String sitioWeb;
 
-    @Size(max = 10)
+    @Size(max = 9)
     @EmpresaNitUnique(message = "Este NIT ya esta registrado")
     private String nit;
 

@@ -44,16 +44,14 @@ export function useSendForm() {
     async function send(url, method, body, headers = { "Content-Type": "application/json" }) {
         const fullUrl = `${API_CLIENT_URL}${url}`;
         setLoading(true);
-        console.log(headers)
         try {
             const res = await fetch(fullUrl, {
                 method,
+                headers: headers ? headers : {},
                 body: body ? body :  undefined,
                 credentials: "include"
             });
 
-            if(headers){res.headers = headers}
-            
             const json = await res.json();
             if (res.ok) {
                 setData(json); 
@@ -62,7 +60,7 @@ export function useSendForm() {
                 setError(json.errors || "Error desconocido");
                 setData(null);
             }
-
+            console.log(json)
             return json;
         } catch (err) {
             console.error(err.message);

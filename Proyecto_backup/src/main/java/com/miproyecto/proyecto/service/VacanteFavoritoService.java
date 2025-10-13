@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.miproyecto.proyecto.domain.Usuario;
 import com.miproyecto.proyecto.domain.Vacante;
@@ -18,11 +19,12 @@ import com.miproyecto.proyecto.repos.UsuarioRepository;
 import com.miproyecto.proyecto.repos.VacanteFavoritaRepository;
 
 @Service
+@Transactional
 public class VacanteFavoritoService {
 
     private final VacanteRepository vacanteRepository;
     private final UsuarioRepository usuarioRepository;
-    private VacanteFavoritaRepository vacanteFavoritaRepository;
+    private final VacanteFavoritaRepository vacanteFavoritaRepository;
 
     public VacanteFavoritoService(VacanteRepository vacanteRepository, UsuarioRepository usuarioRepository,
             VacanteFavoritaRepository vacanteFavoritaRepository) {
@@ -38,19 +40,36 @@ public class VacanteFavoritoService {
 
     }
 
-    public void Create(Long idVacante, Long idUsuario){
+    public VacanteFavorita findByIdVacanteAndIdUsuario(Vacante vacante, Usuario usuario){
+        return vacanteFavoritaRepository.findByVacanteFavoritaAndUsuarioFavorita(vacante, usuario)
+        .orElse(null);
+    }
 
+    public Map<String, Object> CreateOrRemove(Long idVacante, Long idUsuario){
+        Map<String,Object> response = new HashMap<>();
         Vacante vacante = new Vacante();
         Usuario usuario = new Usuario();
         VacanteFavorita vacanteFavorita = new VacanteFavorita();
+        VacanteFavorita vacanteBuscada = new VacanteFavorita();
 
         vacante = vacanteRepository.findById(idVacante).orElseThrow(NotFoundException::new);
         usuario = usuarioRepository.findById(idUsuario).orElseThrow(NotFoundException::new);
+
+        vacanteBuscada = findByIdVacanteAndIdUsuario(vacante, usuario);
+        if (vacanteBuscada != null) {
+            delete(vacanteBuscada.getId());
+            response.put("status", 204);
+            response.put("mensaje", "vacante removida correctamente");
+            return response;
+        }
 
         vacanteFavorita.setVacanteFavorita(vacante);
         vacanteFavorita.setUsuarioFavorita(usuario);
         vacanteFavorita.setFechaAgregada(LocalDate.now());
         vacanteFavoritaRepository.save(vacanteFavorita);
+        response.put("status", 201);
+        response.put("mensaje", "vacante guardada correctamente");
+        return response;
     }
 
     public void delete(Long id){
@@ -68,6 +87,7 @@ public class VacanteFavoritoService {
     }
 
     public VacanteFavoritaDTO mapToVacantefavoritaDTO(final VacanteFavorita vacanteFavorita, final VacanteFavoritaDTO vacanteFaVacanteFavoritaDTO){
+        vacanteFaVacanteFavoritaDTO.setId(vacanteFavorita.getId());
         vacanteFaVacanteFavoritaDTO.setUsuario(vacanteFavorita.getUsuarioFavorita());
         vacanteFaVacanteFavoritaDTO.setFechaAgregada(vacanteFavorita.getFechaAgregada());
         vacanteFaVacanteFavoritaDTO.setVacante(vacanteFavorita.getVacanteFavorita());

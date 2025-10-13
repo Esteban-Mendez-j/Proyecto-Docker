@@ -23,7 +23,7 @@ public class VacanteFavorita {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_Fav_usuario", nullable = false)
-    private Usuario UsuarioFavorita;
+    private Usuario usuarioFavorita;
 
     private LocalDate fechaAgregada;
 
@@ -44,11 +44,11 @@ public class VacanteFavorita {
     }
 
     public Usuario getUsuarioFavorita() {
-        return UsuarioFavorita;
+        return usuarioFavorita;
     }
 
     public void setUsuarioFavorita(Usuario usuarioFavorita) {
-        UsuarioFavorita = usuarioFavorita;
+        this.usuarioFavorita = usuarioFavorita;
     }
 
     public LocalDate getFechaAgregada() {

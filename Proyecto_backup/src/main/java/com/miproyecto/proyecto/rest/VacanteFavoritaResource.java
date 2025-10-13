@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -26,7 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RestController
 @RequestMapping(value = "/api/vacantes/favoritas", produces = MediaType.APPLICATION_JSON_VALUE)
 public class VacanteFavoritaResource {
-    private VacanteFavoritoService vacanteFavoritoService;
+    private final VacanteFavoritoService vacanteFavoritoService;
     private final JwtUtils jwtUtils;
 
     public VacanteFavoritaResource(VacanteFavoritoService vacanteFavoritoService, JwtUtils jwtUtils) {
@@ -53,9 +52,7 @@ public class VacanteFavoritaResource {
 
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
-        vacanteFavoritoService.Create(idVacante, idUsuario);
-        response.put("status", 201);
-        response.put("mensaje", "vacante guardada correctamente");
+        response = vacanteFavoritoService.CreateOrRemove(idVacante, idUsuario);
         return ResponseEntity.ok(response);
     }
 
@@ -67,5 +64,5 @@ public class VacanteFavoritaResource {
         response.put("mensaje", "vacante removida correctamente");
         return ResponseEntity.ok(response);
     }
-    
+
 }

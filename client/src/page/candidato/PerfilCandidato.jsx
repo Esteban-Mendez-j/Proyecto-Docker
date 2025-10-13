@@ -63,7 +63,7 @@ function PerfilCandidato() {
               </h1>
               <p className="candidato-cargo">
                 {candidato.experiencia
-                  ? `${candidato.experiencia > 1?"año":"años"} laborando`
+                  ? `${candidato.experiencia}${candidato.experiencia > 1?" años":" año"} laborando`
                   : ""}
               </p>
             </div>
