@@ -8,13 +8,27 @@ export default function ResumenVacante({job, rol}) {
     const[IdUserSesion ,setIdUserSesion] = useState(null);
     const [curriculo, setCurriculo] = useState(null);
     const [jobResumen, setJobResumen] = useState(job);
-    const {data} = useFetch("/api/candidatos/perfil", "GET");
     const { send } = useSendForm();
+    const { data:dataCandidato,  sendCandidato } = useSendForm;
+    const { data } = useFetch("/api/usuarios/rol", "GET");
+
+    if(rol == "CANDIDATO"){
+      const candidatoPerfil = async () =>  {
+        sendCandidato("/api/candidatos/perfil", "GET");
+      }
+      candidatoPerfil()
+    }
+
+    useEffect(()=>{
+      if(!dataCandidato){return}
+      if(rol == "CANDIDATO"){
+        setCurriculo(dataCandidato.candidato.curriculo);
+      }
+    }, [ dataCandidato])
 
     useEffect(()=>{
       if(!data){return}
-      setCurriculo(data.candidato.curriculo);
-      setIdUserSesion(data.candidato.idUsuario);
+      setIdUserSesion(data.id);
     }, [ data ])
 
     async function handleOnClick (){
@@ -220,7 +234,7 @@ export default function ResumenVacante({job, rol}) {
             jobResumen.idUsuario == IdUserSesion ? (
               <Link
                 className="w-full bg-gradient-primary text-white py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
-                to={`/postulados/${jobResumen.nvacantes}`}
+                to={`/empresa/postulados/${jobResumen.nvacantes}`}
               >
                 Ver Postulados
               </Link>

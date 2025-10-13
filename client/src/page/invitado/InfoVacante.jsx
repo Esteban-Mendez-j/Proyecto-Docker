@@ -33,8 +33,8 @@ export default function InfoVacante() {
     }
     const {id} = useParams()
     const [job, setJob] = useState(initialJob);
-    const {rol, setRol} = useContext(RoleContext);
-    const {data, error, loading} = useFetch(`/api/vacantes/seleccion/${id}`, "GET");
+    const {rol} = useContext(RoleContext);
+    const {data, loading} = useFetch(`/api/vacantes/seleccion/${id}`, "GET");
     const navigate =  useNavigate();
     
     useEffect(() => {
