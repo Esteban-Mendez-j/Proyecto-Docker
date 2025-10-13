@@ -1,5 +1,5 @@
 import { API_CLIENT_URL } from './Api';
-import {modalResponse, modal} from "./Modal"
+import { modal, modalResponse } from "./Modal";
 
 export const manejarRespuesta = async (res) => {
   let data;

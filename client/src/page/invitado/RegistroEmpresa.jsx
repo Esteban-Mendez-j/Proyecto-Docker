@@ -105,6 +105,8 @@ export default function RegistroEmpresa (){
                                         value={dataFrom.nit}
                                         handleOnChange={handleOnChange}
                                         error={error}
+                                        minL={9}
+                                        maxL={9}
                                     />
                                     <p className="error-text hidden" id="error-nit"></p>
                                 </div>
@@ -141,6 +143,7 @@ export default function RegistroEmpresa (){
                                     value={dataFrom.telefono}
                                     handleOnChange={handleOnChange}
                                     error={error}
+                                    maxL={10}
                                 />
                             </div>
 

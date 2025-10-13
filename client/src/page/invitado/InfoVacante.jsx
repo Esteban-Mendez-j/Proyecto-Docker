@@ -33,10 +33,9 @@ export default function InfoVacante() {
     }
     const {id} = useParams()
     const [job, setJob] = useState(initialJob);
-    const {rol, setRol} = useContext(RoleContext);
-    const {data, error, loading} = useFetch(`/api/vacantes/seleccion/${id}`, "GET");
+    const {rol} = useContext(RoleContext);
+    const {data, loading} = useFetch(`/api/vacantes/seleccion/${id}`, "GET");
     const navigate =  useNavigate();
-    const [curriculo, setCurriculo] = useState(null);
     
     useEffect(() => {
         if (!data) {return} 
@@ -454,7 +453,7 @@ export default function InfoVacante() {
                         </div>
                     </div>
 
-                    {data && <ResumenVacante job={data.vacanteSeleccionada} rol={rol}  curriculo ={curriculo} />}
+                    {data && <ResumenVacante job={data.vacanteSeleccionada} rol={rol}/>}
                 </div>
             </div>
         </Layout>

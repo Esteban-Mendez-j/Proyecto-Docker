@@ -1,16 +1,48 @@
 import { useEffect, useState } from "react"
-import { useFetch } from "../hooks/useFetch"
+import { useFetch, useSendForm } from "../hooks/useFetch"
 import { Link } from "react-router-dom";
+import { modal } from "../services/Modal";
 
-export default function ResumenVacante({job, rol, curriculo}) {
+export default function ResumenVacante({job, rol}) {
 
     const[IdUserSesion ,setIdUserSesion] = useState(null);
-    const {data, error, loading} = useFetch("/api/usuarios/rol", "GET");
+    const [curriculo, setCurriculo] = useState(null);
+    const [jobResumen, setJobResumen] = useState(job);
+    const { send } = useSendForm();
+    const { data:dataCandidato,  sendCandidato } = useSendForm;
+    const { data } = useFetch("/api/usuarios/rol", "GET");
+
+    if(rol == "CANDIDATO"){
+      const candidatoPerfil = async () =>  {
+        sendCandidato("/api/candidatos/perfil", "GET");
+      }
+      candidatoPerfil()
+    }
 
     useEffect(()=>{
-        if(!data){return}
-        setIdUserSesion(data.id);
-    }, [data])
+      if(!dataCandidato){return}
+      if(rol == "CANDIDATO"){
+        setCurriculo(dataCandidato.candidato.curriculo);
+      }
+    }, [ dataCandidato])
+
+    useEffect(()=>{
+      if(!data){return}
+      setIdUserSesion(data.id);
+    }, [ data ])
+
+    async function handleOnClick (){
+      const result = await send(`/api/postulados/add/${jobResumen.nvacantes}`, "POST");
+      modal(result.message , result.status);
+      if (result.status === "success") {
+        setJobResumen(prev => ({
+          ...prev,
+          estadoPostulacion: "Espera",
+          candidatoPostulado: true
+        }));
+      }
+
+    }
 
     return (
       <div>
@@ -37,10 +69,10 @@ export default function ResumenVacante({job, rol, curriculo}) {
               <div>
                 <p className="text-sm text-text-light">Empresa</p>
                 <Link
-                  to={`/perfil/empresa/${job.idUsuario}`}
+                  to={`/perfil/empresa/${jobResumen.idUsuario}`}
                   className="font-medium text-blue-600 no-underline hover:text-blue-700 transition-colors"
                 >
-                  {job.nameEmpresa}
+                  {jobResumen.nameEmpresa}
                 </Link>
               </div>
             </div>
@@ -64,7 +96,7 @@ export default function ResumenVacante({job, rol, curriculo}) {
               <div>
                 <p className="text-sm text-text-light">Ubicación</p>
                 <p className="font-medium">
-                  {job.ciudad}, {job.departamento}
+                  {jobResumen.ciudad}, {jobResumen.departamento}
                 </p>
               </div>
             </div>
@@ -87,7 +119,7 @@ export default function ResumenVacante({job, rol, curriculo}) {
               </svg>
               <div>
                 <p className="text-sm text-text-light">Salario</p>
-                <p className="font-medium">{job.sueldo}</p>
+                <p className="font-medium">{jobResumen.sueldo}</p>
               </div>
             </div>
 
@@ -109,7 +141,7 @@ export default function ResumenVacante({job, rol, curriculo}) {
               </svg>
               <div>
                 <p className="text-sm text-text-light">Fecha de publicación</p>
-                <p className="font-medium">{job.fechaPublicacion}</p>
+                <p className="font-medium">{jobResumen.fechaPublicacion}</p>
               </div>
             </div>
 
@@ -131,7 +163,7 @@ export default function ResumenVacante({job, rol, curriculo}) {
               </svg>
               <div>
                 <p className="text-sm text-text-light">Postulados</p>
-                <p className="font-medium">{job.totalpostulaciones}</p>
+                <p className="font-medium">{jobResumen.totalpostulaciones}</p>
               </div>
             </div>
             <div className="flex items-start">
@@ -146,37 +178,36 @@ export default function ResumenVacante({job, rol, curriculo}) {
                 </svg>
                 <div>
                     <p className="text-sm text-text-light">Numero De Guardados</p>
-                    <p className="font-medium">{job.numeroGuardadosFavoritos}</p>
+                    <p className="font-medium">{jobResumen.numeroGuardadosFavoritos}</p>
                 </div>
             </div>
           </div>
 
           {rol === "CANDIDATO" ? (
             <>
-              {job.candidatoPostulado &&
-              job.estadoPostulacion !== "Cancelada" ? (
-                <span
-                  className={`top-4 right-4 text-white text-xs font-semibold px-9 py-3 rounded-full shadow-md ${
-                    job.estadoPostulacion === "Aceptada"
-                      ? "bg-green-500"
-                      : job.estadoPostulacion === "Rechazada"
-                      ? "bg-red-500"
-                      : "bg-blue-500"
-                  }`}
-                >
-                  {job.estadoPostulacion}
-                </span>
+              {jobResumen.candidatoPostulado &&
+                jobResumen.estadoPostulacion !== "Cancelada" ? (
+                  <span
+                    className={`top-4 right-4 text-white text-xs font-semibold px-9 py-3 rounded-full shadow-md ${
+                      jobResumen.estadoPostulacion === "Aceptada"
+                        ? "bg-green-500"
+                        : jobResumen.estadoPostulacion === "Rechazada"
+                        ? "bg-red-500"
+                        : "bg-blue-500"
+                    }`}
+                  >
+                    {jobResumen.estadoPostulacion }
+                  </span>
               ) : (
                 <>
-                  {!job.active || !job.activaPorEmpresa ? (
+                  {!jobResumen.active || !jobResumen.activaPorEmpresa ? (
                     <p className="text-red-600 text-sm mt-2">
                       Esta vacante está deshabilitada y no puedes postularte.
                     </p>
                   ) : (
                     <>
                       <button
-                        id="applyButton"
-                        data-id={job.id}
+                        onClick={handleOnClick}
                         className="w-full bg-gradient-primary text-white py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={!curriculo}
                       >
@@ -200,10 +231,10 @@ export default function ResumenVacante({job, rol, curriculo}) {
               Inicia sesión para postularte
             </Link>
           ) : rol === "EMPRESA" ? (
-            job.idUsuario == IdUserSesion ? (
+            jobResumen.idUsuario == IdUserSesion ? (
               <Link
                 className="w-full bg-gradient-primary text-white py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
-                to={`/postulados/${job.nvacantes}`}
+                to={`/empresa/postulados/${jobResumen.nvacantes}`}
               >
                 Ver Postulados
               </Link>

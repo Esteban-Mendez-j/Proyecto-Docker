@@ -11,9 +11,49 @@ public class EmpresaDTO extends UsuarioDTO  {
     @Size(max = 255)
     private String sitioWeb;
 
-    @Size(max = 10)
+    @Size(max = 9)
     @EmpresaNitUnique(message = "Este NIT ya esta registrado")
     private String nit;
+
+    private int numeroVacantes;
+
+    private int numeroVacantesActivas;
+
+    private int candidatosAceptados;
+
+    private double porcentajeAceptacion;
+
+    public int getNumeroVacantes() {
+        return numeroVacantes;
+    }
+
+    public void setNumeroVacantes(int numeroVacantes) {
+        this.numeroVacantes = numeroVacantes;
+    }
+
+    public int getNumeroVacantesActivas() {
+        return numeroVacantesActivas;
+    }
+
+    public void setNumeroVacantesActivas(int numeroVacantesActivas) {
+        this.numeroVacantesActivas = numeroVacantesActivas;
+    }
+
+    public int getCandidatosAceptados() {
+        return candidatosAceptados;
+    }
+
+    public void setCandidatosAceptados(int candidatosAceptados) {
+        this.candidatosAceptados = candidatosAceptados;
+    }
+
+    public double getPorcentajeAceptacion() {
+        return porcentajeAceptacion;
+    }
+
+    public void setPorcentajeAceptacion(double porcentajeAceptacion) {
+        this.porcentajeAceptacion = porcentajeAceptacion;
+    }
 
     public String getSectorEmpresarial() {
         return sectorEmpresarial;

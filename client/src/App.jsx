@@ -22,6 +22,7 @@ import RegistroCandidato from "./page/invitado/RegistroCandidato";
 import RegistroEmpresa from './page/invitado/RegistroEmpresa';
 import EditarPerfilEmpresa from "./page/perfil/empresa/EditarPerfilEmpresa.jsx";
 import PerfilEmpresa from "./page/perfil/empresa/PerfilEmpresa.jsx";
+import Postulaciones from "./page/empresa/Postulaciones.jsx";
 
 function App() {
 
@@ -35,6 +36,7 @@ function App() {
         <Route element={<RouteProtection accessRole={"EMPRESA"} />}> 
           <Route path="/empresa/vacantes" element={<Vacantes/>} />
           <Route path="/empresa/editar/vacantes/:nvacantes" element={<EditarVacantes/>} />
+          <Route path="/empresa/postulados/:vacanteId" element={<Postulaciones/>} />
           <Route path="/empresa/listado/vacantes" element={<MisVacantes />} />
           <Route path="/perfil/empresa" element={<PerfilEmpresa/>} />
           <Route path="/perfil/empresa/editar" element={<EditarPerfilEmpresa />} />

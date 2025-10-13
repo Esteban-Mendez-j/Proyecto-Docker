@@ -8,7 +8,7 @@ import com.miproyecto.proyecto.domain.Vacante;
 public class VacanteFavoritaDTO {
     private Long id; 
     private Vacante vacante;
-    private Usuario Usuario;
+    private Usuario usuario;
     private LocalDate fechaAgregada;
 
     public Long getId() {
@@ -24,10 +24,10 @@ public class VacanteFavoritaDTO {
         this.vacante = vacante;
     }
     public Usuario getUsuario() {
-        return Usuario;
+        return usuario;
     }
     public void setUsuario(Usuario usuario) {
-        Usuario = usuario;
+        this.usuario = usuario;
     }
     public LocalDate getFechaAgregada() {
         return fechaAgregada;
