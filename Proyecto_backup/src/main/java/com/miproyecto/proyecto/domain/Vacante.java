@@ -68,6 +68,8 @@ public class Vacante {
     @Column
     private String comentarioAdmin;
 
+    @Column
+    private int numCompartidos;
 
     @OneToMany(mappedBy = "vacante")
     private Set<Postulado> litarpostulados;
@@ -79,6 +81,17 @@ public class Vacante {
     @JoinColumn(name = "id_usuario_id")
     private Empresa idUsuario;
 
+    public int getNumCompartidos() {
+        return numCompartidos;
+    }
+
+    public void setNumCompartidos(int numCompartidos) {
+        this.numCompartidos = numCompartidos;
+    }
+
+    public void setIncrementNumCompartidos(int increment) {
+        this.numCompartidos += increment;
+    }
     
     public Set<VacanteFavorita> getListaVacnatesFavoritas() {
         return listaVacnatesFavoritas;

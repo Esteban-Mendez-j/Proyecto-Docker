@@ -71,6 +71,16 @@ public class VacanteDTO {
 
     private Boolean vacanteGuardada = false;
 
+    private int numCompartidos;
+
+    public int getNumCompartidos() {
+        return numCompartidos;
+    }
+
+    public void setNumCompartidos(int numCompartidos) {
+        this.numCompartidos = numCompartidos;
+    }
+
     public Boolean getVacanteGuardada() {
         return vacanteGuardada;
     }
