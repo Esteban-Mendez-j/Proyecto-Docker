@@ -1,11 +1,12 @@
 import { useContext, useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import Loding from "../../components/Loading"
 import ResumenVacante from "../../components/ResumenVacante"
 import { useFetch } from "../../hooks/useFetch"
 import Layout from "../../layouts/Layout"
 import { API_CLIENT_URL } from "../../services/Api"
 import { RoleContext } from "../../services/RoleContext"
+import { modalTime } from "../../services/Modal"
 
 export default function InfoVacante() {
     const initialJob = {
@@ -32,11 +33,35 @@ export default function InfoVacante() {
         numeroGuardadosFavoritos: 0,
     }
     const {id} = useParams()
+    const [location, setLocation] = useState("")
     const [job, setJob] = useState(initialJob);
     const {rol} = useContext(RoleContext);
     const {data, loading} = useFetch(`/api/vacantes/seleccion/${id}`, "GET");
     const navigate =  useNavigate();
-    
+    const subject = encodeURIComponent("¡Mira esta oferta increíble!");
+    const [copied, setCopied] = useState(false);
+    const message = encodeURIComponent(`Te comparto esta oferta laboral que encontré, puede interesarte: ${location}`);
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(location).then(() => {
+            setCopied(true);
+            modalTime("Texto copiado")
+            setTimeout(() => setCopied(false), 1500);
+        });
+    }
+
+    const handleWhatsAppShare = () => {
+        window.open(`https://wa.me/?text=${message}`, "_blank");
+    };
+
+    const handleGmailShare = () => {
+        window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=&su=${subject}&body=${message}`, "_blank");
+    };
+
+    useEffect(() => {
+        setLocation(window.location.href)
+    }, []);
+
     useEffect(() => {
         if (!data) {return} 
 
@@ -57,6 +82,13 @@ export default function InfoVacante() {
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-8">
                     {/* Detalles del empleo  */}
                     <div>
+                        <button
+                                onClick={() => navigate(-1)}
+                                className="flex items-center gap-2 px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-xl shadow-sm transition-all duration-200"
+                            >
+                                <span className="text-lg">←</span>
+                                <span className="font-medium">Volver</span>
+                            </button>
                         <div
                             className="p-8 mb-8 border rounded-lg shadow-lg bg-white/80 backdrop-blur-xl border-white/20"
                         >
@@ -136,23 +168,58 @@ export default function InfoVacante() {
                                             Publicado: {job.fechaPublicacion}
                                         </span>
                                     </div>
-                                    <div className="flex flex-wrap gap-2">
-                                        <span
-                                            className="px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary"
-                                        >
+                                    <div className="flex flex-wrap gap-2 items-center relative">
+                                        <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary">
                                             {job.tipo}
                                         </span>
-                                        <span
-                                            className="px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary"
-                                        >
+                                        <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary">
                                             {job.modalidad}
                                         </span>
-                                        <span
-                                            className="px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary"
-                                        >
+                                        <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary">
                                             {job.cargo}
                                         </span>
+
+                                        <details className="relative group">
+                                            <summary className="flex items-center gap-1 cursor-pointer text-blue-500 text-sm font-medium hover:text-blue-600 transition-colors select-none">
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    viewBox="0 0 640 640"
+                                                    width="16"
+                                                    height="16"
+                                                    className="transition-transform duration-300 group-open:rotate-90"
+                                                >
+                                                    <path
+                                                        fill="currentColor"
+                                                        d="M457.5 71C450.6 64.1 440.3 62.1 431.3 65.8C422.3 69.5 416.5 78.3 416.5 88L416.5 144L368.5 144C280.1 144 208.5 215.6 208.5 304C208.5 350.7 229.2 384.4 252.1 407.4C260.2 415.6 268.6 422.3 276.4 427.8C285.6 434.3 298.1 433.5 306.5 425.9C314.9 418.3 316.7 405.9 311 396.1C307.4 389.8 304.5 381.2 304.5 369.4C304.5 333.2 333.8 303.9 370 303.9L416.5 303.9L416.5 359.9C416.5 369.6 422.3 378.4 431.3 382.1C440.3 385.8 450.6 383.8 457.5 376.9L593.5 240.9C602.9 231.5 602.9 216.3 593.5 207L457.5 71z"
+                                                    />
+                                                </svg>
+                                                Compartir
+                                            </summary>
+
+                                            <div className="absolute right-0 mt-2 w-40 bg-white border border-blue-100 rounded-xl shadow-lg p-2 flex flex-col gap-2 z-50">
+                                                <button 
+                                                className="px-2 py-1 text-sm bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
+                                                onClick={handleCopy}
+                                                >
+                                                    Copiar Link {copied && "👍"}
+                                                </button>
+                                                <button 
+                                                className="px-2 py-1 text-sm bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors"
+                                                onClick={handleWhatsAppShare}
+                                                >
+                                                    WhatsApp
+                                                </button>
+                                                <button 
+                                                className="px-2 py-1 text-sm bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors"
+                                                onClick={handleGmailShare}
+                                                >
+                                                    Gmail
+                                                </button>
+                                                <label htmlFor="">{location.pathname}</label>
+                                            </div>
+                                        </details>
                                     </div>
+
                                 </div>
                             </div>
 

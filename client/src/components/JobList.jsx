@@ -147,7 +147,7 @@ const JobList = ({ jobs, rol, setCurrentPage, currentPage, totalPages, fetchAllJ
                 <Link to={`/empresa/editar/vacantes/${job.nvacantes}`} className="btn btn-edit">Editar</Link>
                 <button
                   onClick={() => cambiarEstado(job.nvacantes, !job.activaPorEmpresa)}
-                  className={`px-4 py-2 font-semibold rounded-lg shadow ${
+                  className={`btn px-4 py-2 font-semibold rounded-lg shadow ${
                     job.activaPorEmpresa
                       ? "bg-red-500 hover:bg-red-600 text-white"
                       : "bg-green-500 hover:bg-green-600 text-white"

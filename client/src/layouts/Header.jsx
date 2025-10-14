@@ -3,10 +3,12 @@ import { NavLink } from "react-router-dom";
 import { API_CLIENT_URL } from "../services/Api";
 import { RoleContext } from "../services/RoleContext";
 import "../style/invitado/header.css";
-import Loading from "../components/Loading";
+import useVisible from "../hooks/useVisible"
+
 export default function Header () {
 
-    const {rol, setRol} = useContext(RoleContext)
+    const {rol} = useContext(RoleContext)
+    const [handleOnClick , visible] = useVisible(false)
 
     const linksByRole = {
         SUPER_ADMIN: [
@@ -59,9 +61,10 @@ export default function Header () {
                 </a>
 
                 <button
-                    id="menuToggle"
-                    className="md:hidden bg-transparent border-none cursor-pointer text-text hover:text-primary transition-transform duration-300 hover:rotate-90"
-                    aria-label="Abrir menú"
+                    className="md:hidden z-10 bg-transparent border-none cursor-pointer text-text hover:text-primary transition-transform duration-300 hover:rotate-90"
+                    aria-label={visible? "Cerrar menú" : "Abrir menú"}
+                    aria-expanded={visible? true : false}
+                    onClick={handleOnClick}
                 >
                     <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -80,7 +83,7 @@ export default function Header () {
                     </svg>
                 </button> 
 
-                <nav className="nav" id="mainNav">
+                <nav className={`nav ${visible? "nav-open":null}`}>
                     {/*userRole*/}
                     {linksByRole[rol].map(link => (
                         <NavLink className={({isActive}) => isActive? "selected-link": "nav-link"} key={link.path} to={link.path}>

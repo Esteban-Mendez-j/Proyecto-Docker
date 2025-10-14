@@ -24,6 +24,17 @@ public class Empresa  extends Usuario {
     @OneToMany(mappedBy = "idUsuario")
     private Set<Vacante> listarVacantes;
 
+    @Column
+    private boolean isVerified;
+
+    public boolean isVerified() {
+        return isVerified;
+    }
+
+    public void setVerified(boolean isVerified) {
+        this.isVerified = isVerified;
+    }
+
     public String getSectorEmpresarial() {
         return sectorEmpresarial;
     }

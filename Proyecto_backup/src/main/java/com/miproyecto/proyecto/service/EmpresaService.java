@@ -57,6 +57,7 @@ public class EmpresaService {
     public void create(final EmpresaDTO empresaDTO) {
         List<Roles> roles= new ArrayList<>();
         empresaDTO.setIsActive(true);
+        empresaDTO.setVerified(false);
         empresaDTO.setFechaRegistro(LocalDate.now());
         roles.add(rolesRepository.findByRol("EMPRESA"));
         Empresa empresa = mapToEntity(empresaDTO, new Empresa(), true);
@@ -78,7 +79,7 @@ public class EmpresaService {
     public int contarVacantesActivas (Set<Vacante> listVacantes){
         int numVacantesActivas = 0;
         for(Vacante vacante:listVacantes ){
-            if(vacante.getIsActive()){numVacantesActivas += 1;}
+            if(vacante.getIsActive() && vacante.isActivaPorEmpresa()){numVacantesActivas += 1;}
         }
         return numVacantesActivas;
     }
@@ -121,6 +122,7 @@ public class EmpresaService {
         empresaDTO.setNit(empresa.getNit());
         empresaDTO.setIsActive(empresa.getIsActive());
         empresaDTO.setComentarioAdmin(empresa.getComentarioAdmin());
+        empresaDTO.setVerified(empresaDTO.isVerified());
         empresaDTO.setNumeroVacantes(empresa.getListarVacantes().size());
         empresaDTO.setNumeroVacantesActivas(contarVacantesActivas(empresa.getListarVacantes()));
         empresaDTO.setCandidatosAceptados(aceptadosPostulacion.get("CandidatosAceptados"));
@@ -148,6 +150,7 @@ public class EmpresaService {
         empresa.setSectorEmpresarial(empresaDTO.getSectorEmpresarial());
         empresa.setSitioWeb(empresaDTO.getSitioWeb());
         empresa.setNit(empresaDTO.getNit());
+        empresa.setVerified(empresaDTO.isVerified());
         // empresa.setRoles(
         //     empresaDTO.getRoles().stream()
         //             .map(roles -> rolesRepository.findByRol(roles))
