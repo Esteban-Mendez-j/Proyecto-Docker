@@ -3,6 +3,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import com.miproyecto.proyecto.repos.VacanteFavoritaRepository;
 import com.miproyecto.proyecto.repos.VacanteRepository;
 import com.miproyecto.proyecto.util.NotFoundException;
 
+
 @Service
 @Transactional
 public class VacanteFavoritoService {
@@ -25,12 +27,14 @@ public class VacanteFavoritoService {
     private final VacanteRepository vacanteRepository;
     private final UsuarioRepository usuarioRepository;
     private final VacanteFavoritaRepository vacanteFavoritaRepository;
+    private final VacanteService vacanteService;
 
-    public VacanteFavoritoService(VacanteRepository vacanteRepository, UsuarioRepository usuarioRepository,
+    public VacanteFavoritoService(VacanteRepository vacanteRepository, UsuarioRepository usuarioRepository,VacanteService vacanteService, 
             VacanteFavoritaRepository vacanteFavoritaRepository) {
         this.vacanteRepository = vacanteRepository;
         this.usuarioRepository = usuarioRepository;
         this.vacanteFavoritaRepository = vacanteFavoritaRepository;
+        this.vacanteService = vacanteService;
     }
 
     public VacanteFavoritaDTO findById(Long id){
@@ -101,15 +105,12 @@ public class VacanteFavoritoService {
         return vacanteFavorita;
     }
     
-    public List<Vacante> findByUsuarioFavorita(Long idUsuario){ {
-        List<Vacante> vacantesfavoritas = vacanteFavoritaRepository.findVacantesFavoritasByUsuario(idUsuario);
+        public List<VacanteDTO> obtenerVacantesFavoritas(Long idUsuario) {
+        Usuario usuario = new Usuario(); 
+        usuario = usuarioRepository.findById(idUsuario).orElseThrow(NotFoundException::new);
 
-        if (vacantesfavoritas.isEmpty()) {
-            throw new NotFoundException("El usuario no tiene vacantes favoritas");
-        }
-
-        
-     return vacanteFavoritaRepository.findVacantesFavoritasByUsuario(idUsuario);
+        return vacanteFavoritaRepository.findVacantesFavoritasByUsuarioFavorita(usuario).stream()
+            .map(vacante -> vacanteService.mapToDTO(0L, vacante.getVacanteFavorita(), new VacanteDTO()))
+            .collect(Collectors.toList());
     }
-}
 }

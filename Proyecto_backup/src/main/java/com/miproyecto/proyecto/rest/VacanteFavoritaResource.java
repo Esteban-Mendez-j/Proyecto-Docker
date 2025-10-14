@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +15,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.miproyecto.proyecto.domain.Vacante;
+import com.miproyecto.proyecto.model.VacanteDTO;
 import com.miproyecto.proyecto.service.VacanteFavoritoService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
@@ -70,11 +71,10 @@ public class VacanteFavoritaResource {
     }
 
     
-    @GetMapping("/listar/{idUsuario}")
+    @GetMapping("/listar")
     public ResponseEntity<Map<String, Object>> ListarVacantesFavoritasPerfil(
         HttpSession session,
-        @RequestParam(name = "page", defaultValue = "0") int page,
-        @RequestParam(name = "size", defaultValue = "6") int size,
+        @PageableDefault(page = 0, size = 10) Pageable pageable,
         @CookieValue(name = "jwtToken", required = true) String jwtToken) {
         
         Map<String, Object> response = new HashMap<>();
@@ -88,14 +88,14 @@ public class VacanteFavoritaResource {
 
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
-        List<Vacante> vacantesFavoritas = vacanteFavoritoService.findByUsuarioFavorita(idUsuario);
+        List<VacanteDTO> vacantesFavoritas = vacanteFavoritoService.obtenerVacantesFavoritas(idUsuario);
         
-        //ERROR NO CARGAN LAS VACANTES FAVORITAS
+        //YA FUNCIONA
 
         response.put("status", 200);
         response.put("mensaje", "Lista de vacantes favoritas obtenida correctamente");
         response.put("vacantesFavoritas", vacantesFavoritas);
-        System.out.println("vacantes favoritas"+ vacantesFavoritas);
+        System.out.println("vacantes favoritas son estas :     "+ vacantesFavoritas);
         // Agregar la lista de vacantes favoritas al response
         // response.put("vacantesFavoritas", listaDeVacantesFavoritas);
 

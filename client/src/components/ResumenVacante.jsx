@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
-import { useFetch, useSendForm } from "../hooks/useFetch"
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useFetch, useSendForm } from "../hooks/useFetch";
 import { modal } from "../services/Modal";
 
 export default function ResumenVacante({job, rol}) {

@@ -187,6 +187,14 @@ public class VacanteService {
             .findFirst()
             .ifPresent(p -> vacanteDTO.setEstadoPostulacion(p.getEstado())); // o p.getEstado().name()
         vacanteDTO.setNumeroGuardadosFavoritos(vacante.getListaVacnatesFavoritas().size());
+        vacante.getListaVacnatesFavoritas()
+        .forEach(favoritaVacante -> { if (favoritaVacante.getVacanteFavorita().getNvacantes().equals(vacante.getNvacantes())
+        ) {
+            vacanteDTO.setVacanteGuardada(true);
+        } else {
+            vacanteDTO.setVacanteGuardada(false);
+        }
+        }); 
         return vacanteDTO;
     }
 

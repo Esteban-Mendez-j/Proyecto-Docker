@@ -139,7 +139,8 @@ export default function FilterComponent({ filtersLocal, clearAllFilters, handleF
               activaPorEmpresa: null,
               ciudad: null,
               sueldo: null,
-              totalpostulaciones: null
+              totalpostulaciones: null,
+              favoritos: null
             }); // fuerza los filtros globales a reiniciarse
           }}
         >

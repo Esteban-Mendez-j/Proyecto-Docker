@@ -30,12 +30,14 @@ export default function InfoVacante() {
         estadoPostulacion: "",
         activaPor: "",
         numeroGuardadosFavoritos: 0,
+        vacanteGuardada: false,
     }
     const {id} = useParams()
     const [job, setJob] = useState(initialJob);
     const {rol} = useContext(RoleContext);
     const {data, loading} = useFetch(`/api/vacantes/seleccion/${id}`, "GET");
     const navigate =  useNavigate();
+    const [isFavorite, setIsFavorite] = useState(false);
     
     useEffect(() => {
         if (!data) {return} 
@@ -45,13 +47,15 @@ export default function InfoVacante() {
             return;
         }
         setJob(data.vacanteSeleccionada);
+        setIsFavorite(data.vacanteSeleccionada.vacanteGuardada);
     }, [data]);
 
 
     //SECCION DE FAVORITOS
 
 
-  const [isFavorite, setIsFavorite] = useState(false);
+  
+  
 
 
     const toggleFavorito = async (nvacantes) => {
