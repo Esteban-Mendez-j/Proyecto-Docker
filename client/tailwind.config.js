@@ -1,4 +1,3 @@
-import animate from "tailwindcss-animate";
 // const plugins = require("tailwindcss/plugin");
 
 /** @type {import('tailwindcss').Config} */

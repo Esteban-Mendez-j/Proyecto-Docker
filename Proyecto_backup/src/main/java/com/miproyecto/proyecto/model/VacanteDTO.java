@@ -69,6 +69,15 @@ public class VacanteDTO {
 
     private int numeroGuardadosFavoritos;
 
+    private Boolean vacanteGuardada = false;
+
+    public Boolean getVacanteGuardada() {
+        return vacanteGuardada;
+    }
+
+    public void setVacanteGuardada(Boolean vacanteGuardada) {
+        this.vacanteGuardada = vacanteGuardada;
+    }
 
     public int getNumeroGuardadosFavoritos() {
         return numeroGuardadosFavoritos;

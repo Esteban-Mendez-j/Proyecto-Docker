@@ -3,7 +3,6 @@ package com.miproyecto.proyecto.domain;
 import java.time.LocalDate;
 import java.util.List;
 
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -28,6 +28,7 @@ export default function Header () {
             { name: "Empleos", path: "/empleos" },
             { name: "Postulaciones", path: "/postulaciones" },
             { name: "Perfil", path: "/perfil/candidato" },
+            { name: "Favoritos", path: "/vacantes/favoritas" },
         ],
         EMPRESA: [
             { name: "Inicio", path: "/" },
