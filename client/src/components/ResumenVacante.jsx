@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
-import { useFetch, useSendForm } from "../hooks/useFetch"
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useFetch, useSendForm } from "../hooks/useFetch";
 import { modal } from "../services/Modal";
 
 export default function ResumenVacante({job, rol}) {
@@ -9,22 +9,16 @@ export default function ResumenVacante({job, rol}) {
     const [curriculo, setCurriculo] = useState(null);
     const [jobResumen, setJobResumen] = useState(job);
     const { send } = useSendForm();
-    const { data:dataCandidato,  sendCandidato } = useSendForm;
+    const {send:sendCandidato, data:dataCandidato } = useSendForm();
     const { data } = useFetch("/api/usuarios/rol", "GET");
 
-    if(rol == "CANDIDATO"){
-      const candidatoPerfil = async () =>  {
-        sendCandidato("/api/candidatos/perfil", "GET");
-      }
-      candidatoPerfil()
-    }
-
     useEffect(()=>{
-      if(!dataCandidato){return}
       if(rol == "CANDIDATO"){
+        sendCandidato("/api/candidatos/perfil", "GET");
+        if(!dataCandidato){return}
         setCurriculo(dataCandidato.candidato.curriculo);
       }
-    }, [ dataCandidato])
+    }, [rol, dataCandidato])
 
     useEffect(()=>{
       if(!data){return}

@@ -1,8 +1,5 @@
 package com.miproyecto.proyecto.repos;
 
-import com.miproyecto.proyecto.domain.Empresa;
-import com.miproyecto.proyecto.domain.Vacante;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import com.miproyecto.proyecto.domain.Empresa;
+import com.miproyecto.proyecto.domain.Vacante;
 
 
 public interface VacanteRepository extends JpaRepository<Vacante, Long>, JpaSpecificationExecutor<Vacante>{

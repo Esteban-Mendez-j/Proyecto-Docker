@@ -69,6 +69,25 @@ public class VacanteDTO {
 
     private int numeroGuardadosFavoritos;
 
+    private Boolean vacanteGuardada = false;
+
+    private int numCompartidos;
+
+    public int getNumCompartidos() {
+        return numCompartidos;
+    }
+
+    public void setNumCompartidos(int numCompartidos) {
+        this.numCompartidos = numCompartidos;
+    }
+
+    public Boolean getVacanteGuardada() {
+        return vacanteGuardada;
+    }
+
+    public void setVacanteGuardada(Boolean vacanteGuardada) {
+        this.vacanteGuardada = vacanteGuardada;
+    }
 
     public int getNumeroGuardadosFavoritos() {
         return numeroGuardadosFavoritos;

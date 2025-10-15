@@ -184,4 +184,12 @@ public class VacanteResource {
         vacanteService.cambiarEstado(idVacante, estado);
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "Incrementar el numero compartidos", description = "Incrementa en uno cada vez que se comparte una vacante.")
+    @PutMapping("/edit/numCompartidos/{idVacante}")
+    public  ResponseEntity<Void> incrementNumCompartidos(@PathVariable Long idVacante){
+        vacanteService.updateNumCompartidos(idVacante);
+        return ResponseEntity.ok().build();
+    }
+
 }

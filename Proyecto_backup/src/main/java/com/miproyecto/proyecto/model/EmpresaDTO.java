@@ -23,6 +23,16 @@ public class EmpresaDTO extends UsuarioDTO  {
 
     private double porcentajeAceptacion;
 
+    private boolean isVerified;
+
+    public boolean isVerified() {
+        return isVerified;
+    }
+
+    public void setVerified(boolean isVerified) {
+        this.isVerified = isVerified;
+    }
+
     public int getNumeroVacantes() {
         return numeroVacantes;
     }

@@ -1,25 +1,30 @@
 package com.miproyecto.proyecto.rest;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.miproyecto.proyecto.model.VacanteDTO;
 import com.miproyecto.proyecto.service.VacanteFavoritoService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import jakarta.servlet.http.HttpSession;
 
 
 @RestController
@@ -65,4 +70,36 @@ public class VacanteFavoritaResource {
         return ResponseEntity.ok(response);
     }
 
+    
+    @GetMapping("/listar")
+    public ResponseEntity<Map<String, Object>> ListarVacantesFavoritasPerfil(
+        HttpSession session,
+        @PageableDefault(page = 0, size = 10) Pageable pageable,
+        @CookieValue(name = "jwtToken", required = true) String jwtToken) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        
+        if (jwtToken == null) {
+            response.put("status", 401);
+            response.put("mensaje", "Inicia sesión");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
+        DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+        Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+        List<VacanteDTO> vacantesFavoritas = vacanteFavoritoService.obtenerVacantesFavoritas(idUsuario);
+        
+        //YA FUNCIONA
+
+        response.put("status", 200);
+        response.put("mensaje", "Lista de vacantes favoritas obtenida correctamente");
+        response.put("vacantesFavoritas", vacantesFavoritas);
+        System.out.println("vacantes favoritas son estas :     "+ vacantesFavoritas);
+        // Agregar la lista de vacantes favoritas al response
+        // response.put("vacantesFavoritas", listaDeVacantesFavoritas);
+
+        return ResponseEntity.ok(response);
+    }
+    
 }

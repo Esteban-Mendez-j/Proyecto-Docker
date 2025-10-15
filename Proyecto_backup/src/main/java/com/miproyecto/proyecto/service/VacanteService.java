@@ -149,6 +149,13 @@ public class VacanteService {
         vacanteRepository.save(vacante);
     }
 
+    public void updateNumCompartidos (Long nVacantes){
+        final Vacante vacante = vacanteRepository.findById(nVacantes)
+                .orElseThrow(NotFoundException::new);
+        vacante.setIncrementNumCompartidos(1);
+        vacanteRepository.save(vacante);
+    }
+
     public void cambiarEstado(final Long nvacantes, boolean estado) {
         final Vacante vacante = vacanteRepository.findById(nvacantes)
                 .orElseThrow(NotFoundException::new);
@@ -177,6 +184,7 @@ public class VacanteService {
         vacanteDTO.setnPostulados(vacante.getLitarpostulados().size());
         vacanteDTO.setTotalpostulaciones(vacante.getTotalpostulaciones());
         vacanteDTO.setActivaPorEmpresa(vacante.isActivaPorEmpresa());
+        vacanteDTO.setNumCompartidos(vacante.getNumCompartidos());
         vacanteDTO.setCandidatoPostulado(
             vacante.getLitarpostulados()
                 .stream()
@@ -187,6 +195,12 @@ public class VacanteService {
             .findFirst()
             .ifPresent(p -> vacanteDTO.setEstadoPostulacion(p.getEstado())); // o p.getEstado().name()
         vacanteDTO.setNumeroGuardadosFavoritos(vacante.getListaVacnatesFavoritas().size());
+        vacante.getListaVacnatesFavoritas()
+        .forEach(favoritaVacante -> { 
+            if (favoritaVacante.getVacanteFavorita().getNvacantes().equals(vacante.getNvacantes())){
+                vacanteDTO.setVacanteGuardada(true);
+            } 
+        }); 
         return vacanteDTO;
     }
 
@@ -215,6 +229,7 @@ public class VacanteService {
         vacante.setIsActive(vacanteDTO.isActive());
         vacante.setActivaPorEmpresa(vacanteDTO.isActivaPorEmpresa());
         vacante.setComentarioAdmin(vacanteDTO.getComentarioAdmin());
+        vacante.setNumCompartidos(vacanteDTO.getNumCompartidos());
         final Empresa idUsuario = vacanteDTO.getIdUsuario() == null ? null : empresaRepository.findById(vacanteDTO.getIdUsuario())
                 .orElseThrow(() -> new NotFoundException("idUsuario not found"));
         vacante.setIdUsuario(idUsuario);
