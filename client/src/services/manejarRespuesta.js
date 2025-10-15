@@ -1,7 +1,7 @@
 import { API_CLIENT_URL } from './Api';
 import {modalResponse, modal} from "./Modal"
 
-export const manejarRespuesta = async (res) => {
+export const ManejarRespuesta = async (res) => {
   let data;
   try {
     try {
@@ -39,4 +39,4 @@ export const manejarRespuesta = async (res) => {
 };
 
 
-export default manejarRespuesta;
+export default ManejarRespuesta;
