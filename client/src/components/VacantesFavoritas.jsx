@@ -54,7 +54,7 @@ const fetchVacantesFav = async () => {
     setLoading(false);
   }
 };
-// 🔁 Cada vez que cambie "refresh", se vuelve a ejecutar
+// Cada que refresh se ejecuta se actualiza la lista
 useEffect(() => {
   fetchVacantesFav();
 }, [refresh]);
