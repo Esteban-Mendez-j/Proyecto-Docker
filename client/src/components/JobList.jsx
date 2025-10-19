@@ -1,8 +1,8 @@
+import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { API_CLIENT_URL } from '../services/Api';
 import '../style/invitado/jobcard.css';
 import Paginacion from './Paginacion';
-import { Link } from 'react-router-dom';
 
 
 const JobList = ({ jobs, rol, setCurrentPage, currentPage, totalPages, fetchAllJobs }) => {

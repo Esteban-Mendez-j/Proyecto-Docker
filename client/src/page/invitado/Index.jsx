@@ -1,12 +1,11 @@
 import { useContext } from "react";
+import { Link } from "react-router-dom";
 import FeatureCard from "../../components/FeatureCard";
+import JobCard from "../../components/JobCard";
 import { useFetch } from "../../hooks/useFetch";
 import Layout from "../../layouts/Layout";
-import "../../style/invitado/index.css"
 import { RoleContext } from "../../services/RoleContext";
-import JobList from "../../components/JobList"
-import JobCard from "../../components/JobCard";
-import { Link } from "react-router-dom";
+import "../../style/invitado/index.css";
 export default function Index (){
 
     const {rol, setRol} = useContext(RoleContext)
@@ -78,7 +77,9 @@ export default function Index (){
                         data? (
                             <div className="jobs-grid">
                                 {data.vacantes.map(job =>
+                                <div key={job.nvacantes}>
                                     <JobCard job={job}/>
+                                    </div>
                                 )}
                             </div>
                         ):(
