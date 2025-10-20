@@ -226,4 +226,18 @@ public class CandidatoResource {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/registro/automatio")
+    public ResponseEntity<Map<String, String>> postMethodName( 
+        @RequestPart(name = "pdf", required = true) MultipartFile curriculo) {
+        Map<String, String> response = new HashMap<>();
+        
+        try {
+            
+        } catch (Exception e) {
+            
+        }
+        
+        return ResponseEntity.ok(response);
+    }
+    
 }
