@@ -1,15 +1,17 @@
 package com.miproyecto.proyecto.service;
 
+import java.util.List;
+
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.miproyecto.proyecto.domain.Candidato;
 import com.miproyecto.proyecto.domain.Estudio;
 import com.miproyecto.proyecto.model.EstudioDTO;
 import com.miproyecto.proyecto.repos.CandidatoRepository;
 import com.miproyecto.proyecto.repos.EstudioRepository;
 import com.miproyecto.proyecto.util.NotFoundException;
-import java.util.List;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -87,6 +89,7 @@ public class EstudioService {
         estudioDTO.setIdEstudio(estudio.getIdEstudio());
         estudioDTO.setTitulo(estudio.getTitulo());
         estudioDTO.setAcademia(estudio.getAcademia());
+        estudioDTO.setNivelEducacion(estudio.getNivelEducacion());
         estudioDTO.setIdUsuario(estudio.getIdUsuario() == null ? null : estudio.getIdUsuario().getIdUsuario());
         return estudioDTO;
     }
@@ -94,6 +97,7 @@ public class EstudioService {
     private Estudio mapToEntity(final EstudioDTO estudioDTO, final Estudio estudio) {
         estudio.setTitulo(estudioDTO.getTitulo());
         estudio.setAcademia(estudioDTO.getAcademia());
+        estudio.setNivelEducacion(estudioDTO.getNivelEducacion());
         final Candidato idUsuario = estudioDTO.getIdUsuario() == null ? null : candidatoRepository.findById(estudioDTO.getIdUsuario())
                 .orElseThrow(() -> new NotFoundException("idUsuario not found"));
         estudio.setIdUsuario(idUsuario);
