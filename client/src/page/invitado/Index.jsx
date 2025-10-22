@@ -41,7 +41,9 @@ export default function Index (){
         <Layout>
             <section className="hero">
                 <div className="container">
+                    
                     <div className="hero-content">
+                        <img className="hero-isotipo" src="/isotipo.png" alt="Isotipo, lupa y una maleta" />
                         <h1 className="hero-title">Encuentra empleo o talento de forma fácil y profesional</h1>
                         <p className="hero-subtitle">
                             Conectamos empresas con los mejores talentos a través de una plataforma intuitiva y moderna
@@ -77,7 +79,7 @@ export default function Index (){
                         data? (
                             <div className="jobs-grid">
                                 {data.vacantes.map(job =>
-                                    <JobCard job={job}/>
+                                    <JobCard job={job} key={job.nvacantes}/>
                                 )}
                             </div>
                         ):(

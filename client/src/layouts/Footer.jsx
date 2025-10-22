@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import "../style/invitado/footer.css"
 
 export default function Footer() {
@@ -15,34 +16,28 @@ export default function Footer() {
 
                     <div className="column">
                         <h4 className="column-title">Candidatos</h4>
-                        <a href="/empleos" className="link">
+                        <Link to="/empleos" className="link">
                             Buscar empleos
-                        </a>
-                        <a href="/voluntariados" className="link">
-                            Voluntariados
-                        </a>
-                        <a href="/registro/candidato" className="link">
+                        </Link>
+                        <Link to="/postulaciones" className="link">
+                            Postulaciones
+                        </Link>
+                        <Link to="/registro/candidato" className="link">
                             Registrarse
-                        </a>
-                        <a href="/login" className="link">
-                            Iniciar sesión
-                        </a>
+                        </Link>
                     </div>
 
                     <div className="column">
                         <h4 className="column-title">Empresas</h4>
-                        <a href="/publicar-vacante" className="link">
+                        <Link to="/empresa/vacantes" className="link">
                             Publicar vacante
-                        </a>
-                        <a href="/buscar-talento" className="link">
-                            Buscar talento
-                        </a>
-                        <a href="/registro/empresa" className="link">
+                        </Link>
+                        <Link to="/empresa/listado/vacantes" className="link">
+                            Vacantes Publicadas
+                        </Link>
+                        <Link to="/registro/empresa" className="link">
                             Registrarse
-                        </a>
-                        <a href="/login" className="link">
-                            Iniciar sesión
-                        </a>
+                        </Link>
                     </div>
 
                     <div className="column">
@@ -50,8 +45,8 @@ export default function Footer() {
                         <a href="mailto:info@searchjobs.com" className="link">
                             info@searchjobs.com
                         </a>
-                        <a href="tel:+123456789" className="link">
-                            +1 (234) 567-89
+                        <a href="tel:+3116244567" className="link">
+                            +57 311 624 4567
                         </a>
                     </div>
                 </div>
@@ -59,12 +54,12 @@ export default function Footer() {
                 <div className="bottom">
                     <p className="copyright">© {currentYear} SearchJobs. Todos los derechos reservados.</p>
                     <div className="links">
-                        <a href="/terminos" className="bottom-link">
+                        <Link to="/terminos" className="bottom-link">
                             Términos y condiciones
-                        </a>
-                        <a href="/privacidad" className="bottom-link">
+                        </Link>
+                        <Link to="/privacidad" className="bottom-link">
                             Política de privacidad
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>

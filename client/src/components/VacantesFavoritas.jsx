@@ -44,7 +44,6 @@ const fetchVacantesFav = async () => {
     });
 
     const data = await res.json();
-    console.log("📦 Respuesta del backend:", data);
 
     // ✅ Guarda solo el array, no todo el objeto
     setVacantes(data.vacantesFavoritas || []);
