@@ -3,11 +3,13 @@ import { Link, NavLink } from "react-router-dom";
 import { API_CLIENT_URL } from "../services/Api";
 import { RoleContext } from "../services/RoleContext";
 import "../style/invitado/header.css";
-import { useFetch, useSendForm } from "../hooks/useFetch";
+import { useSendForm } from "../hooks/useFetch";
+import useVisible from "../hooks/useVisible"
 export default function Header () {
 
     const {rol} = useContext(RoleContext);
     const [urlImagen, setUrlImagen] = useState(null);
+    const [handleOnClick, visible] = useVisible()
     const { data, send }  = useSendForm();
     useEffect(()=>{
         if(rol && rol != "ROLE_INVITADO"){

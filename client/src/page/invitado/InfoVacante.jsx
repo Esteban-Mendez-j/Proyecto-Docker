@@ -128,7 +128,7 @@ export default function InfoVacante() {
                                 <div className="flex-grow">
                                     <a className="mb-2 text-2xl font-bold">{job.titulo}</a>
                                     
-                                  <button
+                                  {"CANDIDATO" == rol && <button
                                         className="flex items-center justify-center w-8 h-8 rounded-md bg-gray-100 border border-gray-300 hover:bg-gray-200 transition-colors duration-200 ml-auto"
                                          onClick={() => handleClick(job.nvacantes)} 
                                         title="Agregar a favoritos"
@@ -148,7 +148,7 @@ export default function InfoVacante() {
                                                 d="M11.48 3.499a.562.562 0 011.04 0l2.125 4.308a.563.563 0 00.424.308l4.756.691a.562.562 0 01.312.959l-3.44 3.352a.563.563 0 00-.162.498l.811 4.733a.562.562 0 01-.815.592L12 17.347l-4.26 2.24a.562.562 0 01-.815-.592l.811-4.733a.563.563 0 00-.162-.498L4.134 9.765a.562.562 0 01.312-.959l4.756-.691a.563.563 0 00.424-.308l2.125-4.308z"
                                             />
                                         </svg>
-                                    </button>
+                                    </button>}
 
                                     <div className="flex flex-wrap gap-2 mb-3">
                                         <span className="inline-flex items-center text-sm text-text-light">
