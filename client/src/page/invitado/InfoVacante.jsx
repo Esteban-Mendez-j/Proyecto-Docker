@@ -7,6 +7,7 @@ import Layout from "../../layouts/Layout"
 import { API_CLIENT_URL } from "../../services/Api"
 import { RoleContext } from "../../services/RoleContext"
 import { modalTime } from "../../services/Modal"
+import { toggleFavoritoRequest } from "../../services/ToggleFavoritosRequest"
 
 export default function InfoVacante() {
     const initialJob = {
@@ -78,37 +79,16 @@ export default function InfoVacante() {
 
 
     //SECCION DE FAVORITOS
-
+  const handleClick = async () => {
+    setIsFavorite(!isFavorite);
+    await toggleFavoritoRequest(job.nvacantes);
+  };
 
   
   
 
 
-    const toggleFavorito = async (nvacantes) => {
-        try {
-            // Cambia el estado visual inmediatamente
-            setIsFavorite(!isFavorite);
 
-            // Llamada al backend para agregar favorito
-            const response = await fetch(`http://localhost:8080/api/vacantes/favoritas/add/${nvacantes}`, {
-                method: "POST",
-                credentials: "include", // 👈 necesario para enviar la cookie jwtToken
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-
-            if (!response.ok) throw new Error("Error al agregar favorito");
-
-            const data = await response.json();
-            console.log("⭐", data.mensaje);
-
-        } catch (error) {
-            console.error("❌ Error al agregar favorito:", error);
-            console.log("idVacante:", nvacantes);
-        }
-
-};
 
     if (loading ) {return <Loding/>}
     
@@ -150,7 +130,7 @@ export default function InfoVacante() {
                                     
                                   <button
                                         className="flex items-center justify-center w-8 h-8 rounded-md bg-gray-100 border border-gray-300 hover:bg-gray-200 transition-colors duration-200 ml-auto"
-                                         onClick={() => toggleFavorito(job.nvacantes)} 
+                                         onClick={() => handleClick(job.nvacantes)} 
                                         title="Agregar a favoritos"
                                     >
                                         <svg

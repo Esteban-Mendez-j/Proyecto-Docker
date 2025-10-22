@@ -1,11 +1,12 @@
 package com.miproyecto.proyecto.domain;
 
+import java.util.Set;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrimaryKeyJoinColumn;
-
-import java.util.Set;
 
 
 @Entity
@@ -32,6 +33,9 @@ public class Candidato extends Usuario {
 
     @OneToMany(mappedBy = "idUsuario")
     private Set<HistorialLaboral> listarHistorial;
+
+    @OneToMany(mappedBy = "idUsuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Aptitudes> listarAptitudes;
 
     public String getApellido() {
         return apellido;

@@ -75,6 +75,33 @@ public class UsuarioResource {
         return ResponseEntity.ok(response);
     }
 
+
+    @Operation(summary = "Nombre e imagen del Usuario",
+        description = "Devuelve el nombre e imagen del usuario"
+    )
+    @GetMapping("/datos")
+    public  ResponseEntity<Map<String, Object>> obtenerImagenYNombre(
+        @CookieValue(name = "jwtToken", required = false) String jwtToken){
+        
+        Map<String, Object> response = new HashMap<>();
+        Long id = 0L;
+
+        if(jwtToken == null){
+            response.put("status", HttpStatus.NOT_FOUND.value());
+            response.put("mensaje", "No ha iniciado sesion");
+            return ResponseEntity.ok(response);
+        }
+
+        DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+        id = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+
+        UsuarioDTO usuarioDTO = usuarioService.get(id);
+        response.put("status", HttpStatus.OK.value());
+        response.put("nombre", usuarioDTO.getNombre());
+        response.put("imagen", usuarioDTO.getImagen());
+        return ResponseEntity.ok(response);
+    }
+
     @Operation(
         summary = "Crear un nuevo usuario",
         description = "Crea un nuevo usuario en el sistema."

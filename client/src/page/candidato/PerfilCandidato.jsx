@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
+import Loading from "../../components/Loading.jsx";
+import { useFetch } from "../../hooks/useFetch.jsx";
 import Layout from "../../layouts/Layout.jsx";
 import { API_CLIENT_URL } from "../../services/Api.js";
 import "../../style/invitado/candidato.css";
-import { useFetch } from "../../hooks/useFetch.jsx";
-import Loading from "../../components/Loading.jsx"
-import { modal } from "../../services/Modal.js";
 
 function PerfilCandidato() {
   const initialData = {
@@ -143,6 +142,9 @@ function PerfilCandidato() {
                     <p className="text-sm text-[var(--primary)]">
                       {estudio.academia}
                     </p>
+                    <h3 className="text-base font-semibold text-[var(--text)]">
+                      {estudio.nivelEducacion}
+                    </h3>
                   </div>
                 ))}
               </div>
