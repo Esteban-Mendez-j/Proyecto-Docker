@@ -9,10 +9,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.miproyecto.proyecto.domain.Usuario;
 
-
-
-
-
 public interface UsuarioRepository extends JpaRepository<Usuario, Long>, JpaSpecificationExecutor<Usuario> {
     Optional<Usuario> findByCorreoAndContrasena(String correo, String contrasena);
     
