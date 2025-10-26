@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useFetch, useSendForm } from "../hooks/useFetch";
 import { modal } from "../services/Modal";
+import { API_CLIENT_URL } from "../services/Api";
 
 export default function ResumenVacante({job, rol}) {
 
@@ -12,13 +13,38 @@ export default function ResumenVacante({job, rol}) {
     const {send:sendCandidato, data:dataCandidato } = useSendForm();
     const { data } = useFetch("/api/usuarios/rol", "GET");
 
-    useEffect(()=>{
-      if(rol == "CANDIDATO"){
-        sendCandidato("/api/candidatos/perfil", "GET");
-        if(!dataCandidato){return}
-        setCurriculo(dataCandidato.candidato.curriculo);
-      }
-    }, [rol, dataCandidato])
+    useEffect(() => {
+    if (jobResumen?.nvacantes) {
+        console.log("ID a enviar:", jobResumen.nvacantes);
+
+        fetch(`${API_CLIENT_URL}/api/vacantes/visita/${jobResumen.nvacantes}`, {
+            method: "POST",
+            credentials: 'include'
+        })
+        .then(response => {
+            console.log("Status visita:", response.status);
+            if (!response.ok) {
+                throw new Error(`Error ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(data => console.log("Visita registrada"))
+        .catch(error => console.error("Error visita:", error));
+    }
+}, [jobResumen?.nvacantes]);
+
+    useEffect(() => {
+  if (rol === "CANDIDATO") {
+    sendCandidato("/api/candidatos/perfil", "GET");
+  }
+}, [rol]);
+
+useEffect(() => {
+  if (dataCandidato) {
+    setCurriculo(dataCandidato.candidato.curriculo);
+  }
+}, [dataCandidato]);
+
 
     useEffect(()=>{
       if(!data){return}
@@ -35,9 +61,14 @@ export default function ResumenVacante({job, rol}) {
           candidatoPostulado: true
         }));
       }
-
     }
+    
+    useEffect(()=>{
+      if(!job){return}
+      setJobResumen(job);
+    }, [ job ])
 
+    
     return (
       <div>
         <div className="sticky p-6 border rounded-lg shadow-lg bg-red backdrop-blur-xl border-white/20 top-24">
@@ -160,6 +191,7 @@ export default function ResumenVacante({job, rol}) {
                 <p className="font-medium">{jobResumen.totalpostulaciones}</p>
               </div>
             </div>
+
             <div className="flex items-start">
                 <svg 
                     xmlns="http://www.w3.org/2000/svg"
@@ -174,6 +206,54 @@ export default function ResumenVacante({job, rol}) {
                     <p className="text-sm text-text-light">Numero De Guardados</p>
                     <p className="font-medium">{jobResumen.numeroGuardadosFavoritos}</p>
                 </div>
+            </div>
+
+            <div className="flex items-start">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="mt-1 mr-3 text-primary"
+              >
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+              </svg>
+              <div>
+                <p className="text-sm text-text-light">numero de compartidos</p>
+                <p className="font-medium">{jobResumen.numCompartidos}</p>
+              </div>
+            </div>
+
+            {/* 🔥 NUEVO: Campo de visitas */}
+            <div className="flex items-start">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="mt-1 mr-3 text-primary"
+              >
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <div>
+                <p className="text-sm text-text-light">Número de Visitas</p>
+                <p className="font-medium">{jobResumen.visitas }</p>
+              </div>
             </div>
           </div>
 

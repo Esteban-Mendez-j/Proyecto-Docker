@@ -60,7 +60,7 @@ export function useSendForm() {
                 setError(json.errors || "Error desconocido");
                 setData(null);
             }
-            console.log(json)
+            
             return json;
         } catch (err) {
             console.error(err.message);
