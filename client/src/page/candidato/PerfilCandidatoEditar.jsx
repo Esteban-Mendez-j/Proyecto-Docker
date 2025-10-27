@@ -1,16 +1,31 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import InputForm from "../../components/InputForm.jsx";
+import Loading from "../../components/Loading.jsx";
+import { useFetch, useSendForm } from "../../hooks/useFetch";
 import Layout from "../../layouts/Layout.jsx";
 import { API_CLIENT_URL } from "../../services/Api";
-import { useFetch, useSendForm } from "../../hooks/useFetch";
-import InputForm from "../../components/InputForm.jsx";
-import { modal, modalResponse } from "../../services/Modal"
-import Loading from "../../components/Loading.jsx"
+import { modal, modalResponse } from "../../services/Modal";
 import "../../style/invitado/candidato.css";
 
 const tmpId = () => crypto.randomUUID();
 
 const PerfilCandidatoEditar = () => {
+
+  const listAptitudes = {
+    PensamientoCritico: "Pensamiento Critico",
+    Creatividad: "Creatividad" ,
+    AtencionDetalle: "Atencion al detalle",
+    AprendizajeContinuo: "Aprendizaje continuo",
+    EticaProfesional: "Etica Profesional",
+    Autonomia: "Autonomia", 
+    Responsabilidad: "Responsabilidad", 
+    Liderazgo: "Liderazgo", 
+    ResolucionProblemas: "Resolucion de Problemas",
+    ComunicacionAfectiva: "Comunicacion Afectiva",
+    TrabajoEquipo: "Trabajo en Equipo",
+  }
+
   const initialData = {
     apellido: "",
     comentarioAdmin: null,
@@ -28,7 +43,8 @@ const PerfilCandidatoEditar = () => {
     nombre: "",
     rolPrinciapl: "",
     roles: [],
-    telefono: ""
+    telefono: "",
+    aptitudes: []
   }
 
   const initialDataEstudios = {
@@ -46,10 +62,31 @@ const PerfilCandidatoEditar = () => {
   const navigate = useNavigate()
   const { data, loading } = useFetch("/api/candidatos/perfil", "GET");
   const { error, send } = useSendForm();
+  const [selected, setSelected] = useState([]);
   const [candidato, setCandidato] = useState(initialData);
   const [estudios, setEstudios] = useState([]);
   const [historialLaboral, setHistorial] = useState([]);
   const [previewImg, setPreviewImg] = useState(null);
+
+  const handleClick = (key) => {
+    let updated;
+    if (selected.includes(key)) {
+      updated = selected.filter((item) => item !== key);
+    } else if (selected.length < 5) {
+      updated = [...selected, key];
+    } else {
+      modal("Solo puedes seleccionar hasta 5 aptitudes", "error");
+      return;
+    }
+
+    setSelected(updated);
+
+    // Aquí el hijo modifica directamente el estado del padre
+    setCandidato((prev) => ({
+      ...prev,
+      aptitudes: updated,
+    }));
+  };
 
   /* refs archivos --------------------------------- */
   const fotoRef = useRef(null);
@@ -68,6 +105,7 @@ const PerfilCandidatoEditar = () => {
     setCandidato(data.candidato);
     setEstudios((data.estudios).map((e) => ({ ...e, _tmpId: tmpId() })));
     setHistorial((data.historialLaboral).map((h) => ({ ...h, _tmpId: tmpId() })));
+    setSelected(data.candidato.aptitudes)
   }, [data]);
 
   /* Manejar cambio de imagen para mostrar preview */
@@ -148,6 +186,7 @@ const PerfilCandidatoEditar = () => {
           body: JSON.stringify(historialEnviar),
           credentials: "include",
         }),
+        
       ]);
 
       /* ----------- 4. Comprobar respuestas ------------ */
@@ -402,6 +441,38 @@ const PerfilCandidatoEditar = () => {
             />
             {error?.descripcion && <p className="error-text hidden" id="error-descripcion">{error.descripcion}</p>}
           </div>
+
+          {/* ---------- Aptitudes ---------- */}
+
+          <div>
+      <h2 className="mb-2 text-lg font-semibold">Aptitudes</h2>
+
+      <div className="flex flex-wrap gap-3">
+        {Object.entries(listAptitudes).map(([key, label]) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => handleClick(key)}
+            className={`px-4 py-2 rounded-2xl border transition-all duration-200 ${
+              selected.includes(key)
+                ? "bg-blue-600 text-white border-blue-600 shadow-md scale-105"
+                : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Si quieres mostrar errores de validación */}
+      {/* {error?.aptitudes && (
+        <p className="error-text hidden" id="error-descripcion">
+          {error.aptitudes}
+        </p>
+      )} */}
+    </div>
+
+
 
           {/* ---------- ESTUDIOS ---------- */}
           <section>

@@ -35,13 +35,16 @@ public class VacanteService {
     private final VacanteRepository vacanteRepository;
     private final EmpresaRepository empresaRepository;
     private final PostuladoRepository postuladoRepository;
+    private final AptitudesService aptitudesService;
 
     public VacanteService(final VacanteRepository vacanteRepository,
             final EmpresaRepository empresaRepository,
-            final PostuladoRepository postuladoRepository) {
+            final PostuladoRepository postuladoRepository,
+            final AptitudesService aptitudesService) {
         this.vacanteRepository = vacanteRepository;
         this.empresaRepository = empresaRepository;
         this.postuladoRepository = postuladoRepository;
+        this.aptitudesService = aptitudesService;
     }
 
     // listado de todas las vacantes activas
@@ -185,6 +188,10 @@ public class VacanteService {
         vacanteDTO.setTotalpostulaciones(vacante.getTotalpostulaciones());
         vacanteDTO.setActivaPorEmpresa(vacante.isActivaPorEmpresa());
         vacanteDTO.setNumCompartidos(vacante.getNumCompartidos());
+        vacanteDTO.setAptitudes(
+                vacante.getAptitudes().stream()
+                        .map(aptitud -> aptitud.getNombreAptitud())
+                        .collect(Collectors.toList()));
         vacanteDTO.setCandidatoPostulado(
             vacante.getLitarpostulados()
                 .stream()
@@ -233,6 +240,7 @@ public class VacanteService {
         final Empresa idUsuario = vacanteDTO.getIdUsuario() == null ? null : empresaRepository.findById(vacanteDTO.getIdUsuario())
                 .orElseThrow(() -> new NotFoundException("idUsuario not found"));
         vacante.setIdUsuario(idUsuario);
+        vacante.setAptitudes(aptitudesService.mapToListEntity(vacanteDTO.getAptitudes()));
         return vacante;
     }
 

@@ -1,10 +1,15 @@
 package com.miproyecto.proyecto.domain;
 
+import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 
@@ -34,8 +39,17 @@ public class Candidato extends Usuario {
     @OneToMany(mappedBy = "idUsuario")
     private Set<HistorialLaboral> listarHistorial;
 
-    @OneToMany(mappedBy = "idUsuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Aptitudes> listarAptitudes;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinTable(name = "candidato_aptitudes", joinColumns = @JoinColumn(name = "idCandidato"), inverseJoinColumns = @JoinColumn(name = "Id_aptitud"))
+    private List<Aptitudes> aptitudes;
+
+    public List<Aptitudes> getAptitudes() {
+        return aptitudes;
+    }
+
+    public void setAptitudes(List<Aptitudes> aptitudes) {
+        this.aptitudes = aptitudes;
+    }
 
     public String getApellido() {
         return apellido;

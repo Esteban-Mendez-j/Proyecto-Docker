@@ -1,32 +1,58 @@
 package com.miproyecto.proyecto.domain;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "aptitud")
+@Table(name = "aptitudes")
 public class Aptitudes {
     
     @Id
-    @Column(nullable = false, updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_aptitud", nullable = false, updatable = false)
     private Long idAptitud;
 
-    @Column(nullable = false, length = 80)
+    @Column(name = "nombre_aptitud", nullable = false, unique = true, length = 100)
     private String nombreAptitud;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_usuario_id")
-    private Candidato idUsuario;
+    @ManyToMany(mappedBy = "aptitudes")
+    private List<Candidato> candidato;
 
+    @ManyToMany(mappedBy = "aptitudes")
+    private List<Vacante> vacantes;
+    
+    public List<Vacante> getVacantes() {
+        return vacantes;
+    }
 
+    public void setVacantes(List<Vacante> vacantes) {
+        this.vacantes = vacantes;
+    }
+
+    public List<Candidato> getCandidato() {
+        return candidato;
+    }
+
+    public void setCandidato(List<Candidato> candidato) {
+        this.candidato = candidato;
+    }
+
+    // --- Constructor vacío ---
+    public void Aptitud() {}
+
+    // --- Constructor con nombre ---
+    public void Aptitud(String nombreAptitud) {
+        this.nombreAptitud = nombreAptitud;
+    }
+
+    // --- Getters y Setters ---
     public Long getIdAptitud() {
         return idAptitud;
     }
@@ -42,13 +68,30 @@ public class Aptitudes {
     public void setNombreAptitud(String nombreAptitud) {
         this.nombreAptitud = nombreAptitud;
     }
-
-    public Candidato getIdUsuario() {
-        return idUsuario;
-    }
-
-    public void setIdUsuario(Candidato idUsuario) {
-        this.idUsuario = idUsuario;
-    }
-    
 }
+
+    // @Column(nullable = false, length = 80)
+    // private String nombreAptitud;
+
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "id_usuario_id")
+    // private Candidato idUsuario;
+
+
+
+    // public String getNombreAptitud() {
+    //     return nombreAptitud;
+    // }
+
+    // public void setNombreAptitud(String nombreAptitud) {
+    //     this.nombreAptitud = nombreAptitud;
+    // }
+
+    // public Candidato getIdUsuario() {
+    //     return idUsuario;
+    // }
+
+    // public void setIdUsuario(Candidato idUsuario) {
+    //     this.idUsuario = idUsuario;
+    // }
+    

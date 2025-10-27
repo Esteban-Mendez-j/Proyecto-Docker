@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import Layout from "../../../layouts/Layout";
 import { API_CLIENT_URL } from "../../../services/Api";
-import { manejarRespuesta } from "../../../services/manejarRespuesta";
+import { manejarRespuesta } from "../../../services/ManejarRespuesta";
 import "../../../style/invitado/empresa.css";
 
 const EditarPerfilEmpresa = () => {

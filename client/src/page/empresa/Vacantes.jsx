@@ -1,9 +1,26 @@
 import { useState } from 'react';
 import Layout from '../../layouts/Layout';
-import '../../style/invitado/vacantes.css';
 import { API_CLIENT_URL } from '../../services/Api';
+import { modal } from '../../services/Modal';
+import '../../style/invitado/vacantes.css';
 
 export default function CrearVacante() {
+
+    const listAptitudes = {
+    PensamientoCritico: "Pensamiento Critico",
+    Creatividad: "Creatividad" ,
+    AtencionDetalle: "Atencion al detalle",
+    AprendizajeContinuo: "Aprendizaje continuo",
+    EticaProfesional: "Etica Profesional",
+    Autonomia: "Autonomia", 
+    Responsabilidad: "Responsabilidad", 
+    Liderazgo: "Liderazgo", 
+    ResolucionProblemas: "Resolucion de Problemas",
+    ComunicacionAfectiva: "Comunicacion Afectiva",
+    TrabajoEquipo: "Trabajo en Equipo",
+  }
+
+  const [selected, setSelected] = useState([]);
   const [formData, setFormData] = useState({
     titulo: '',
     ciudad: '',
@@ -14,7 +31,8 @@ export default function CrearVacante() {
     cargo: '',
     experiencia: '',
     descripcion: '',
-    requerimientos: ''
+    requerimientos: '',
+    aptitudes: []
   });
 
   const handleChange = (e) => {
@@ -23,6 +41,27 @@ export default function CrearVacante() {
       [e.target.name]: e.target.value
     });
   };
+
+  const handleClick = (key) => {
+    let updated;
+    if (selected.includes(key)) {
+      updated = selected.filter((item) => item !== key);
+    } else if (selected.length < 5) {
+      updated = [...selected, key];
+    } else {
+      modal("Solo puedes seleccionar hasta 5 aptitudes", "error");
+      return;
+    }
+
+    setSelected(updated);
+
+    // Aquí el hijo modifica directamente el estado del padre
+    setFormData((prev) => ({
+      ...prev,
+      aptitudes: updated,
+    }));
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -133,6 +172,26 @@ export default function CrearVacante() {
               <textarea id="requerimientos" name="requerimientos"
                 value={formData.requerimientos} onChange={handleChange} required />
             </div>
+                      {/* ---------- Aptitudes ---------- */}
+          <div>
+            <h2 className="mb-2 text-lg font-semibold">Aptitudes Requeridas</h2>
+
+              <div className="flex flex-wrap gap-3">
+                {Object.entries(listAptitudes).map(([key, label]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => handleClick(key)}
+                    className={`px-4 py-2 rounded-2xl border transition-all duration-200 ${selected.includes(key)
+                      ? "bg-blue-600 text-white border-blue-600 shadow-md scale-105"
+                      : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"
+                      }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Botones */}
@@ -142,8 +201,6 @@ export default function CrearVacante() {
           </div>
         </form>
       </div>
-
-      
     </Layout>
   );
 }

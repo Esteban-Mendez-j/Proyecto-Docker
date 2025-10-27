@@ -123,6 +123,22 @@ function PerfilCandidato() {
               <p className="candidato-descripcion">{candidato.descripcion}</p>
             </div>
 
+
+            <div className="candidato-section">
+              <h2 className="candidato-section-title">Aptitudes</h2>
+
+              <div className="flex flex-wrap gap-3">
+                {candidato.aptitudes.map((label) => (
+                  <label
+                    key={candidato.aptitudes.indexOf(label)}
+                    className={"px-4 py-2 rounded-2xl border transition-all duration-200 bg-blue-600 text-white border-blue-600 shadow-md scale-105"}
+                  >
+                    {label}
+                  </label>
+                ))}
+              </div>
+            </div>
+
             {/* Estudios */}
             <section className="mb-6 pb-6 border-b border-[var(--border)]">
               <h2 className="text-[1.125rem] font-semibold text-[var(--text)] mb-4 pl-4 relative flex items-center">

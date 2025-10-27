@@ -1,5 +1,7 @@
 package com.miproyecto.proyecto.model;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -20,6 +22,16 @@ public class CandidatoDTO  extends UsuarioDTO {
     @CandidatoIdentificacionUnique(message = "Esta identificacion ya esta registrada")
     private String identificacion;
 
+    private List <String> aptitudes;
+ 
+
+    public List<String> getAptitudes() {
+        return aptitudes;
+    }
+
+    public void setAptitudes(List<String> aptitudes) {
+        this.aptitudes = aptitudes;
+    }
 
     public String getApellido() {
         return apellido;

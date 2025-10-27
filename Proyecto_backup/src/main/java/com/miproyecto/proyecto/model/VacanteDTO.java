@@ -1,6 +1,7 @@
 package com.miproyecto.proyecto.model;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -72,6 +73,16 @@ public class VacanteDTO {
     private Boolean vacanteGuardada = false;
 
     private int numCompartidos;
+
+    private List <String> aptitudes;
+
+    public List<String> getAptitudes() {
+        return aptitudes;
+    }
+
+    public void setAptitudes(List<String> aptitudes) {
+        this.aptitudes = aptitudes;
+    }
 
     public int getNumCompartidos() {
         return numCompartidos;
