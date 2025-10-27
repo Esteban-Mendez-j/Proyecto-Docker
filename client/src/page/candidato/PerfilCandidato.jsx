@@ -4,7 +4,6 @@ import { useFetch } from "../../hooks/useFetch.jsx";
 import Layout from "../../layouts/Layout.jsx";
 import { API_CLIENT_URL } from "../../services/Api.js";
 import "../../style/invitado/candidato.css";
-import { useParams } from "react-router-dom";
 
 function PerfilCandidato() {
   const initialData = {
@@ -14,7 +13,9 @@ function PerfilCandidato() {
     contrasena: "",
     telefono: "",
     identificacion: "",
-    contraseñaVerificada: ""
+    contraseñaVerificada: "",
+    nivelEducativo: "",
+
   }
   const [candidato, setCandidato] = useState(null);
   const [estudios, setEstudios] = useState([]);
@@ -63,8 +64,11 @@ function PerfilCandidato() {
               <p className="candidato-cargo">
                 {candidato.experiencia
                   ? `${candidato.experiencia}${candidato.experiencia > 1?" años":" año"} laborando`
-                  : ""}
+                  : ""}    
               </p>
+              <h1 className="text-base font-semibold text-[var(--text)]">
+                      {candidato.nivelEducativo}
+                    </h1>
             </div>
 
             {/* Botones */}
@@ -158,9 +162,7 @@ function PerfilCandidato() {
                     <p className="text-sm text-[var(--primary)]">
                       {estudio.academia}
                     </p>
-                    <h3 className="text-base font-semibold text-[var(--text)]">
-                      {estudio.nivelEducacion}
-                    </h3>
+                    
                   </div>
                 ))}
               </div>

@@ -445,32 +445,31 @@ const PerfilCandidatoEditar = () => {
           {/* ---------- Aptitudes ---------- */}
 
           <div>
-      <h2 className="mb-2 text-lg font-semibold">Aptitudes</h2>
+            <h2 className="mb-2 text-lg font-semibold">Aptitudes</h2>
 
-      <div className="flex flex-wrap gap-3">
-        {Object.entries(listAptitudes).map(([key, label]) => (
-          <button
-            key={key}
-            type="button"
-            onClick={() => handleClick(key)}
-            className={`px-4 py-2 rounded-2xl border transition-all duration-200 ${
-              selected.includes(key)
-                ? "bg-blue-600 text-white border-blue-600 shadow-md scale-105"
-                : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+            <div className="flex flex-wrap gap-3">
+              {Object.entries(listAptitudes).map(([key, label]) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => handleClick(key)}
+                  className={`px-4 py-2 rounded-2xl border transition-all duration-200 ${selected.includes(key)
+                      ? "bg-blue-600 text-white border-blue-600 shadow-md scale-105"
+                      : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"
+                    }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
 
-      {/* Si quieres mostrar errores de validación */}
-      {/* {error?.aptitudes && (
+            {/* Si quieres mostrar errores de validación */}
+            {/* {error?.aptitudes && (
         <p className="error-text hidden" id="error-descripcion">
           {error.aptitudes}
         </p>
       )} */}
-    </div>
+          </div>
 
 
 

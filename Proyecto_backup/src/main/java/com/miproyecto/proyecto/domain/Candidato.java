@@ -43,6 +43,17 @@ public class Candidato extends Usuario {
     @JoinTable(name = "candidato_aptitudes", joinColumns = @JoinColumn(name = "idCandidato"), inverseJoinColumns = @JoinColumn(name = "Id_aptitud"))
     private List<Aptitudes> aptitudes;
 
+    @Column (length = 30)
+    private String nivelEducativo;
+
+    public String getNivelEducativo() {
+        return nivelEducativo;
+    }
+
+    public void setNivelEducativo(String nivelEducativo) {
+        this.nivelEducativo = nivelEducativo;
+    }
+
     public List<Aptitudes> getAptitudes() {
         return aptitudes;
     }

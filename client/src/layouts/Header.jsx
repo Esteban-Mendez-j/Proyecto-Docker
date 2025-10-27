@@ -1,11 +1,10 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { useSendForm } from "../hooks/useFetch";
+import useVisible from "../hooks/useVisible";
 import { API_CLIENT_URL } from "../services/Api";
 import { RoleContext } from "../services/RoleContext";
 import "../style/invitado/header.css";
-import { useSendForm } from "../hooks/useFetch";
-import useVisible from "../hooks/useVisible"
-import BandejaNotificacion from "../components/BandejaNotificacion";
 export default function Header () {
 
     const {rol} = useContext(RoleContext);
@@ -104,7 +103,7 @@ export default function Header () {
                     </svg>
                 </button> 
                 
-                {["EMPRESA", "CANDIDATO"].includes(rol) && <BandejaNotificacion/>}
+                {/* {["EMPRESA", "CANDIDATO"].includes(rol) && <BandejaNotificacion/>} */}
 
                 <nav className={`nav ${visible? "nav-open":null}`}>
                     {/*userRole*/}

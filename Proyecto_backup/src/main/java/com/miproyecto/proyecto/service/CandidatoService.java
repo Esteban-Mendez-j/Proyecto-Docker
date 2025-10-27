@@ -105,6 +105,7 @@ public class CandidatoService{
                 candidato.getAptitudes().stream()
                         .map(aptitud -> aptitud.getNombreAptitud())
                         .collect(Collectors.toList()));
+        candidatoDTO.setNivelEducativo(candidato.getNivelEducativo());
                         
         candidatoDTO.setRoles(
             candidato.getRoles().stream()
@@ -144,6 +145,7 @@ public class CandidatoService{
         candidato.setFechaInicioSesion(candidatoDTO.getFechaInicioSesion());
         candidato.setFechaRegistro(candidatoDTO.getFechaRegistro());
         candidato.setAptitudes(aptitudesService.mapToListEntity(candidatoDTO.getAptitudes()));
+        candidato.setNivelEducativo(candidatoDTO.getNivelEducativo());
         return candidato;
     }
 

@@ -89,7 +89,6 @@ public class EstudioService {
         estudioDTO.setIdEstudio(estudio.getIdEstudio());
         estudioDTO.setTitulo(estudio.getTitulo());
         estudioDTO.setAcademia(estudio.getAcademia());
-        estudioDTO.setNivelEducacion(estudio.getNivelEducacion());
         estudioDTO.setIdUsuario(estudio.getIdUsuario() == null ? null : estudio.getIdUsuario().getIdUsuario());
         return estudioDTO;
     }
@@ -97,7 +96,6 @@ public class EstudioService {
     private Estudio mapToEntity(final EstudioDTO estudioDTO, final Estudio estudio) {
         estudio.setTitulo(estudioDTO.getTitulo());
         estudio.setAcademia(estudioDTO.getAcademia());
-        estudio.setNivelEducacion(estudioDTO.getNivelEducacion());
         final Candidato idUsuario = estudioDTO.getIdUsuario() == null ? null : candidatoRepository.findById(estudioDTO.getIdUsuario())
                 .orElseThrow(() -> new NotFoundException("idUsuario not found"));
         estudio.setIdUsuario(idUsuario);

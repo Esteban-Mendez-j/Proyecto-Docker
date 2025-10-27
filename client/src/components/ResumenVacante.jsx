@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useFetch, useSendForm } from "../hooks/useFetch";
 import { modal } from "../services/Modal";
+import Prediccion from "./Prediccion";
 
-export default function ResumenVacante({job, rol}) {
+export default function ResumenVacante({job, rol, id}) {
 
     const[IdUserSesion ,setIdUserSesion] = useState(null);
     const [curriculo, setCurriculo] = useState(null);
@@ -12,13 +13,18 @@ export default function ResumenVacante({job, rol}) {
     const {send:sendCandidato, data:dataCandidato } = useSendForm();
     const { data } = useFetch("/api/usuarios/rol", "GET");
 
-    useEffect(()=>{
-      if(rol == "CANDIDATO"){
+    useEffect(() => {
+      if (rol === "CANDIDATO") {
         sendCandidato("/api/candidatos/perfil", "GET");
-        if(!dataCandidato){return}
+      }
+    }, [rol]);
+
+    useEffect(() => {
+      if (dataCandidato) {
         setCurriculo(dataCandidato.candidato.curriculo);
       }
-    }, [rol, dataCandidato])
+    }, [dataCandidato]);
+
 
     useEffect(()=>{
       if(!data){return}
@@ -235,6 +241,9 @@ export default function ResumenVacante({job, rol}) {
             ) : null
           ) : null}
         </div>
+        <br />
+        <br />
+        {rol == "CANDIDATO" && <Prediccion id={id}/>}
       </div>
     );
 }

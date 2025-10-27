@@ -23,7 +23,19 @@ public class CandidatoDTO  extends UsuarioDTO {
     private String identificacion;
 
     private List <String> aptitudes;
+
+    @NotNull
+    @Size(max = 30)
+    private String nivelEducativo;
  
+
+    public String getNivelEducativo() {
+        return nivelEducativo;
+    }
+
+    public void setNivelEducativo(String nivelEducativo) {
+        this.nivelEducativo = nivelEducativo;
+    }
 
     public List<String> getAptitudes() {
         return aptitudes;

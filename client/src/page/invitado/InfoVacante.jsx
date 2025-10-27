@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from "react"
-import { useLocation, useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import Loding from "../../components/Loading"
 import ResumenVacante from "../../components/ResumenVacante"
 import { useFetch } from "../../hooks/useFetch"
 import Layout from "../../layouts/Layout"
 import { API_CLIENT_URL } from "../../services/Api"
-import { RoleContext } from "../../services/RoleContext"
 import { modalTime } from "../../services/Modal"
+import { RoleContext } from "../../services/RoleContext"
 import { toggleFavoritoRequest } from "../../services/ToggleFavoritosRequest"
 
 export default function InfoVacante() {
@@ -33,6 +33,7 @@ export default function InfoVacante() {
         activaPor: "",
         numeroGuardadosFavoritos: 0,
         vacanteGuardada: false,
+        aptitudes: []
     }
     const {id} = useParams()
     const [location, setLocation] = useState("")
@@ -76,6 +77,8 @@ export default function InfoVacante() {
         setJob(data.vacanteSeleccionada);
         setIsFavorite(data.vacanteSeleccionada.vacanteGuardada);
     }, [data]);
+
+    
 
 
     //SECCION DE FAVORITOS
@@ -442,6 +445,20 @@ export default function InfoVacante() {
                                     </div>
                                 </div>
                             </div>
+                            <div className="candidato-section">
+                                <h2 className="candidato-section-title">Aptitudes</h2>
+
+                                <div className="flex flex-wrap gap-3">
+                                    {job.aptitudes.map((label) => (
+                                        <label
+                                            key={job.aptitudes.indexOf(label)}
+                                            className={"px-4 py-2 rounded-2xl border transition-all duration-200 bg-blue-600 text-white border-blue-600 shadow-md scale-105"}
+                                        >
+                                            {label}
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
 
                             {/* Descripción del puesto  */}
                             <div className="mb-8">
@@ -505,7 +522,8 @@ export default function InfoVacante() {
                         </div>
                     </div>
 
-                    {data && <ResumenVacante job={data.vacanteSeleccionada} rol={rol}/>}
+                    {data && <ResumenVacante job={data.vacanteSeleccionada} rol={rol} id={id}/>}
+                    {/* {rol == "CANDIDATO" && <Prediccion id={id}/>} */}
                 </div>
             </div>
         </Layout>
