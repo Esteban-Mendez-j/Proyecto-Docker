@@ -4,6 +4,7 @@ import { API_CLIENT_URL } from '../services/Api';
 import { manejarRespuesta } from '../services/ManejarRespuesta';
 import '../style/invitado/empleos.css';
 import Paginacion from './Paginacion';
+import { Link } from 'react-router-dom';
 
 const VacantesActivas = () => {
   const [vacantes, setVacantes] = useState([]);
@@ -258,9 +259,9 @@ const VacantesActivas = () => {
                         Reactivar
                       </button>
                     )}
-                    <a href={`/postulados/${vacantes.nvacantes}`} className="text-blue-600 hover:text-blue-900">
+                    <Link to={`/empresa/postulados/${vacantes.nvacantes}`} className="text-blue-600 hover:text-blue-900">
                       Postulados
-                    </a>
+                    </Link>
                   </td>
                 </tr>
               ))}

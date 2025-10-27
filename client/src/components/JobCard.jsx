@@ -5,7 +5,7 @@ import { QuestionModal } from "../services/Modal";
 import { RoleContext } from "../services/RoleContext";
 import { toggleFavoritoRequest } from '../services/ToggleFavoritosRequest';
 
-export default function JobCard({ job, onFavoritoChange }) {
+export default function JobCard({ job, onFavoritoChange, cambiarEstado }) {
 
     const [isFavorite, setIsFavorite] = useState(false);
     const { rol } = useContext(RoleContext)

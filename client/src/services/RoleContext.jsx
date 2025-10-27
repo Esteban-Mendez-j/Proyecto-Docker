@@ -7,7 +7,7 @@ export const RoleContext = createContext(null);
 
 export function RoleSesion({ children }) {
     const [rol, setRol] = useState(null);
-    const {data, loading, error} = useFetch("/api/usuarios/rol", "GET")
+    const {data, loading, error} = useFetch("/api/usuarios/rol", "GET");
     
     async function logout (mensaje) {
         const res = await modalResponse(mensaje, "error");

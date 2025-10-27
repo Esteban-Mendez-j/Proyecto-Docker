@@ -5,6 +5,7 @@ import { RoleContext } from "../services/RoleContext";
 import "../style/invitado/header.css";
 import { useSendForm } from "../hooks/useFetch";
 import useVisible from "../hooks/useVisible"
+import BandejaNotificacion from "../components/BandejaNotificacion";
 export default function Header () {
 
     const {rol} = useContext(RoleContext);
@@ -102,6 +103,8 @@ export default function Header () {
                     <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
                 </button> 
+                
+                {["EMPRESA", "CANDIDATO"].includes(rol) && <BandejaNotificacion/>}
 
                 <nav className={`nav ${visible? "nav-open":null}`}>
                     {/*userRole*/}

@@ -5,7 +5,14 @@ public class CandidatoResumenDTO {
     private String curriculo;
     private String nombre;
     private String experiencia;
+    private String correo;
     
+    public String getCorreo() {
+        return correo;
+    }
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
     public Long getId() {
         return id;
     }

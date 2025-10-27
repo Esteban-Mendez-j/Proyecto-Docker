@@ -119,6 +119,7 @@ public class CandidatoService{
         candidatoResumenDTO.setNombre(candidato.getNombre());
         candidatoResumenDTO.setExperiencia(candidato.getExperiencia());
         candidatoResumenDTO.setCurriculo(candidato.getCurriculo());
+        candidatoResumenDTO.setCorreo(candidato.getCorreo());
         return candidatoResumenDTO;
     }
     
