@@ -6,7 +6,7 @@ import { API_CLIENT_URL } from "../../services/Api.js";
 import "../../style/invitado/candidato.css";
 import { useParams } from "react-router-dom";
 
-function PerfilCandidato() {
+function PerfilCandidatoPublic() {
   const initialData = {
     nombre: "",
     apellido: "",
@@ -16,10 +16,11 @@ function PerfilCandidato() {
     identificacion: "",
     contraseñaVerificada: ""
   }
+  const {id} = useParams();
   const [candidato, setCandidato] = useState(null);
   const [estudios, setEstudios] = useState([]);
   const [historialLaboral, setHistorialLaboral] = useState([]);
-  const { data , error , loading } = useFetch("/api/candidatos/perfil", "GET");
+  const { data , error , loading } = useFetch(`/api/candidatos/perfil?idUsuario=${id}`, "GET");
 
   useEffect(() => {
 
@@ -69,14 +70,6 @@ function PerfilCandidato() {
 
             {/* Botones */}
             <div className="candidato-header-actions">
-              <a
-                href="/perfil/candidato/editar"
-                id="editProfileBtn"
-                className="candidato-edit-button"
-              >
-                {/* SVG edit */}
-                Editar perfil
-              </a>
               <a
                 href={
                   candidato.curriculo
@@ -182,4 +175,4 @@ function PerfilCandidato() {
   );
 }
 
-export default PerfilCandidato;
+export default PerfilCandidatoPublic;

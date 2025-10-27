@@ -10,7 +10,7 @@ import { API_CLIENT_URL } from "../../services/Api";
 import { modal } from "../../services/Modal";
 import {sendMessage} from "../../services/Websocket"
 
-export default function Postulaciones() {
+export default function Postulados() {
 
     const mensajesNotificaciones = {
         rechazada: {

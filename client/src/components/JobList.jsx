@@ -1,24 +1,14 @@
-import { Link } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import { modal, QuestionModal } from "../services/Modal";
 import { API_CLIENT_URL } from '../services/Api';
 import '../style/invitado/jobcard.css';
 import Paginacion from './Paginacion';
 import JobCard from './JobCard';
 
-
-const JobList = ({ jobs, rol, setCurrentPage, currentPage, totalPages, fetchAllJobs }) => {
+const JobList = ({ jobs, setCurrentPage, currentPage, totalPages, fetchAllJobs }) => {
 
   async function cambiarEstado(id, estado) {
-    let mensaje = estado? "activar":"desactivar";
-    const { isConfirmed } = await Swal.fire({
-      title: 'Confirmar acción',
-      text: `¿Estás seguro de que deseas ${mensaje} esta vacante?`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, continuar',
-      cancelButtonText: 'Cancelar',
-      reverseButtons: true,      // pone Cancelar a la izquierda
-    });
+    let mensaje = estado ? "activar" : "desactivar";
+    const isConfirmed = await QuestionModal(`¿Estás seguro de que deseas ${mensaje} esta vacante?`)
     if (!isConfirmed) return;    // e
 
     try {
@@ -27,20 +17,22 @@ const JobList = ({ jobs, rol, setCurrentPage, currentPage, totalPages, fetchAllJ
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include", 
+        credentials: "include",
       });
 
       if (response.ok) {
-        await Swal.fire({ text: `Exito al ${mensaje} la vacante`, icon: 'success' });        
-        fetchAllJobs()
+        modal(`Exito al ${mensaje} la vacante`, "success");
+        // fetchAllJobs()
       } else {
-        await Swal.fire({ text: `Error al ${mensaje} la vacante.`, icon: 'error' });    
+        modal(`Error al ${mensaje} la vacante`, "error");
       }
     } catch (error) {
       console.error("Error en la solicitud:", error);
-      await Swal.fire({ text: "Hubo un problema al intentar eliminar la vacante.", icon: 'error' });    }
+      modal("Hubo un problema al intentar modificar la vacante", "error");
+
+    }
   }
-    
+
   if (!jobs) {
     console.log(jobs)
     return (
@@ -59,7 +51,7 @@ const JobList = ({ jobs, rol, setCurrentPage, currentPage, totalPages, fetchAllJ
     <div>
       <div className="jobs-grid">
         {jobs.map((job) => (
-          <JobCard job={job} key={job.nvacantes} />
+          <JobCard job={job} key={job.nvacantes} cambiarEstado={cambiarEstado} />
         ))}
       </div>
       <Paginacion 

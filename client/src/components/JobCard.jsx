@@ -3,8 +3,9 @@ import { API_CLIENT_URL } from '../services/Api';
 import { QuestionModal } from "../services/Modal";
 import { toggleFavoritoRequest } from '../services/ToggleFavoritosRequest';
 import { RoleContext } from "../services/RoleContext";
+import { Link } from "react-router-dom"
 
-export default function JobCard({ job, onFavoritoChange }) {
+export default function JobCard({ job, onFavoritoChange, cambiarEstado }) {
 
     const [isFavorite, setIsFavorite] = useState(false);
     const { rol } = useContext(RoleContext)
@@ -55,13 +56,13 @@ export default function JobCard({ job, onFavoritoChange }) {
                     <div className="info">
                         {!job.active && (
                             <span className=" top-4 left-4 bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-md">
-                                {rol === "empresa" ? "Desactivada por Admin" : "Desactivada"}
+                                {rol === "EMPRESA" ? "Desactivada por Admin" : "Desactivada"}
                             </span>
                         )}
 
                         {!job.activaPorEmpresa && job.active && (
                             <span className=" top-4 left-4 bg-yellow-500 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-md">
-                                {rol === "empresa" ? "Desactivada por ti" : "Desactivada"}
+                                {rol === "EMPRESA" ? "Desactivada por ti" : "Desactivada"}
                             </span>
                         )}
 
@@ -153,12 +154,12 @@ export default function JobCard({ job, onFavoritoChange }) {
                 </div>
             </a>
 
-            {rol === 'empresa' && (
+            {rol === 'EMPRESA' && (
                 <div className="apply">
                     <Link to={`/empresa/editar/vacantes/${job.nvacantes}`} className="btn btn-edit">Editar</Link>
                     <button
                         onClick={() => cambiarEstado(job.nvacantes, !job.activaPorEmpresa)}
-                        className={`px-4 py-2 font-semibold rounded-lg shadow ${job.activaPorEmpresa
+                        className={`btn px-4 py-2 font-semibold rounded-lg shadow ${job.activaPorEmpresa
                             ? "bg-red-500 hover:bg-red-600 text-white"
                             : "bg-green-500 hover:bg-green-600 text-white"
                             }`}

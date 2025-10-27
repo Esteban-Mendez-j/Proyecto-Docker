@@ -132,9 +132,9 @@ public class VacanteService {
     public void create(final VacanteDTO vacanteDTO) {
         final Vacante vacante = new Vacante();
         vacanteDTO.setFechaPublicacion(LocalDate.now());
+        vacanteDTO.setActive(true);
+        vacanteDTO.setActivaPorEmpresa(true);
         mapToEntity(vacanteDTO, vacante);
-        vacante.setIsActive(true);
-        vacante.setActivaPorEmpresa(true);
         vacanteRepository.save(vacante);
     }
 

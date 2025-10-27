@@ -159,7 +159,7 @@ const crearAdmin = async (idUsuario, estado) => {
           </button>
         </div>
       </div>
-       <p className="mb-2 text-sm text-gray-600">
+       <p className="px-4 py-3 font-medium text-blue-600 ">
             {totalElements} Usuarios {verBaneados ? 'Baneados' : 'Activos'}
           </p>
       <div className="overflow-hidden bg-white border border-gray-100 rounded-lg shadow-sm">
@@ -206,32 +206,32 @@ const crearAdmin = async (idUsuario, estado) => {
                     </button>
                   )}
 
-                  
-
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"></td>
-
                   {user.rolPrinciapl !== 'ADMIN' && (
                     <a className="mr-3 text-blue-600 hover:text-blue-900" href={`/perfil/${user.rolPrinciapl.toLowerCase()}/${user.idUsuario}`}> Ver Perfil 
                     </a>
                   )}
 
-                  {userRol === 'SUPER_ADMIN' && (
-                    verBaneados ? (
-                      <button
-                        onClick={() => cambiarEstado(user.idUsuario, true)}
-                        className="text-green-600 hover:text-green-800"
-                      >
-                        Reactivar
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => cambiarEstado(user.idUsuario, false)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        Banear
-                      </button>
-                    )
-                  )}
+                  {(
+                    (userRol === "SUPER_ADMIN") ||
+                    (userRol === "ADMIN" && !["ADMIN", "SUPER_ADMIN"].includes(user.rolPrinciapl))
+                  ) && (
+                      verBaneados ? (
+                        <button
+                          onClick={() => cambiarEstado(user.idUsuario, true)}
+                          className="text-green-600 hover:text-green-800"
+                        >
+                          Reactivar
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => cambiarEstado(user.idUsuario, false)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          Banear
+                        </button>
+                      )
+                    )}
+
 
                   
                 </td>

@@ -2,8 +2,11 @@ import { useState } from 'react';
 import Layout from '../../layouts/Layout';
 import '../../style/invitado/vacantes.css';
 import { API_CLIENT_URL } from '../../services/Api';
+import { modal, modalResponse } from '../../services/Modal';
+import { useNavigate } from 'react-router-dom';
 
 export default function CrearVacante() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     titulo: '',
     ciudad: '',
@@ -33,19 +36,21 @@ export default function CrearVacante() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
+        credentials: 'include'
       });
 
       if (res.ok) {
-        alert('Vacante creada con éxito');
-        // redirigir
-        window.location.href = '/empleos/listadoVacantes';
+        const redirect =  await modalResponse('Vacante creada con éxito', "success");
+        if(redirect){
+          navigate("/empresa/listado/vacantes");
+        }
       } else {
-        alert('Error al crear la vacante');
+        modal('Error al crear la vacante', "error");
       }
     } catch (error) {
       console.error(error);
-      alert('Error de conexión con el servidor');
+      modal('Error de conexión con el servidor', "error");
     }
   };
 

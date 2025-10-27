@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
-import AdminSidebar from "../../components/AdminSidebar";
 import UsuariosActivos from "../../components/UsuariosActivos";
 import Footer from "../../layouts/Footer";
 import Layout from "../../layouts/Layout";
@@ -32,16 +31,15 @@ export default function AdminUsuarios() {
   };
 
   return (
-    <Layout title="Gestión de Usuarios | SearchJobs">
+    <Layout >
       
       <br />
 
       <div className="container px-4 py-6 mx-auto">
         <div className="flex flex-col gap-6 md:flex-row">
-          <AdminSidebar activeItem="usuarios" />
 
           <div className="flex-1">
-            {/* Tabs */}
+            {/* Tabs
             <div className="flex border-b">
               <button
                 onClick={() => setActiveTab("activos")}
@@ -63,14 +61,11 @@ export default function AdminUsuarios() {
               >
                 Baneados
               </button>
-            </div>
+            </div> */}
 
             {/* Contenido */}
-            {activeTab === "activos" ? (
-              <UsuariosActivos onBanear={handleBanear} />
-            ) : (
-              <div>Baneados</div>
-            )}
+            <UsuariosActivos onBanear={handleBanear} />
+            
           </div>
         </div>
       </div>

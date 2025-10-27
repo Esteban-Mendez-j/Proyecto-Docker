@@ -11,7 +11,7 @@ import PostuladosPage from "./page/candidato/Postulados.jsx";
 import VacantesFav from "./page/candidato/VacantesFav.jsx";
 import Chat from "./page/chat/chat";
 import MisVacantes from "./page/empresa/MisVacantes.jsx";
-import Postulaciones from "./page/empresa/Postulaciones.jsx";
+import Postulados from "./page/empresa/Postulados.jsx";
 import EmpresaPerfil from "./page/empresa/PublicPerfilEmpresa.jsx";
 import Vacantes from "./page/empresa/Vacantes.jsx";
 import EditarVacantes from "./page/empresa/editarVacantes.jsx";
@@ -24,6 +24,7 @@ import RegistroCandidato from "./page/invitado/RegistroCandidato";
 import RegistroEmpresa from './page/invitado/RegistroEmpresa';
 import EditarPerfilEmpresa from "./page/perfil/empresa/EditarPerfilEmpresa.jsx";
 import PerfilEmpresa from "./page/perfil/empresa/PerfilEmpresa.jsx";
+import PerfilCandidatoPublic from "./page/candidato/PerfilCandidatoPublic.jsx"
 
 function App() {
 
@@ -38,14 +39,12 @@ function App() {
         <Route element={<RouteProtection accessRole={"EMPRESA"} />}> 
           <Route path="/empresa/vacantes" element={<Vacantes/>} />
           <Route path="/empresa/editar/vacantes/:nvacantes" element={<EditarVacantes/>} />
-          <Route path="/empresa/postulados/:vacanteId" element={<Postulaciones/>} />
           <Route path="/empresa/listado/vacantes" element={<MisVacantes />} />
           <Route path="/perfil/empresa" element={<PerfilEmpresa/>} />
           <Route path="/perfil/empresa/editar" element={<EditarPerfilEmpresa />} />
         </Route>
          <Route element={<RouteProtection accessRole={["EMPRESA","CANDIDATO"]} />}> 
           <Route path="/chat/:id" element={<Chat/>} />
-          
         </Route>
         <Route element={<RouteProtection accessRole={"ROLE_INVITADO"} />}> 
           <Route path="/registro" element={<Registro />} />
@@ -61,12 +60,14 @@ function App() {
         <Route element={<RouteProtection accessRole={["EMPRESA","CANDIDATO","ROLE_INVITADO"]} />}> 
           <Route path="/" element={<Index />} />
         </Route>
+        <Route element={<RouteProtection accessRole={["EMPRESA","ADMIN","SUPER_ADMIN"]} />}> 
+          <Route path="/empresa/postulados/:vacanteId" element={<Postulados/>} />
+        </Route>
         <Route path="/login" element={<Login/>} />
         <Route path="/empleos/:id" element={<InfoVacante />} />
         <Route path="/empleos" element={<ListadoVacantes/>} />
         <Route path="/perfil/empresa/:id" element={<EmpresaPerfil/>} />
-
-        {/* Direccion desprotejida de editar perfil candidato  */}
+        <Route path="/perfil/candidato/:id" element={<PerfilCandidatoPublic/>} />
         <Route path="/perfil/candidato/editar" element={<PerfilCandidatoEditar/>}/>
 
         <Route path="*" element={<NotFound/>} />

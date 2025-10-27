@@ -8,8 +8,9 @@ import { RoleContext } from "../../services/RoleContext";
 import "../../style/invitado/index.css";
 export default function Index (){
 
-    const {rol, setRol} = useContext(RoleContext)
-    const {data, loading, error} = useFetch("/api/vacantes/Top/listar","GET")
+    const { rol } = useContext(RoleContext)
+    const url = rol == "EMPRESA"? "/api/vacantes/popular/listar" : "/api/vacantes/Top/listar";
+    const {data, loading, error} = useFetch(url,"GET")
     const features = [
         {
             id: "1",
@@ -73,8 +74,8 @@ export default function Index (){
             <section className="section">
                 <div className="container">
                     <h2 className="section-title">Empleos Destacados</h2>
-                    <p className="section-subtitle">Descubre las mejores oportunidades laborales seleccionadas para ti</p>
-                    
+                    <p className="section-subtitle">{rol == "EMPRESA"? "Oberva tus mejores ofertas" : "Descubre las mejores oportunidades laborales seleccionadas para ti"}</p>
+                    {/* TODO: no esta el metdodo para cambiar el estado de la vacante por parte de la empresa */}
                     {
                         data? (
                             <div className="jobs-grid">
@@ -89,7 +90,7 @@ export default function Index (){
                     
 
                     <div className="view-all-container">
-                        <Link to={rol == "EMPRESA" ? "/empleos":"/empleos"} className="btn btn-secondary">
+                        <Link to={rol == "EMPRESA" ? "/empresa/listado/vacantes":"/empleos"} className="btn btn-secondary">
                             Ver todos los empleos
                         </Link>
                     </div>

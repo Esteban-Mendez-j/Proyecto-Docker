@@ -140,14 +140,11 @@ public class VacanteResource {
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> createVacante(
             @RequestBody @Valid final VacanteDTO vacanteDTO,
-            HttpSession session) {
+            @CookieValue(name = "jwtToken", required = true) String jwtToken) {
 
-        String jwtToken = (String) session.getAttribute("jwtToken");
-        if (jwtToken != null) {
-            DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
-            Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
-            vacanteDTO.setIdUsuario(idUsuario);
-        }
+        DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+        Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+        vacanteDTO.setIdUsuario(idUsuario);
         vacanteService.create(vacanteDTO);
         return ResponseEntity.ok(Map.of(
                 "status", HttpStatus.CREATED.value(),
