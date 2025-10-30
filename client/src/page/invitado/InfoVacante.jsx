@@ -33,6 +33,7 @@ export default function InfoVacante() {
         activaPor: "",
         numeroGuardadosFavoritos: 0,
         vacanteGuardada: false,
+        numCompartidos: 0,
     }
     const {id} = useParams()
     const [location, setLocation] = useState("")
@@ -44,20 +45,43 @@ export default function InfoVacante() {
     const [copied, setCopied] = useState(false);
     const message = encodeURIComponent(`Te comparto esta oferta laboral que encontré, puede interesarte: ${location}`);
 
+    async function handleCompartir() {
+      try {
+        const response = await fetch(`${API_CLIENT_URL}/api/vacantes/edit/numCompartidos/${job.nvacantes}`, {
+          method: "PUT",
+        });
+
+        if (response.ok) {
+          setJob((prev) => ({
+            ...prev,
+            numCompartidos: (prev.numCompartidos + 1) ,
+          }));
+        } else {
+          console.error("Error al incrementar el número de compartidos");
+        }
+      } catch (error) {
+        console.error("Error al compartir la vacante:", error);
+      }
+    }
+
     const handleCopy = () => {
         navigator.clipboard.writeText(location).then(() => {
             setCopied(true);
             modalTime("Texto copiado")
             setTimeout(() => setCopied(false), 1500);
         });
+        handleCompartir();
     }
 
     const handleWhatsAppShare = () => {
         window.open(`https://wa.me/?text=${message}`, "_blank");
+        handleCompartir();
     };
+    
 
     const handleGmailShare = () => {
         window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=&su=${subject}&body=${message}`, "_blank");
+        handleCompartir();
     };
 
     useEffect(() => {
@@ -234,6 +258,7 @@ export default function InfoVacante() {
                                                     />
                                                 </svg>
                                                 Compartir
+                                                
                                             </summary>
 
                                             <div className="absolute right-0 mt-2 w-40 bg-white border border-blue-100 rounded-xl shadow-lg p-2 flex flex-col gap-2 z-50">
