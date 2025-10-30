@@ -65,7 +65,7 @@ public class ApelacionResource {
     })
     @GetMapping("/cambiarEstado/{idApelacion}")
     public ResponseEntity<ApelacionDTO> cambiarEstado(
-            @Parameter(description = "ID de la apelación") @PathVariable("idApelacion") final Long idApelacion,
+            @Parameter(description = "ID de la apelación") @PathVariable final Long idApelacion,
             Model model) {
         ApelacionDTO apelacionDTO = apelacionService.get(idApelacion);
 
@@ -82,8 +82,8 @@ public class ApelacionResource {
     })
     @PostMapping("/cambiarEstado/{idApelacion}")
     public ResponseEntity<Long> cambiarEstado(
-            @Parameter(description = "ID de la apelación") @PathVariable("idApelacion") final Long idApelacion,
-            @Parameter(description = "Nuevo estado de la apelación") @RequestParam("estado") final String estado,
+            @Parameter(description = "ID de la apelación") @PathVariable final Long idApelacion,
+            @Parameter(description = "Nuevo estado de la apelación") @RequestParam final String estado,
             RedirectAttributes redirectAttributes) {
 
         ApelacionDTO apelacionDTO = apelacionService.get(idApelacion);
@@ -109,14 +109,14 @@ public class ApelacionResource {
     @Operation(summary = "Obtener apelación por ID", description = "Devuelve los detalles de una apelación específica.")
     @GetMapping("/edit/{id}")
     public ResponseEntity<ApelacionDTO> getApelacion(
-            @Parameter(description = "ID de la apelación") @PathVariable(name = "id") final Long id) {
+            @Parameter(description = "ID de la apelación") @PathVariable final Long id) {
         return ResponseEntity.ok(apelacionService.get(id));
     }
 
     @Operation(summary = "Actualizar apelación", description = "Modifica una apelación existente usando su ID.")
     @PutMapping("/edit/{id}")
     public ResponseEntity<Long> updateApelacion(
-            @Parameter(description = "ID de la apelación") @PathVariable(name = "id") final Long id,
+            @Parameter(description = "ID de la apelación") @PathVariable final Long id,
             @RequestBody @Valid final ApelacionDTO apelacionDTO) {
         apelacionService.update(id, apelacionDTO);
         return ResponseEntity.ok(id);
@@ -125,7 +125,7 @@ public class ApelacionResource {
     @Operation(summary = "Eliminar apelación", description = "Elimina una apelación existente usando su ID.")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteApelacion(
-            @Parameter(description = "ID de la apelación") @PathVariable(name = "id") final Long id) {
+            @Parameter(description = "ID de la apelación") @PathVariable final Long id) {
         apelacionService.delete(id);
         return ResponseEntity.noContent().build();
     }

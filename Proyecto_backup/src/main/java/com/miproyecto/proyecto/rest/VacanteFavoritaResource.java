@@ -45,8 +45,8 @@ public class VacanteFavoritaResource {
     @ApiResponse(responseCode = "201", description = "vacante guardada correctamente")
     @PostMapping("/add/{idVacante}")
     public ResponseEntity<Map<String, Object>> AgregarVacanteFavorita(
-        @PathVariable(name = "idVacante") Long idVacante, 
-        @CookieValue(name = "jwtToken", required = true) String jwtToken) {
+        @PathVariable Long idVacante, 
+        @CookieValue(required = true) String jwtToken) {
         Map<String, Object> response = new HashMap<>();
         
         if (jwtToken == null) {
@@ -75,7 +75,7 @@ public class VacanteFavoritaResource {
     public ResponseEntity<Map<String, Object>> ListarVacantesFavoritasPerfil(
         HttpSession session,
         @PageableDefault(page = 0, size = 10) Pageable pageable,
-        @CookieValue(name = "jwtToken", required = true) String jwtToken) {
+        @CookieValue(required = true) String jwtToken) {
         
         Map<String, Object> response = new HashMap<>();
         
