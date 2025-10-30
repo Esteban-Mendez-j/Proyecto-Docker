@@ -5,6 +5,7 @@ import { autenticacion } from "../../services/autenticacion.js";
 import { RoleContext } from "../../services/RoleContext.jsx";
 import Header from "../../layouts/Header.jsx"
 import "../../style/invitado/login.css";
+import ScrollTop from "../../components/ScrollTop.jsx";
 
 export default function Login (){
     const [error , setError] = useState(null)
@@ -62,6 +63,7 @@ export default function Login (){
     return(
         <>
         <Header/>
+        <ScrollTop/>
         <div className="container">
             <div className="login-container">
                 <div className="login-header">

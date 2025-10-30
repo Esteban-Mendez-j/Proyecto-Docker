@@ -2,7 +2,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import '../../style/invitado/editarVacantes.css';
-import { API_URL, API_CLIENT_URL } from "../../services/Api";
+import { API_CLIENT_URL } from "../../services/Api";
+import manejarRespuesta from "../../services/ManejarRespuesta"
+import { modal, modalResponse } from "../../services/Modal";
 
 const EditarVacantes= () => {
   const { nvacantes } = useParams();
@@ -14,7 +16,7 @@ const EditarVacantes= () => {
   useEffect(() => {
     const fetchVacante = async () => {
       try {
-        const res = await fetch(`${API_URL}/Api/vacantes/seleccion/${nvacantes}`);
+        const res = await fetch(`${API_CLIENT_URL}/api/vacantes/seleccion/${nvacantes}`);
         const data = await manejarRespuesta(res);
         setVacante(data.vacanteSeleccionada);
       } catch (error) {
@@ -38,7 +40,7 @@ const EditarVacantes= () => {
     e.preventDefault();
 
     try {
-      const res = await fetch(`${API_CLIENT_URL}/Api/vacantes/edit/${vacante.nvacantes}`, {
+      const res = await fetch(`${API_CLIENT_URL}/api/vacantes/edit/${vacante.nvacantes}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -48,11 +50,13 @@ const EditarVacantes= () => {
 
       if (!res.ok) throw new Error("Error al guardar los cambios");
 
-      alert("Vacante actualizada correctamente");
-      navigate("/empresa/listado/vacantes");
+      const ok = modalResponse("Vacante actualizada correctamente", "success");
+      if (ok) {
+        navigate("/empresa/listado/vacantes");
+      }
     } catch (error) {
       console.error("Error al actualizar:", error);
-      alert("No se pudo guardar la vacante");
+      modal("No se pudo guardar la vacante", "error");
     }
   };
 

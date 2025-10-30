@@ -8,19 +8,15 @@ import org.springframework.stereotype.Service;
 import com.miproyecto.proyecto.domain.Aptitudes;
 import com.miproyecto.proyecto.model.AptitudesDTO;
 import com.miproyecto.proyecto.repos.AptitudesRepository;
-import com.miproyecto.proyecto.repos.CandidatoRepository;
 
 
 @Service
 public class AptitudesService {
     
     private final AptitudesRepository aptitudesRepository;
-    private final CandidatoRepository candidatoRepository;
 
-    public AptitudesService(final AptitudesRepository aptitudesRepository,
-            final CandidatoRepository candidatoRepository) {
+    public AptitudesService(final AptitudesRepository aptitudesRepository) {
         this.aptitudesRepository = aptitudesRepository;
-        this.candidatoRepository = candidatoRepository;
     }
 // //listar todos las aptitudes
 //     public List<AptitudesDTO> findAll() {

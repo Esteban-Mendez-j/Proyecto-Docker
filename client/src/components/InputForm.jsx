@@ -26,7 +26,7 @@ export default function InputForm({
         onChange={handleOnChange}
         autoComplete={autoComplete}
         min={type == "number" ? minL : undefined}
-        maxLength={type == "number" && maxL}
+        maxLength={type == "text"? maxL: undefined}
       />
 
       {children}

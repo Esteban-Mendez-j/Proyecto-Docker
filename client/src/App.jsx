@@ -14,7 +14,7 @@ import MisVacantes from "./page/empresa/MisVacantes.jsx";
 import Postulados from "./page/empresa/Postulados.jsx";
 import EmpresaPerfil from "./page/empresa/PublicPerfilEmpresa.jsx";
 import Vacantes from "./page/empresa/Vacantes.jsx";
-import EditarVacantes from "./page/empresa/editarVacantes.jsx";
+import EditarVacantes from "./page/empresa/EditarVacantes.jsx";
 import NotFound from "./page/invitado/404";
 import Index from './page/invitado/Index';
 import InfoVacante from "./page/invitado/InfoVacante";
@@ -25,6 +25,8 @@ import RegistroEmpresa from './page/invitado/RegistroEmpresa';
 import EditarPerfilEmpresa from "./page/perfil/empresa/EditarPerfilEmpresa.jsx";
 import PerfilEmpresa from "./page/perfil/empresa/PerfilEmpresa.jsx";
 import PerfilCandidatoPublic from "./page/candidato/PerfilCandidatoPublic.jsx"
+import PoliticaPrivacidad from "./page/invitado/PoliticaPrivacidad.jsx";
+import TerminosCondiciones from "./page/invitado/TerminosCondiciones.jsx";
 
 function App() {
 
@@ -69,7 +71,8 @@ function App() {
         <Route path="/perfil/empresa/:id" element={<EmpresaPerfil/>} />
         <Route path="/perfil/candidato/:id" element={<PerfilCandidatoPublic/>} />
         <Route path="/perfil/candidato/editar" element={<PerfilCandidatoEditar/>}/>
-
+        <Route path="/politicas/privacidad" element={<PoliticaPrivacidad/>}/>
+        <Route path="/terminos/condiciones" element={<TerminosCondiciones/>}/>
         <Route path="*" element={<NotFound/>} />
         
       </Routes>

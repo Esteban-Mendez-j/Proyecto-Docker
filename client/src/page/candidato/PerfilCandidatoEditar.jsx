@@ -12,6 +12,13 @@ const tmpId = () => crypto.randomUUID();
 
 const PerfilCandidatoEditar = () => {
 
+  //TODO: Implementar el resto de niveles de educacion 
+  const listEducacion=[
+    "Tecnico",
+    "Doctorado",
+
+  ]
+
   const listAptitudes = {
     PensamientoCritico: "Pensamiento Critico",
     Creatividad: "Creatividad" ,
@@ -44,6 +51,7 @@ const PerfilCandidatoEditar = () => {
     rolPrinciapl: "",
     roles: [],
     telefono: "",
+    nivelEducativo:"",
     aptitudes: []
   }
 
@@ -309,6 +317,23 @@ const PerfilCandidatoEditar = () => {
                 </div>
               </div>
 
+              <div className="flex-1 space-y-3">
+                <div className="flex flex-col gap-4 md:flex-row">
+                  {/* --- Nivel Educativo --- */}
+                  <div className="flex flex-col w-full md:w-1/2">
+                    <label htmlFor="nivelEducativo" className="mb-1 text-sm font-medium">
+                      Nivel Educativo
+                    </label>
+                    <select value={candidato.nivelEducativo} name="nivelEducativo" className={"w-full rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"} required onChange={handleOnChange}>
+                      <option value={""} disabled>Selecciona tu nivel educativo</option>
+                      {listEducacion.map((nivel, index) => (
+                        <option key={index} value={nivel} >{nivel}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
               {/* ---- CV uploader ------------------------------------------------ */}
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center text-sm">
                 {/* Botón subir / cambiar */}
@@ -439,7 +464,7 @@ const PerfilCandidatoEditar = () => {
               onChange={handleOnChange}
               required
             />
-            {error?.descripcion && <p className="error-text hidden" id="error-descripcion">{error.descripcion}</p>}
+            {error?.descripcion && <p className="error-text" id="error-descripcion">{error.descripcion}</p>}
           </div>
 
           {/* ---------- Aptitudes ---------- */}
