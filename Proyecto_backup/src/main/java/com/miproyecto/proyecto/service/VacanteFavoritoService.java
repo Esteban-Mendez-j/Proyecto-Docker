@@ -1,11 +1,10 @@
 package com.miproyecto.proyecto.service;
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -105,12 +104,19 @@ public class VacanteFavoritoService {
         return vacanteFavorita;
     }
     
-        public List<VacanteDTO> obtenerVacantesFavoritas(Long idUsuario) {
+        public Page<VacanteDTO> obtenerVacantesFavoritas(Long idUsuario, Pageable pageable) {
         Usuario usuario = new Usuario(); 
         usuario = usuarioRepository.findById(idUsuario).orElseThrow(NotFoundException::new);
 
-        return vacanteFavoritaRepository.findVacantesFavoritasByUsuarioFavorita(usuario).stream()
-            .map(vacante -> vacanteService.mapToDTO(0L, vacante.getVacanteFavorita(), new VacanteDTO()))
-            .collect(Collectors.toList());
+        Page<VacanteFavorita> favoritasPage = vacanteFavoritaRepository
+                .findVacantesFavoritasByUsuarioFavorita(usuario, pageable);
+
+       return favoritasPage.map(favorita ->
+                vacanteService.mapToDTO(
+                        0L,
+                        favorita.getVacanteFavorita(),
+                        new VacanteDTO()
+                        )
+                );
     }
 }

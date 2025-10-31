@@ -52,11 +52,48 @@ export default function Prediccion({ id }) {
       <div className="space-y-2 text-gray-800">
         <p>
           <span className="font-semibold">Resultado:</span>{" "}
-          {resultadoPrediccion === "1.0" ? (
-            <span className="text-green-600 font-medium">Tu Perfil es adecuado para esta vacante!</span>
-          ) : (
-            <span className="text-red-600 font-medium"> tu perfil no cumple con los requisitos</span>
-          )}
+          {(() => {
+            // ✅ Caso 1: Alta coincidencia y predicción positiva
+            if (resultadoPrediccion === "1.0" && porcentajeMatch >= 70) {
+              return (
+                <span className="text-green-600 font-medium">
+                  ¡Excelente! Tu perfil encaja muy bien con esta vacante. 🌟
+                </span>
+              );
+            }
+
+            // ✅ Caso 2: Predicción positiva pero coincidencia media
+            if (resultadoPrediccion === "1.0" && porcentajeMatch < 70) {
+              return (
+                <span className="text-blue-600 font-medium">
+                  ¡Buen trabajo! Cumples con la mayor parte de requisitos de esta vacante!
+                </span>
+              );
+            }
+            if (resultadoPrediccion === "0.0" && porcentajeMatch >= 70) {
+              return (
+                <span className="text-orange-600 font-medium">
+                  ¡Buen trabajo! Cumples con varios requisitos.
+                </span>
+              );
+            }
+
+            // ⚠️ Caso 3: Predicción negativa pero coincidencia decente
+            if (resultadoPrediccion === "0.0" && porcentajeMatch >= 50) {
+              return (
+                <span className="text-yellow-600 font-medium">
+                   Al parecer estás muy cerca del perfil ideal para esta vacante! 
+                </span>
+              );
+            }
+
+            // ❌ Caso 4: Baja coincidencia y predicción negativa
+            return (
+              <span className="text-red-600 font-medium">
+                Al parecer no cumples con las aptitudes requeridas pero buena suerte! 🚀
+              </span>
+            );
+          })()}
         </p>
 
         <p>
