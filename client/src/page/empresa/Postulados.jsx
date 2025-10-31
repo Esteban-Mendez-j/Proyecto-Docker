@@ -9,27 +9,9 @@ import manejarRespuesta from "../../services/ManejarRespuesta";
 import { API_CLIENT_URL } from "../../services/Api";
 import { modal } from "../../services/Modal";
 import {sendMessage} from "../../services/Websocket"
+import { mensajesNotificaciones } from "../../services/data";
 
 export default function Postulados() {
-
-    const mensajesNotificaciones = {
-        rechazada: {
-            asunto: "Actualización sobre tu postulación",
-            cuerpo: "Agradecemos tu interés en la vacante. Tras revisar tu perfil, la empresa ha decidido continuar con otros candidatos. Te invitamos a seguir postulando a otras oportunidades.",
-        },
-        aceptada: {
-            asunto: "¡Felicidades! Tu postulación ha sido aceptada",
-            cuerpo: "Nos complace informarte que tu postulación para la vacante ha sido aceptada. La empresa revisó tu perfil y desea continuar con el proceso de selección. Pronto recibirás más información sobre los siguientes pasos.",
-        },
-        espera: {
-            asunto: "Tu postulación está siendo revisada",
-            cuerpo: "Hemos recibido tu postulación y se encuentra en proceso de revisión por parte de la empresa. Te notificaremos tan pronto como se actualice el estado."
-        },
-        cancelada: {
-            asunto: "La vacante ha sido cancelada",
-            cuerpo: "Lamentamos informarte que la empresa ha decidido cancelar el proceso de selección para la vacante a la que postulaste. Agradecemos tu interés y te invitamos a explorar nuevas oportunidades en la plataforma."
-        }
-    }
 
     const initialNotificacion = {
         Id: "",

@@ -7,31 +7,11 @@ import Layout from "../../layouts/Layout.jsx";
 import { API_CLIENT_URL } from "../../services/Api";
 import { modal, modalResponse } from "../../services/Modal";
 import "../../style/invitado/candidato.css";
+import { listEducacion, listAptitudes } from "../../services/data.js"
 
 const tmpId = () => crypto.randomUUID();
 
 const PerfilCandidatoEditar = () => {
-
-  //TODO: Implementar el resto de niveles de educacion 
-  const listEducacion=[
-    "Tecnico",
-    "Doctorado",
-
-  ]
-
-  const listAptitudes = {
-    PensamientoCritico: "Pensamiento Critico",
-    Creatividad: "Creatividad" ,
-    AtencionDetalle: "Atencion al detalle",
-    AprendizajeContinuo: "Aprendizaje continuo",
-    EticaProfesional: "Etica Profesional",
-    Autonomia: "Autonomia", 
-    Responsabilidad: "Responsabilidad", 
-    Liderazgo: "Liderazgo", 
-    ResolucionProblemas: "Resolucion de Problemas",
-    ComunicacionAfectiva: "Comunicacion Afectiva",
-    TrabajoEquipo: "Trabajo en Equipo",
-  }
 
   const initialData = {
     apellido: "",
@@ -80,7 +60,7 @@ const PerfilCandidatoEditar = () => {
     let updated;
     if (selected.includes(key)) {
       updated = selected.filter((item) => item !== key);
-    } else if (selected.length < 5) {
+    } else if (selected.length <= 5) {
       updated = [...selected, key];
     } else {
       modal("Solo puedes seleccionar hasta 5 aptitudes", "error");

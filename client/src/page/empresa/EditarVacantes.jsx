@@ -1,17 +1,52 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import '../../style/invitado/editarVacantes.css';
+// import '../../style/invitado/editarVacantes.css';
 import { API_CLIENT_URL } from "../../services/Api";
-import manejarRespuesta from "../../services/ManejarRespuesta"
+import manejarRespuesta from "../../services/ManejarRespuesta";
 import { modal, modalResponse } from "../../services/Modal";
+import { ciudadesColombia, departamentoColombia, listAptitudes } from "../../services/data";
+import Loading from "../../components/Loading"
+import Layout from "../../layouts/layout";
 
 const EditarVacantes= () => {
   const { nvacantes } = useParams();
   const navigate = useNavigate();
-
-  const [vacante, setVacante] = useState(null);
+  const [selected, setSelected] = useState([]);
+  const [vacante, setVacante] = useState({
+    titulo: '',
+    ciudad: '',
+    departamento: '',
+    tipo: '',
+    modalidad: '',
+    sueldo: '',
+    cargo: '',
+    experiencia: '',
+    descripcion: '',
+    requerimientos: '',
+    aptitudes: []
+  });
   const [loading, setLoading] = useState(true);
+
+  const handleClick = (key) => {
+    let updated;
+    if (selected.includes(key)) {
+      updated = selected.filter((item) => item !== key);
+    } else if (selected.length <= 5) {
+      updated = [...selected, key];
+    } else {
+      modal("Solo puedes seleccionar hasta 5 aptitudes", "error");
+      return;
+    }
+
+    setSelected(updated);
+
+    // Aquí el hijo modifica directamente el estado del padre
+    setVacante((prev) => ({
+      ...prev,
+      aptitudes: updated,
+    }));
+  };
 
   useEffect(() => {
     const fetchVacante = async () => {
@@ -19,6 +54,7 @@ const EditarVacantes= () => {
         const res = await fetch(`${API_CLIENT_URL}/api/vacantes/seleccion/${nvacantes}`);
         const data = await manejarRespuesta(res);
         setVacante(data.vacanteSeleccionada);
+        setSelected(data.vacanteSeleccionada.aptitudes)
       } catch (error) {
         console.error("Error cargando la vacante:", error);
       } finally {
@@ -60,21 +96,17 @@ const EditarVacantes= () => {
     }
   };
 
-  if (loading) return <p>Cargando...</p>;
+  if (loading || !vacante) return <Loading/>;
 
   return (
-    <>
-      
-      <div className="vacante-form-container">
-        <h1 className="vacante-form-title">Editar Oferta</h1>
-        <p className="vacante-form-subtitle">Modifica los campos necesarios</p>
-
-        {vacante ? (
-          <form id="vacanteForm" className="vacante-form" onSubmit={handleSubmit}>
+    <Layout>
+      <div className="registro-container">
+        <h1 className="registroEmpresa-title">Editar Oferta</h1>
+        <p className="subtitle">Modifica los campos necesarios</p>
+          <form  className="form" onSubmit={handleSubmit}>
             <input type="hidden" name="nvacantes" value={vacante.nvacantes} />
 
             {/* Primera fila */}
-            <div className="form-row">
               <div className="form-group">
                 <label htmlFor="titulo">Título del Puesto</label>
                 <input
@@ -86,47 +118,39 @@ const EditarVacantes= () => {
                   required
                 />
               </div>
-            </div>
 
             {/* Segunda fila */}
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="ciudad">Ciudad</label>
-                <input
-                  type="text"
-                  id="ciudad"
-                  name="ciudad"
-                  value={vacante.ciudad || ""}
-                  onChange={handleChange}
-                  required
-                />
+                <select value={vacante.ciudad} name="ciudad" className={"w-full rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"} required onChange={handleChange}>
+                  <option value={""} disabled>Selecciona tu ciudad</option>
+                  {ciudadesColombia.map((ciudad, index) => (
+                    <option key={index} value={ciudad} >{ciudad}</option>
+                  ))}
+                </select>
               </div>
               <div className="form-group">
-                <label htmlFor="departamento">Departamento</label>
+                <label htmlFor="sueldo">Sueldo</label>
                 <input
-                  type="text"
-                  id="departamento"
-                  name="departamento"
-                  value={vacante.departamento || ""}
+                  type="number"
+                  id="sueldo"
+                  name="sueldo"
+                  value={vacante.sueldo || ""}
                   onChange={handleChange}
-                  required
                 />
               </div>
+              <input type="text" name="departamento" value={departamentoColombia[vacante.ciudad]} required hidden />
             </div>
 
             {/* Fecha de publicación */}
-            <div className="form-row">
-              <div className="form-group full-width">
-                <label htmlFor="fechaPublicacion">Fecha de Publicación</label>
-                <input
-                  type="date"
-                  id="fechaPublicacion"
-                  name="fechaPublicacion"
-                  value={vacante.fechaPublicacion?.split("T")[0] || ""}
-                  readOnly
-                />
-              </div>
-            </div>
+            <input
+              type="date"
+              name="fechaPublicacion"
+              value={vacante.fechaPublicacion?.split("T")[0] || ""}
+              readOnly
+              hidden
+            />
 
             {/* Tercera fila */}
             <div className="form-row">
@@ -164,17 +188,6 @@ const EditarVacantes= () => {
                   <option value="Hibrido">Híbrido</option>
                 </select>
               </div>
-
-              <div className="form-group">
-                <label htmlFor="sueldo">Sueldo</label>
-                <input
-                  type="number"
-                  id="sueldo"
-                  name="sueldo"
-                  value={vacante.sueldo || ""}
-                  onChange={handleChange}
-                />
-              </div>
             </div>
 
             {/* Cuarta fila */}
@@ -193,7 +206,7 @@ const EditarVacantes= () => {
               <div className="form-group">
                 <label htmlFor="experiencia">Experiencia</label>
                 <input
-                  type="text"
+                  type="number"
                   id="experiencia"
                   name="experiencia"
                   value={vacante.experiencia || ""}
@@ -226,11 +239,31 @@ const EditarVacantes= () => {
               </div>
             </div>
 
+            <div>
+              <h2 className="mb-2 text-lg font-semibold">Aptitudes Requeridas</h2>
+
+              <div className="flex flex-wrap gap-3">
+                {Object.entries(listAptitudes).map(([key, label]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => handleClick(key)}
+                    className={`px-4 py-2 rounded-2xl border transition-all duration-200 ${selected.includes(key)
+                      ? "bg-blue-600 text-white border-blue-600 shadow-md scale-105"
+                      : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"
+                      }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Botones */}
             <div className="form-actions">
               <button
                 type="button"
-                className="btn btn-cancel"
+                className="btn btn-outline"
                 onClick={() => navigate("/empresa/listado/vacantes")}
               >
                 Cancelar
@@ -240,12 +273,8 @@ const EditarVacantes= () => {
               </button>
             </div>
           </form>
-        ) : (
-          <p>No se pudo cargar la vacante.</p>
-        )}
       </div>
-      
-    </>
+    </Layout>
   );
-};
+}
 export default EditarVacantes;

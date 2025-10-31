@@ -375,7 +375,7 @@ export default function InfoVacante() {
                                     </svg>
                                     <div>
                                         <p className="text-sm text-text-light">Sueldo</p>
-                                        <p className="font-medium">{job.sueldo} COP</p>
+                                        <p className="font-medium">{job.sueldo.toLocaleString('es-CO')} COP</p>
                                     </div>
                                 </div>
 

@@ -119,7 +119,7 @@ export default function ResumenVacante({job, rol, id}) {
               </svg>
               <div>
                 <p className="text-sm text-text-light">Salario</p>
-                <p className="font-medium">{jobResumen.sueldo}</p>
+                <p className="font-medium">{jobResumen.sueldo.toLocaleString('es-CO')} COP</p>
               </div>
             </div>
 

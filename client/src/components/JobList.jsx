@@ -33,7 +33,7 @@ const JobList = ({ jobs, setCurrentPage, currentPage, totalPages, fetchAllJobs }
     }
   }
 
-  if (!jobs) {
+  if (!jobs || jobs.length == 0) {
     console.log(jobs)
     return (
         <div className="flex flex-col items-center justify-center h-96 text-center p-4">
