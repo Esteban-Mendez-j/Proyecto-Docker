@@ -35,6 +35,21 @@ export default function InfoVacante() {
         vacanteGuardada: false,
         aptitudes: []
     }
+ // mapeo de aptitudes
+const NOMBRES_APTITUDES = {
+  PensamientoCritico: "Pensamiento Crítico",
+  Creatividad: "Creatividad",
+  AtencionDetalle: "Atención al Detalle",
+  AprendizajeContinuo: "Aprendizaje Continuo",
+  EticaProfesional: "Ética Profesional",
+  Autonomia: "Autonomía",
+  Responsabilidad: "Responsabilidad",
+  Liderazgo: "Liderazgo",
+  Adaptabilidad: "Adaptabilidad",
+  ResolucionProblemas: "Resolución de Problemas",
+  ComunicacionAfectiva: "Comunicación Afectiva",
+  TrabajoEquipo: "Trabajo en Equipo",
+};
     const {id} = useParams()
     const [location, setLocation] = useState("")
     const [job, setJob] = useState(initialJob);
@@ -454,7 +469,7 @@ export default function InfoVacante() {
                                             key={job.aptitudes.indexOf(label)}
                                             className={"px-4 py-2 rounded-2xl border transition-all duration-200 bg-blue-600 text-white border-blue-600 shadow-md scale-105"}
                                         >
-                                            {label}
+                                             {NOMBRES_APTITUDES[label] || label}
                                         </label>
                                     ))}
                                 </div>

@@ -19,6 +19,7 @@ export default function CrearVacante() {
     ResolucionProblemas: "Resolucion de Problemas",
     ComunicacionAfectiva: "Comunicacion Afectiva",
     TrabajoEquipo: "Trabajo en Equipo",
+    Adaptabilidad: "Adaptabilidad",
   }
 
   const [selected, setSelected] = useState([]);

@@ -30,7 +30,21 @@ function PerfilCandidato() {
     setHistorialLaboral(data.historialLaboral || []);
 
   }, [data, error]);
-
+  // mapeo de aptitudes
+const NOMBRES_APTITUDES = {
+  PensamientoCritico: "Pensamiento Crítico",
+  Creatividad: "Creatividad",
+  AtencionDetalle: "Atención al Detalle",
+  AprendizajeContinuo: "Aprendizaje Continuo",
+  EticaProfesional: "Ética Profesional",
+  Autonomia: "Autonomía",
+  Responsabilidad: "Responsabilidad",
+  Liderazgo: "Liderazgo",
+  Adaptabilidad: "Adaptabilidad",
+  ResolucionProblemas: "Resolución de Problemas",
+  ComunicacionAfectiva: "Comunicación Afectiva",
+  TrabajoEquipo: "Trabajo en Equipo",
+};
   if (!data || !candidato || !estudios || !historialLaboral || loading || error) {
     return <Loading/>;
   }
@@ -137,8 +151,8 @@ function PerfilCandidato() {
                     key={candidato.aptitudes.indexOf(label)}
                     className={"px-4 py-2 rounded-2xl border transition-all duration-200 bg-blue-600 text-white border-blue-600 shadow-md scale-105"}
                   >
-                    {label}
-                  </label>
+                   {NOMBRES_APTITUDES[label] || label}
+              </label>
                 ))}
               </div>
             </div>

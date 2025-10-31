@@ -14,7 +14,7 @@ const PerfilCandidatoEditar = () => {
 
   //TODO: Implementar el resto de niveles de educacion 
   const listEducacion=[
-    "Tecnico",
+    "Técnico",
     "Doctorado",
 
   ]
@@ -31,6 +31,7 @@ const PerfilCandidatoEditar = () => {
     ResolucionProblemas: "Resolucion de Problemas",
     ComunicacionAfectiva: "Comunicacion Afectiva",
     TrabajoEquipo: "Trabajo en Equipo",
+    Adaptabilidad: "Adaptabilidad",
   }
 
   const initialData = {
