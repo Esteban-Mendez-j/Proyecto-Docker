@@ -42,6 +42,15 @@ public class VacanteResource {
         this.jwtUtils = jwtUtils;
     }
 
+    // 🔥 NUEVO: Endpoint para registrar visitas
+      
+    @Operation(summary = "Registrar visita a vacante", description = "Incrementa el contador de visitas cada vez que se visualiza una vacante")
+    @PostMapping("/visita/{nvacantes}")
+    public ResponseEntity<Void> registrarVisita(@PathVariable Long nvacantes) {
+        vacanteService.incrementarVisitas(nvacantes);
+        return ResponseEntity.ok().build();
+    }
+
     @Operation(summary = "Listar vacantes propias", description = "Devuelve las vacantes creadas por el usuario autenticado (empresa).")
     @GetMapping
     public ResponseEntity<Map<String,Object>> list(
@@ -86,7 +95,7 @@ public class VacanteResource {
     @Operation(summary = "Vacantes destacadas", description = "Lista vacantes ordenadas por fecha, sueldo y experiencia (para candidatos e invitados).")
     @GetMapping("/Top/listar")
     public ResponseEntity<Map<String, Object>> TopVacantesPorFechaSueldoExperiencia(
-            @CookieValue(name = "jwtToken", required = false) String jwtToken) {
+            @CookieValue(required = false) String jwtToken) {
         Long idUsuario = 0L;
         if (jwtToken != null) {
             DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
@@ -101,7 +110,7 @@ public class VacanteResource {
     public ResponseEntity<Map<String, Object>> listarVacantesFiltradas(
             HttpSession session,
             @PageableDefault(page = 0, size = 10) Pageable pageable,
-            @CookieValue(name = "jwtToken", required = false) String jwtToken,
+            @CookieValue(required = false) String jwtToken,
             @RequestBody FiltroVacanteDTO filtro) {
 
         Long idUsuario = 0L;
@@ -118,7 +127,7 @@ public class VacanteResource {
     @GetMapping("/seleccion/{nvacantes}")
     public ResponseEntity<Map<String, Object>> seleccionVacante(
             @PathVariable Long nvacantes,
-            @CookieValue(name = "jwtToken", required = false) String jwtToken) {
+            @CookieValue(required = false) String jwtToken) {
 
         Long idUsuario = 0L;
         if (jwtToken != null) {
@@ -191,5 +200,4 @@ public class VacanteResource {
         vacanteService.updateNumCompartidos(idVacante);
         return ResponseEntity.ok().build();
     }
-
-}
+}   

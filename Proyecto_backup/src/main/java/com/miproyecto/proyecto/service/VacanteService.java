@@ -27,7 +27,6 @@ import com.miproyecto.proyecto.repos.VacanteSpecifications;
 import com.miproyecto.proyecto.util.NotFoundException;
 import com.miproyecto.proyecto.util.ReferencedWarning;
 
-
 @Service
 @Transactional
 public class VacanteService {
@@ -42,6 +41,14 @@ public class VacanteService {
         this.vacanteRepository = vacanteRepository;
         this.empresaRepository = empresaRepository;
         this.postuladoRepository = postuladoRepository;
+    }
+
+    // 🔥 NUEVO: Método para incrementar visitas
+    public void incrementarVisitas(final Long nvacantes) {
+        final Vacante vacante = vacanteRepository.findById(nvacantes)
+                .orElseThrow(NotFoundException::new);
+        vacante.incrementarVisitas();
+        vacanteRepository.save(vacante);
     }
 
     // listado de todas las vacantes activas
@@ -185,6 +192,10 @@ public class VacanteService {
         vacanteDTO.setTotalpostulaciones(vacante.getTotalpostulaciones());
         vacanteDTO.setActivaPorEmpresa(vacante.isActivaPorEmpresa());
         vacanteDTO.setNumCompartidos(vacante.getNumCompartidos());
+        
+        // 🔥 NUEVO: Mapear el campo de visitas
+        vacanteDTO.setVisitas(vacante.getVisitas());
+        
         vacanteDTO.setCandidatoPostulado(
             vacante.getLitarpostulados()
                 .stream()
@@ -230,6 +241,10 @@ public class VacanteService {
         vacante.setActivaPorEmpresa(vacanteDTO.isActivaPorEmpresa());
         vacante.setComentarioAdmin(vacanteDTO.getComentarioAdmin());
         vacante.setNumCompartidos(vacanteDTO.getNumCompartidos());
+        
+        // 🔥 NUEVO: Mapear el campo de visitas
+        vacante.setVisitas(vacanteDTO.getVisitas());
+        
         final Empresa idUsuario = vacanteDTO.getIdUsuario() == null ? null : empresaRepository.findById(vacanteDTO.getIdUsuario())
                 .orElseThrow(() -> new NotFoundException("idUsuario not found"));
         vacante.setIdUsuario(idUsuario);
@@ -248,5 +263,4 @@ public class VacanteService {
         }
         return null;
     }
-
 }

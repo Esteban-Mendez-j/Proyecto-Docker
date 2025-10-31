@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-
 public class VacanteDTO {
 
     private Long nvacantes;
@@ -72,6 +71,18 @@ public class VacanteDTO {
     private Boolean vacanteGuardada = false;
 
     private int numCompartidos;
+
+    // 🔥 NUEVO: Campo de visitas
+    private Integer visitas = 0;
+
+    // 🔥 NUEVO: Getter y Setter para visitas
+    public Integer getVisitas() {
+        return visitas;
+    }
+
+    public void setVisitas(Integer visitas) {
+        this.visitas = visitas;
+    }
 
     public int getNumCompartidos() {
         return numCompartidos;

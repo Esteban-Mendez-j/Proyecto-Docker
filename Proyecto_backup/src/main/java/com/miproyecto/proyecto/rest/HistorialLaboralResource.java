@@ -83,7 +83,7 @@ public class HistorialLaboralResource {
     @GetMapping("/edit/{iDHistorial}")
     public ResponseEntity<HistorialLaboralDTO> getHistorialLaboral(
             @Parameter(description = "ID del historial laboral")
-            @PathVariable(name = "iDHistorial") final Long iDHistorial) {
+            @PathVariable final Long iDHistorial) {
         return ResponseEntity.ok(historialLaboralService.get(iDHistorial));
     }
 
@@ -116,7 +116,7 @@ public class HistorialLaboralResource {
     @PutMapping("/edit/{iDHistorial}")
     public ResponseEntity<Long> updateHistorialLaboral(
             @Parameter(description = "ID del historial laboral a actualizar")
-            @PathVariable(name = "iDHistorial") final Long iDHistorial,
+            @PathVariable final Long iDHistorial,
             @RequestBody @Valid final HistorialLaboralDTO historialLaboralDTO) {
         historialLaboralService.update(iDHistorial, historialLaboralDTO);
         return ResponseEntity.ok(iDHistorial);
@@ -133,7 +133,7 @@ public class HistorialLaboralResource {
     @DeleteMapping("/delete/{iDHistorial}")
     public ResponseEntity<Void> deleteHistorialLaboral(
             @Parameter(description = "ID del historial laboral a eliminar")
-            @PathVariable(name = "iDHistorial") final Long iDHistorial) {
+            @PathVariable final Long iDHistorial) {
         historialLaboralService.delete(iDHistorial);
         return ResponseEntity.noContent().build();
     }

@@ -13,7 +13,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
-
 @Entity
 public class Vacante {
 
@@ -43,7 +42,6 @@ public class Vacante {
     @Column(nullable = false, length = 50)
     private String departamento;
 
-
     @Column(nullable = false, length = 100)
     private String titulo;
 
@@ -71,6 +69,10 @@ public class Vacante {
     @Column
     private int numCompartidos;
 
+    // 🔥 NUEVO CAMPO: Contador de visitas
+    @Column(nullable = false)
+    private Integer visitas = 0;
+
     @OneToMany(mappedBy = "vacante")
     private Set<Postulado> litarpostulados;
 
@@ -80,6 +82,20 @@ public class Vacante {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario_id")
     private Empresa idUsuario;
+
+    // 🔥 NUEVO: Getter y Setter para visitas
+    public Integer getVisitas() {
+        return visitas;
+    }
+
+    public void setVisitas(Integer visitas) {
+        this.visitas = visitas;
+    }
+
+    // 🔥 NUEVO: Método para incrementar visitas
+    public void incrementarVisitas() {
+        this.visitas++;
+    }
 
     public int getNumCompartidos() {
         return numCompartidos;
@@ -100,6 +116,7 @@ public class Vacante {
     public void setListaVacnatesFavoritas(Set<VacanteFavorita> listaVacnatesFavoritas) {
         this.listaVacnatesFavoritas = listaVacnatesFavoritas;
     }
+
     public Long getNvacantes() {
         return nvacantes;
     }
@@ -228,7 +245,6 @@ public class Vacante {
         this.totalpostulaciones = totalpostulaciones;
     }
 
-
     public Boolean getIsActive() {
         return isActive;
     }
@@ -244,5 +260,4 @@ public class Vacante {
     public void setComentarioAdmin(String comentarioAdmin) {
         this.comentarioAdmin = comentarioAdmin;
     }
-
 }

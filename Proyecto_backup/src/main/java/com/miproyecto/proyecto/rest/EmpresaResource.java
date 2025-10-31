@@ -63,7 +63,7 @@ public class EmpresaResource {
     )
     @GetMapping("/perfil")
     public ResponseEntity<Map<String, Object>> mostrarPerfil( Model model,HttpSession session,
-            @RequestParam(value = "idUsuario", required = false) Long idUsuario) {        
+            @RequestParam(required = false) Long idUsuario) {        
         
         Map<String, Object> response = new HashMap<>();     
         if (idUsuario == null) {
@@ -105,7 +105,7 @@ public class EmpresaResource {
     )
     @GetMapping("/edit/{idEmpresa}")
     public ResponseEntity<EmpresaDTO> getEmpresa(
-            @PathVariable(name = "idEmpresa") final Long idEmpresa) {
+            @PathVariable final Long idEmpresa) {
         return ResponseEntity.ok(empresaService.get(idEmpresa));
     }
 
@@ -123,7 +123,7 @@ public class EmpresaResource {
     public ResponseEntity<Map<String, Object>> editCandidato(
             @RequestPart("empresa") @Validated({ValidationGroups.OnUpdate.class, Default.class}) EmpresaDTO empresaDTO,
             @RequestPart(name = "img", required = false) MultipartFile imagen,
-            @CookieValue(name = "jwtToken", required = false) String jwtToken) {
+            @CookieValue(required = false) String jwtToken) {
 
         Map<String, Object> response = new HashMap<>();
         
@@ -169,7 +169,7 @@ public class EmpresaResource {
     )
     @DeleteMapping("/delete/{idEmpresa}")
     public ResponseEntity<Void> deleteEmpresa(
-            @PathVariable(name = "idEmpresa") final Long idEmpresa) {
+            @PathVariable final Long idEmpresa) {
         
         empresaService.delete(idEmpresa);
         return ResponseEntity.noContent().build();

@@ -72,7 +72,7 @@ public class EstudioResource {
     @GetMapping("/edit/{idEstudio}")
     public ResponseEntity<EstudioDTO> getEstudio(
             @Parameter(description = "ID del estudio a consultar")
-            @PathVariable(name = "idEstudio") final Long idEstudio) {
+            @PathVariable final Long idEstudio) {
         return ResponseEntity.ok(estudioService.get(idEstudio));
     }
 
@@ -105,7 +105,7 @@ public class EstudioResource {
     @PutMapping("/edit/{idEstudio}")
     public ResponseEntity<Long> updateEstudio(
             @Parameter(description = "ID del estudio a actualizar")
-            @PathVariable(name = "idEstudio") final Long idEstudio,
+            @PathVariable final Long idEstudio,
             @RequestBody @Valid final EstudioDTO estudioDTO) {
         estudioService.update(idEstudio, estudioDTO);
         return ResponseEntity.ok(idEstudio);
@@ -122,7 +122,7 @@ public class EstudioResource {
     @DeleteMapping("/delete/{idEstudio}")
     public ResponseEntity<Void> deleteEstudio(
             @Parameter(description = "ID del estudio a eliminar")
-            @PathVariable(name = "idEstudio") final Long idEstudio) {
+            @PathVariable final Long idEstudio) {
         estudioService.delete(idEstudio);
         return ResponseEntity.noContent().build();
     }

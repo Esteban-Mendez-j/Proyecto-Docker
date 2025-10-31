@@ -120,7 +120,7 @@ public class ChatResource {
     @GetMapping("/{chatId}/info")
     public ResponseEntity<Map<String, Object>> obtenerInfoChat(
         @PathVariable String chatId, 
-        @CookieValue(name="jwtToken") String jwtToken) {
+        @CookieValue String jwtToken) {
         
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         
@@ -160,8 +160,8 @@ public class ChatResource {
     public ResponseEntity<Map<String, Object>> listarChatsPorUsuario(
         @PathVariable String tipoUsuario,        // "empresa" o "candidato"
         @PathVariable String userId,
-        @RequestParam(name = "estado",required = false) String estado,
-        @RequestParam(name = "search" , required = false) String search,
+        @RequestParam(required = false) String estado,
+        @RequestParam(required = false) String search,
         @PageableDefault(page = 0, size = 10) Pageable pageable) {
 
         Boolean activoFiltro = null;

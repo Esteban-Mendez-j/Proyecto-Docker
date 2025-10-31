@@ -58,9 +58,9 @@ public class AdminResource {
     public ResponseEntity<Map<String, Object>> listarUsuariosFiltrados(
             HttpSession session,
             @PageableDefault(page = 0, size = 10) Pageable pageable,
-            @Parameter(description = "Nombre del usuario a filtrar") @RequestParam(name = "nombre", required = false) String nombre,
+            @Parameter(description = "Nombre del usuario a filtrar") @RequestParam(required = false) String nombre,
             @Parameter(description = "Rol principal a filtrar") @RequestParam(name = "rolPrinciapl", required = false) String rol,
-            @Parameter(description = "Estado activo/inactivo") @RequestParam(name = "estado", required = false) Boolean estado) {
+            @Parameter(description = "Estado activo/inactivo") @RequestParam(required = false) Boolean estado) {
 
         String jwtToken = (String) session.getAttribute("jwtToken");
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
@@ -102,7 +102,7 @@ public class AdminResource {
         description = "Asigna o activa el rol de administrador a un usuario existente."
     )
     @PostMapping("/agregarRol")
-    public ResponseEntity<Map<String, String>> addAdminRole(@RequestParam("idUsuario") Long idUsuario, @RequestParam("estado") boolean estado) {
+    public ResponseEntity<Map<String, String>> addAdminRole(@RequestParam Long idUsuario, @RequestParam boolean estado) {
         adminService.modificarRoles(idUsuario, estado);
         Map<String, String> response = new HashMap<>();
         response.put("message", "Rol de admin agregado exitosamente");
@@ -114,7 +114,7 @@ public class AdminResource {
         description = "Elimina o desactiva el rol de administrador de un usuario."
     )
     @PostMapping("/removerRol")
-    public ResponseEntity<Map<String, String>> removeAdminRole(@RequestParam("idUsuario") Long idUsuario) {
+    public ResponseEntity<Map<String, String>> removeAdminRole(@RequestParam Long idUsuario) {
         adminService.modificarRoles(idUsuario, false);
         Map<String, String> response = new HashMap<>();
         response.put("message", "Rol de admin removido exitosamente");
@@ -127,9 +127,9 @@ public class AdminResource {
     )
     @PostMapping("/cambiar-estado/usuario")
     public ResponseEntity<Map<String, String>> changeUserStatus(
-            @RequestParam("idUsuario") Long idUsuario,
-            @RequestParam("estado") boolean estado,
-            @RequestParam("comentario") String comentario) {
+            @RequestParam Long idUsuario,
+            @RequestParam boolean estado,
+            @RequestParam String comentario) {
 
         if (estado == usuarioService.get(idUsuario).getIsActive()) {
             Map<String, String> errorResponse = new HashMap<>();
@@ -151,9 +151,9 @@ public class AdminResource {
     )
     @PostMapping("/cambiar-estado/vacantes")
     public ResponseEntity<Map<String, String>> changeVacancyStatus(
-            @RequestParam("nvacante") Long nvacante,
-            @RequestParam("estado") boolean estado,
-            @RequestParam("comentario") String comentario) {
+            @RequestParam Long nvacante,
+            @RequestParam boolean estado,
+            @RequestParam String comentario) {
 
         if (estado == vacanteService.get(0L,nvacante).isActive()) {
             Map<String, String> errorResponse = new HashMap<>();

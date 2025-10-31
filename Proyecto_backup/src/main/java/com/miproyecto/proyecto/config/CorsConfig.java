@@ -12,7 +12,7 @@ import java.util.List;
 public class CorsConfig {
 
     @Bean(name = "customCorsConfig")
-    public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(List.of("http://localhost:4321", "http://localhost:5173")); 

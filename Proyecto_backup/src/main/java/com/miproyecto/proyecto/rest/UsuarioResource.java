@@ -50,7 +50,7 @@ public class UsuarioResource {
     @ApiResponse(responseCode = "200", description = "Rol obtenido correctamente")
     @GetMapping("/rol")
     public ResponseEntity<Map<String, Object>> getRol(
-            @CookieValue(name = "jwtToken", required = false) String jwtToken,
+            @CookieValue(required = false) String jwtToken,
             HttpSession session) {
 
         Map<String, Object> response = new HashMap<>();
@@ -119,7 +119,7 @@ public class UsuarioResource {
     )
     @GetMapping("/edit/{idUsuario}")
     public ResponseEntity<UsuarioDTO> getUsuario(
-            @PathVariable(name = "idUsuario") final Long idUsuario) {
+            @PathVariable final Long idUsuario) {
         return ResponseEntity.ok(usuarioService.get(idUsuario));
     }
 
@@ -129,7 +129,7 @@ public class UsuarioResource {
     )
     @PutMapping("/edit/{idUsuario}")
     public ResponseEntity<Long> updateUsuario(
-            @PathVariable(name = "idUsuario") final Long idUsuario,
+            @PathVariable final Long idUsuario,
             @RequestBody @Valid final UsuarioDTO usuarioDTO) {
         usuarioService.update(idUsuario, usuarioDTO);
         return ResponseEntity.ok(idUsuario);
@@ -142,7 +142,7 @@ public class UsuarioResource {
     @ApiResponse(responseCode = "204", description = "Usuario eliminado correctamente")
     @DeleteMapping("/delete/{idUsuario}")
     public ResponseEntity<Void> deleteUsuario(
-            @PathVariable(name = "idUsuario") final Long idUsuario) {
+            @PathVariable final Long idUsuario) {
         usuarioService.delete(idUsuario);
         return ResponseEntity.noContent().build();
     }

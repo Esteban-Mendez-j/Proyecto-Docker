@@ -76,8 +76,8 @@ public class CandidatoResource {
     })
     @GetMapping("/perfil")
     public ResponseEntity<Map<String, Object>> mostrarPerfil(
-        @RequestParam(name = "idUsuario", required = false) Long idUsuario,
-        @RequestParam(name = "nPostulacion", required = false) Long nPostulacion,
+        @RequestParam(required = false) Long idUsuario,
+        @RequestParam(required = false) Long nPostulacion,
         Model model, HttpSession session) {
 
         Map<String, Object> response = new HashMap<>();
@@ -150,7 +150,7 @@ public class CandidatoResource {
     )
     @GetMapping("/edit/{idUsuario}")
     public ResponseEntity<CandidatoDTO> getCandidato(
-            @PathVariable(name = "idCandidato") final Long idCandidato) {
+            @PathVariable final Long idCandidato) {
         return ResponseEntity.ok(candidatoService.get(idCandidato));
     }
 
@@ -221,7 +221,7 @@ public class CandidatoResource {
     )
     @DeleteMapping("/delete/{idCandidato}")
     public ResponseEntity<Void> deleteCandidato(
-            @PathVariable(name = "idCandidato") final Long idCandidato) {
+            @PathVariable final Long idCandidato) {
         candidatoService.delete(idCandidato);
         return ResponseEntity.noContent().build();
     }

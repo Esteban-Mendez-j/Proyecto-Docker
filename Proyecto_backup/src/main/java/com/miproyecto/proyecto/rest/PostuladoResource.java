@@ -67,12 +67,12 @@ public class PostuladoResource {
     )
     @GetMapping("/lista")
     public ResponseEntity<Map<String, Object>> listaByNvacantes(
-        @RequestParam(name = "nvacantes") Long nvacantes,
-        @RequestParam(name = "estado", required = false) String estado,
-        @RequestParam(name = "fechaMinima", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaMinima,
-        @RequestParam(name = "nombreCandidato", required = false) String nombreCandidato,
+        @RequestParam Long nvacantes,
+        @RequestParam(required = false) String estado,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaMinima,
+        @RequestParam(required = false) String nombreCandidato,
         @PageableDefault(page = 0, size = 10) Pageable pageable,
-        @CookieValue(name = "jwtToken", required = false) String jwtToken) {
+        @CookieValue(required = false) String jwtToken) {
 
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
@@ -153,14 +153,14 @@ public class PostuladoResource {
     @Operation(summary = "Obtener una postulación por ID", description = "Devuelve los datos de una postulación específica.")
     @GetMapping("/edit/{nPostulacion}")
     public ResponseEntity<PostuladoDTO> getPostulado(
-            @PathVariable(name = "nPostulacion") final Long nPostulacion) {
+            @PathVariable final Long nPostulacion) {
         return ResponseEntity.ok(postuladoService.get(nPostulacion));
     }
 
     @Operation(summary = "Actualizar una postulación", description = "Modifica los datos de una postulación existente.")
     @PutMapping("/edit/{nPostulacion}")
     public ResponseEntity<Long> updatePostulado(
-            @PathVariable(name = "nPostulacion") final Long nPostulacion,
+            @PathVariable final Long nPostulacion,
             @RequestBody final PostuladoDTO postuladoDTO) {
         postuladoService.update(nPostulacion, postuladoDTO);
         return ResponseEntity.ok(nPostulacion);
@@ -170,7 +170,7 @@ public class PostuladoResource {
     @PatchMapping("/cancelar/{nPostulacion}")
     public ResponseEntity<Void> cancelarPostulado(
             @PathVariable Long nPostulacion,
-            @RequestParam(name = "estado") Boolean estado,
+            @RequestParam Boolean estado,
             @RequestParam(name = "nvacante") Long nvacantes) {
 
         postuladoService.cancelarPostulacion(nPostulacion, estado, nvacantes);
