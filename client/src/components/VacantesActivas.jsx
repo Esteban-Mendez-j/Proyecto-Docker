@@ -116,7 +116,7 @@ const VacantesActivas = () => {
         credentials: 'include',
       });
 
-      if (!res.ok) throw new Error('Error al cambiar el estado de la vacante');
+      // if (!res.ok || ) throw new Error('Error al cambiar el estado de la vacante');
 
       await Swal.fire('Éxito', 'El estado de la vacante fue actualizado.', 'success');
 
@@ -126,7 +126,7 @@ const VacantesActivas = () => {
 
     } catch (err) {
       console.error('Error al cambiar el estado de la vacante:', err);
-      Swal.fire('Error', 'Ocurrió un error al cambiar el estado.', 'error');
+      await Swal.fire('Error', 'Ocurrió un error al cambiar el estado.', 'error');
     }
   };
   

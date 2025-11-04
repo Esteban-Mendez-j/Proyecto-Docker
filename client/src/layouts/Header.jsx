@@ -5,6 +5,8 @@ import useVisible from "../hooks/useVisible";
 import { API_CLIENT_URL } from "../services/Api";
 import { RoleContext } from "../services/RoleContext";
 import "../style/invitado/header.css";
+import { clearLocalStore } from "../services/localStore"
+
 export default function Header () {
 
     const {rol} = useContext(RoleContext);
@@ -112,7 +114,15 @@ export default function Header () {
                             {link.name}
                         </NavLink>
                     ))}
-                    {rol !== "ROLE_INVITADO" && <a href={`${API_CLIENT_URL}/usuarios/cerrarSesion`} className="nav-link">Cerrar Sesion</a>}
+                    {rol !== "ROLE_INVITADO" &&
+                        <button className="nav-link"
+                            onClick={() => {
+                                clearLocalStore()
+                                window.location.href = `${API_CLIENT_URL}/usuarios/cerrarSesion`;
+                            }}>
+                            Cerrar Sesion
+                        </button>
+                    }
                     {["CANDIDATO", "EMPRESA"].includes(rol) &&
                         <Link to={"/perfil/"+ rol.toLowerCase()} className="perfil-link">
                             <picture className="perfil-header">

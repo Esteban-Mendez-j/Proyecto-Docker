@@ -120,7 +120,6 @@ export default function AdminUsuarios() {
         </div>
       )}
 
-      <Footer />
     </Layout>
   );
 }

@@ -16,7 +16,6 @@ export default function AdminVacantes() {
           </div>
         </div>
       </div>
-      <Footer />
       <style jsx>{`
         .tab-button.active {
           border-bottom-width: 2px;

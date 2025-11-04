@@ -103,6 +103,13 @@
     color: var(--primary);
   }
 
+  .icon-active{
+    color: var(--secondary);
+    background-color: var(--primary);
+    border-radius: 10px;
+    padding: 5px;
+  }
+
   .apply {
     display: flex;
     justify-content: center;

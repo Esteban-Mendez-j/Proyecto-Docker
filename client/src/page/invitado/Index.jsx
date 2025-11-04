@@ -80,7 +80,7 @@ export default function Index (){
                         data? (
                             <div className="jobs-grid">
                                 {data.vacantes.map(job =>
-                                    <JobCard job={job} key={job.nvacantes}/>
+                                    <JobCard job={job} key={job.nvacantes} verSeccionEdit={false}/>
                                 )}
                             </div>
                         ):(

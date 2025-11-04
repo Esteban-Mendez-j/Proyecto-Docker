@@ -28,7 +28,7 @@ export default function ChatApp({ chatId: initialChatId }) {
             <input
               type="text"
               className="flex-1 bg-blue-50 text-blue-900 placeholder-blue-400 outline-none"
-              placeholder="Buscar conversaciones..."
+              placeholder="Buscar por vacante..."
               value={searchTextLocal}
               onChange={(e) => setSearchTextLocal(e.target.value)}
             />

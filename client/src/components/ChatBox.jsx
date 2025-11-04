@@ -231,7 +231,7 @@ const ChatBox = ({ chatId }) => {
                 }`}
               >
                 <p className="mb-4">{msg.content}</p>
-                <span className="absolute bottom-1 right-3 text-xs text-gray-300">
+                <span className="absolute bottom-1 right-3 text-xs text-black-300">
                   {new Date(msg.time + 'Z').toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
