@@ -3,12 +3,12 @@ import { NavLink } from "react-router-dom";
 import { API_CLIENT_URL } from "../services/Api";
 import { RoleContext } from "../services/RoleContext";
 import "../style/invitado/header.css";
-import useVisible from "../hooks/useVisible"
+import useVisible from "../hooks/useVisible";
+import Notificaciones from "../components/Notificaciones"; /*aqui muestra las notificaciones al lado de perfil siu*/ 
 
-export default function Header () {
-
-    const {rol} = useContext(RoleContext)
-    const [handleOnClick , visible] = useVisible(false)
+export default function Header() {
+    const { rol } = useContext(RoleContext);
+    const [handleOnClick, visible] = useVisible(false);
 
     const linksByRole = {
         SUPER_ADMIN: [
@@ -36,20 +36,17 @@ export default function Header () {
             { name: "Publicar oferta", path: "/empresa/vacantes" },
             { name: "Chats", path: "/chat/empresa" },
             { name: "Perfil", path: "/perfil/empresa" },
-
         ],
         ROLE_INVITADO: [
             { name: "Inicio", path: "/" },
             { name: "Empleos", path: "/empleos" },
             { name: "Iniciar Sesión", path: "/login" },
-            { name: "Registrarse", path: "/registro", className: "register-btn" }
-        ]
+            { name: "Registrarse", path: "/registro", className: "register-btn" },
+        ],
     };
 
-    if(!rol){
-        return null
-    }
-    
+    if (!rol) return null;
+
     return (
         <header className="header">
             <div className="container">
@@ -63,39 +60,56 @@ export default function Header () {
 
                 <button
                     className="md:hidden z-10 bg-transparent border-none cursor-pointer text-text hover:text-primary transition-transform duration-300 hover:rotate-90"
-                    aria-label={visible? "Cerrar menú" : "Abrir menú"}
-                    aria-expanded={visible? true : false}
+                    aria-label={visible ? "Cerrar menú" : "Abrir menú"}
+                    aria-expanded={visible ? true : false}
                     onClick={handleOnClick}
                 >
                     <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                     >
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
-                </button> 
+                </button>
 
-                <nav className={`nav ${visible? "nav-open":null}`}>
-                    {/*userRole*/}
-                    {linksByRole[rol].map(link => (
-                        <NavLink className={({isActive}) => isActive? "selected-link": "nav-link"} key={link.path} to={link.path}>
+                <nav className={`nav ${visible ? "nav-open" : ""}`}>
+                    {linksByRole[rol].map((link) => (
+                        <NavLink
+                            className={({ isActive }) =>
+                                isActive ? "selected-link" : "nav-link"
+                            }
+                            key={link.path}
+                            to={link.path}
+                        >
                             {link.name}
                         </NavLink>
                     ))}
-                    {rol !== "ROLE_INVITADO" &&<a href={`${API_CLIENT_URL}/usuarios/cerrarSesion`} className="nav-link">Cerrar Sesion</a>}
+
+                    {/*  Botón de notificaciones */}
+                    {rol !== "ROLE_INVITADO" && <Notificaciones />}
+
+                    {/* Cerrar sesión */}
+                    {rol !== "ROLE_INVITADO" && (
+                        <a
+                            href={`${API_CLIENT_URL}/usuarios/cerrarSesion`}
+                            className="nav-link"
+                        >
+                            Cerrar Sesión
+                        </a>
+                    )}
+
                     <label className="nav-link register-btn">{rol}</label>
                 </nav>
             </div>
         </header>
     );
-    
 }
