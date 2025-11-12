@@ -18,6 +18,8 @@ const VacantesFavoritas = ({ pageSize = 10 }) => {
   const [searchPostuladoInput, setSearchPostuladoInput] = useState('');
   const [searchIsActive, setSearchIsActive] = useState(true);
   const [fade, setFade] = useState(true);
+  const [refresh, setRefresh] = useState(false);
+  const [onFavoritoChange, setOnFavoritoChange] = useState(false);
 
   useEffect(() => {
     
@@ -42,7 +44,6 @@ const fetchVacantesFav = async () => {
     });
 
     const data = await res.json();
-    console.log("📦 Respuesta del backend:", data);
 
     // ✅ Guarda solo el array, no todo el objeto
     setVacantes(data.vacantesFavoritas || []);
@@ -52,9 +53,19 @@ const fetchVacantesFav = async () => {
     setLoading(false);
   }
 };
+// Cada que refresh se ejecuta se actualiza la lista
+useEffect(() => {
+  fetchVacantesFav();
+}, [refresh]);
+
+// Llama después de eliminar/agregar favorito
+const handleToggleFavorito = async () => {
+  
+  setRefresh(prev => !prev); // Cambia el estado → dispara el useEffect
+};
 
   const aplicarFiltros = () => {
-    // Aquí podrías agregar más filtros si lo deseas
+    // Aquí  más filtros 
     fetchVacantesFav();
   };
 
@@ -143,9 +154,12 @@ const fetchVacantesFav = async () => {
 
                   {/* Contenedor con bordes de columnas */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {vacantes.map((job, index) => (
-                          <div key={index} className="border border-gray-300 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-200">
-                              <JobCard job={job} />
+                      {vacantes.map((job) => (
+                          <div key={job.nvacantes} className="border border-gray-300 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-200">
+                              <JobCard 
+                              job={job} 
+                              onFavoritoChange={handleToggleFavorito}/>
+                              
                           </div>
                       ))}
                   </div>

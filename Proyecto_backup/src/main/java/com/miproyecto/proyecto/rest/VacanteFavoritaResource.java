@@ -95,7 +95,7 @@ public class VacanteFavoritaResource {
         response.put("status", 200);
         response.put("mensaje", "Lista de vacantes favoritas obtenida correctamente");
         response.put("vacantesFavoritas", vacantesFavoritas);
-        System.out.println("vacantes favoritas son estas :     "+ vacantesFavoritas);
+       
         // Agregar la lista de vacantes favoritas al response
         // response.put("vacantesFavoritas", listaDeVacantesFavoritas);
 

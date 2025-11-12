@@ -9,7 +9,6 @@ export const manejarRespuesta = async (res) => {
     } catch (e) {
       data = {};
     }
-    console.log(res.status)
     if (res.status === 401) {
       const responseModal = await modalResponse(data.message, "info")
       if(responseModal){

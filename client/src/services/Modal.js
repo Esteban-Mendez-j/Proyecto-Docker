@@ -1,4 +1,4 @@
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
 // type puede ser: success, error, info, warning
 // icon: warning
 
@@ -23,14 +23,14 @@ export async function modalResponse(message, type) {
 }
 
 // para mostrar un modal con pregunta 
-export async function QuestionModal(title, icon) {
-  const sweetalertResponse =  Swal.fire({
-    title: title, 
+export async function QuestionModal(title, icon = "question") {
+  const sweetalertResponse = await Swal.fire({
+    title: title,
     icon: icon,
     showCancelButton: true,
-    confirmButtonText: 'Sí, confirmar',
-    cancelButtonText: 'Cancelar',
-  })
+    confirmButtonText: "Sí, confirmar",
+    cancelButtonText: "Cancelar",
+  });
 
   return sweetalertResponse.isConfirmed;
 }

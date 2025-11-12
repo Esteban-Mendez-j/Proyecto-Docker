@@ -1,14 +1,38 @@
-import { useContext } from "react";
-import { NavLink } from "react-router-dom";
+import { useContext, useState, useEffect } from "react";
+import { Link, NavLink } from "react-router-dom";
 import { API_CLIENT_URL } from "../services/Api";
 import { RoleContext } from "../services/RoleContext";
 import "../style/invitado/header.css";
 import useVisible from "../hooks/useVisible";
-import Notificaciones from "../components/Notificaciones"; /*aqui muestra las notificaciones al lado de perfil siu*/ 
+import Notificaciones from "../components/Notificaciones"; 
+import { useSendForm } from "../hooks/useFetch";
 
-export default function Header() {
-    const { rol } = useContext(RoleContext);
-    const [handleOnClick, visible] = useVisible(false);
+export default function Header () {
+
+    const {rol} = useContext(RoleContext);
+    const [urlImagen, setUrlImagen] = useState(null);
+    const [handleOnClick, visible] = useVisible()
+    const { data, send }  = useSendForm();
+    useEffect(()=>{
+        if(rol && rol != "ROLE_INVITADO"){
+            send("/api/usuarios/datos", "GET");
+        }
+    }, [rol])
+    
+    useEffect(() => {
+        if (!rol || !data) return;
+
+        const imagenPorDefecto = rol === "CANDIDATO"
+            ? "/images/imgCandidato.png"
+            : "/images/imgEmpresa.png";
+
+        setUrlImagen(
+            data?.imagen
+                ? `${API_CLIENT_URL}/img/${data.imagen}`
+                : API_CLIENT_URL+ imagenPorDefecto
+        );
+    }, [data]);
+
 
     const linksByRole = {
         SUPER_ADMIN: [
@@ -27,7 +51,6 @@ export default function Header() {
             { name: "Chats", path: "/chat/candidato" },
             { name: "Empleos", path: "/empleos" },
             { name: "Postulaciones", path: "/postulaciones" },
-            { name: "Perfil", path: "/perfil/candidato" },
             { name: "Favoritos", path: "/vacantes/favoritas" },
         ],
         EMPRESA: [
@@ -93,21 +116,20 @@ export default function Header() {
                             {link.name}
                         </NavLink>
                     ))}
-
-                    {/*  Botón de notificaciones */}
-                    {rol !== "ROLE_INVITADO" && <Notificaciones />}
-
-                    {/* Cerrar sesión */}
-                    {rol !== "ROLE_INVITADO" && (
-                        <a
-                            href={`${API_CLIENT_URL}/usuarios/cerrarSesion`}
-                            className="nav-link"
-                        >
-                            Cerrar Sesión
-                        </a>
-                    )}
-
-                    <label className="nav-link register-btn">{rol}</label>
+                    {rol !== "ROLE_INVITADO" && <a href={`${API_CLIENT_URL}/usuarios/cerrarSesion`} className="nav-link">Cerrar Sesion</a>}
+                    {rol == "CANDIDATO" && <Notificaciones />}
+                    {["CANDIDATO", "EMPRESA"].includes(rol) &&
+                        <Link to={"/perfil/"+ rol.toLowerCase()} className="perfil-link">
+                            <picture className="perfil-header">
+                                <img
+                                    src={urlImagen}
+                                    className="foto-perfil"
+                                    alt="foto de perfil"
+                                />
+                                <p className="nombre-perfil">{data?.nombre}</p>
+                            </picture>
+                        </Link>
+                    }
                 </nav>
             </div>
         </header>
