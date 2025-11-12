@@ -3,38 +3,44 @@ import { manejarRespuesta } from "../services/ManejarRespuesta";
 import FilterComponent from './FilterComponent';
 import FiltroSuperior from './FiltroSuperior';
 import JobList from './JobList';
+import { ListSvg } from './Icons';
+import { readLocalStore, saveLocalStore } from '../services/localStore';
 
 
 const JobBoard = ({ fetchUrl, rol }) => {
     const [currentPage, setCurrentPage] = useState(1);
+    const [presentacion, setPresentacion] = useState(readLocalStore("presentacion", 1)); // 1:CARD, 2:HORIZONTAL, 3:TABLA
     const [totalElement, setTotalElement] = useState(0) 
     const [totalPages, setTotalPages] = useState(1);
-    const [filters, setFilters] = useState({
-        titulo:null,
-        tipo: "todos",
-        experiencia: null,
-        modalidad: null,
-        active: null,
-        activaPorEmpresa: null,
-        cargo: null,
-        ciudad: null,
-        sueldo: null,
-        totalpostulaciones:null
-    });
-    const [filtersLocal, setFiltersLocal] = useState({
-        titulo:null,
-        tipo: "todos",
-        experiencia: null,
-        modalidad: null,
-        active: null,
-        activaPorEmpresa: null,
-        cargo: null,
-        ciudad: null,
-        sueldo: null,
-        totalpostulaciones:null
-    });
     const [filteredJobs, setFilteredJobs] = useState([]);
     const itemsPerPage = 20;
+    const initialFiltros = {
+        titulo: null,
+        tipo: "todos",
+        experiencia: null,
+        modalidad: null,
+        active: rol === "empresa"? null : true,
+        activaPorEmpresa: rol === "empresa"? null : true,
+        cargo: null,
+        ciudad: null,
+        sueldo: null,
+        totalpostulaciones: null
+    }
+
+    const [filters, setFilters] = useState(readLocalStore("filtro", initialFiltros));
+    const [filtersLocal, setFiltersLocal] = useState(readLocalStore("filtroLocal", initialFiltros));
+
+    useEffect(()=>{
+        saveLocalStore("presentacion", presentacion) 
+    },[presentacion])
+
+    useEffect(()=>{
+        saveLocalStore("filtro", filters) 
+    },[filters])
+
+    useEffect(()=>{
+        saveLocalStore("filtroLocal", filters) 
+    },[filtersLocal])
 
     const fetchAllJobs = async () => {
         try {
@@ -140,7 +146,20 @@ const JobBoard = ({ fetchUrl, rol }) => {
                 <div className="jobs-container">
                     <div className="jobs-header">
                         <h2 className="jobs-title">Empleos disponibles</h2>
-                        <div className="jobs-count">{totalElement} empleos encontrados</div>
+                        <div className='container-flex-row'>
+                            <div className="jobs-count">{totalElement} empleos encontrados</div>
+                            <div className='container-flex-row'>
+                                <button className='btn-presentacion' onClick={()=>{setPresentacion(1)}}>
+                                   <ListSvg name={"tarjeta"} width={40} height={40} nameClass={presentacion == 1 ? "icon-active" : "icon"}/>
+                                </button>
+                                <button className='btn-presentacion' onClick={()=>{setPresentacion(2)}}>
+                                   <ListSvg name={"menu"} width={40} height={40} nameClass={presentacion == 2 ? "icon-active": "icon"}/>
+                                </button>
+                                <button className='btn-presentacion' onClick={()=>{setPresentacion(3)}}>
+                                   <ListSvg name={"tabla"} width={40} height={40} nameClass={presentacion == 3 ? "icon-active": "icon"}/>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <JobList
                         jobs={filteredJobs}
@@ -149,6 +168,7 @@ const JobBoard = ({ fetchUrl, rol }) => {
                         setCurrentPage={setCurrentPage}
                         totalPages={totalPages}
                         fetchAllJobs={fetchAllJobs}
+                        presentacion = {presentacion}
                     />
                 </div>
             </div>

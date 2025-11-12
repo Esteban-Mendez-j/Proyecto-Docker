@@ -1,13 +1,31 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import Layout from "../../../layouts/Layout";
 import { API_CLIENT_URL } from "../../../services/Api";
-import { manejarRespuesta } from "../../../services/manejarRespuesta";
 import "../../../style/invitado/empresa.css";
+import { Link, useNavigate } from "react-router-dom";
+import { useFetch, useSendForm } from "../../../hooks/useFetch";
+import InputForm from "../../../components/InputForm";
+import { modalResponse } from "../../../services/Modal";
 
 const EditarPerfilEmpresa = () => {
-  const [empresa, setEmpresa] = useState({});
+  const initialData = {
+    nombre: "",
+    nit: "",
+    correo: "",
+    telefono: "",
+    sectorEmpresarial: "",
+    imagen: "",
+    sitioWeb: "",
+    descripcion: "",
+  }
+
+  const navigate = useNavigate();
+  const [empresa, setEmpresa] = useState(initialData);
   const [preview, setPreview] = useState(null);
+  const {data} = useFetch("/api/empresas/perfil", "GET");
+  const { send , error} = useSendForm();
+  const fotoRef = useRef(null);
 
   const sectores = [
     "Tecnologia de la Informacion (TI) / Software",
@@ -32,17 +50,9 @@ const EditarPerfilEmpresa = () => {
   ];
 
   useEffect(() => {
-    const fetchEmpresa = async () => {
-      try {
-        const res = await fetch(`${API_CLIENT_URL}/api/empresas/perfil`);
-        const data = await manejarRespuesta(res);
-        setEmpresa(data.empresa || {});
-      } catch (err) {
-        console.error("Error cargando empresa:", err);
-      }
-    };
-    fetchEmpresa();
-  }, []);
+    if(!data){return}
+    setEmpresa(data.empresa);
+  }, [data]);
 
   const handleLogoChange = (e) => {
     const file = e.target.files?.[0];
@@ -53,14 +63,40 @@ const EditarPerfilEmpresa = () => {
     }
   };
 
-  return (
-    <Layout title={`Editar ${empresa.nombre || "Empresa"} | SearchJobs`}>
-      
+  const handleOnChange = (event) => {
+    const { name, value } = event.target;
+    setEmpresa(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+      formData.set(
+        "empresa",
+        new Blob([JSON.stringify(empresa)], { type: "application/json" })
+      );
+     
+      if (fotoRef.current?.files[0]) {
+        formData.append("img", fotoRef.current.files[0]);
+      }
+
+    const result = await send(`/api/empresas/edit/${empresa.idUsuario}`, "PUT", formData, null);
+    if (result.status === 200) {
+      const isOk = await modalResponse(result.mensaje, "success");
+      if (isOk) {
+        navigate("/perfil/empresa");
+      }
+    }
+  }
+
+  return (
+    <Layout>
       <div className="min-h-screen bg-sky-50/60 py-12">
         <form
-          id="PerfilForm"
-          data-id={empresa.idUsuario}
+          onSubmit={handleSubmit}
           className="mx-auto w-full max-w-5xl space-y-10 rounded-3xl bg-white/90 backdrop-blur shadow-2xl ring-1 ring-sky-100 p-10"
         >
           {/* Cabecera */}
@@ -107,36 +143,28 @@ const EditarPerfilEmpresa = () => {
                 onChange={handleLogoChange}
               />
 
-              <input type="hidden" name="imagen" value={empresa.imagen || ""} />
+              <input type="hidden" name="imagen" defaultValue={empresa.imagen || ""} />
               <p className="error-text hidden" id="error-imagen"></p>
             </div>
 
             {/* Nombre & Sector */}
             <div className="flex-1 w-full space-y-4">
-              <input
-                id="nombre"
-                name="nombre"
-                defaultValue={empresa.nombre}
-                placeholder="Nombre de la empresa"
+              <InputForm
+                type={"text"}
+                name={"nombre"}
+                value={empresa.nombre}
+                placeholder={"Nombre de la empresa"}
                 className="w-full text-3xl font-semibold bg-transparent border-b-2 border-sky-200 focus:border-sky-500 focus:outline-none"
-                required
+                onChange={handleOnChange}
+                error={error}
               />
-              <p className="error-text hidden" id="error-nombre"></p>
 
-              <select
-                id="sectorEmpresa"
-                name="sectorEmpresarial"
-                defaultValue={empresa.sectorEmpresarial}
-                className="w-full rounded-lg border border-sky-200 bg-sky-50/40 py-2 px-3 focus:ring-2 focus:ring-sky-400"
-                required
-              >
-                {sectores.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
+              <select value={empresa.sectorEmpresarial} name="sectorEmpresarial" className={`form-control ${error?.sectorEmpresarial ? "error-input" : ""}`} required onChange={handleOnChange}>
+                <option value={""} disabled>Selecciona tu sector{empresa.sectorEmpresarial}</option>
+                {sectores.map((sector, index) => (
+                  <option key={index} value={sector} >{sector}</option>
                 ))}
               </select>
-              <p className="error-text hidden" id="error-sectorEmpresarial"></p>
             </div>
           </div>
 
@@ -162,16 +190,16 @@ const EditarPerfilEmpresa = () => {
                 </svg>
                 <div className="empresa-info-content">
                   <span className="empresa-info-label">NIT</span>
-                  <input
-                    type="text"
-                    id="nit"
-                    name="nit"
-                    defaultValue={empresa.nit}
+                  <InputForm
+                    type={"number"}
+                    name={"nit"}
+                    value={empresa.nit}
                     className="empresa-info-input"
-                    placeholder="NIT de la empresa"
-                    required
+                    placeholder={"NIT de la empresa"}
+                    handleOnChange={handleOnChange}
+                    error={error}
+                    minL={9}
                   />
-                  <p className="error-text hidden" id="error-nit"></p>
                 </div>
               </div>
 
@@ -191,16 +219,15 @@ const EditarPerfilEmpresa = () => {
                 </svg>
                 <div className="empresa-info-content">
                   <span className="empresa-info-label">Correo</span>
-                  <input
-                    type="email"
-                    id="correo"
-                    name="correo"
-                    defaultValue={empresa.correo}
+                  <InputForm
+                    type={"email"}
+                    name={"correo"}
+                    value={empresa.correo}
                     className="empresa-info-input"
-                    placeholder="Correo electrónico"
-                    required
+                    placeholder={"Correo electrónico"}
+                    handleOnChange={handleOnChange}
+                    error={error}
                   />
-                  <p className="error-text hidden" id="error-correo"></p>
                 </div>
               </div>
 
@@ -219,15 +246,16 @@ const EditarPerfilEmpresa = () => {
                 </svg>
                 <div className="empresa-info-content">
                   <span className="empresa-info-label">Teléfono</span>
-                  <input
-                    type="tel"
-                    id="telefono"
-                    name="telefono"
-                    defaultValue={empresa.telefono || ""}
+                  <InputForm
+                    type={"number"}
+                    name={"telefono"}
+                    value={empresa.telefono}
                     className="empresa-info-input"
-                    placeholder="Teléfono de contacto"
+                    placeholder={"Teléfono de contacto"}
+                    handleOnChange={handleOnChange}
+                    error={error}
+                    minL={10}
                   />
-                  <p className="error-text hidden" id="error-telefono"></p>
                 </div>
               </div>
 
@@ -248,15 +276,15 @@ const EditarPerfilEmpresa = () => {
                 </svg>
                 <div className="empresa-info-content">
                   <span className="empresa-info-label">Sitio Web</span>
-                  <input
-                    type="url"
-                    id="sitioWeb"
-                    name="sitioWeb"
-                    defaultValue={empresa.sitioWeb || ""}
+                  <InputForm
+                    type={"url"}
+                    name={"sitioWeb"}
+                    value={empresa.sitioWeb}
                     className="empresa-info-input"
-                    placeholder="Sitio web (ejemplo.com)"
+                    placeholder={"Sitio web (ejemplo.com)"}
+                    handleOnChange={handleOnChange}
+                    error={error}
                   />
-                  <p className="error-text hidden" id="error-sitioWeb"></p>
                 </div>
               </div>
             </div>
@@ -265,13 +293,13 @@ const EditarPerfilEmpresa = () => {
             <div className="empresa-descripcion-section">
               <h2 className="empresa-section-title">Descripción</h2>
               <textarea
-                id="descripcion"
                 name="descripcion"
-                defaultValue={empresa.descripcion || ""}
-                className="empresa-descripcion-input"
+                value={empresa.descripcion}
+                className={`empresa-descripcion-input ${error?.sectorEmpresa ? "error-input" : ""}`}
                 placeholder="Describe tu empresa, su misión, visión y valores..."
+                onChange={handleOnChange}
               />
-              <p className="error-text hidden" id="error-descripcion"></p>
+              <p className= {`error-text ${error?.descripcion? null : "hidden" } `} >{error?.descripcion}</p>
             </div>
 
             {/* Botones */}
@@ -279,9 +307,9 @@ const EditarPerfilEmpresa = () => {
               <button type="submit" className="empresa-save-button">
                 Guardar cambios
               </button>
-              <a href="/perfil/empresa/" className="empresa-cancel-button">
+              <Link to={"/perfil/empresa"} className="empresa-cancel-button">
                 Cancelar
-              </a>
+              </Link>
             </div>
           </div>
         </form>

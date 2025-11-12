@@ -13,9 +13,10 @@ function PerfilCandidato() {
     contrasena: "",
     telefono: "",
     identificacion: "",
-    contraseñaVerificada: ""
-  }
+    contraseñaVerificada: "",
+    nivelEducativo: "",
 
+  }
   const [candidato, setCandidato] = useState(null);
   const [estudios, setEstudios] = useState([]);
   const [historialLaboral, setHistorialLaboral] = useState([]);
@@ -29,7 +30,21 @@ function PerfilCandidato() {
     setHistorialLaboral(data.historialLaboral || []);
 
   }, [data, error]);
-
+  // mapeo de aptitudes
+const NOMBRES_APTITUDES = {
+  PensamientoCritico: "Pensamiento Crítico",
+  Creatividad: "Creatividad",
+  AtencionDetalle: "Atención al Detalle",
+  AprendizajeContinuo: "Aprendizaje Continuo",
+  EticaProfesional: "Ética Profesional",
+  Autonomia: "Autonomía",
+  Responsabilidad: "Responsabilidad",
+  Liderazgo: "Liderazgo",
+  Adaptabilidad: "Adaptabilidad",
+  ResolucionProblemas: "Resolución de Problemas",
+  ComunicacionAfectiva: "Comunicación Afectiva",
+  TrabajoEquipo: "Trabajo en Equipo",
+};
   if (!data || !candidato || !estudios || !historialLaboral || loading || error) {
     return <Loading/>;
   }
@@ -63,8 +78,11 @@ function PerfilCandidato() {
               <p className="candidato-cargo">
                 {candidato.experiencia
                   ? `${candidato.experiencia}${candidato.experiencia > 1?" años":" año"} laborando`
-                  : ""}
+                  : ""}    
               </p>
+              <h1 className="text-base font-semibold text-[var(--text)]">
+                      {candidato.nivelEducativo}
+                    </h1>
             </div>
 
             {/* Botones */}
@@ -123,6 +141,22 @@ function PerfilCandidato() {
               <p className="candidato-descripcion">{candidato.descripcion}</p>
             </div>
 
+
+            <div className="candidato-section">
+              <h2 className="candidato-section-title">Aptitudes</h2>
+
+              <div className="flex flex-wrap gap-3">
+                {candidato.aptitudes.map((label) => (
+                  <label
+                    key={candidato.aptitudes.indexOf(label)}
+                    className={"px-4 py-2 rounded-2xl border transition-all duration-200 bg-blue-600 text-white border-blue-600 shadow-md scale-105"}
+                  >
+                   {NOMBRES_APTITUDES[label] || label}
+              </label>
+                ))}
+              </div>
+            </div>
+
             {/* Estudios */}
             <section className="mb-6 pb-6 border-b border-[var(--border)]">
               <h2 className="text-[1.125rem] font-semibold text-[var(--text)] mb-4 pl-4 relative flex items-center">
@@ -142,9 +176,7 @@ function PerfilCandidato() {
                     <p className="text-sm text-[var(--primary)]">
                       {estudio.academia}
                     </p>
-                    <h3 className="text-base font-semibold text-[var(--text)]">
-                      {estudio.nivelEducacion}
-                    </h3>
+                    
                   </div>
                 ))}
               </div>

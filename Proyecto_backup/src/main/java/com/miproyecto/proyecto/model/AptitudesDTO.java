@@ -1,9 +1,7 @@
 package com.miproyecto.proyecto.model;
 
-
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
 
 public class AptitudesDTO {
 
@@ -11,9 +9,9 @@ public class AptitudesDTO {
 
     @NotNull
     @Size(max = 80)
-    private String nombreAptitud;
+     private String nombreAptitud;
 
-    private Long idUsuario;
+    // private Long idUsuario;
 
     public Long getIdAptitud() {
         return idAptitud;
@@ -23,26 +21,25 @@ public class AptitudesDTO {
         this.idAptitud = idAptitud;
     }
 
-    public String getNombreAptitud() {
-        return nombreAptitud;
+     public String getNombreAptitud() {
+         return nombreAptitud;
     }
 
     public void setNombreAptitud(String nombreAptitud) {
         this.nombreAptitud = nombreAptitud;
     }
 
-    public Long getIdUsuario() {
-        return idUsuario;
-    }
+    // public Long getIdUsuario() {
+    //     return idUsuario;
+    // }
 
-    public void setIdUsuario(Long idUsuario) {
-        this.idUsuario = idUsuario;
-    }
+    // public void setIdUsuario(Long idUsuario) {
+    //     this.idUsuario = idUsuario;
+    // }
 
     @Override
     public String toString() {
-        return "AptitudesDTO [idAptitud=" + idAptitud + ", nombreAptitud=" + nombreAptitud + ", idUsuario=" + idUsuario
-                + "]";
+        return "AptitudesDTO [idAptitud=" + idAptitud + ", nombreAptitud= " + nombreAptitud + "]";
     }
 
 }

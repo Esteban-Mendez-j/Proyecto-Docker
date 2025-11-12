@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import InputForm from "../../components/InputForm.jsx";
+import Loading from "../../components/Loading.jsx";
+import { useFetch, useSendForm } from "../../hooks/useFetch";
 import Layout from "../../layouts/Layout.jsx";
 import { API_CLIENT_URL } from "../../services/Api";
-import { useFetch, useSendForm } from "../../hooks/useFetch";
-import InputForm from "../../components/InputForm.jsx";
-import { modal, modalResponse } from "../../services/Modal"
-import Loading from "../../components/Loading.jsx"
+import { modal, modalResponse } from "../../services/Modal";
 import "../../style/invitado/candidato.css";
+import { listEducacion, listAptitudes } from "../../services/data.js"
 
 const tmpId = () => crypto.randomUUID();
 
 const PerfilCandidatoEditar = () => {
+
   const initialData = {
     apellido: "",
     comentarioAdmin: null,
@@ -28,7 +30,9 @@ const PerfilCandidatoEditar = () => {
     nombre: "",
     rolPrinciapl: "",
     roles: [],
-    telefono: ""
+    telefono: "",
+    nivelEducativo:"",
+    aptitudes: []
   }
 
   const initialDataEstudios = {
@@ -46,10 +50,31 @@ const PerfilCandidatoEditar = () => {
   const navigate = useNavigate()
   const { data, loading } = useFetch("/api/candidatos/perfil", "GET");
   const { error, send } = useSendForm();
+  const [selected, setSelected] = useState([]);
   const [candidato, setCandidato] = useState(initialData);
   const [estudios, setEstudios] = useState([]);
   const [historialLaboral, setHistorial] = useState([]);
   const [previewImg, setPreviewImg] = useState(null);
+
+  const handleClick = (key) => {
+    let updated;
+    if (selected.includes(key)) {
+      updated = selected.filter((item) => item !== key);
+    } else if (selected.length <= 5) {
+      updated = [...selected, key];
+    } else {
+      modal("Solo puedes seleccionar hasta 5 aptitudes", "error");
+      return;
+    }
+
+    setSelected(updated);
+
+    // Aquí el hijo modifica directamente el estado del padre
+    setCandidato((prev) => ({
+      ...prev,
+      aptitudes: updated,
+    }));
+  };
 
   /* refs archivos --------------------------------- */
   const fotoRef = useRef(null);
@@ -68,6 +93,7 @@ const PerfilCandidatoEditar = () => {
     setCandidato(data.candidato);
     setEstudios((data.estudios).map((e) => ({ ...e, _tmpId: tmpId() })));
     setHistorial((data.historialLaboral).map((h) => ({ ...h, _tmpId: tmpId() })));
+    setSelected(data.candidato.aptitudes)
   }, [data]);
 
   /* Manejar cambio de imagen para mostrar preview */
@@ -148,6 +174,7 @@ const PerfilCandidatoEditar = () => {
           body: JSON.stringify(historialEnviar),
           credentials: "include",
         }),
+        
       ]);
 
       /* ----------- 4. Comprobar respuestas ------------ */
@@ -267,6 +294,23 @@ const PerfilCandidatoEditar = () => {
                     error={error}
                     className={"w-full rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 "}
                   />
+                </div>
+              </div>
+
+              <div className="flex-1 space-y-3">
+                <div className="flex flex-col gap-4 md:flex-row">
+                  {/* --- Nivel Educativo --- */}
+                  <div className="flex flex-col w-full md:w-1/2">
+                    <label htmlFor="nivelEducativo" className="mb-1 text-sm font-medium">
+                      Nivel Educativo
+                    </label>
+                    <select value={candidato.nivelEducativo} name="nivelEducativo" className={"w-full rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"} required onChange={handleOnChange}>
+                      <option value={""} disabled>Selecciona tu nivel educativo</option>
+                      {listEducacion.map((nivel, index) => (
+                        <option key={index} value={nivel} >{nivel}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -400,8 +444,39 @@ const PerfilCandidatoEditar = () => {
               onChange={handleOnChange}
               required
             />
-            {error?.descripcion && <p className="error-text hidden" id="error-descripcion">{error.descripcion}</p>}
+            {error?.descripcion && <p className="error-text" id="error-descripcion">{error.descripcion}</p>}
           </div>
+
+          {/* ---------- Aptitudes ---------- */}
+
+          <div>
+            <h2 className="mb-2 text-lg font-semibold">Aptitudes</h2>
+
+            <div className="flex flex-wrap gap-3">
+              {Object.entries(listAptitudes).map(([key, label]) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => handleClick(key)}
+                  className={`px-4 py-2 rounded-2xl border transition-all duration-200 ${selected.includes(key)
+                      ? "bg-blue-600 text-white border-blue-600 shadow-md scale-105"
+                      : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"
+                    }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {/* Si quieres mostrar errores de validación */}
+            {/* {error?.aptitudes && (
+        <p className="error-text hidden" id="error-descripcion">
+          {error.aptitudes}
+        </p>
+      )} */}
+          </div>
+
+
 
           {/* ---------- ESTUDIOS ---------- */}
           <section>

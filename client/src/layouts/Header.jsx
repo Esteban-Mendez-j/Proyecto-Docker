@@ -1,11 +1,13 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { useSendForm } from "../hooks/useFetch";
+import useVisible from "../hooks/useVisible";
 import { API_CLIENT_URL } from "../services/Api";
 import { RoleContext } from "../services/RoleContext";
 import "../style/invitado/header.css";
-import useVisible from "../hooks/useVisible";
 import Notificaciones from "../components/Notificaciones"; 
 import { useSendForm } from "../hooks/useFetch";
+import { clearLocalStore } from "../services/localStore"
 
 export default function Header () {
 
@@ -103,6 +105,8 @@ export default function Header () {
                         <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
                 </button>
+                
+                {/* {["EMPRESA", "CANDIDATO"].includes(rol) && <BandejaNotificacion/>} */}
 
                 <nav className={`nav ${visible ? "nav-open" : ""}`}>
                     {linksByRole[rol].map((link) => (
@@ -116,7 +120,16 @@ export default function Header () {
                             {link.name}
                         </NavLink>
                     ))}
-                    {rol !== "ROLE_INVITADO" && <a href={`${API_CLIENT_URL}/usuarios/cerrarSesion`} className="nav-link">Cerrar Sesion</a>}
+                    
+                    {rol !== "ROLE_INVITADO" &&
+                        <button className="nav-link"
+                            onClick={() => {
+                                clearLocalStore()
+                                window.location.href = `${API_CLIENT_URL}/usuarios/cerrarSesion`;
+                            }}>
+                            Cerrar Sesion
+                        </button>
+                    }
                     {rol == "CANDIDATO" && <Notificaciones />}
                     {["CANDIDATO", "EMPRESA"].includes(rol) &&
                         <Link to={"/perfil/"+ rol.toLowerCase()} className="perfil-link">

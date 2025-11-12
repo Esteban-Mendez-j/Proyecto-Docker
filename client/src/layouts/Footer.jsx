@@ -54,10 +54,10 @@ export default function Footer() {
                 <div className="bottom">
                     <p className="copyright">© {currentYear} SearchJobs. Todos los derechos reservados.</p>
                     <div className="links">
-                        <Link to="/terminos" className="bottom-link">
+                        <Link to="/terminos/condiciones" className="bottom-link">
                             Términos y condiciones
                         </Link>
-                        <Link to="/privacidad" className="bottom-link">
+                        <Link to="/politicas/privacidad" className="bottom-link">
                             Política de privacidad
                         </Link>
                     </div>

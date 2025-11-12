@@ -1,6 +1,7 @@
 package com.miproyecto.proyecto.model;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -72,16 +73,24 @@ public class VacanteDTO {
 
     private int numCompartidos;
 
-    // 🔥 NUEVO: Campo de visitas
+    private List <String> aptitudes;
+
     private Integer visitas = 0;
 
-    // 🔥 NUEVO: Getter y Setter para visitas
     public Integer getVisitas() {
         return visitas;
     }
 
     public void setVisitas(Integer visitas) {
         this.visitas = visitas;
+    }
+
+    public List<String> getAptitudes() {
+        return aptitudes;
+    }
+
+    public void setAptitudes(List<String> aptitudes) {
+        this.aptitudes = aptitudes;
     }
 
     public int getNumCompartidos() {

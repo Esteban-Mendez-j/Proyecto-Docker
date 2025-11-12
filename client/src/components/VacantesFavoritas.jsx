@@ -4,7 +4,7 @@ import '../style/invitado/empleos.css';
 import JobCard from './JobCard.jsx';
 import Paginacion from './Paginacion';
 
-const VacantesFavoritas = ({ pageSize = 10 }) => {
+const VacantesFavoritas = ({ pageSize = 12 }) => {
   const [vacantes, setVacantes] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -47,6 +47,8 @@ const fetchVacantesFav = async () => {
 
     // ✅ Guarda solo el array, no todo el objeto
     setVacantes(data.vacantesFavoritas || []);
+    setTotalPages(data.totalPages || 1);
+    setTotalElements(data.totalElements || 0);
   } catch (error) {
     console.error("❌ Error al cargar vacantes favoritas:", error);
   } finally {
@@ -100,7 +102,7 @@ const handleToggleFavorito = async () => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
         <h1 className="text-2xl font-bold">Gestión de Vacantes Favoritas</h1>
 
-        <div className="flex flex-wrap gap-2">
+        {/* <div className="flex flex-wrap gap-2">
           <input
             type="text"
             placeholder="Buscar Empresa..."
@@ -145,7 +147,7 @@ const handleToggleFavorito = async () => {
           >
             Limpiar
           </button>
-        </div>
+        </div> */}
       </div>
 
 
@@ -154,6 +156,7 @@ const handleToggleFavorito = async () => {
 
                   {/* Contenedor con bordes de columnas */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    
                       {vacantes.map((job) => (
                           <div key={job.nvacantes} className="border border-gray-300 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-200">
                               <JobCard 
@@ -166,11 +169,7 @@ const handleToggleFavorito = async () => {
 
                   {/* Paginación */}
                   <div className="mt-6">
-                      <Paginacion
-                          currentPage={currentPage}
-                          setCurrentPage={setCurrentPage}
-                          totalPages={totalPages}
-                      />
+                      <Paginacion currentPage={currentPage} setCurrentPage={setCurrentPage} totalPages={totalPages} />
                   </div>
 
               </div>

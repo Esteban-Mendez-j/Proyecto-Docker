@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { API_CLIENT_URL } from '../services/Api';
 import manejarRespuesta from "../services/ManejarRespuesta";
+import Loading from "../components/Loading"
 
 const ChatList = ({ searchText, Estado , onSelectChat }) => {
   const [userRole, setUserRole] = useState(null);
@@ -59,10 +60,20 @@ const ChatList = ({ searchText, Estado , onSelectChat }) => {
     fetchChats();
   }, [userRole, userId, searchText, Estado]);
 
-  if (loading) return <div>Cargando chats...</div>;
-  if (chats.length === 0) return <div>No hay chats para mostrar.</div>;
+  if (loading) return <Loading/>;
+  if (chats.length === 0)
+    return (
+      <div className="flex flex-col items-center justify-center text-center py-16 text-gray-500">
+        <h2 className="text-lg font-semibold text-gray-700">
+          No hay chats disponibles
+        </h2>
+        <p className="text-sm text-gray-500">
+          Cuando inicies una conversación, aparecerá aquí.
+        </p>
+      </div>
+    );
   return (
-    <div className="h-full overflow-y-auto bg-white border border-blue-200 rounded-lg shadow-sm custom-scroll">
+    <div className=" h-full overflow-y-auto bg-white border border-blue-200 rounded-lg shadow-sm custom-scroll">
       <ul className="divide-y divide-blue-100">
         {chats.map((chat) => (
           <li key={chat.id}>

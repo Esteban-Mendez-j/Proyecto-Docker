@@ -7,30 +7,9 @@ import Loading from "../../components/Loading";
 import useVisible from "../../hooks/useVisible";
 import { modalResponse } from "../../services/Modal";
 import { useNavigate } from "react-router-dom";
+import { sectores } from "../../services/data";
 export default function RegistroEmpresa (){
     
-    const sectores = [
-        "Tecnologia de la Informacion (TI) / Software",
-        "Salud y Medicina",
-        "Educacion y Formacion",
-        "Construccion e Infraestructura",
-        "Manufactura e Industria",
-        "Comercio y Ventas",
-        "Logistica y Transporte",
-        "Banca, Finanzas y Seguros",
-        "Agroindustria y Agricultura",
-        "Legal y Juridico",
-        "Turismo, Hoteleria y Gastronomia",
-        "Medios, Comunicacion y Publicidad",
-        "Energia y Mineria",
-        "Servicios Profesionales y Consultoria",
-        "Arte, Cultura y Entretenimiento",
-        "Bienes Raices e Inmobiliaria",
-        "Ciencia e Investigacion",
-        "Organizaciones sin Fines de Lucro y ONG",
-        "Otros"
-    ];
-
     const initialData = {
         nombre: "",
         nit: "",
@@ -114,8 +93,8 @@ export default function RegistroEmpresa (){
                                     <label htmlFor="sectorEmpresa">Sector Empresa <span className="required">*</span></label>
                                     <select id="sectorEmpresa" value={dataFrom.sectorEmpresa} name="sectorEmpresa" className= {`form-control ${error?.sectorEmpresa ? "error-input" : ""}`} required onChange={handleOnChange}>
                                         <option value={""} disabled>Selecciona tu sector</option>
-                                        {sectores.map((sector) => (
-                                            <option value={sector} selected={dataFrom.sectorEmpresa == sector}>{sector}</option>
+                                        {sectores.map((sector, index) => (
+                                            <option key={index} value={sector} >{sector}</option>
                                         ))}
                                     </select>
                                 </div>

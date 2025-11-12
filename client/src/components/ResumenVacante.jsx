@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 import { useFetch, useSendForm } from "../hooks/useFetch";
 import { modal } from "../services/Modal";
 import { API_CLIENT_URL } from "../services/Api";
+import Prediccion from "./Prediccion";
 
-export default function ResumenVacante({job, rol}) {
+export default function ResumenVacante({job, rol, id}) {
 
     const[IdUserSesion ,setIdUserSesion] = useState(null);
     const [curriculo, setCurriculo] = useState(null);
@@ -144,7 +145,7 @@ useEffect(() => {
               </svg>
               <div>
                 <p className="text-sm text-text-light">Salario</p>
-                <p className="font-medium">{jobResumen.sueldo}</p>
+                <p className="font-medium">{jobResumen.sueldo.toLocaleString('es-CO')} COP</p>
               </div>
             </div>
 
@@ -315,6 +316,9 @@ useEffect(() => {
             ) : null
           ) : null}
         </div>
+        <br />
+        <br />
+        {rol == "CANDIDATO" && <Prediccion id={id}/>}
       </div>
     );
 }

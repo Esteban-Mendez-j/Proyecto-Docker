@@ -60,13 +60,13 @@
 
 .form-group textarea {
   width: 100%;
-  min-height: 120px;
+  min-height: 140px;
   padding: 0.75rem 1rem;
   border: 1px solid #E2E8F0;
   border-radius: 8px;
   font-size: 0.95rem;
   background-color: #F8FAFC;
-  resize: vertical;
+  resize: none;
 }
 
 /* Estilo para los botones como en la imagen */

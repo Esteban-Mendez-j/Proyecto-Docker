@@ -1,3 +1,5 @@
+import { deleteLocalStore } from "../services/localStore";
+
 export default function FilterComponent({ filtersLocal, clearAllFilters, handleFilterChange, setFilters, rol,handleEstadoChange }) {
   
   return (
@@ -142,6 +144,8 @@ export default function FilterComponent({ filtersLocal, clearAllFilters, handleF
               totalpostulaciones: null,
               favoritos: null
             }); // fuerza los filtros globales a reiniciarse
+            deleteLocalStore("filtroLocal")
+            deleteLocalStore("filtro")
           }}
         >
           Eliminar filtros

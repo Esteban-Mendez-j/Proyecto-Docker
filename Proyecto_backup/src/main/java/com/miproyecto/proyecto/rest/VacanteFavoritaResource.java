@@ -1,9 +1,9 @@
 package com.miproyecto.proyecto.rest;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -71,35 +71,47 @@ public class VacanteFavoritaResource {
     }
 
     
-    @GetMapping("/listar")
-    public ResponseEntity<Map<String, Object>> ListarVacantesFavoritasPerfil(
+@GetMapping("/listar")
+public ResponseEntity<Map<String, Object>> listarVacantesFavoritasPerfil(
         HttpSession session,
         @PageableDefault(page = 0, size = 10) Pageable pageable,
-        @CookieValue(required = true) String jwtToken) {
-        
-        Map<String, Object> response = new HashMap<>();
-        
-        
-        if (jwtToken == null) {
-            response.put("status", 401);
-            response.put("mensaje", "Inicia sesión");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-        }
+        @CookieValue(name = "jwtToken", required = true) String jwtToken) {
+    
+    Map<String, Object> response = new HashMap<>();
 
-        DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
-        Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
-        List<VacanteDTO> vacantesFavoritas = vacanteFavoritoService.obtenerVacantesFavoritas(idUsuario);
-        
-        //YA FUNCIONA
-
-        response.put("status", 200);
-        response.put("mensaje", "Lista de vacantes favoritas obtenida correctamente");
-        response.put("vacantesFavoritas", vacantesFavoritas);
-       
-        // Agregar la lista de vacantes favoritas al response
-        // response.put("vacantesFavoritas", listaDeVacantesFavoritas);
-
-        return ResponseEntity.ok(response);
+    // 🔹 Validar token JWT
+    if (jwtToken == null) {
+        response.put("status", 401);
+        response.put("mensaje", "Inicia sesión");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
+
+ 
+    DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+    Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+
+    
+    Page<VacanteDTO> paginaVacantes = vacanteFavoritoService.obtenerVacantesFavoritas(idUsuario, pageable);
+
+     
+    Map<String, Object> pageInfo = new HashMap<>();
+    pageInfo.put("pageNumber", pageable.getPageNumber());
+    pageInfo.put("pageSize", pageable.getPageSize());
+    pageInfo.put("sort", pageable.getSort());
+    pageInfo.put("offset", pageable.getOffset());
+    pageInfo.put("paged", pageable.isPaged());
+    pageInfo.put("unpaged", pageable.isUnpaged());
+
+    
+    response.put("status", 200);
+    response.put("mensaje", "Lista de vacantes favoritas obtenida correctamente");
+    response.put("vacantesFavoritas", paginaVacantes.getContent());
+    response.put("totalElements", paginaVacantes.getTotalElements());
+    response.put("totalPages", paginaVacantes.getTotalPages());
+    response.put("pageActual", pageInfo);
+    
+
+    return ResponseEntity.ok(response);
+}
     
 }

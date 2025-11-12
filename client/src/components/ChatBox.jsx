@@ -181,7 +181,6 @@ const ChatBox = ({ chatId }) => {
           </div>
           <h3>Tus mensajes</h3>
           <p>Selecciona una conversación para ver tus mensajes o inicia una nueva</p>
-          
         </div>
       </div>
     );
@@ -225,14 +224,14 @@ const ChatBox = ({ chatId }) => {
               className={`flex ${isOwn ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-sm px-5 py-3 rounded-xl shadow-md text-base relative break-words overflow-hidden ${
+                className={`min-w-[100px] max-w-sm px-5 py-3 rounded-xl shadow-md text-base relative break-words overflow-hidden ${
                   isOwn
                     ? "bg-blue-500 text-white rounded-br-none"
                     : "bg-white text-blue-900 rounded-bl-none border border-blue-200"
                 }`}
               >
                 <p className="mb-4">{msg.content}</p>
-                <span className="absolute bottom-1 right-3 text-xs text-gray-300">
+                <span className="absolute bottom-1 right-3 text-xs text-black-300">
                   {new Date(msg.time + 'Z').toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",

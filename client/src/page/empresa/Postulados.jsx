@@ -7,12 +7,27 @@ import Swal from 'sweetalert2';
 import Pagination from "../../components/Paginacion";
 import manejarRespuesta from "../../services/ManejarRespuesta";
 import { API_CLIENT_URL } from "../../services/Api";
+import { modal } from "../../services/Modal";
+import {sendMessage} from "../../services/Websocket"
+import { mensajesNotificaciones } from "../../services/data";
 
-export default function Postulaciones() {
+export default function Postulados() {
 
+    const initialNotificacion = {
+        Id: "",
+        asunto: "",
+        cuerpo: "",
+        fechaEnvio: "",
+        destinatario: "",
+        remitente: "",
+        nameRemitente: "",
+        isVisible: true,
+        estadoEnvio: "",
+    }
     const { vacanteId } = useParams()
     const itemsPerPage = 10;
-
+    const [remitenteId, setRemitenteId] = useState(null)
+    const [notificacion, setNotificacion] = useState(initialNotificacion);
     const [postulados, setPostulados] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -33,6 +48,7 @@ export default function Postulaciones() {
             const data = await manejarRespuesta(res);
             if (!data) { return; }
             setUserRole(data.rolPrincipal);
+            setRemitenteId(data.id)
         } catch (error) {
             console.error('Error fetching user role:', error);
         }
@@ -109,6 +125,21 @@ export default function Postulaciones() {
         }
     };
 
+    const sendNotificacion = (estadoPostulacion, idPostulacion) => {
+        const { asunto, cuerpo } = mensajesNotificaciones[estadoPostulacion];
+        const postulacion = postulados.find(p => p.nPostulacion === idPostulacion);
+        const destinatario = postulacion.candidato.correo ;
+
+        const notificacion = {
+            asunto: asunto,
+            cuerpo: cuerpo,
+            destinatario: destinatario,
+            remitente: remitenteId,
+        }
+
+        sendMessage("/app/enviar/notificacion", notificacion);
+    }
+
     const actualizarEstadoPostulacion = async (nPostulacion, nuevoEstado) => {
         const { isConfirmed } = await Swal.fire({
             title: 'Confirmar acción',
@@ -134,8 +165,9 @@ export default function Postulaciones() {
 
             if (!res.ok) { await Swal.fire({ text: 'Error al actualizar estado', icon: 'error' }); }
 
-            alert(`Postulación ${nuevoEstado.toLowerCase()} correctamente`);
+            modal(`Postulación ${nuevoEstado.toLowerCase()} correctamente`, "success");
             fetchPostulados(currentPage);
+            sendNotificacion(nuevoEstado.toLowerCase(), nPostulacion)
         } catch (error) {
             console.error('Error al actualizar:', error);
             await Swal.fire({ text: 'Ocurrió un error al actualizar la postulación', icon: 'error' });

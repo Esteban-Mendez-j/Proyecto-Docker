@@ -34,13 +34,16 @@ public class VacanteService {
     private final VacanteRepository vacanteRepository;
     private final EmpresaRepository empresaRepository;
     private final PostuladoRepository postuladoRepository;
+    private final AptitudesService aptitudesService;
 
     public VacanteService(final VacanteRepository vacanteRepository,
             final EmpresaRepository empresaRepository,
-            final PostuladoRepository postuladoRepository) {
+            final PostuladoRepository postuladoRepository,
+            final AptitudesService aptitudesService) {
         this.vacanteRepository = vacanteRepository;
         this.empresaRepository = empresaRepository;
         this.postuladoRepository = postuladoRepository;
+        this.aptitudesService = aptitudesService;
     }
 
     // 🔥 NUEVO: Método para incrementar visitas
@@ -139,9 +142,9 @@ public class VacanteService {
     public void create(final VacanteDTO vacanteDTO) {
         final Vacante vacante = new Vacante();
         vacanteDTO.setFechaPublicacion(LocalDate.now());
+        vacanteDTO.setActive(true);
+        vacanteDTO.setActivaPorEmpresa(true);
         mapToEntity(vacanteDTO, vacante);
-        vacante.setIsActive(true);
-        vacante.setActivaPorEmpresa(true);
         vacanteRepository.save(vacante);
     }
 
@@ -196,6 +199,10 @@ public class VacanteService {
         // 🔥 NUEVO: Mapear el campo de visitas
         vacanteDTO.setVisitas(vacante.getVisitas());
         
+        vacanteDTO.setAptitudes(
+                vacante.getAptitudes().stream()
+                        .map(aptitud -> aptitud.getNombreAptitud())
+                        .collect(Collectors.toList()));
         vacanteDTO.setCandidatoPostulado(
             vacante.getLitarpostulados()
                 .stream()
@@ -248,6 +255,7 @@ public class VacanteService {
         final Empresa idUsuario = vacanteDTO.getIdUsuario() == null ? null : empresaRepository.findById(vacanteDTO.getIdUsuario())
                 .orElseThrow(() -> new NotFoundException("idUsuario not found"));
         vacante.setIdUsuario(idUsuario);
+        vacante.setAptitudes(aptitudesService.mapToListEntity(vacanteDTO.getAptitudes()));
         return vacante;
     }
 

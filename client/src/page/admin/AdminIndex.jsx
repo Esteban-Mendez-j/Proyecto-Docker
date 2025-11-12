@@ -10,7 +10,6 @@ export default function AdminIndex() {
 
       <div className="container px-4 py-6 mx-auto mt-12">
         <div className="flex flex-col gap-6 md:flex-row">
-          <AdminSidebar activeItem="dashboard" />
 
           <div className="flex-1">
             <h1 className="mb-6 text-2xl font-bold">Panel de Administrador</h1>

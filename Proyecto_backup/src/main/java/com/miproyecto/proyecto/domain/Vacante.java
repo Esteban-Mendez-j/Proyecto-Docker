@@ -1,8 +1,10 @@
 package com.miproyecto.proyecto.domain;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +12,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
@@ -83,7 +87,11 @@ public class Vacante {
     @JoinColumn(name = "id_usuario_id")
     private Empresa idUsuario;
 
-    // 🔥 NUEVO: Getter y Setter para visitas
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinTable(name = "vacante_aptitudes", joinColumns = @JoinColumn(name = "nvacantes"), inverseJoinColumns = @JoinColumn(name = "Id_aptitud"))
+    private List<Aptitudes> aptitudes;
+
+
     public Integer getVisitas() {
         return visitas;
     }
@@ -92,9 +100,16 @@ public class Vacante {
         this.visitas = visitas;
     }
 
-    // 🔥 NUEVO: Método para incrementar visitas
     public void incrementarVisitas() {
         this.visitas++;
+    }
+    
+    public List<Aptitudes> getAptitudes() {
+        return aptitudes;
+    }
+
+    public void setAptitudes(List<Aptitudes> aptitudes) {
+        this.aptitudes = aptitudes;
     }
 
     public int getNumCompartidos() {

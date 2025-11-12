@@ -1,13 +1,5 @@
 package com.miproyecto.proyecto.service;
 
-import com.miproyecto.proyecto.domain.Candidato;
-import com.miproyecto.proyecto.domain.Roles;
-import com.miproyecto.proyecto.model.CandidatoDTO;
-import com.miproyecto.proyecto.model.CandidatoResumenDTO;
-import com.miproyecto.proyecto.repos.CandidatoRepository;
-import com.miproyecto.proyecto.repos.RolesRepository;
-import com.miproyecto.proyecto.util.NotFoundException;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +9,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.miproyecto.proyecto.domain.Candidato;
+import com.miproyecto.proyecto.domain.Roles;
+import com.miproyecto.proyecto.model.CandidatoDTO;
+import com.miproyecto.proyecto.model.CandidatoResumenDTO;
+import com.miproyecto.proyecto.repos.CandidatoRepository;
+import com.miproyecto.proyecto.repos.RolesRepository;
+import com.miproyecto.proyecto.util.NotFoundException;
+
 
 @Service
 @Transactional
@@ -25,13 +25,15 @@ public class CandidatoService{
     private final CandidatoRepository candidatoRepository;
     private final PasswordEncoder passwordEncoder;
     private final RolesRepository rolesRepository;
+    private final AptitudesService aptitudesService;
 
 
-    public CandidatoService(CandidatoRepository candidatoRepository, PasswordEncoder passwordEncoder,
+    public CandidatoService(CandidatoRepository candidatoRepository, PasswordEncoder passwordEncoder, AptitudesService aptitudesService,
             RolesRepository rolesRepository) {
         this.candidatoRepository = candidatoRepository;
         this.passwordEncoder = passwordEncoder;
         this.rolesRepository = rolesRepository;
+        this.aptitudesService = aptitudesService;
     }
 
     // busca un candidato por su id
@@ -69,12 +71,12 @@ public class CandidatoService{
         candidatoRepository.save(candidato);
     }
 
-    
     // busca y actualiza un objeto candidato en la base de datos 
     public void update(final Long idUsuario, final CandidatoDTO candidatoDTO) {
         final Candidato candidato = candidatoRepository.findById(idUsuario)
                 .orElseThrow(NotFoundException::new);
         mapToEntity(candidatoDTO, candidato, false);
+        
         candidatoRepository.save(candidato);
     }
 
@@ -99,7 +101,12 @@ public class CandidatoService{
         candidatoDTO.setComentarioAdmin(candidato.getComentarioAdmin());
         candidatoDTO.setFechaInicioSesion(candidato.getFechaInicioSesion());
         candidatoDTO.setFechaRegistro(candidato.getFechaRegistro());
-
+        candidatoDTO.setAptitudes(
+                candidato.getAptitudes().stream()
+                        .map(aptitud -> aptitud.getNombreAptitud())
+                        .collect(Collectors.toList()));
+        candidatoDTO.setNivelEducativo(candidato.getNivelEducativo());
+                        
         candidatoDTO.setRoles(
             candidato.getRoles().stream()
                     .map(roles -> roles.getRol())
@@ -113,6 +120,7 @@ public class CandidatoService{
         candidatoResumenDTO.setNombre(candidato.getNombre());
         candidatoResumenDTO.setExperiencia(candidato.getExperiencia());
         candidatoResumenDTO.setCurriculo(candidato.getCurriculo());
+        candidatoResumenDTO.setCorreo(candidato.getCorreo());
         return candidatoResumenDTO;
     }
     
@@ -134,8 +142,10 @@ public class CandidatoService{
         candidato.setIdentificacion(candidatoDTO.getIdentificacion());
         candidato.setIsActive(candidatoDTO.getIsActive());
         candidato.setComentarioAdmin(candidatoDTO.getComentarioAdmin());
-        candidatoDTO.setFechaInicioSesion(candidato.getFechaInicioSesion());
-        candidatoDTO.setFechaRegistro(candidato.getFechaRegistro());
+        candidato.setFechaInicioSesion(candidatoDTO.getFechaInicioSesion());
+        candidato.setFechaRegistro(candidatoDTO.getFechaRegistro());
+        candidato.setAptitudes(aptitudesService.mapToListEntity(candidatoDTO.getAptitudes()));
+        candidato.setNivelEducativo(candidatoDTO.getNivelEducativo());
         return candidato;
     }
 

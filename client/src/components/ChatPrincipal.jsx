@@ -11,7 +11,7 @@ export default function ChatApp({ chatId: initialChatId }) {
 
   return (
     <div className="h-screen flex">
-      <aside className="w-1/4 flex flex-col border-r border-gray-200 bg-white">
+      <aside className="w-1/4 flex flex-col border-r border-gray-200 bg-white pt-20">
         <header className="p-4 border-b">
           <h2 className="text-lg font-semibold text-blue-700">Mensajes</h2>
         </header>
@@ -28,7 +28,7 @@ export default function ChatApp({ chatId: initialChatId }) {
             <input
               type="text"
               className="flex-1 bg-blue-50 text-blue-900 placeholder-blue-400 outline-none"
-              placeholder="Buscar conversaciones..."
+              placeholder="Buscar por vacante..."
               value={searchTextLocal}
               onChange={(e) => setSearchTextLocal(e.target.value)}
             />
@@ -79,7 +79,7 @@ export default function ChatApp({ chatId: initialChatId }) {
 
         </nav>
 
-        <div className="flex-1 overflow-y-auto min-h-0 px-2 pb-4">
+        <div className="flex-1 overflow-y-auto min-h-0 px-2 pb-4 ">
           {/* Pasamos searchText y Estado al componente que lista chats */}
           <ChatList
             searchText={searchText}
