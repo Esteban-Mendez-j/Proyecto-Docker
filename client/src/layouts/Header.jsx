@@ -5,9 +5,8 @@ import useVisible from "../hooks/useVisible";
 import { API_CLIENT_URL } from "../services/Api";
 import { RoleContext } from "../services/RoleContext";
 import "../style/invitado/header.css";
-import Notificaciones from "../components/Notificaciones"; 
-import { useSendForm } from "../hooks/useFetch";
 import { clearLocalStore } from "../services/localStore"
+import BandejaNotificacion from "../components/BandejaNotificacion";
 
 export default function Header () {
 
@@ -106,8 +105,6 @@ export default function Header () {
                     </svg>
                 </button>
                 
-                {/* {["EMPRESA", "CANDIDATO"].includes(rol) && <BandejaNotificacion/>} */}
-
                 <nav className={`nav ${visible ? "nav-open" : ""}`}>
                     {linksByRole[rol].map((link) => (
                         <NavLink
@@ -130,7 +127,8 @@ export default function Header () {
                             Cerrar Sesion
                         </button>
                     }
-                    {rol == "CANDIDATO" && <Notificaciones />}
+                    {/* {rol == "CANDIDATO" && <Notificaciones />} // jesus */}
+                    {["CANDIDATO", "EMPRESA"].includes(rol) && <BandejaNotificacion/>}
                     {["CANDIDATO", "EMPRESA"].includes(rol) &&
                         <Link to={"/perfil/"+ rol.toLowerCase()} className="perfil-link">
                             <picture className="perfil-header">

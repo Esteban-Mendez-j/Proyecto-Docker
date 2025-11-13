@@ -27,6 +27,7 @@ import PerfilEmpresa from "./page/perfil/empresa/PerfilEmpresa.jsx";
 import PerfilCandidatoPublic from "./page/candidato/PerfilCandidatoPublic.jsx"
 import PoliticaPrivacidad from "./page/invitado/PoliticaPrivacidad.jsx";
 import TerminosCondiciones from "./page/invitado/TerminosCondiciones.jsx";
+import Notificaciones from "./page/candidato/Notificaciones.jsx";
 
 function App() {
 
@@ -37,6 +38,7 @@ function App() {
           <Route path="/perfil/candidato" element={<PerfilCandidato/>} />
           <Route path="/postulaciones" element= {<PostuladosPage/>} />
           <Route path= "/vacantes/favoritas" element= {<VacantesFav/>} />
+          <Route path= "/notificaciones" element= {<Notificaciones/>} />
         </Route>
         <Route element={<RouteProtection accessRole={"EMPRESA"} />}> 
           <Route path="/empresa/vacantes" element={<Vacantes/>} />

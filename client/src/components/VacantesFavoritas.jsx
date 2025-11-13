@@ -161,7 +161,7 @@ const handleToggleFavorito = async () => {
                           <div key={job.nvacantes} className="border border-gray-300 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-200">
                               <JobCard 
                               job={job} 
-                              onFavoritoChange={handleToggleFavorito}/>
+                              onFavoritoChange={handleToggleFavorito} presentaion={1}/>
                               
                           </div>
                       ))}

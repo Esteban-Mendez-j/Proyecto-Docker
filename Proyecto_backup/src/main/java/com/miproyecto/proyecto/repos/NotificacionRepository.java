@@ -9,7 +9,7 @@ import com.miproyecto.proyecto.domain.Notificacion;
 import java.util.List;
 
 
-public interface NotificacionRepository extends MongoRepository<Notificacion, Long> {
+public interface NotificacionRepository extends MongoRepository<Notificacion, String> {
 
     Page<Notificacion> findAllByDestinatarioAndIsVisibleOrderByFechaEnvioDesc(String Destinatario, Boolean isVisible , Pageable Pageable);
 

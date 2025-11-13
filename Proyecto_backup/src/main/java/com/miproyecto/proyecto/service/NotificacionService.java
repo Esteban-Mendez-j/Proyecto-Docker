@@ -79,26 +79,21 @@ public class NotificacionService {
 
         Notificacion notificacion = mapToEntity(notificacionDTO, new Notificacion());
 
-        Long id = notificacionRepository.save(notificacion).getId();
+        String id = notificacionRepository.save(notificacion).getId();
         notificacionDTO.setId(id);
         return notificacionDTO;
     }
 
-    public void  cambiarVisible ( Boolean isVisible,  Long idUsuario){
-        String Destinatario = usuarioRepository.findById(idUsuario)
-            .orElseThrow(NotFoundException::new).getCorreo();
-
-        Notificacion notificacion = notificacionRepository.findByDestinatario(Destinatario);
+    public void  cambiarVisible ( Boolean isVisible,  String idNotificacion){
+        Notificacion notificacion = notificacionRepository.findById(idNotificacion)
+            .orElseThrow(NotFoundException::new);
         notificacion.setIsVisible(isVisible);
 
         notificacionRepository.save(notificacion);
     }
 
-    public void  cambiarEstadoEnvio ( EstadoEnvio estado,  Long idUsuario){
-        String Destinatario = usuarioRepository.findById(idUsuario)
-            .orElseThrow(NotFoundException::new).getCorreo();
-
-        Notificacion notificacion = notificacionRepository.findByDestinatario(Destinatario);
+    public void  cambiarEstadoEnvio ( EstadoEnvio estado,  String idNotificacion){
+        Notificacion notificacion = notificacionRepository.findById(idNotificacion).orElseThrow(NotFoundException::new);
         notificacion.setEstadoEnvio(estado);
 
         notificacionRepository.save(notificacion);
@@ -130,7 +125,6 @@ public class NotificacionService {
     
     public Notificacion mapToEntity (final NotificacionDTO notificacionDTO, final Notificacion notificacion ){
         
-        notificacion.setId(notificacionDTO.getId());
         notificacion.setAsunto(notificacionDTO.getAsunto());
         notificacion.setCuerpo(notificacionDTO.getCuerpo());
         notificacion.setFechaEnvio(notificacionDTO.getFechaEnvio());

@@ -6,7 +6,7 @@ import com.miproyecto.proyecto.dataType.EstadoEnvio;
 
 public class NotificacionDTO {
     
-    private Long Id;
+    private String Id;
     private String asunto;
     private String cuerpo;
     private LocalDateTime fechaEnvio;
@@ -16,10 +16,10 @@ public class NotificacionDTO {
     private Boolean isVisible;
     private EstadoEnvio estadoEnvio;
     
-    public Long getId() {
+    public String getId() {
         return Id;
     }
-    public void setId(Long id) {
+    public void setId(String id) {
         Id = id;
     }
     public String getAsunto() {

@@ -2,6 +2,7 @@ package com.miproyecto.proyecto.domain;
 
 import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.miproyecto.proyecto.dataType.EstadoEnvio;
@@ -9,7 +10,8 @@ import com.miproyecto.proyecto.dataType.EstadoEnvio;
 @Document
 public class Notificacion {
     
-    private Long Id;
+    @Id
+    private String id;
     private String asunto;
     private String cuerpo;
     private LocalDateTime fechaEnvio;
@@ -19,12 +21,10 @@ public class Notificacion {
     private Boolean isVisible;
     private EstadoEnvio estadoEnvio;
     
-    public Long getId() {
-        return Id;
+    public String getId() {
+        return id;
     }
-    public void setId(Long id) {
-        Id = id;
-    }
+    
     public String getAsunto() {
         return asunto;
     }

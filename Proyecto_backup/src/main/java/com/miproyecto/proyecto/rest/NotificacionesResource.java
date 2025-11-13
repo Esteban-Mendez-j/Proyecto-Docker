@@ -93,23 +93,27 @@ public class NotificacionesResource {
     }
 
     @PutMapping("/edit/estadoEnvio/{id}") 
-    public ResponseEntity<Void> editEstadoEnvio(
-        @PathVariable(name = "id", required = true) Long idNotificacion){
+    public ResponseEntity<Map<String, Object>> editEstadoEnvio(
+        @PathVariable(name = "id", required = true) String idNotificacion){
             
         notificacionService.cambiarEstadoEnvio(EstadoEnvio.RECIBIDO, idNotificacion);
-        return ResponseEntity.ok().build();
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", 200);
+        return ResponseEntity.ok().body(response);
     }
 
     /*TODO: verificar si es correcto que solo tenag un solo atributo de visibilidad 
       porque donde alguno de los dos oculte la notificacion el otro no la va a poder ver
     */ 
     @PutMapping("/edit/visibilidad/{id}") 
-    public ResponseEntity<Void> editVisibilidad(
-        @PathVariable(name = "id", required = true) Long idNotificacion,
-        @RequestParam boolean visibilidad){
+    public ResponseEntity<Map<String, Object>> editVisibilidad(
+        @PathVariable(name = "id", required = true) String idNotificacion,
+        @RequestParam(name = "visibilidad") boolean visibilidad){
 
         notificacionService.cambiarVisible(visibilidad, idNotificacion);
-        return ResponseEntity.ok().build();
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", 200);
+        return ResponseEntity.ok().body(response);
     }
 
 }
