@@ -186,16 +186,15 @@ public class VacanteService {
         vacanteDTO.setTipo(vacante.getTipo());
         vacanteDTO.setDescripcion(vacante.getDescripcion());
         vacanteDTO.setRequerimientos(vacante.getRequerimientos());
-        vacanteDTO.setActive(vacante.getIsActive());
+        vacanteDTO.setActive(Boolean.TRUE.equals(vacante.getIsActive()));
         vacanteDTO.setComentarioAdmin(vacante.getComentarioAdmin());
         vacanteDTO.setIdUsuario(vacante.getIdUsuario() == null ? null : vacante.getIdUsuario().getIdUsuario());
         vacanteDTO.setNameEmpresa(vacante.getIdUsuario() != null ? vacante.getIdUsuario().getNombre() : "Empresa Desconocida");
         vacanteDTO.setImagenEmpresa(vacante.getIdUsuario() != null ? vacante.getIdUsuario().getImagen() : "null");
-        vacanteDTO.setnPostulados(vacante.getLitarpostulados().size());
         vacanteDTO.setTotalpostulaciones(vacante.getTotalpostulaciones());
         vacanteDTO.setActivaPorEmpresa(vacante.isActivaPorEmpresa());
         vacanteDTO.setNumCompartidos(vacante.getNumCompartidos());
-        
+        vacanteDTO.setnPostulados(vacante.getLitarpostulados() != null? vacante.getLitarpostulados().size(): 0);
         // 🔥 NUEVO: Mapear el campo de visitas
         vacanteDTO.setVisitas(vacante.getVisitas());
         

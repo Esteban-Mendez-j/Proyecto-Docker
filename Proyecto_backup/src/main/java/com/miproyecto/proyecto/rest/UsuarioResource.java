@@ -108,9 +108,9 @@ public class UsuarioResource {
     )
     @ApiResponse(responseCode = "201", description = "Usuario creado con éxito")
     @PostMapping("/add")
-    public ResponseEntity<Long> createUsuario(@RequestBody @Valid final UsuarioDTO usuarioDTO) {
-        final Long createdIdUsuario = usuarioService.create(usuarioDTO);
-        return new ResponseEntity<>(createdIdUsuario, HttpStatus.CREATED);
+    public ResponseEntity<UsuarioDTO> createUsuario(@RequestBody @Valid final UsuarioDTO usuarioDTO) {
+        final UsuarioDTO createdUsuario = usuarioService.create(usuarioDTO);
+        return new ResponseEntity<>(createdUsuario, HttpStatus.CREATED);
     }
 
     @Operation(

@@ -1,6 +1,8 @@
 package com.miproyecto.proyecto.domain;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -91,6 +93,12 @@ public class Vacante {
     @JoinTable(name = "vacante_aptitudes", joinColumns = @JoinColumn(name = "nvacantes"), inverseJoinColumns = @JoinColumn(name = "Id_aptitud"))
     private List<Aptitudes> aptitudes;
 
+
+    public Vacante() {
+        this.litarpostulados = new HashSet<>();
+        this.listaVacnatesFavoritas = new HashSet<>();
+        this.aptitudes = new ArrayList<>();
+    }
 
     public Integer getVisitas() {
         return visitas;

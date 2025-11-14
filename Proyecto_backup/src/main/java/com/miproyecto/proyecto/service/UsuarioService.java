@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -52,7 +51,7 @@ public class UsuarioService {
     }
 
     public List<UsuarioDTO> findAll() {
-        final List<Usuario> usuarios = usuarioRepository.findAll(Sort.by("idUsuario"));
+        final List<Usuario> usuarios = usuarioRepository.findAll();
         return usuarios.stream()
                 .map(usuario -> mapToDTO(usuario, new UsuarioDTO()))
                 .toList();
@@ -120,10 +119,11 @@ public class UsuarioService {
         return usuarioRepository.findByCorreoAndContrasena(correo, contrasena).isPresent();
     }
 
-    public Long create(final UsuarioDTO usuarioDTO) {
+    public UsuarioDTO create(final UsuarioDTO usuarioDTO) {
         final Usuario usuario = new Usuario();
         mapToEntity(usuarioDTO, usuario);
-        return usuarioRepository.save(usuario).getIdUsuario();
+        usuarioRepository.save(usuario);
+        return usuarioDTO ;
     }
 
     public void update(final Long idUsuario, final UsuarioDTO usuarioDTO) {

@@ -28,6 +28,14 @@ public class Aptitudes {
     @ManyToMany(mappedBy = "aptitudes")
     private List<Vacante> vacantes;
     
+    public Aptitudes() {
+    }
+
+    public Aptitudes(Long idAptitud, String nombreAptitud) {
+        this.idAptitud = idAptitud;
+        this.nombreAptitud = nombreAptitud;
+    }
+
     public List<Vacante> getVacantes() {
         return vacantes;
     }

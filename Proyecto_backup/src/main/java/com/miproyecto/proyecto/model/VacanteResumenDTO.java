@@ -8,6 +8,13 @@ public class VacanteResumenDTO {
     private Boolean activaPorEmpresa;
     private Boolean isActive;
     
+    public VacanteResumenDTO() {
+    }
+    public VacanteResumenDTO(Long nvacantes, String titulo, Boolean isActive) {
+        this.nvacantes = nvacantes;
+        this.titulo = titulo;
+        this.isActive = isActive;
+    }
     public Boolean getActivaPorEmpresa() {
         return activaPorEmpresa;
     }
