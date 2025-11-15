@@ -105,7 +105,7 @@ export default function FilterComponent({ filtersLocal, clearAllFilters, handleF
           </label>
         </div>
       </div>
-      {RoleSesion === "candidato" && (
+      {RoleSesion === "CANDIDATO" && (
         <div className="filter-group">
           <h4 className="filter-group-title">Favoritas</h4>
           <select name="isFavorita" value={filtersLocal.isFavorita?.toString() || "false"} onChange={handleFilterChange} className="search-input">

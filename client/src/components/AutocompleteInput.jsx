@@ -29,7 +29,7 @@ const AutocompleteInput = ({
   };
 
   return (
-    <div className={`relative`}>
+    <div className={`relative `}>
       <input
         type="text"
         placeholder={placeholder}
@@ -46,7 +46,7 @@ const AutocompleteInput = ({
 
       {showList && filteredOptions.length > 0 && (
         <ul
-          className={`absolute z-50 w-full overflow-y-auto bg-white border rounded shadow-md ${listClassName}`}
+          className={`absolute z-[100] w-full overflow-y-auto bg-white border rounded shadow-md ${listClassName}`}
           style={{ maxHeight }}
         >
           {filteredOptions.map((opt, i) => (

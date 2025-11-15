@@ -123,6 +123,7 @@ export default function RegistroCandidato() {
                                     value={dataFrom.correo}
                                     handleOnChange={handleOnChange}
                                     error={error}
+                                    autoComplete={"email"}
                                 />
                                 <p className="form-hint">
                                     Usarás este correo para iniciar sesión
@@ -133,7 +134,7 @@ export default function RegistroCandidato() {
                                 <div className="form-group">
                                     <label htmlFor="telefono">Teléfono</label>
                                     <InputFrom
-                                        type={"tel"}
+                                        type={"number"}
                                         name={"telefono"}
                                         placeholder={"Ej: +57 300 123 4567"}
                                         value={dataFrom.telefono}
@@ -354,18 +355,8 @@ export default function RegistroCandidato() {
                                 </div>
 
                                 <div className="checkbox-group">
-                                    <label className="checkbox-label">
-                                        <input
-                                            type="checkbox"
-                                            id="terminos"
-                                            name="terminos"
-                                            required
-                                        />
-                                        <span className="checkbox-text">
-                                            Acepto los términos y condiciones{" "}
-                                            <span className="required">*</span>
-                                        </span>
-                                    </label>
+                                    <input type="checkbox" id="aceptoTerminos" required />
+                                    <label htmlFor="aceptoTerminos">Acepto los términos y condiciones <span className="required">*</span></label>
                                 </div>
                             </div>
 

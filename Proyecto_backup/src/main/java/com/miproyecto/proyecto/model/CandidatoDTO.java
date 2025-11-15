@@ -24,7 +24,6 @@ public class CandidatoDTO  extends UsuarioDTO {
 
     private List <String> aptitudes;
 
-    @NotNull
     @Size(max = 30)
     private String nivelEducativo;
  

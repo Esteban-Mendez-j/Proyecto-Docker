@@ -13,10 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.miproyecto.proyecto.domain.Aptitudes;
 import com.miproyecto.proyecto.domain.Candidato;
+import com.miproyecto.proyecto.domain.Postulado;
 import com.miproyecto.proyecto.domain.Vacante;
 import com.miproyecto.proyecto.ml.WekaWrapper;
 import com.miproyecto.proyecto.repos.CandidatoRepository;
+import com.miproyecto.proyecto.repos.PostuladoRepository;
 import com.miproyecto.proyecto.repos.VacanteRepository;
+import com.miproyecto.proyecto.util.NotFoundException;
 
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -31,6 +34,30 @@ public class PrediccionService {
     private CandidatoRepository candidatoRepository;
     @Autowired
     private VacanteRepository vacanteRepository;
+    @Autowired
+    private PostuladoRepository postuladoRepository;
+
+
+    public void ActualizarAfinidad(Long idUsuario) throws Exception {
+        Candidato candidato = candidatoRepository.findById(idUsuario)
+                .orElseThrow(NotFoundException::new);
+
+        List<Postulado> listPostulados = postuladoRepository.findAllByCandidato(candidato);
+
+        for (Postulado postulacion : listPostulados) {
+
+            Map<String, Object> resultado = predecirDesdeComparacion(
+                    postulacion.getVacante().getNvacantes(), idUsuario);
+
+            Object valor = resultado.get("porcentajeMatch");
+
+            if (valor != null) {
+                postulacion.setPorcentajePrediccion(Double.parseDouble(valor.toString()));
+            }
+        }
+
+        postuladoRepository.saveAll(listPostulados);
+    }
 
     public Map<String, Integer> comparacion(Vacante vacante, Candidato candidato) {
 

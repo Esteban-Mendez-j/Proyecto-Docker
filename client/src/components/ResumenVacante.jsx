@@ -9,6 +9,7 @@ export default function ResumenVacante({job, rol, id}) {
 
     const[IdUserSesion ,setIdUserSesion] = useState(null);
     const [curriculo, setCurriculo] = useState(null);
+    const [prediccionActiva , setPrediccionActiva] = useState(false);
     const [jobResumen, setJobResumen] = useState(job);
     const { send } = useSendForm();
     const {send:sendCandidato, data:dataCandidato } = useSendForm();
@@ -16,41 +17,49 @@ export default function ResumenVacante({job, rol, id}) {
 
     useEffect(() => {
     if (jobResumen?.nvacantes) {
-        console.log("ID a enviar:", jobResumen.nvacantes);
 
         fetch(`${API_CLIENT_URL}/api/vacantes/visita/${jobResumen.nvacantes}`, {
             method: "POST",
             credentials: 'include'
         })
         .then(response => {
-            console.log("Status visita:", response.status);
             if (!response.ok) {
                 throw new Error(`Error ${response.status}`);
             }
             return response.text();
         })
-        .then(data => console.log("Visita registrada"))
         .catch(error => console.error("Error visita:", error));
     }
 }, [jobResumen?.nvacantes]);
 
-    useEffect(() => {
-  if (rol === "CANDIDATO") {
-    sendCandidato("/api/candidatos/perfil", "GET");
-  }
-}, [rol]);
+  useEffect(() => {
+    if (rol === "CANDIDATO") {
+      sendCandidato("/api/candidatos/perfil", "GET");
+    }
+  }, [rol]);
 
-useEffect(() => {
-  if (dataCandidato) {
-    setCurriculo(dataCandidato.candidato.curriculo);
-  }
-}, [dataCandidato]);
+  useEffect(() => {
+    if (dataCandidato) {
+      const { curriculo, nivelEducativo, experiencia, aptitudes } = dataCandidato.candidato;
+      setCurriculo(curriculo);
+
+      // Activar predicción solo si existen valores y hay mínimo 2 aptitudes
+      const tieneDatosCompletos =
+        nivelEducativo &&
+        experiencia &&
+        Array.isArray(aptitudes) &&
+        aptitudes.length >= 2;
+
+      setPrediccionActiva(tieneDatosCompletos);
+    }
+  }, [dataCandidato]);
 
 
-    useEffect(()=>{
-      if(!data){return}
-      setIdUserSesion(data.id);
-    }, [ data ])
+
+  useEffect(() => {
+    if (!data) { return }
+    setIdUserSesion(data.id);
+  }, [data])
 
     async function handleOnClick (){
       const result = await send(`/api/postulados/add/${jobResumen.nvacantes}`, "POST");
@@ -318,7 +327,14 @@ useEffect(() => {
         </div>
         <br />
         <br />
-        {rol == "CANDIDATO" && <Prediccion id={id}/>}
+
+        {rol === "CANDIDATO" && prediccionActiva  ? (
+          <Prediccion id={id} />
+        ) : (
+          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-lg">
+            Completa tu perfil para activar tu predicción de afinidad y recibir mejores oportunidades.
+          </div>
+        )}
       </div>
     );
 }

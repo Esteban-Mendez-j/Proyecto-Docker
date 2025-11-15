@@ -319,11 +319,22 @@
 
 .checkbox-group {
   margin-bottom: 16px;
+  display: flex;
+  flex-direction: row;
+  max-height: 20px;
+  justify-content: start;
+  align-items: center;
+  text-align: center;
+}
+
+.checkbox-group input {
+  width: 20px;
 }
 
 .checkbox-label {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: center;
   gap: 10px;
   cursor: pointer;
 }
@@ -331,6 +342,7 @@
 .checkbox-text {
   font-size: 14px;
   line-height: 1.4;
+  text-align: center;
 }
 
 .step-buttons {

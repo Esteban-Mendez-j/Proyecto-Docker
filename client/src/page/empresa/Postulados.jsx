@@ -23,6 +23,7 @@ export default function Postulados() {
         nameRemitente: "",
         isVisible: true,
         estadoEnvio: "",
+        porcentajePrediccion: ""
     }
     const { vacanteId } = useParams()
     const itemsPerPage = 10;
@@ -252,6 +253,7 @@ export default function Postulados() {
                                     <thead className="bg-gray-50">
                                         <tr>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase">Nombre</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase">Afinidad</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase">Fecha</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase">Estado</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase">CV</th>
@@ -275,6 +277,9 @@ export default function Postulados() {
                                                             Vacante deshabilitada
                                                         </span>
                                                     )}
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    {postulado.porcentajePrediccion || '-'} %
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                     {postulado.fechaPostulacion || '-'}

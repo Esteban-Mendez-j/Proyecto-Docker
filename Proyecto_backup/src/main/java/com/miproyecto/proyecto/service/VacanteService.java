@@ -236,6 +236,8 @@ public class VacanteService {
         vacanteResumenDTO.setTipo(vacante.getTipo());
         vacanteResumenDTO.setActivaPorEmpresa(vacante.isActivaPorEmpresa());
         vacanteResumenDTO.setIsActive(vacante.getIsActive());
+        vacanteResumenDTO.setNameEmpresa(vacante.getIdUsuario().getNombre());
+        vacanteResumenDTO.setModalidad(vacante.getModalidad());
         return vacanteResumenDTO;
     }
 

@@ -7,6 +7,8 @@ public class VacanteResumenDTO {
     private String tipo;
     private Boolean activaPorEmpresa;
     private Boolean isActive;
+    private String nameEmpresa;
+    private String modalidad;
     
     public VacanteResumenDTO() {
     }
@@ -14,6 +16,20 @@ public class VacanteResumenDTO {
         this.nvacantes = nvacantes;
         this.titulo = titulo;
         this.isActive = isActive;
+    }
+
+    public String getModalidad() {
+        return modalidad;
+    }
+    public void setModalidad(String modalidad) {
+        this.modalidad = modalidad;
+    }
+
+    public String getNameEmpresa() {
+        return nameEmpresa;
+    }
+    public void setNameEmpresa(String nameEmpresa) {
+        this.nameEmpresa = nameEmpresa;
     }
     public Boolean getActivaPorEmpresa() {
         return activaPorEmpresa;
