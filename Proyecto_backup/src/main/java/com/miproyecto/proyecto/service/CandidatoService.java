@@ -99,6 +99,7 @@ public class CandidatoService{
         candidatoDTO.setComentarioAdmin(candidato.getComentarioAdmin());
         candidatoDTO.setFechaInicioSesion(candidato.getFechaInicioSesion());
         candidatoDTO.setFechaRegistro(candidato.getFechaRegistro());
+        candidatoDTO.setVideoLink(candidato.getVideoLink());
 
         candidatoDTO.setRoles(
             candidato.getRoles().stream()
@@ -136,6 +137,7 @@ public class CandidatoService{
         candidato.setComentarioAdmin(candidatoDTO.getComentarioAdmin());
         candidatoDTO.setFechaInicioSesion(candidato.getFechaInicioSesion());
         candidatoDTO.setFechaRegistro(candidato.getFechaRegistro());
+        candidato.setVideoLink(candidatoDTO.getVideoLink());
         return candidato;
     }
 

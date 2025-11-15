@@ -20,6 +20,10 @@ public class CandidatoDTO  extends UsuarioDTO {
     @CandidatoIdentificacionUnique(message = "Esta identificacion ya esta registrada")
     private String identificacion;
 
+    @Size(max = 255)
+    private String videoLink;
+
+
 
     public String getApellido() {
         return apellido;
@@ -52,6 +56,14 @@ public class CandidatoDTO  extends UsuarioDTO {
     public void setIdentificacion(final String identificacion) {
         this.identificacion = identificacion;
     }
+    public String getVideoLink() {
+    return videoLink;
+}
+
+    public void setVideoLink(final String videoLink) {
+        this.videoLink = videoLink;
+    }
+
 
     @Override
     public String toString() {

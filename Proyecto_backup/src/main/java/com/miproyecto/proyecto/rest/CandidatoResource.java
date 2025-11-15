@@ -225,5 +225,11 @@ public class CandidatoResource {
         candidatoService.delete(idCandidato);
         return ResponseEntity.noContent().build();
     }
+    @PutMapping("/perfil")
+    public ResponseEntity<Void> updatePerfil(@RequestBody CandidatoDTO dto) {
+    candidatoService.update(dto.getIdUsuario(), dto);
+    return ResponseEntity.ok().build();
+}
+
 
 }

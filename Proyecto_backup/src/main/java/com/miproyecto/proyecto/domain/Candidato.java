@@ -24,6 +24,10 @@ public class Candidato extends Usuario {
     @Column(unique = true, length = 11)
     private String identificacion;
 
+    @Column(name = "video_link", length = 255)
+    private String videoLink;
+
+
     @OneToMany(mappedBy = "candidato")
     private Set<Postulado> listarPostulados;
 
@@ -64,6 +68,15 @@ public class Candidato extends Usuario {
     public void setIdentificacion(final String identificacion) {
         this.identificacion = identificacion;
     }
+
+    public String getVideoLink() {
+    return videoLink;
+    }
+
+    public void setVideoLink(String videoLink) {
+        this.videoLink = videoLink;
+    }
+
 
     public Set<Postulado> getListarPostulados() {
         return listarPostulados;
