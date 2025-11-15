@@ -226,7 +226,7 @@ public class CandidatoResource {
         return ResponseEntity.noContent().build();
     }
     @PutMapping("/perfil")
-    public ResponseEntity<Void> updatePerfil(@RequestBody CandidatoDTO dto) {
+    public ResponseEntity<Void> updatePerfil(@RequestBody CandidatoDTO dto) throws Exception {
     candidatoService.update(dto.getIdUsuario(), dto);
     return ResponseEntity.ok().build();
 }
