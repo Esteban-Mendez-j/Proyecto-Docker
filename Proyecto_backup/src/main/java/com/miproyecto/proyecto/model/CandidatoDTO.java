@@ -43,6 +43,10 @@ public class CandidatoDTO  extends UsuarioDTO {
     public void setAptitudes(List<String> aptitudes) {
         this.aptitudes = aptitudes;
     }
+    @Size(max = 255)
+    private String videoLink;
+
+
 
     public String getApellido() {
         return apellido;
@@ -75,6 +79,14 @@ public class CandidatoDTO  extends UsuarioDTO {
     public void setIdentificacion(final String identificacion) {
         this.identificacion = identificacion;
     }
+    public String getVideoLink() {
+    return videoLink;
+}
+
+    public void setVideoLink(final String videoLink) {
+        this.videoLink = videoLink;
+    }
+
 
     @Override
     public String toString() {

@@ -109,6 +109,7 @@ public class CandidatoService{
             candidatoDTO.setAptitudes(
                 aptitudes.stream().map(Aptitudes::getNombreAptitud).collect(Collectors.toList())
             );
+        candidatoDTO.setVideoLink(candidato.getVideoLink());
 
         candidatoDTO.setNivelEducativo(candidato.getNivelEducativo());
                         
@@ -151,8 +152,8 @@ public class CandidatoService{
         candidato.setFechaRegistro(candidatoDTO.getFechaRegistro());
         List<String> aptitudes = candidatoDTO.getAptitudes() != null ? candidatoDTO.getAptitudes() : new ArrayList<>();
         candidato.setAptitudes(aptitudesService.mapToListEntity(aptitudes));
-
         candidato.setNivelEducativo(candidatoDTO.getNivelEducativo());
+        candidato.setVideoLink(candidatoDTO.getVideoLink());
         return candidato;
     }
 
