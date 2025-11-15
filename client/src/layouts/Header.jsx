@@ -4,7 +4,7 @@ import { API_CLIENT_URL } from "../services/Api";
 import { RoleContext } from "../services/RoleContext";
 import "../style/invitado/header.css";
 import useVisible from "../hooks/useVisible";
-import Notificaciones from "../components/Notificaciones"; /*aqui muestra las notificaciones al lado de perfil siu*/ 
+
 
 export default function Header() {
     const { rol } = useContext(RoleContext);
@@ -94,8 +94,7 @@ export default function Header() {
                         </NavLink>
                     ))}
 
-                    {/*  Botón de notificaciones */}
-                    {rol !== "ROLE_INVITADO" && <Notificaciones />}
+            
 
                     {/* Cerrar sesión */}
                     {rol !== "ROLE_INVITADO" && (

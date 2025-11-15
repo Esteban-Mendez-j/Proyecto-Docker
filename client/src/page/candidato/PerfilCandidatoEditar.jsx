@@ -28,7 +28,8 @@ const PerfilCandidatoEditar = () => {
     nombre: "",
     rolPrinciapl: "",
     roles: [],
-    telefono: ""
+    telefono: "",
+    videoLink: ""
   }
 
   const initialDataEstudios = {
@@ -402,6 +403,22 @@ const PerfilCandidatoEditar = () => {
             />
             {error?.descripcion && <p className="error-text hidden" id="error-descripcion">{error.descripcion}</p>}
           </div>
+                    {/* ---------- VIDEO PRESENTACIÓN ---------- */}
+          <div>
+            <h2 className="mb-2 text-lg font-semibold">Video de Presentación</h2>
+            <input
+              type="text"
+              name="videoLink"
+              placeholder="URL de tu video (YouTube / Vimeo)"
+              value={candidato.videoLink}
+              onChange={handleOnChange}
+              className="w-full rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Ejemplo: https://youtu.be/abc123
+            </p>
+          </div>
+
 
           {/* ---------- ESTUDIOS ---------- */}
           <section>

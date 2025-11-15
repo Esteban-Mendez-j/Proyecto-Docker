@@ -123,6 +123,32 @@ function PerfilCandidato() {
               <h2 className="candidato-section-title">Descripción</h2>
               <p className="candidato-descripcion">{candidato.descripcion}</p>
             </div>
+            {/* Video Presentación */}
+          <section className="mb-6 pb-6 border-b border-[var(--border)]">
+            <h2 className="text-[1.125rem] font-semibold text-[var(--text)] mb-4 pl-4 relative flex items-center">
+              <span className="absolute left-0 top-1 h-4/5 w-1 bg-[var(--gradient-primary)] rounded"></span>
+              Video de Presentación
+            </h2>
+
+    {candidato.videoLink ? (
+  <a
+    href={candidato.videoLink}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="block p-4 border rounded-xl shadow-sm hover:shadow-md transition"
+  >
+    🎥 Video de presentación del candidato
+  </a>
+) : (
+  <p className="italic text-gray-500">El candidato aún no ha agregado un video de presentación.</p>
+)}
+
+
+
+
+
+          </section>
+
 
             {/* Estudios */}
             <section className="mb-6 pb-6 border-b border-[var(--border)]">
