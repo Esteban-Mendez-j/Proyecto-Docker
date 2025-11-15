@@ -8,7 +8,7 @@ import { readLocalStore, saveLocalStore } from '../services/localStore';
 
 
 const JobBoard = ({ fetchUrl, rol }) => {
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(readLocalStore("PaginaActual", 1));
     const [presentacion, setPresentacion] = useState(readLocalStore("presentacion", 1)); // 1:CARD, 2:HORIZONTAL, 3:TABLA
     const [totalElement, setTotalElement] = useState(0) 
     const [totalPages, setTotalPages] = useState(1);
@@ -24,23 +24,24 @@ const JobBoard = ({ fetchUrl, rol }) => {
         cargo: null,
         ciudad: null,
         sueldo: null,
-        totalpostulaciones: null
+        totalpostulaciones: null,
+        isFavorita: false
     }
 
     const [filters, setFilters] = useState(readLocalStore("filtro", initialFiltros));
-    const [filtersLocal, setFiltersLocal] = useState(readLocalStore("filtroLocal", initialFiltros));
+    const [filtersLocal, setFiltersLocal] = useState(readLocalStore("filtro", initialFiltros));
 
     useEffect(()=>{
         saveLocalStore("presentacion", presentacion) 
     },[presentacion])
+    
+    useEffect(()=>{
+        saveLocalStore("PaginaActual", currentPage) 
+    },[currentPage])
 
     useEffect(()=>{
         saveLocalStore("filtro", filters) 
     },[filters])
-
-    useEffect(()=>{
-        saveLocalStore("filtroLocal", filters) 
-    },[filtersLocal])
 
     const fetchAllJobs = async () => {
         try {
@@ -72,7 +73,8 @@ const JobBoard = ({ fetchUrl, rol }) => {
         const { name, value } = event.target;
         setFiltersLocal(prev => ({
             ...prev,
-            [name]: value
+            [name]: value,
+            [name]: name === "isFavorita" ? value === "true" : value
         }));
     };
 
@@ -111,18 +113,8 @@ const JobBoard = ({ fetchUrl, rol }) => {
 
 
     const clearAllFilters = () => {
-        setFiltersLocal({
-            titulo:null,
-            tipo: null,
-            experiencia: null,
-            active: null,
-            activaPorEmpresa: null,
-            modalidad: null,
-            cargo: null,
-            ciudad: null,
-            sueldo: null,
-            totalpostulaciones: null
-        });
+        setFiltersLocal( initialFiltros);
+        setFilters(initialFiltros)
     };
 
     return (

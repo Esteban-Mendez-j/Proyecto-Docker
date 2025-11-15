@@ -159,6 +159,9 @@ const Postulaciones = ({ itemsPerPage = 10 }) => {
               <thead>
                 <tr className="bg-gray-200">
                   <th className="px-6 py-3 text-left text-gray-600">Vacante</th>
+                  <th className="px-6 py-3 text-left text-gray-600">Empresa</th>
+                  <th className="px-6 py-3 text-left text-gray-600">Ciudad</th>
+                  <th className="px-6 py-3 text-left text-gray-600">Modalidad</th>
                   <th className="px-6 py-3 text-left text-gray-600">Fecha</th>
                   <th className="px-6 py-3 text-left text-gray-600">Estado</th>
                   <th className="px-6 py-3 text-left text-gray-600">Acciones</th>
@@ -168,6 +171,9 @@ const Postulaciones = ({ itemsPerPage = 10 }) => {
                 {postulaciones.map((p) => (
                   <tr key={p.nPostulacion} className="border-t">
                     <td className="px-6 py-4 text-gray-800">{p.vacante.titulo}</td>
+                    <td className="px-6 py-4 text-gray-800">{p.vacante.nameEmpresa}</td>
+                    <td className="px-6 py-4 text-gray-800">{p.vacante.ciudad}</td>
+                    <td className="px-6 py-4 text-gray-800">{p.vacante.modalidad}</td>
                     <td className="px-6 py-4 text-gray-800">{p.fechaPostulacion || '-'}</td>
                     <td className="px-6 py-4 text-gray-800">{p.estado || 'Espera'}</td>
                     <td className="px-6 py-4 space-x-2">

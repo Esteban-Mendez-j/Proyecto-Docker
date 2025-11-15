@@ -52,14 +52,12 @@ export default function Header () {
             { name: "Chats", path: "/chat/candidato" },
             { name: "Empleos", path: "/empleos" },
             { name: "Postulaciones", path: "/postulaciones" },
-            { name: "Favoritos", path: "/vacantes/favoritas" },
         ],
         EMPRESA: [
             { name: "Inicio", path: "/" },
             { name: "Mis Vacantes", path: "/empresa/listado/vacantes" },
             { name: "Publicar oferta", path: "/empresa/vacantes" },
             { name: "Chats", path: "/chat/empresa" },
-            { name: "Perfil", path: "/perfil/empresa" },
         ],
         ROLE_INVITADO: [
             { name: "Inicio", path: "/" },

@@ -29,8 +29,9 @@ public class NotificacionService {
     }
 
     public  Map<String, Object> findByDestinatarioAndVisible (Long idUsuario, Pageable pageable, Boolean isVisible){
+        System.out.println("Buscando usuario con ID: " + idUsuario);
         String Destinatario = usuarioRepository.findById(idUsuario).orElseThrow(NotFoundException::new).getCorreo();
-        
+        System.out.println("Usuario encontrado? " + Destinatario);
         Page<NotificacionDTO> notificaciones =  notificacionRepository.findAllByDestinatarioAndIsVisibleOrderByFechaEnvioDesc(Destinatario, isVisible, pageable)
             .map(notificacion -> mapToDTO(notificacion, new NotificacionDTO()));
 

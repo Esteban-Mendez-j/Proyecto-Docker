@@ -1,6 +1,7 @@
 package com.miproyecto.proyecto.repos;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -23,9 +24,10 @@ public interface PostuladoRepository extends JpaRepository<Postulado, Long>{
     @Query("""
         SELECT p FROM Postulado p
         WHERE p.vacante = :vacante
-            AND (:estado IS NULL OR p.estado = :estado)
-            AND (:fechaMinima IS NULL OR p.fechaPostulacion >= :fechaMinima)
-            AND (:nombreCandidato IS NULL OR LOWER(p.candidato.nombre) LIKE LOWER(CONCAT('%', :nombreCandidato, '%')))
+        AND (:estado IS NULL OR p.estado = :estado)
+        AND (:fechaMinima IS NULL OR p.fechaPostulacion >= :fechaMinima)
+        AND (:nombreCandidato IS NULL OR LOWER(p.candidato.nombre) LIKE LOWER(CONCAT('%', :nombreCandidato, '%')))
+        ORDER BY p.porcentajePrediccion DESC
     """)
     Page<Postulado> buscarPorFiltros(@Param("vacante") Vacante vacante, @Param("estado") String estado,
         @Param("fechaMinima") LocalDate fechaMinima,
@@ -57,6 +59,8 @@ public interface PostuladoRepository extends JpaRepository<Postulado, Long>{
     Optional<Postulado> findByCandidatoAndVacante(Candidato candidato, Vacante vacante);  // Cambiar Nvacante a Vacante y asegurar que los parámetros sean correctos
 
     Page<Postulado> findByCandidato(Candidato candidato, Pageable pageable);
+    
+    List<Postulado> findAllByCandidato(Candidato candidato);
 
     Postulado findFirstByVacante(Vacante vacante);  
 

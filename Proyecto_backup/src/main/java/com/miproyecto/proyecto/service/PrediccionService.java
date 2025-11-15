@@ -13,10 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.miproyecto.proyecto.domain.Aptitudes;
 import com.miproyecto.proyecto.domain.Candidato;
+import com.miproyecto.proyecto.domain.Postulado;
 import com.miproyecto.proyecto.domain.Vacante;
 import com.miproyecto.proyecto.ml.WekaWrapper;
 import com.miproyecto.proyecto.repos.CandidatoRepository;
+import com.miproyecto.proyecto.repos.PostuladoRepository;
 import com.miproyecto.proyecto.repos.VacanteRepository;
+import com.miproyecto.proyecto.util.NotFoundException;
 
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -31,6 +34,30 @@ public class PrediccionService {
     private CandidatoRepository candidatoRepository;
     @Autowired
     private VacanteRepository vacanteRepository;
+    @Autowired
+    private PostuladoRepository postuladoRepository;
+
+
+    public void ActualizarAfinidad(Long idUsuario) throws Exception {
+        Candidato candidato = candidatoRepository.findById(idUsuario)
+                .orElseThrow(NotFoundException::new);
+
+        List<Postulado> listPostulados = postuladoRepository.findAllByCandidato(candidato);
+
+        for (Postulado postulacion : listPostulados) {
+
+            Map<String, Object> resultado = predecirDesdeComparacion(
+                    postulacion.getVacante().getNvacantes(), idUsuario);
+
+            Object valor = resultado.get("porcentajeMatch");
+
+            if (valor != null) {
+                postulacion.setPorcentajePrediccion(Double.parseDouble(valor.toString()));
+            }
+        }
+
+        postuladoRepository.saveAll(listPostulados);
+    }
 
     public Map<String, Integer> comparacion(Vacante vacante, Candidato candidato) {
 
@@ -74,51 +101,51 @@ public class PrediccionService {
         return resultado;
     }
 
-public Map<String, Object> predecirDesdeComparacion(Long nvacantes, Long idCandidato) throws Exception {
-    Candidato candidato = candidatoRepository.findById(idCandidato).orElse(null);
-    Vacante vacante = vacanteRepository.findById(nvacantes).orElse(null);
+    public Map<String, Object> predecirDesdeComparacion(Long nvacantes, Long idCandidato) throws Exception {
+        Candidato candidato = candidatoRepository.findById(idCandidato).orElse(null);
+        Vacante vacante = vacanteRepository.findById(nvacantes).orElse(null);
 
-    Map<String, Integer> comparacion = comparacion(vacante, candidato);
+        Map<String, Integer> comparacion = comparacion(vacante, candidato);
 
-    String nivelEducativo = candidato.getNivelEducativo(); 
-    int añosExperiencia = Integer.parseInt(candidato.getExperiencia()); 
+        String nivelEducativo = candidato.getNivelEducativo(); 
+        int añosExperiencia = Integer.parseInt(candidato.getExperiencia()); 
 
-    // --- Calcular porcentaje de coincidencia ---
-    int cantidadMatch = comparacion.get("CantidadAptitudes");
-    int totalAptitudes = vacante.getAptitudes().size();
-    double porcentajeMatch = 0;
-    if(totalAptitudes != 0 ){
-        porcentajeMatch = (cantidadMatch / (double) totalAptitudes) * 100; // hay 5 aptitudes en total
+        // --- Calcular porcentaje de coincidencia ---
+        int cantidadMatch = comparacion.get("CantidadAptitudes");
+        int totalAptitudes = vacante.getAptitudes().size();
+        double porcentajeMatch = 0;
+        if(totalAptitudes != 0 ){
+            porcentajeMatch = (cantidadMatch / (double) totalAptitudes) * 100; // hay 5 aptitudes en total
+        }
+
+        // --- Llamar al método que hace la predicción ---
+        String resultadoPrediccion = predecir(
+            nivelEducativo,
+            añosExperiencia,
+            comparacion.get("PensamientoCritico").toString(),
+            comparacion.get("Creatividad").toString(),
+            comparacion.get("AtencionDetalle").toString(),
+            comparacion.get("AprendizajeContinuo").toString(),
+            comparacion.get("EticaProfesional").toString(),
+            comparacion.get("Autonomia").toString(),
+            comparacion.get("Responsabilidad").toString(),
+            comparacion.get("Liderazgo").toString(),
+            comparacion.get("Adaptabilidad").toString(),
+            comparacion.get("ResolucionProblemas").toString(),
+            comparacion.get("ComunicacionAfectiva").toString(),
+            comparacion.get("TrabajoEquipo").toString(),
+            comparacion.get("CantidadAptitudes")
+        );
+
+        // --- Crear respuesta con ambos valores ---
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("resultadoPrediccion", resultadoPrediccion);
+        respuesta.put("porcentajeMatch", porcentajeMatch);
+        respuesta.put("cantidadCoincidencias", cantidadMatch);
+        respuesta.put("totalAptitudes", totalAptitudes);
+
+        return respuesta;
     }
-
-    // --- Llamar al método que hace la predicción ---
-    String resultadoPrediccion = predecir(
-        nivelEducativo,
-        añosExperiencia,
-        comparacion.get("PensamientoCritico").toString(),
-        comparacion.get("Creatividad").toString(),
-        comparacion.get("AtencionDetalle").toString(),
-        comparacion.get("AprendizajeContinuo").toString(),
-        comparacion.get("EticaProfesional").toString(),
-        comparacion.get("Autonomia").toString(),
-        comparacion.get("Responsabilidad").toString(),
-        comparacion.get("Liderazgo").toString(),
-        comparacion.get("Adaptabilidad").toString(),
-        comparacion.get("ResolucionProblemas").toString(),
-        comparacion.get("ComunicacionAfectiva").toString(),
-        comparacion.get("TrabajoEquipo").toString(),
-        comparacion.get("CantidadAptitudes")
-    );
-
-    // --- Crear respuesta con ambos valores ---
-    Map<String, Object> respuesta = new HashMap<>();
-    respuesta.put("resultadoPrediccion", resultadoPrediccion);
-    respuesta.put("porcentajeMatch", porcentajeMatch);
-    respuesta.put("cantidadCoincidencias", cantidadMatch);
-    respuesta.put("totalAptitudes", totalAptitudes);
-
-    return respuesta;
-}
 
 
     public  String predecir(

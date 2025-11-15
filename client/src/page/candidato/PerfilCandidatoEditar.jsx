@@ -61,10 +61,10 @@ const PerfilCandidatoEditar = () => {
     let updated;
     if (selected.includes(key)) {
       updated = selected.filter((item) => item !== key);
-    } else if (selected.length <= 5) {
+    } else if (selected.length < 5) {
       updated = [...selected, key];
     } else {
-      modal("Solo puedes seleccionar hasta 5 aptitudes", "error");
+      modal("Selecciona maximo 5 y minimo 2 aptitudes", "warning");
       return;
     }
 
@@ -155,7 +155,10 @@ const PerfilCandidatoEditar = () => {
   /* ------------ SUBMIT --------------------------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if(selected.length > 5 || selected.length < 2){
+      modal("Selecciona maximo 5 y minimo 2 aptitudes", "warning");
+      return
+    }
     /* ----------- 2. Preparar payloads ------------ */
     const estudiosEnviar = estudios.map(({ _tmpId, ...rest }) => rest);
     const historialEnviar = historialLaboral.map(({ _tmpId, ...rest }) => rest);
@@ -468,7 +471,7 @@ const PerfilCandidatoEditar = () => {
 
           <div>
             <h2 className="mb-2 text-lg font-semibold">Aptitudes</h2>
-
+            <p className="text-lg text-gray-700">Selecciona minimo 2 y maximo 5 aptitude.</p>
             <div className="flex flex-wrap gap-3">
               {Object.entries(listAptitudes).map(([key, label]) => (
                 <button

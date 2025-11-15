@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   padding-top: 80px;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.763)), url("https://media.licdn.com/dms/image/v2/D4E12AQGevzbjVvVvCA/article-cover_image-shrink_720_1280/B4EZW0qCEAHcAM-/0/1742492674210?e=2147483647&v=beta&t=iwfEx_RjtFCFZL_UjLDzk3TMbaGPm9WXHhBBGcCTQLA");
+  background-image: linear-gradient(rgba(0, 0, 0, 0.763)), url("/heroIMG.png");
   position: relative;
   overflow: hidden;
   text-align: center;

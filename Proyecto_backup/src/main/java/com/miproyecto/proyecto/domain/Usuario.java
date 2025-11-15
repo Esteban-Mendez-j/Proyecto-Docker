@@ -82,6 +82,14 @@ public class Usuario {
     public Usuario() {
     }
 
+    public Usuario(Long id, String correo, String contrasena, List<Roles> roles) {
+        this.idUsuario = id;
+        this.correo = correo;
+        this.contrasena = contrasena;
+        this.roles = roles;
+    }
+
+
     public LocalDate getFechaRegistro() {
         return fechaRegistro;
     }

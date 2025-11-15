@@ -122,7 +122,7 @@ public class EmpresaService {
         empresaDTO.setNit(empresa.getNit());
         empresaDTO.setIsActive(empresa.getIsActive());
         empresaDTO.setComentarioAdmin(empresa.getComentarioAdmin());
-        empresaDTO.setVerified(empresaDTO.isVerified());
+        empresaDTO.setVerified(empresa.isVerified());
         empresaDTO.setNumeroVacantes(empresa.getListarVacantes().size());
         empresaDTO.setNumeroVacantesActivas(contarVacantesActivas(empresa.getListarVacantes()));
         empresaDTO.setCandidatosAceptados(aceptadosPostulacion.get("CandidatosAceptados"));

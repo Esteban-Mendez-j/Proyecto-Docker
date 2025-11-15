@@ -8,7 +8,6 @@ import ListadoVacantes from "./page/candidato/ListadoVacantes";
 import PerfilCandidato from "./page/candidato/PerfilCandidato";
 import PerfilCandidatoEditar from "./page/candidato/PerfilCandidatoEditar.jsx";
 import PostuladosPage from "./page/candidato/Postulados.jsx";
-import VacantesFav from "./page/candidato/VacantesFav.jsx";
 import Chat from "./page/chat/chat";
 import MisVacantes from "./page/empresa/MisVacantes.jsx";
 import Postulados from "./page/empresa/Postulados.jsx";
@@ -37,7 +36,6 @@ function App() {
         <Route element={<RouteProtection accessRole={"CANDIDATO"} />}> 
           <Route path="/perfil/candidato" element={<PerfilCandidato/>} />
           <Route path="/postulaciones" element= {<PostuladosPage/>} />
-          <Route path= "/vacantes/favoritas" element= {<VacantesFav/>} />
           <Route path= "/notificaciones" element= {<Notificaciones/>} />
         </Route>
         <Route element={<RouteProtection accessRole={"EMPRESA"} />}> 

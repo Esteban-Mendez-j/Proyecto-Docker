@@ -21,8 +21,22 @@ public class Notificacion {
     private Boolean isVisible;
     private EstadoEnvio estadoEnvio;
     
+    public Notificacion() {
+    }
+
+    public Notificacion(String id, String asunto, String destinatario, Boolean isVisible, EstadoEnvio estadoEnvio) {
+        this.id = id;
+        this.asunto = asunto;
+        this.destinatario = destinatario;
+        this.isVisible = isVisible;
+        this.estadoEnvio = estadoEnvio;
+    }
+
     public String getId() {
         return id;
+    }
+    public void setId(String id) {
+        this.id = id;
     }
     
     public String getAsunto() {

@@ -1,4 +1,4 @@
-import { modal, QuestionModal } from "../services/Modal";
+import { modal, modalTime, QuestionModal } from "../services/Modal";
 import { API_CLIENT_URL } from "../services/Api";
 import "../style/invitado/jobcard.css";
 import Paginacion from "./Paginacion";
@@ -33,8 +33,8 @@ const JobList = ({
       );
 
       if (response.ok) {
-        modal(`Exito al ${mensaje} la vacante`, "success");
-        // fetchAllJobs()
+        modalTime(`Exito al ${mensaje} la vacante`)
+        fetchAllJobs()
       } else {
         modal(`Error al ${mensaje} la vacante`, "error");
       }
@@ -45,7 +45,6 @@ const JobList = ({
   }
 
   if (!jobs || jobs.length == 0) {
-    console.log(jobs);
     return (
       <div className="flex flex-col items-center justify-center h-96 text-center p-4">
         <h2 className="text-2xl font-semibold text-gray-700 mb-2">
@@ -62,7 +61,7 @@ const JobList = ({
     <div>
       <div className={presentacion == 1 ? "jobs-grid" : "jobs-column"}>
         {presentacion == 3 ? (
-          <TableJob jobs={jobs} />
+          <TableJob jobs={jobs} verSeccionEdit={true} />
         ) : (
           jobs.map((job) => (
             <JobCard

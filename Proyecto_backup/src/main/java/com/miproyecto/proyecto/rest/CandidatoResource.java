@@ -150,8 +150,8 @@ public class CandidatoResource {
     )
     @GetMapping("/edit/{idUsuario}")
     public ResponseEntity<CandidatoDTO> getCandidato(
-            @PathVariable final Long idCandidato) {
-        return ResponseEntity.ok(candidatoService.get(idCandidato));
+            @PathVariable final Long idUsuario) {
+        return ResponseEntity.ok(candidatoService.get(idUsuario));
     }
 
     @Operation(
@@ -210,7 +210,7 @@ public class CandidatoResource {
     @PutMapping("/edit/{idUsuario}")
     public ResponseEntity<Long> updateCandidato(
             @PathVariable(name = "idUsuario") final Long idCandidato,
-            @RequestBody @Valid final CandidatoDTO candidatoDTO) {
+            @RequestBody @Valid final CandidatoDTO candidatoDTO) throws Exception {
         candidatoService.update(idCandidato, candidatoDTO);
         return ResponseEntity.ok(idCandidato);
     }

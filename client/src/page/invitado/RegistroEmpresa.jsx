@@ -109,6 +109,7 @@ export default function RegistroEmpresa (){
                                     value={dataFrom.correo}
                                     handleOnChange={handleOnChange}
                                     error={error}
+                                    autoComplete={"email"}
                                 />
                                 <p className="form-hint">Usarás este correo para iniciar sesión</p>
                             </div>
