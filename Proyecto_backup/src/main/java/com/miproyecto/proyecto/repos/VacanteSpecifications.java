@@ -6,6 +6,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import com.miproyecto.proyecto.domain.Empresa;
 import com.miproyecto.proyecto.domain.Vacante;
+import com.miproyecto.proyecto.domain.VacanteFavorita;
 import com.miproyecto.proyecto.model.FiltroVacanteDTO;
 
 import jakarta.persistence.criteria.Join;
@@ -88,6 +89,87 @@ public class VacanteSpecifications {
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+
+    public static Specification<VacanteFavorita> favoritaConFiltros(Long idUsuario, FiltroVacanteDTO filtro) {
+        return (root, query, cb) -> {
+            query.distinct(true); // evita duplicados
+            List<Predicate> predicates = new ArrayList<>();
+
+            // --- Filtrar solo las favoritas del usuario ---
+            if (idUsuario != null && idUsuario > 0) {
+                predicates.add(cb.equal(root.get("usuarioFavorita").get("idUsuario"), idUsuario));
+            }
+
+            // --- Join con Vacante para aplicar filtros ---
+            Join<VacanteFavorita, Vacante> vacanteJoin = root.join("vacanteFavorita", JoinType.INNER);
+
+            if (filtro.getIdUsuario() != null && filtro.getIdUsuario() > 0) {
+                Join<Vacante, Empresa> empresaJoin = vacanteJoin.join("idUsuario", JoinType.INNER);
+                predicates.add(cb.equal(empresaJoin.get("idUsuario"), filtro.getIdUsuario()));
+            }
+
+            if (filtro.getTotalpostulaciones() >= 0){
+                predicates.add(cb.greaterThanOrEqualTo(vacanteJoin.get("totalpostulaciones"), filtro.getTotalpostulaciones()));
+            }
+
+            if (filtro.getNameEmpresa() != null && !filtro.getNameEmpresa().isEmpty()) {
+                Join<Vacante, Empresa> empresaJoin = vacanteJoin.join("idUsuario", JoinType.INNER);
+                predicates.add(cb.like(cb.lower(empresaJoin.get("nombre")), "%" + filtro.getNameEmpresa().toLowerCase() + "%"));
+            }
+
+            if (filtro.getIsActive() != null) {
+                predicates.add(cb.equal(vacanteJoin.get("isActive"), filtro.getIsActive()));
+            }
+
+            if (filtro.isActivaPorEmpresa() != null) {
+                predicates.add(cb.equal(vacanteJoin.get("activaPorEmpresa"), filtro.isActivaPorEmpresa()));
+            }
+
+            if (filtro.getTitulo() != null && !filtro.getTitulo().isEmpty()) {
+                predicates.add(cb.like(cb.lower(vacanteJoin.get("titulo")), "%" + filtro.getTitulo().toLowerCase() + "%"));
+            }
+
+            if (filtro.getCargo() != null && !filtro.getCargo().isEmpty()) {
+                predicates.add(cb.like(vacanteJoin.get("cargo"), "%" + filtro.getCargo() + "%"));
+            }
+
+            if (filtro.getCiudad() != null && !filtro.getCiudad().isEmpty()) {
+                predicates.add(cb.equal(vacanteJoin.get("ciudad"), filtro.getCiudad()));
+            }
+
+            if (filtro.getExperiencia() != null) {
+                predicates.add(cb.greaterThanOrEqualTo(vacanteJoin.get("experiencia"), filtro.getExperiencia()));
+            }
+
+            if (filtro.getSueldo() != null) {
+                predicates.add(cb.greaterThanOrEqualTo(vacanteJoin.get("sueldo"), filtro.getSueldo()));
+            }
+
+            if (filtro.getFechaPublicacion() != null) {
+                predicates.add(cb.greaterThanOrEqualTo(vacanteJoin.get("fechaPublicacion"), filtro.getFechaPublicacion()));
+            }
+
+            if ("todos".equals(filtro.getTipo())) {
+                predicates.add(cb.or(
+                    cb.equal(vacanteJoin.get("tipo"), "Practica"),
+                    cb.equal(vacanteJoin.get("tipo"), "Vacante")
+                ));
+            } else if (filtro.getTipo() != null) {
+                predicates.add(cb.equal(vacanteJoin.get("tipo"), filtro.getTipo()));
+            }
+
+            if ("null".equals(filtro.getModalidad())) {
+                predicates.add(cb.or(
+                    cb.equal(vacanteJoin.get("modalidad"), "Presencial"),
+                    cb.equal(vacanteJoin.get("modalidad"), "Remota")
+                ));
+            } else if (filtro.getModalidad() != null) {
+                predicates.add(cb.equal(vacanteJoin.get("modalidad"), filtro.getModalidad()));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
 }

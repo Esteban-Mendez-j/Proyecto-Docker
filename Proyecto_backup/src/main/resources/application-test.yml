@@ -16,3 +16,17 @@ app:
   upload-dir:
     img: uploads/img
     pdf: uploads/pdf
+
+security:
+  jwt:
+    key:
+      private: "ClaveTest"
+    user:
+      generator: SEARCHJOBS-BACKEND-TEST
+    expiration: 7000000
+
+  user:
+    name: test
+    password: test
+
+    

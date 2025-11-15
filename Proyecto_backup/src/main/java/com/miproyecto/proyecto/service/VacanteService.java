@@ -17,13 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.miproyecto.proyecto.domain.Empresa;
 import com.miproyecto.proyecto.domain.Postulado;
 import com.miproyecto.proyecto.domain.Vacante;
+import com.miproyecto.proyecto.domain.VacanteFavorita;
 import com.miproyecto.proyecto.model.FiltroVacanteDTO;
 import com.miproyecto.proyecto.model.VacanteDTO;
 import com.miproyecto.proyecto.model.VacanteResumenDTO;
-import com.miproyecto.proyecto.repos.EmpresaRepository;
-import com.miproyecto.proyecto.repos.PostuladoRepository;
-import com.miproyecto.proyecto.repos.VacanteRepository;
-import com.miproyecto.proyecto.repos.VacanteSpecifications;
+import com.miproyecto.proyecto.repos.*;
 import com.miproyecto.proyecto.util.NotFoundException;
 import com.miproyecto.proyecto.util.ReferencedWarning;
 
@@ -31,6 +29,7 @@ import com.miproyecto.proyecto.util.ReferencedWarning;
 @Transactional
 public class VacanteService {
 
+    private final VacanteFavoritaRepository vacanteFavoritaRepository;
     private final VacanteRepository vacanteRepository;
     private final EmpresaRepository empresaRepository;
     private final PostuladoRepository postuladoRepository;
@@ -39,11 +38,12 @@ public class VacanteService {
     public VacanteService(final VacanteRepository vacanteRepository,
             final EmpresaRepository empresaRepository,
             final PostuladoRepository postuladoRepository,
-            final AptitudesService aptitudesService) {
+            final AptitudesService aptitudesService, VacanteFavoritaRepository vacanteFavoritaRepository) {
         this.vacanteRepository = vacanteRepository;
         this.empresaRepository = empresaRepository;
         this.postuladoRepository = postuladoRepository;
         this.aptitudesService = aptitudesService;
+        this.vacanteFavoritaRepository = vacanteFavoritaRepository;
     }
 
     // 🔥 NUEVO: Método para incrementar visitas
@@ -96,9 +96,17 @@ public class VacanteService {
     }
     
     public Map<String, Object> buscarVacantesConFiltros( Long idLogin, FiltroVacanteDTO filtro, Pageable pageable) {
-        Specification<Vacante> specification = VacanteSpecifications.conFiltros(filtro);
-        Page<VacanteDTO> page = vacanteRepository.findAll(specification, pageable).map(vacante -> mapToDTO(idLogin,vacante, new VacanteDTO()));
-        
+       
+        Page<VacanteDTO> page = null;
+
+        if (Boolean.TRUE.equals(filtro.getIsFavorita())) {
+            Specification<VacanteFavorita> specFav = VacanteSpecifications.favoritaConFiltros(idLogin, filtro);
+            page = vacanteFavoritaRepository.findAll(specFav, pageable)
+                    .map(vf -> mapToDTO(idLogin, vf.getVacanteFavorita(), new VacanteDTO()));
+        }else{
+            Specification<Vacante> specification = VacanteSpecifications.conFiltros(filtro);
+            page = vacanteRepository.findAll(specification, pageable).map(vacante -> mapToDTO(idLogin,vacante, new VacanteDTO()));
+        }
         return mapResponse(page, "vacantes");         
     }
 

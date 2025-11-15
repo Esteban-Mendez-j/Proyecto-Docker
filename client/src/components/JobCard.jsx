@@ -23,13 +23,13 @@ export default function JobCard({ job, onFavoritoChange, cambiarEstado, verSecci
                 await toggleFavoritoRequest(job.nvacantes);
                 setIsFavorite(true);
             } else {
-                // Si YA está en favoritos → preguntar antes de quitar
-                const confirmed = await QuestionModal(
-                    "¿Quieres eliminar esta vacante de tus favoritos?",
-                    "warning"
-                );
+                // // Si YA está en favoritos → preguntar antes de quitar
+                // const confirmed = await QuestionModal(
+                //     "¿Quieres eliminar esta vacante de tus favoritos?",
+                //     "warning"
+                // );
 
-                if (!confirmed) return; // Si cancela, no hacer nada
+                // if (!confirmed) return; // Si cancela, no hacer nada
 
                 await toggleFavoritoRequest(job.nvacantes);
                 setIsFavorite(false);
@@ -46,8 +46,8 @@ export default function JobCard({ job, onFavoritoChange, cambiarEstado, verSecci
     // Muestra los empleos en forma de tarjetas
     if (presentaion == 1) {
         return (
-            <div className="card" >
-                <a href={`/empleos/${job.nvacantes}`} >
+            <div className="card" onClick={()=> navigate(`/empleos/${job.nvacantes}`)}>
+                {/* <a href={`/empleos/${job.nvacantes}`} > */}
                     <div className="card-header">
                         <div className="logo">
                             <img
@@ -156,13 +156,25 @@ export default function JobCard({ job, onFavoritoChange, cambiarEstado, verSecci
                     <div className="apply">
                         <span className="apply-text">Ver detalles</span>
                     </div>
-                </a>
+                {/* </a> */}
 
                 {(rol === 'EMPRESA' && verSeccionEdit) && (
                     <div className="apply">
-                        <Link to={`/empresa/editar/vacantes/${job.nvacantes}`} className="btn btn-edit">Editar</Link>
+                        {/* <Link to={`/empresa/editar/vacantes/${job.nvacantes}`} className="btn btn-edit">Editar</Link> */}
                         <button
-                            onClick={() => cambiarEstado(job.nvacantes, !job.activaPorEmpresa)}
+                            onClick={(e) =>  {
+                                e.stopPropagation();
+                                navigate(`/empresa/editar/vacantes/${job.nvacantes}`)
+                            }}
+                            className="btn btn-edit"
+                        >
+                            Editar
+                        </button>
+                        <button
+                            onClick={(e) =>  {
+                                e.stopPropagation();
+                                cambiarEstado(job.nvacantes, !job.activaPorEmpresa)
+                            }}
                             className={`btn px-4 py-2 font-semibold rounded-lg shadow ${job.activaPorEmpresa
                                 ? "bg-red-500 hover:bg-red-600 text-white"
                                 : "bg-green-500 hover:bg-green-600 text-white"
@@ -267,16 +279,19 @@ export default function JobCard({ job, onFavoritoChange, cambiarEstado, verSecci
                             {rol === "EMPRESA" && verSeccionEdit && (
                                 <div className="flex items-center gap-2 ml-auto">
                                     <button
-                                        className="px-3 py-1.5 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-100 transition"
-                                        onClick={() => {
+                                        className="px-3 py-1.5 text-sm font-medium border border-gray-300 rounded-md hover:text-white hover:bg-blue-500 transition"
+                                        onClick={(e) => {
                                             e.preventDefault()
-                                            e.stopPropagation()
+                                            e.stopPropagation();
                                             navigate(`/empresa/editar/vacantes/${job.nvacantes}`)
                                         }}>
                                         Editar
                                     </button>
                                     <button
-                                        onClick={() => cambiarEstado(job.nvacantes, !job.activaPorEmpresa)}
+                                        onClick={(e) => {
+                                            e.stopPropagation() 
+                                            cambiarEstado(job.nvacantes, !job.activaPorEmpresa)
+                                        }}
                                         className={`px-3 py-1.5 text-sm font-semibold rounded-md shadow ${job.activaPorEmpresa
                                                 ? "bg-red-500 hover:bg-red-600 text-white"
                                                 : "bg-green-500 hover:bg-green-600 text-white"

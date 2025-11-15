@@ -1,7 +1,11 @@
+import { useContext } from "react";
 import { deleteLocalStore } from "../services/localStore";
+import { RoleContext, RoleSesion } from "../services/RoleContext";
 
 export default function FilterComponent({ filtersLocal, clearAllFilters, handleFilterChange, setFilters, rol,handleEstadoChange }) {
   
+  const {rol:RoleSesion} = useContext(RoleContext);
+
   return (
     <div className="filters-container">
       <div className="filter-group">
@@ -101,12 +105,21 @@ export default function FilterComponent({ filtersLocal, clearAllFilters, handleF
           </label>
         </div>
       </div>
+      {RoleSesion === "candidato" && (
+        <div className="filter-group">
+          <h4 className="filter-group-title">Favoritas</h4>
+          <select name="isFavorita" value={filtersLocal.isFavorita?.toString() || "false"} onChange={handleFilterChange} className="search-input">
+            <option value="false">Todas</option>
+            <option value="true">Favoritas</option>
+          </select>
+        </div>
+      )}
 
       {rol === "empresa" && (
         <div className="filter-group">
           <h4 className="filter-group-title">Estado</h4>
           <select name="estado" value={filtersLocal.estado} onChange={handleEstadoChange} className="search-input">
-            <option value="todas" selected>Todas</option>
+            <option value="todas" >Todas</option>
             <option value="activas">Activas</option>
             <option value="desactivadasAdmin">Desactivadas por Admin</option>
             <option value="pausadasEmpresa">Pausadas por Empresa</option>
@@ -130,21 +143,7 @@ export default function FilterComponent({ filtersLocal, clearAllFilters, handleF
         <button
           className="btn btn-primary filter-search-button"
           onClick={() => {
-            clearAllFilters(); // resetea filtros locales
-            setFilters({
-              titulo: null,
-              tipo: "todos",
-              experiencia: null,
-              modalidad: null,
-              cargo: null,
-              isActive: null,
-              activaPorEmpresa: null,
-              ciudad: null,
-              sueldo: null,
-              totalpostulaciones: null,
-              favoritos: null
-            }); // fuerza los filtros globales a reiniciarse
-            deleteLocalStore("filtroLocal")
+            clearAllFilters(); // resetea filtros 
             deleteLocalStore("filtro")
           }}
         >

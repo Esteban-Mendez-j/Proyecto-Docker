@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.miproyecto.proyecto.domain.Aptitudes;
 import com.miproyecto.proyecto.domain.Candidato;
 import com.miproyecto.proyecto.domain.Roles;
 import com.miproyecto.proyecto.model.CandidatoDTO;
@@ -101,10 +102,11 @@ public class CandidatoService{
         candidatoDTO.setComentarioAdmin(candidato.getComentarioAdmin());
         candidatoDTO.setFechaInicioSesion(candidato.getFechaInicioSesion());
         candidatoDTO.setFechaRegistro(candidato.getFechaRegistro());
-        candidatoDTO.setAptitudes(
-                candidato.getAptitudes().stream()
-                        .map(aptitud -> aptitud.getNombreAptitud())
-                        .collect(Collectors.toList()));
+        List<Aptitudes> aptitudes = candidato.getAptitudes() != null ? candidato.getAptitudes() : new ArrayList<>();
+            candidatoDTO.setAptitudes(
+                aptitudes.stream().map(Aptitudes::getNombreAptitud).collect(Collectors.toList())
+            );
+
         candidatoDTO.setNivelEducativo(candidato.getNivelEducativo());
                         
         candidatoDTO.setRoles(
@@ -144,7 +146,9 @@ public class CandidatoService{
         candidato.setComentarioAdmin(candidatoDTO.getComentarioAdmin());
         candidato.setFechaInicioSesion(candidatoDTO.getFechaInicioSesion());
         candidato.setFechaRegistro(candidatoDTO.getFechaRegistro());
-        candidato.setAptitudes(aptitudesService.mapToListEntity(candidatoDTO.getAptitudes()));
+        List<String> aptitudes = candidatoDTO.getAptitudes() != null ? candidatoDTO.getAptitudes() : new ArrayList<>();
+        candidato.setAptitudes(aptitudesService.mapToListEntity(aptitudes));
+
         candidato.setNivelEducativo(candidatoDTO.getNivelEducativo());
         return candidato;
     }

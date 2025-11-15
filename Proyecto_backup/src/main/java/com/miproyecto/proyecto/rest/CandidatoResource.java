@@ -150,8 +150,8 @@ public class CandidatoResource {
     )
     @GetMapping("/edit/{idUsuario}")
     public ResponseEntity<CandidatoDTO> getCandidato(
-            @PathVariable final Long idCandidato) {
-        return ResponseEntity.ok(candidatoService.get(idCandidato));
+            @PathVariable final Long idUsuario) {
+        return ResponseEntity.ok(candidatoService.get(idUsuario));
     }
 
     @Operation(

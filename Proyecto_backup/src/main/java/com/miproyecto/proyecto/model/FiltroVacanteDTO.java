@@ -17,7 +17,14 @@ public class FiltroVacanteDTO {
     private String rolUser;
     private Boolean isActive;
     private Boolean activaPorEmpresa;
+    private Boolean isFavorita;
 
+    public Boolean getIsFavorita() {
+        return isFavorita;
+    }
+    public void setIsFavorita(Boolean isFavorita) {
+        this.isFavorita = isFavorita;
+    }
     public Boolean isActivaPorEmpresa() {
         return activaPorEmpresa;
     }
