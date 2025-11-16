@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useFetch } from "../../hooks/useFetch";
 import { useSendForm } from "../../hooks/useFetch";
 import Pagination from "../../components/Paginacion";
 import "../../style/invitado/notificacionesCenter.css";
 import Loading from "../../components/Loading";
 import { ListSvg } from "../../components/Icons";
-import { QuestionModal } from "../../services/Modal";
+import { modalTime, QuestionModal } from "../../services/Modal";
 import Layout from "../../layouts/Layout";
+import { Link } from "react-router-dom";
+import { RoleContext } from "../../services/RoleContext";
+import { connect, sendMessage, subscribe } from "../../services/Websocket";
 
 const Notificaciones = () => {
+  const { rol } = useContext(RoleContext);
   const [currentPage, setCurrentPage] = useState(1);
   const { send } = useSendForm();
   const { data, loading, error } = useFetch(`/api/notificaciones/recibidas?page=${currentPage - 1}`, "GET");
@@ -20,6 +24,39 @@ const Notificaciones = () => {
     }
   }, [data]);
 
+  const sendNotificacionEvent = (evento, idNotificacion) => {
+    const notifi = notificaciones.find(n => n.id === idNotificacion);
+
+    const notificacion = {
+      cuerpo: evento,
+      destinatario: notifi.destinatario,
+      id: idNotificacion
+    }
+    sendMessage("/app/enviar/evento", notificacion);
+  }
+
+
+  useEffect(() => {
+    if (!["CANDIDATO", "EMPRESA"].includes(rol)) { return }
+    connect()
+    // Eventos (eliminar, marcar leído)
+    subscribe("/user/queue/notificacion/evento", (msg) => {
+      const evento = JSON.parse(msg.body);
+      
+      setNotificaciones((prev) => {
+        if (evento.cuerpo === "eliminar") {
+          return prev.filter((n) => n.id !== evento.id);
+        }
+
+        if (evento.cuerpo === "leida") {
+          return prev.map((n) =>
+            n.id === evento.id ? { ...n, estadoEnvio: "RECIBIDO" } : n
+          );
+        }
+        return prev;
+      });
+    });
+  }, [])
 
 
   const eliminarNotificacion = async (id) => {
@@ -32,13 +69,24 @@ const Notificaciones = () => {
       setNotificaciones((prev) =>
         prev.filter((notificacion) => notificacion.id !== id)
       );
+      sendNotificacionEvent("eliminar", id)
     }
 
   }
-
+ 
   const marcarComoLeida = async (id) => {
-    const response = await send(`/api/notificaciones/edit/estadoEnvio/${id}`, "PUT")
-  }
+    const response = await send(`/api/notificaciones/edit/estadoEnvio/${id}`, "PUT");
+    if (response.status == 200) {
+      modalTime("Marcada como leida")
+      setNotificaciones((prev) =>
+        prev.map((n) =>
+          n.id === id ? { ...n, estadoEnvio: "RECIBIDO" } : n
+        )
+      );
+      sendNotificacionEvent("leida", id);
+    }
+  };
+
 
 
   return (
@@ -68,7 +116,8 @@ const Notificaciones = () => {
                 <div key={n.id} className="notification-card">
                   <div className="notification-info">
                     <h4>{n.asunto}</h4>
-                    <p className="notification-sender">De: {n.nameRemitente}</p>
+                    <Link to={`/perfil/empresa/${n.idRemitente}`} className="notification-sender">De: {n.nameRemitente}</Link>
+                    <Link to={`/empleos/${n.idVacante}`} className="notification-sender">Ver informacion de la Vacante</Link>
                     <p className="notification-message">{n.cuerpo}</p>
                     <span className="notification-date">{fecha}</span>
                   </div>
@@ -80,7 +129,7 @@ const Notificaciones = () => {
                       </button>
                     }
                     <button onClick={() => eliminarNotificacion(n.id)} className="delete-btn">
-                      <ListSvg name={"basura"} height={20} width={20} />
+                      <ListSvg name={"basura"} height={20} width={20} nameClass="notification-delete-icon" />
                     </button>
                   </div>
                 </div>

@@ -114,21 +114,25 @@ export const sectores = [
 ];
 
 
-export const mensajesNotificaciones = {
-    rechazada: {
-        asunto: "Actualización sobre tu postulación",
-        cuerpo: "Agradecemos tu interés en la vacante. Tras revisar tu perfil, la empresa ha decidido continuar con otros candidatos. Te invitamos a seguir postulando a otras oportunidades.",
-    },
-    aceptada: {
-        asunto: "¡Felicidades! Tu postulación ha sido aceptada",
-        cuerpo: "Nos complace informarte que tu postulación para la vacante ha sido aceptada. La empresa revisó tu perfil y desea continuar con el proceso de selección. Pronto recibirás más información sobre los siguientes pasos.",
-    },
-    espera: {
-        asunto: "Tu postulación está siendo revisada",
-        cuerpo: "Hemos recibido tu postulación y se encuentra en proceso de revisión por parte de la empresa. Te notificaremos tan pronto como se actualice el estado."
-    },
-    cancelada: {
-        asunto: "La vacante ha sido cancelada",
-        cuerpo: "Lamentamos informarte que la empresa ha decidido cancelar el proceso de selección para la vacante a la que postulaste. Agradecemos tu interés y te invitamos a explorar nuevas oportunidades en la plataforma."
-    }
-}
+export const mensajesNotificaciones = (tituloVacante, estadoPostulacion) => {
+    const mensaje = {
+        rechazada: {
+            asunto: "Actualización sobre tu postulación",
+            cuerpo: `Agradecemos tu interés en la vacante ${tituloVacante}. Tras revisar tu perfil, la empresa ha decidido continuar con otros candidatos. Te invitamos a seguir postulando a otras oportunidades.`,
+        },
+        aceptada: {
+            asunto: "¡Felicidades! Tu postulación ha sido aceptada",
+            cuerpo: `Nos complace informarte que tu postulación para la vacante ${tituloVacante} ha sido aceptada. La empresa revisó tu perfil y desea continuar con el proceso de selección. Pronto recibirás más información sobre los siguientes pasos.`,
+        },
+        espera: {
+            asunto: "Tu postulación está siendo revisada",
+            cuerpo: "Hemos recibido tu postulación y se encuentra en proceso de revisión por parte de la empresa. Te notificaremos tan pronto como se actualice el estado."
+        },
+        cancelada: {
+            asunto: "La vacante ha sido cancelada",
+            cuerpo: `Lamentamos informarte que la empresa ha decidido cancelar el proceso de selección para la vacante ${tituloVacante} a la que postulaste. Agradecemos tu interés y te invitamos a explorar nuevas oportunidades en la plataforma.`
+        }
+    };
+
+    return mensaje[estadoPostulacion];
+};

@@ -104,19 +104,17 @@ public class VacanteFavoritoService {
         return vacanteFavorita;
     }
     
-        public Page<VacanteDTO> obtenerVacantesFavoritas(Long idUsuario, Pageable pageable) {
-        Usuario usuario = new Usuario(); 
+    public Page<VacanteDTO> obtenerVacantesFavoritas(Long idUsuario, Pageable pageable) {
+        Usuario usuario = new Usuario();
         usuario = usuarioRepository.findById(idUsuario).orElseThrow(NotFoundException::new);
 
         Page<VacanteFavorita> favoritasPage = vacanteFavoritaRepository
                 .findVacantesFavoritasByUsuarioFavorita(usuario, pageable);
 
-       return favoritasPage.map(favorita ->
-                vacanteService.mapToDTO(
-                        0L,
-                        favorita.getVacanteFavorita(),
-                        new VacanteDTO()
-                        )
-                );
+        return favoritasPage.map(favorita -> vacanteService.mapToDTO(
+                0L,
+                idUsuario,
+                favorita.getVacanteFavorita(),
+                new VacanteDTO()));
     }
 }

@@ -89,7 +89,7 @@ class NotificacionServiceTest {
     @Test
     void create_ShouldReturnNotificacionDTO() {
         NotificacionDTO dto = new NotificacionDTO();
-        dto.setRemitente("1");
+        dto.setIdRemitente(1L);
         dto.setAsunto("Hola");
         dto.setCuerpo("Cuerpo del mensaje");
 

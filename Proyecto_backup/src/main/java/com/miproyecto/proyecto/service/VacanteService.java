@@ -54,10 +54,10 @@ public class VacanteService {
         vacanteRepository.save(vacante);
     }
 
-    // listado de todas las vacantes activas
+    // listado de todas las vacantes activas 
     public Map<String,Object> findAllByEstado(boolean estado, Pageable pageable, String nameList) {
         final Page<Vacante> vacantes = vacanteRepository.findByIsActiveOrderByFechaPublicacionDesc(estado, pageable);
-        final Page<VacanteDTO> vacantesDTO = vacantes.map(vacante -> mapToDTO(0L,vacante, new VacanteDTO()));
+        final Page<VacanteDTO> vacantesDTO = vacantes.map(vacante -> mapToDTO(0L, 0L ,vacante, new VacanteDTO()));
         return mapResponse(vacantesDTO, nameList) ;       
     }
 
@@ -71,7 +71,7 @@ public class VacanteService {
         return response;
     }
 
-    // listado de las vacantes que esten relacionados con el idUsuario
+    // listado de las vacantes que esten relacionados con el idUsuario  
     public Map<String,Object> findByIdUsuario(Long idUsuario, Pageable pageable) {
         // Obtener la empresa usando su id
         Empresa empresa = empresaRepository.findById(idUsuario)
@@ -81,7 +81,7 @@ public class VacanteService {
         Page<Vacante> vacantes = vacanteRepository.findByIdUsuario(empresa, pageable);
         
         // Convertir cada vacante a VacanteDTO y devolver la lista
-        Page<VacanteDTO> vacantesDTO = vacantes.map(vacante -> mapToDTO(0L,vacante, new VacanteDTO()));
+        Page<VacanteDTO> vacantesDTO = vacantes.map(vacante -> mapToDTO(0L, idUsuario ,vacante, new VacanteDTO()));
         return mapResponse(vacantesDTO, "vacantes");
                 
     }
@@ -91,21 +91,21 @@ public class VacanteService {
                 .orElse(null);
 
         return vacanteRepository.findByIdUsuarioAndNvacantes(empresa, nVacante)
-            .map(vacante -> mapToDTO(0L,vacante, new VacanteDTO()))
+            .map(vacante -> mapToDTO(0L,idUsuario,vacante, new VacanteDTO()))
             .orElse(null);
     }
     
-    public Map<String, Object> buscarVacantesConFiltros( Long idLogin, FiltroVacanteDTO filtro, Pageable pageable) {
+    public Map<String, Object> buscarVacantesConFiltros( Long idPsotulacion, FiltroVacanteDTO filtro, Pageable pageable) {
        
         Page<VacanteDTO> page = null;
 
         if (Boolean.TRUE.equals(filtro.getIsFavorita())) {
-            Specification<VacanteFavorita> specFav = VacanteSpecifications.favoritaConFiltros(idLogin, filtro);
+            Specification<VacanteFavorita> specFav = VacanteSpecifications.favoritaConFiltros(idPsotulacion, filtro);
             page = vacanteFavoritaRepository.findAll(specFav, pageable)
-                    .map(vf -> mapToDTO(idLogin, vf.getVacanteFavorita(), new VacanteDTO()));
+                    .map(vf -> mapToDTO(idPsotulacion, idPsotulacion, vf.getVacanteFavorita(), new VacanteDTO()));
         }else{
             Specification<Vacante> specification = VacanteSpecifications.conFiltros(filtro);
-            page = vacanteRepository.findAll(specification, pageable).map(vacante -> mapToDTO(idLogin,vacante, new VacanteDTO()));
+            page = vacanteRepository.findAll(specification, pageable).map(vacante -> mapToDTO(idPsotulacion,idPsotulacion,vacante, new VacanteDTO()));
         }
         return mapResponse(page, "vacantes");         
     }
@@ -116,7 +116,7 @@ public class VacanteService {
                 .orElse(null);
 
         return vacanteRepository.findTop6ByIdUsuarioOrderByTotalpostulacionesDesc(empresa).stream()
-            .map(v -> mapToDTO(0L, v, new VacanteDTO()))
+            .map(v -> mapToDTO(0L,idEmpresa, v, new VacanteDTO()))
             .collect(Collectors.toList());  
         
     }
@@ -131,13 +131,13 @@ public class VacanteService {
         // Convertir a DTO
         return topVacantes.stream()
             .filter(vacante -> vacante != null)
-            .map(vacante -> mapToDTO(idLogin ,vacante, new VacanteDTO()))
+            .map(vacante -> mapToDTO(idLogin, idLogin ,vacante, new VacanteDTO()))
             .collect(Collectors.toList());
     }
 
     public VacanteDTO get(Long idLogin, final Long nvacantes) {
         return vacanteRepository.findById(nvacantes)
-                .map(vacante -> mapToDTO(idLogin,vacante, new VacanteDTO()))
+                .map(vacante -> mapToDTO(idLogin,idLogin, vacante, new VacanteDTO()))
                 .orElseThrow(NotFoundException::new);
     }
 
@@ -181,7 +181,7 @@ public class VacanteService {
         vacanteRepository.save(vacante);
     }
     
-    public VacanteDTO mapToDTO(Long idPostulaciones, final Vacante vacante, final VacanteDTO vacanteDTO) {
+    public VacanteDTO mapToDTO(Long idPostulaciones, Long idUsuarioAut, final Vacante vacante, final VacanteDTO vacanteDTO) {
         vacanteDTO.setNvacantes(vacante.getNvacantes());
         vacanteDTO.setCargo(vacante.getCargo());
         vacanteDTO.setFechaPublicacion(vacante.getFechaPublicacion());
@@ -203,7 +203,6 @@ public class VacanteService {
         vacanteDTO.setActivaPorEmpresa(vacante.isActivaPorEmpresa());
         vacanteDTO.setNumCompartidos(vacante.getNumCompartidos());
         vacanteDTO.setnPostulados(vacante.getLitarpostulados() != null? vacante.getLitarpostulados().size(): 0);
-        // 🔥 NUEVO: Mapear el campo de visitas
         vacanteDTO.setVisitas(vacante.getVisitas());
         
         vacanteDTO.setAptitudes(
@@ -220,9 +219,13 @@ public class VacanteService {
             .findFirst()
             .ifPresent(p -> vacanteDTO.setEstadoPostulacion(p.getEstado())); // o p.getEstado().name()
         vacanteDTO.setNumeroGuardadosFavoritos(vacante.getListaVacnatesFavoritas().size());
+        //TODO lo que hcae es que verifica si esta en la lista de favooritos pero no verifica si la lista es del usuario autenticado
         vacante.getListaVacnatesFavoritas()
         .forEach(favoritaVacante -> { 
-            if (favoritaVacante.getVacanteFavorita().getNvacantes().equals(vacante.getNvacantes())){
+
+            Long idUsuarioFav = favoritaVacante.getUsuarioFavorita().getIdUsuario();
+            Long nVacanteFav = favoritaVacante.getVacanteFavorita().getNvacantes();
+            if (nVacanteFav.equals(vacante.getNvacantes()) && idUsuarioFav.equals(idUsuarioAut)){
                 vacanteDTO.setVacanteGuardada(true);
             } 
         }); 

@@ -29,9 +29,7 @@ public class NotificacionService {
     }
 
     public  Map<String, Object> findByDestinatarioAndVisible (Long idUsuario, Pageable pageable, Boolean isVisible){
-        System.out.println("Buscando usuario con ID: " + idUsuario);
         String Destinatario = usuarioRepository.findById(idUsuario).orElseThrow(NotFoundException::new).getCorreo();
-        System.out.println("Usuario encontrado? " + Destinatario);
         Page<NotificacionDTO> notificaciones =  notificacionRepository.findAllByDestinatarioAndIsVisibleOrderByFechaEnvioDesc(Destinatario, isVisible, pageable)
             .map(notificacion -> mapToDTO(notificacion, new NotificacionDTO()));
 
@@ -58,10 +56,10 @@ public class NotificacionService {
         return notificaciones;
     }
 
-    public  List<NotificacionDTO> findByDestinatarioRecientes (Long idUsuario, Boolean isVisible){
+    public  List<NotificacionDTO> findByDestinatarioRecientes (Long idUsuario, Boolean isVisible, EstadoEnvio estado){
         String remitente = usuarioRepository.findById(idUsuario).orElseThrow(NotFoundException::new).getCorreo();
         
-        List<NotificacionDTO> notificaciones =  notificacionRepository.findTop5ByDestinatarioAndIsVisibleOrderByFechaEnvioDesc(remitente, isVisible)
+        List<NotificacionDTO> notificaciones =  notificacionRepository.findTop5ByDestinatarioAndIsVisibleAndEstadoEnvioOrderByFechaEnvioDesc(remitente, isVisible, estado)
             .stream()
             .map(notificacion -> mapToDTO(notificacion, new NotificacionDTO()))
             .toList();
@@ -70,7 +68,7 @@ public class NotificacionService {
 
     public NotificacionDTO Create (NotificacionDTO notificacionDTO){
 
-        Usuario remitente = usuarioRepository.findById(Long.parseLong(notificacionDTO.getRemitente())).orElseThrow(NotFoundException::new);
+        Usuario remitente = usuarioRepository.findById(notificacionDTO.getIdRemitente()).orElseThrow(NotFoundException::new);
 
         notificacionDTO.setFechaEnvio(LocalDateTime.now());
         notificacionDTO.setIsVisible(true);
@@ -121,6 +119,8 @@ public class NotificacionService {
         notificacionDTO.setNameRemitente(notificacion.getNameRemitente());
         notificacionDTO.setIsVisible(notificacion.getIsVisible());
         notificacionDTO.setEstadoEnvio(notificacion.getEstadoEnvio());
+        notificacionDTO.setIdRemitente(notificacion.getIdRemitente());
+        notificacionDTO.setIdVacante(notificacion.getIdVacante());
         return notificacionDTO;
     }
     
@@ -134,6 +134,8 @@ public class NotificacionService {
         notificacion.setNameRemitente(notificacionDTO.getNameRemitente());
         notificacion.setIsVisible(notificacionDTO.getIsVisible());
         notificacion.setEstadoEnvio(notificacionDTO.getEstadoEnvio());
+        notificacion.setIdRemitente(notificacionDTO.getIdRemitente());
+        notificacion.setIdVacante(notificacionDTO.getIdVacante());
         return notificacion;
     }
 

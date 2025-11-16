@@ -169,9 +169,10 @@ class PostuladoServiceTest {
          * - Se retorna 10.
          * - El total de postulaciones de la vacante incrementa en +1.
          * - El estado del DTO queda establecido en "Espera".
+         * @throws Exception 
          */
         @Test
-        void create_DeberiaGuardarPostulacionYRetornarId() {
+        void create_DeberiaGuardarPostulacionYRetornarId() throws Exception {
 
                 VacanteResumenDTO vacanteResumenDTO = new VacanteResumenDTO();
                 vacanteResumenDTO.setId(1L);

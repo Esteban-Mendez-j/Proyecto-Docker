@@ -17,6 +17,8 @@ public class Notificacion {
     private LocalDateTime fechaEnvio;
     private String destinatario;
     private String remitente;
+    private Long idRemitente;
+    private Long idVacante;
     private String nameRemitente; 
     private Boolean isVisible;
     private EstadoEnvio estadoEnvio;
@@ -38,7 +40,20 @@ public class Notificacion {
     public void setId(String id) {
         this.id = id;
     }
-    
+    public Long getIdVacante() {
+        return idVacante;
+    }
+
+    public void setIdVacante(Long idVacante) {
+        this.idVacante = idVacante;
+    }
+    public Long getIdRemitente() {
+        return idRemitente;
+    }
+
+    public void setIdRemitente(Long idRemitente) {
+        this.idRemitente = idRemitente;
+    }
     public String getAsunto() {
         return asunto;
     }

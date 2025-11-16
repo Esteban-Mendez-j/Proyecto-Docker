@@ -116,7 +116,7 @@ public class PostuladoResource {
     @PostMapping("/add/{nvacantes}")
     public ResponseEntity<Map<String, Object>> addPostulacion(
             @PathVariable Long nvacantes,
-            HttpSession session) {
+            HttpSession session) throws Exception {
 
         Map<String, Object> response = new HashMap<>();
         String jwtToken = (String) session.getAttribute("jwtToken");

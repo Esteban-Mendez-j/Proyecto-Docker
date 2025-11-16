@@ -6,7 +6,7 @@ import { RoleContext } from "../services/RoleContext";
 import { toggleFavoritoRequest } from '../services/ToggleFavoritosRequest';
 import { ListSvg } from "./Icons";
 
-export default function JobCard({ job, onFavoritoChange, cambiarEstado, verSeccionEdit, presentaion }) {
+export default function JobCard({ job, onFavoritoChange, cambiarEstado, verSeccionEdit, presentaion, fetchAllJobs }) {
 
     const [isFavorite, setIsFavorite] = useState(false);
     const { rol } = useContext(RoleContext)
@@ -30,9 +30,9 @@ export default function JobCard({ job, onFavoritoChange, cambiarEstado, verSecci
                 // );
 
                 // if (!confirmed) return; // Si cancela, no hacer nada
-
                 await toggleFavoritoRequest(job.nvacantes);
                 setIsFavorite(false);
+                fetchAllJobs()
             }
 
             // 🔔 Avisamos al padre que algo cambió

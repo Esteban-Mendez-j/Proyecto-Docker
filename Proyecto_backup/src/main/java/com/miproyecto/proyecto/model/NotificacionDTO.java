@@ -12,6 +12,8 @@ public class NotificacionDTO {
     private LocalDateTime fechaEnvio;
     private String destinatario;
     private String remitente;
+    private Long idRemitente;
+    private Long idVacante;
     private String nameRemitente; 
     private Boolean isVisible;
     private EstadoEnvio estadoEnvio;
@@ -21,6 +23,18 @@ public class NotificacionDTO {
     }
     public void setId(String id) {
         Id = id;
+    }
+    public Long getIdVacante() {
+        return idVacante;
+    }
+    public void setIdVacante(Long idVacante) {
+        this.idVacante = idVacante;
+    }
+    public Long getIdRemitente() {
+        return idRemitente;
+    }
+    public void setIdRemitente(Long idRemitente) {
+        this.idRemitente = idRemitente;
     }
     public String getAsunto() {
         return asunto;
