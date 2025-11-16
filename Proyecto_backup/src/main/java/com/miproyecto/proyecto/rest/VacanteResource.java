@@ -105,7 +105,7 @@ public class VacanteResource {
         return ResponseEntity.ok(Map.of("vacantes", vacantes));
     }
 
-    @Operation(summary = "Listar vacantes filtradas", description = "Filtra vacantes activas para candidatos e invitados.")
+    @Operation(summary = "Listar vacantes filtradas", description = "Filtra y ordena por prediccion las vacantes activas para candidatos e invitados.")
     @PostMapping("/listar/filtradas")
     public ResponseEntity<Map<String, Object>> listarVacantesFiltradas(
             HttpSession session,
@@ -119,7 +119,7 @@ public class VacanteResource {
             idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
         }
         filtro.setActive(true);
-        Map<String, Object> response = vacanteService.buscarVacantesConFiltros(idUsuario, filtro, pageable);
+        Map<String, Object> response = vacanteService.buscarVacantesConFiltrosAndOrdenByPrediccion(idUsuario, filtro, pageable);
         return ResponseEntity.ok(response);
     }
 

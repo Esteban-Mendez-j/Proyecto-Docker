@@ -25,7 +25,8 @@ const JobBoard = ({ fetchUrl, rol }) => {
         ciudad: null,
         sueldo: null,
         totalpostulaciones: null,
-        isFavorita: false
+        isFavorita: false,
+        estado: rol === "empresa"? "todos" : undefined
     }
 
     const [filters, setFilters] = useState(readLocalStore("filtro", initialFiltros));
@@ -76,6 +77,7 @@ const JobBoard = ({ fetchUrl, rol }) => {
             [name]: value,
             [name]: name === "isFavorita" ? value === "true" : value
         }));
+        setCurrentPage(1)
     };
 
     const handleEstadoChange = (event) => {

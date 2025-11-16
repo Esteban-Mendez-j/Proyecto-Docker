@@ -148,9 +148,14 @@ export default function JobCard({ job, onFavoritoChange, cambiarEstado, verSecci
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                                 <circle cx="12" cy="7" r="4" />
                             </svg>
-
                             <span>{job.totalpostulaciones} postulados</span>
                         </div>
+                        {rol === "CANDIDATO" && (
+                            <div className="detail">
+                                <ListSvg name={"prediccion"} height={18} width={18} />
+                                <span>{job.prediccion}%</span>
+                            </div>
+                        )}
                     </div>
 
                     <div className="apply">
@@ -217,6 +222,13 @@ export default function JobCard({ job, onFavoritoChange, cambiarEstado, verSecci
                                 <ListSvg name={"usuario"} width={16} height={16} /> {job.totalpostulaciones}
                                 <ListSvg name={"maleta"} width={16} height={16} /> {job.tipo}  
                                 <ListSvg name={"reloj"} width={16} height={16} /> {job.experiencia} años de experiencia
+                                {rol === "CANDIDATO" && (
+                                <>
+                                    <ListSvg name={"prediccion"} height={18} width={18} />
+                                    {job.prediccion}%
+                                </>
+                                )}
+
                             </p>
                         </div>
                     </div>

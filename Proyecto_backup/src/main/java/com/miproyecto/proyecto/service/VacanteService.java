@@ -1,6 +1,9 @@
 package com.miproyecto.proyecto.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,6 +12,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -34,19 +39,20 @@ public class VacanteService {
     private final EmpresaRepository empresaRepository;
     private final PostuladoRepository postuladoRepository;
     private final AptitudesService aptitudesService;
+    private final PrediccionService prediccionService;
 
-    public VacanteService(final VacanteRepository vacanteRepository,
-            final EmpresaRepository empresaRepository,
-            final PostuladoRepository postuladoRepository,
-            final AptitudesService aptitudesService, VacanteFavoritaRepository vacanteFavoritaRepository) {
+    public VacanteService(VacanteFavoritaRepository vacanteFavoritaRepository, VacanteRepository vacanteRepository,
+            EmpresaRepository empresaRepository, PostuladoRepository postuladoRepository,
+            AptitudesService aptitudesService, PrediccionService prediccionService) {
+        this.vacanteFavoritaRepository = vacanteFavoritaRepository;
         this.vacanteRepository = vacanteRepository;
         this.empresaRepository = empresaRepository;
         this.postuladoRepository = postuladoRepository;
         this.aptitudesService = aptitudesService;
-        this.vacanteFavoritaRepository = vacanteFavoritaRepository;
+        this.prediccionService = prediccionService;
     }
 
-    // 🔥 NUEVO: Método para incrementar visitas
+    //  Método para incrementar visitas
     public void incrementarVisitas(final Long nvacantes) {
         final Vacante vacante = vacanteRepository.findById(nvacantes)
                 .orElseThrow(NotFoundException::new);
@@ -94,9 +100,9 @@ public class VacanteService {
             .map(vacante -> mapToDTO(0L,idUsuario,vacante, new VacanteDTO()))
             .orElse(null);
     }
-    
+
     public Map<String, Object> buscarVacantesConFiltros( Long idPsotulacion, FiltroVacanteDTO filtro, Pageable pageable) {
-       
+        
         Page<VacanteDTO> page = null;
 
         if (Boolean.TRUE.equals(filtro.getIsFavorita())) {
@@ -109,6 +115,82 @@ public class VacanteService {
         }
         return mapResponse(page, "vacantes");         
     }
+
+    //Obtiene 200 vacantes, calcula la afinidad con el usuario autenticado y ordena por la prediccion 
+    public Map<String, Object> buscarVacantesConFiltrosAndOrdenByPrediccion(
+            Long idPsotulacion, FiltroVacanteDTO filtro, Pageable pageableFront) {
+
+        // 1. Definir el número de bloque del backend (cada bloque = 200 vacantes)
+        int pageNumber = pageableFront.getPageNumber() / 10;
+        Pageable pageableBackend = PageRequest.of(pageNumber, 200);
+
+        // 2. Consultar vacantes del bloque
+        Page<VacanteDTO> page;
+
+        if (Boolean.TRUE.equals(filtro.getIsFavorita())) {
+            Specification<VacanteFavorita> specFav = VacanteSpecifications.favoritaConFiltros(idPsotulacion, filtro);
+            page = vacanteFavoritaRepository.findAll(specFav, pageableBackend)
+                    .map(vf -> mapToDTO(idPsotulacion, idPsotulacion, vf.getVacanteFavorita(), new VacanteDTO()));
+        } else {
+            Specification<Vacante> specification = VacanteSpecifications.conFiltros(filtro);
+            page = vacanteRepository.findAll(specification, pageableBackend)
+                    .map(vacante -> mapToDTO(idPsotulacion, idPsotulacion, vacante, new VacanteDTO()));
+        }
+
+        List<VacanteDTO> vacantes = new ArrayList<>(page.getContent());
+        long totalResultados = page.getTotalElements();
+
+        // 3. Calcular predicción por vacante
+        vacantes.forEach(v -> {
+            try {
+                Map<String, Object> resultados = prediccionService.predecirDesdeComparacion(v.getNvacantes(),
+                        idPsotulacion);
+
+                Object valor = resultados.get("porcentajeMatch");
+                if (valor != null) {
+                    v.setPrediccion(Double.parseDouble(valor.toString()));
+                }
+            } catch (Exception e) {
+                System.out.println("Error calculando predicción para vacante " + v.getNvacantes());
+            }
+        });
+
+        // 4. Ordenar por predicción
+        vacantes.sort(Comparator.comparing(VacanteDTO::getPrediccion).reversed());
+
+        // ⚠️ 5. Si el total es MENOR a 200, paginar normalmente
+        if (totalResultados < 200) {
+            int start = (int) pageableFront.getOffset();
+            int end = Math.min(start + pageableFront.getPageSize(), vacantes.size());
+
+            if (start >= end) {
+                return mapResponse(
+                        new PageImpl<>(Collections.emptyList(), pageableFront, totalResultados),
+                        "vacantes");
+            }
+
+            List<VacanteDTO> manualPage = vacantes.subList(start, end);
+            Page<VacanteDTO> finalPage = new PageImpl<>(manualPage, pageableFront, totalResultados);
+
+            return mapResponse(finalPage, "vacantes");
+        }
+
+        // 6. Paginación normal para bloques de 200 (más de 200 resultados totales)
+        int pageInsideBlock = pageableFront.getPageNumber() % 10;
+        int start = pageInsideBlock * pageableFront.getPageSize();
+        int end = Math.min(start + pageableFront.getPageSize(), vacantes.size());
+
+        if (start >= end) {
+            return mapResponse(
+                    new PageImpl<>(Collections.emptyList(), pageableFront, totalResultados),
+                    "vacantes");
+        }
+
+        List<VacanteDTO> pageContent = vacantes.subList(start, end);
+        Page<VacanteDTO> finalPage = new PageImpl<>(pageContent, pageableFront, totalResultados);
+        return mapResponse(finalPage, "vacantes");
+    }
+
 
     public List<VacanteDTO> TopVacantesPorPostulados(Long idEmpresa){
         

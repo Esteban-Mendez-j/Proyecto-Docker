@@ -9,7 +9,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +34,7 @@ import com.miproyecto.proyecto.repos.VacanteRepository;
 import com.miproyecto.proyecto.service.CandidatoService;
 import com.miproyecto.proyecto.service.ChatService;
 import com.miproyecto.proyecto.service.PostuladoService;
+import com.miproyecto.proyecto.service.PrediccionService;
 import com.miproyecto.proyecto.service.VacanteService;
 import com.miproyecto.proyecto.util.NotFoundException;
 
@@ -50,6 +53,8 @@ class PostuladoServiceTest {
         private CandidatoService candidatoService;
         @Mock
         private ChatService chatService; 
+        @Mock
+        private PrediccionService prediccionService;
 
         @InjectMocks
         private PostuladoService postuladoService;
@@ -164,24 +169,34 @@ class PostuladoServiceTest {
          * - El candidato existe.
          * - El servicio de vacantes retorna un resumen válido.
          * - El repositorio guarda correctamente y retorna una entidad con ID = 10.
+         * - El servicio de predicción retorna un porcentaje válido
          *
          * Resultado esperado:
          * - Se retorna 10.
          * - El total de postulaciones de la vacante incrementa en +1.
          * - El estado del DTO queda establecido en "Espera".
+         * - El porcentaje de predicción se asigna correctamente al DTO.
          * @throws Exception 
          */
         @Test
         void create_DeberiaGuardarPostulacionYRetornarId() throws Exception {
 
+                Long idVacante = 1L;
+                Long idCandidato = 20L;
                 VacanteResumenDTO vacanteResumenDTO = new VacanteResumenDTO();
-                vacanteResumenDTO.setId(1L);
+                vacanteResumenDTO.setId(idVacante);
 
                 when(vacanteService.findVacanteResumenById(1L)).thenReturn(vacanteResumenDTO);
 
                 when(vacanteRepository.findById(1L)).thenReturn(Optional.of(vacante));
 
-                when(candidatoRepository.findById(20L)).thenReturn(Optional.of(candidato));
+                when(candidatoRepository.findById(idCandidato)).thenReturn(Optional.of(candidato));
+
+                Map<String,Object> prediccion = new HashMap<>();
+                prediccion.put("porcentajeMatch", 80.0);
+
+                when(prediccionService.predecirDesdeComparacion(idVacante, idCandidato))
+                        .thenReturn(prediccion);
 
                 Postulado postuladoGuardado = new Postulado();
                 postuladoGuardado.setNPostulacion(10L);
@@ -189,14 +204,15 @@ class PostuladoServiceTest {
                 when(postuladoRepository.save(any(Postulado.class))).thenReturn(postuladoGuardado);
 
                 CandidatoResumenDTO candidatoResumenDTO = new CandidatoResumenDTO();
-                candidatoResumenDTO.setId(20L);
+                candidatoResumenDTO.setId(idCandidato);
 
                 PostuladoDTO postuladoDTO = new PostuladoDTO();
 
-                Long result = postuladoService.create(postuladoDTO, candidatoResumenDTO, 1L);
+                Long result = postuladoService.create(postuladoDTO, candidatoResumenDTO, idVacante);
 
                 assertEquals(10L, result);
                 assertEquals(1, vacante.getTotalpostulaciones());
+                assertEquals(80.0, postuladoDTO.getPorcentajePrediccion());
                 assertEquals("Espera", postuladoDTO.getEstado());
         }
 
