@@ -1,5 +1,6 @@
 package com.miproyecto.proyecto.rest;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -114,12 +115,19 @@ public class VacanteResource {
             @RequestBody FiltroVacanteDTO filtro) {
 
         Long idUsuario = 0L;
+        String rol = "ROLE_INVITADO";
+        Map<String, Object> response = new HashMap<>();
         if (jwtToken != null) {
             DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
             idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+            rol = decodedJWT.getClaim("rolPrincipal").asString();
         }
         filtro.setActive(true);
-        Map<String, Object> response = vacanteService.buscarVacantesConFiltrosAndOrdenByPrediccion(idUsuario, filtro, pageable);
+        if(rol.equals("CANDIDATO")){
+            response = vacanteService.buscarVacantesConFiltrosAndOrdenByPrediccion(idUsuario, filtro, pageable);
+        }else{
+            response = vacanteService.buscarVacantesConFiltros(idUsuario, filtro, pageable);
+        }
         return ResponseEntity.ok(response);
     }
 
