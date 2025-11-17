@@ -18,7 +18,14 @@ public class FiltroVacanteDTO {
     private Boolean isActive;
     private Boolean activaPorEmpresa;
     private Boolean isFavorita;
+    private String estadoPostulacion;
 
+    public String getEstadoPostulacion() {
+        return estadoPostulacion;
+    }
+    public void setEstadoPostulacion(String estadoPostulacion) {
+        this.estadoPostulacion = estadoPostulacion;
+    }
     public Boolean getIsFavorita() {
         return isFavorita;
     }

@@ -110,7 +110,7 @@ public class VacanteService {
             page = vacanteFavoritaRepository.findAll(specFav, pageable)
                     .map(vf -> mapToDTO(idPsotulacion, idPsotulacion, vf.getVacanteFavorita(), new VacanteDTO()));
         }else{
-            Specification<Vacante> specification = VacanteSpecifications.conFiltros(filtro);
+            Specification<Vacante> specification = VacanteSpecifications.conFiltros(idPsotulacion, filtro);
             page = vacanteRepository.findAll(specification, pageable).map(vacante -> mapToDTO(idPsotulacion,idPsotulacion,vacante, new VacanteDTO()));
         }
         return mapResponse(page, "vacantes");         
@@ -132,7 +132,7 @@ public class VacanteService {
             page = vacanteFavoritaRepository.findAll(specFav, pageableBackend)
                     .map(vf -> mapToDTO(idPsotulacion, idPsotulacion, vf.getVacanteFavorita(), new VacanteDTO()));
         } else {
-            Specification<Vacante> specification = VacanteSpecifications.conFiltros(filtro);
+            Specification<Vacante> specification = VacanteSpecifications.conFiltros(idPsotulacion, filtro);
             page = vacanteRepository.findAll(specification, pageableBackend)
                     .map(vacante -> mapToDTO(idPsotulacion, idPsotulacion, vacante, new VacanteDTO()));
         }

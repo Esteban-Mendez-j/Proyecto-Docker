@@ -106,6 +106,7 @@ export default function FilterComponent({ filtersLocal, clearAllFilters, handleF
         </div>
       </div>
       {RoleSesion === "CANDIDATO" && (
+        <>
         <div className="filter-group">
           <h4 className="filter-group-title">Favoritas</h4>
           <select name="isFavorita" value={filtersLocal.isFavorita?.toString() || "false"} onChange={handleFilterChange} className="search-input">
@@ -113,6 +114,18 @@ export default function FilterComponent({ filtersLocal, clearAllFilters, handleF
             <option value="true">Favoritas</option>
           </select>
         </div>
+
+        <div className="filter-group">
+          <h4 className="filter-group-title">Estado Postulacion</h4>
+          <select name="estadoPostulacion" value={filtersLocal.estadoPostulacion} onChange={handleFilterChange} className="search-input">
+            <option value="">Todas</option>
+            <option value="SinPostulacion">Sin postular</option>
+            <option value="Aceptada">Aceptadas</option>
+            <option value="Rechazada">Rechazadas</option>
+            <option value="Espera">En Espera</option>
+          </select>
+        </div>
+        </>
       )}
 
       {rol === "empresa" && (

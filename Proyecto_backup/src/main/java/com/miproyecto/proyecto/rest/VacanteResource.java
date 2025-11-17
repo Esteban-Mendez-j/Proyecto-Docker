@@ -123,6 +123,7 @@ public class VacanteResource {
             rol = decodedJWT.getClaim("rolPrincipal").asString();
         }
         filtro.setActive(true);
+        filtro.setRolUser(rol);
         if(rol.equals("CANDIDATO")){
             response = vacanteService.buscarVacantesConFiltrosAndOrdenByPrediccion(idUsuario, filtro, pageable);
         }else{

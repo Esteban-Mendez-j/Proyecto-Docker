@@ -27,7 +27,8 @@ const JobBoard = ({ fetchUrl, rol }) => {
         sueldo: null,
         totalpostulaciones: null,
         isFavorita: false,
-        estado: rol === "empresa"? "todos" : undefined
+        estado: rol === "empresa"? "todos" : undefined,
+        estadoPostulacion: rol === "empresa"? null : "SinPostulacion"
     }
 
     const [filters, setFilters] = useState(readLocalStore("filtro", initialFiltros));
