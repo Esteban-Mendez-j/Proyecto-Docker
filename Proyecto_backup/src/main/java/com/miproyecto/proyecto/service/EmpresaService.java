@@ -127,6 +127,8 @@ public class EmpresaService {
         empresaDTO.setNumeroVacantesActivas(contarVacantesActivas(empresa.getListarVacantes()));
         empresaDTO.setCandidatosAceptados(aceptadosPostulacion.get("CandidatosAceptados"));
         empresaDTO.setPorcentajeAceptacion(aceptadosPostulacion.get("PorcentajeAceptacion"));
+        empresaDTO.setVideoLink(empresa.getVideoLink());
+
         empresaDTO.setRoles(
             empresa.getRoles().stream()
                     .map(roles -> roles.getRol())
@@ -151,6 +153,8 @@ public class EmpresaService {
         empresa.setSitioWeb(empresaDTO.getSitioWeb());
         empresa.setNit(empresaDTO.getNit());
         empresa.setVerified(empresaDTO.isVerified());
+        empresa.setVideoLink(empresaDTO.getVideoLink());
+
         // empresa.setRoles(
         //     empresaDTO.getRoles().stream()
         //             .map(roles -> rolesRepository.findByRol(roles))

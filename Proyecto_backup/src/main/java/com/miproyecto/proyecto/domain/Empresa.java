@@ -27,6 +27,20 @@ public class Empresa  extends Usuario {
     @Column
     private boolean isVerified;
 
+
+    @Column(length = 500)
+    private String videoLink;
+
+    public String getVideoLink() {
+        return videoLink;
+    }
+
+    public void setVideoLink(String videoLink) {
+        this.videoLink = videoLink;
+    }
+
+
+
     public boolean isVerified() {
         return isVerified;
     }
@@ -50,6 +64,7 @@ public class Empresa  extends Usuario {
     public void setSitioWeb(final String sitioWeb) {
         this.sitioWeb = sitioWeb;
     }
+
 
     public String getNit() {
         return nit;

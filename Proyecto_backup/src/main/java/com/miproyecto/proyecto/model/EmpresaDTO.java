@@ -11,6 +11,10 @@ public class EmpresaDTO extends UsuarioDTO  {
     @Size(max = 255)
     private String sitioWeb;
 
+    @Size(max = 500)
+    private String videoLink;
+
+
     
 
     @Size(max = 9)
@@ -82,6 +86,14 @@ public class EmpresaDTO extends UsuarioDTO  {
     public void setSitioWeb(final String sitioWeb) {
         this.sitioWeb = sitioWeb;
     }
+
+    public String getVideoLink() {
+    return videoLink;
+}
+
+    public void setVideoLink(String videoLink) {
+        this.videoLink = videoLink;
+}
 
     public String getNit() {
         return nit;

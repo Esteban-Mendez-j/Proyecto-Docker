@@ -205,6 +205,8 @@ public class VacanteService {
         vacanteDTO.setnPostulados(vacante.getLitarpostulados() != null? vacante.getLitarpostulados().size(): 0);
         // 🔥 NUEVO: Mapear el campo de visitas
         vacanteDTO.setVisitas(vacante.getVisitas());
+        vacanteDTO.setVideoLink(vacante.getVideoLink());
+
         
         vacanteDTO.setAptitudes(
                 vacante.getAptitudes().stream()
@@ -257,7 +259,8 @@ public class VacanteService {
         vacante.setActivaPorEmpresa(vacanteDTO.isActivaPorEmpresa());
         vacante.setComentarioAdmin(vacanteDTO.getComentarioAdmin());
         vacante.setNumCompartidos(vacanteDTO.getNumCompartidos());
-        
+        vacante.setVideoLink(vacanteDTO.getVideoLink());
+
         // 🔥 NUEVO: Mapear el campo de visitas
         vacante.setVisitas(vacanteDTO.getVisitas());
         

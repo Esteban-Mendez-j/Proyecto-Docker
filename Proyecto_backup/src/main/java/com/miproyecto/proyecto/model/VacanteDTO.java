@@ -75,6 +75,9 @@ public class VacanteDTO {
 
     private List <String> aptitudes;
 
+    private String videoLink;
+
+
     private Integer visitas = 0;
 
     public Integer getVisitas() {
@@ -252,6 +255,15 @@ public class VacanteDTO {
     public void setRequerimientos(String requerimientos) {
         this.requerimientos = requerimientos;
     }
+
+    public String getVideoLink() {
+    return videoLink;
+    }
+
+    public void setVideoLink(String videoLink) {
+        this.videoLink = videoLink;
+    }
+
 
     public boolean isActive() {
         return isActive;

@@ -60,6 +60,9 @@ public class Vacante {
     @Column(length = 400)
     private String requerimientos;
 
+    @Column(name = "video_link")
+    private String videoLink;
+
     @Column
     private int totalpostulaciones;
    
@@ -243,6 +246,15 @@ public class Vacante {
     public void setRequerimientos(String requerimientos) {
         this.requerimientos = requerimientos;
     }
+
+    public String getVideoLink() {
+    return videoLink;
+    }
+
+    public void setVideoLink(String videoLink) {
+        this.videoLink = videoLink;
+    }
+
 
     public Set<Postulado> getLitarpostulados() {
         return litarpostulados;
