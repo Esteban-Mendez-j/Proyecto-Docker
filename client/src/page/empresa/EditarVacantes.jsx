@@ -7,7 +7,8 @@ import manejarRespuesta from "../../services/ManejarRespuesta";
 import { modal, modalResponse } from "../../services/Modal";
 import { ciudadesColombia, departamentoColombia, listAptitudes } from "../../services/data";
 import Loading from "../../components/Loading"
-import Layout from "../../layouts/layout";
+import Layout from "../../layouts/Layout";
+
 
 const EditarVacantes= () => {
   const { nvacantes } = useParams();
@@ -32,10 +33,10 @@ const EditarVacantes= () => {
     let updated;
     if (selected.includes(key)) {
       updated = selected.filter((item) => item !== key);
-    } else if (selected.length <= 5) {
+    } else if (selected.length < 5) {
       updated = [...selected, key];
     } else {
-      modal("Solo puedes seleccionar hasta 5 aptitudes", "error");
+      modal("Selecciona maximo 5 y minimo 2 aptitudes", "warning");
       return;
     }
 
@@ -48,13 +49,14 @@ const EditarVacantes= () => {
     }));
   };
 
+
   useEffect(() => {
     const fetchVacante = async () => {
       try {
         const res = await fetch(`${API_CLIENT_URL}/api/vacantes/seleccion/${nvacantes}`);
         const data = await manejarRespuesta(res);
         setVacante(data.vacanteSeleccionada);
-        setSelected(data.vacanteSeleccionada.aptitudes)
+        setSelected(data.vacanteSeleccionada.aptitudes || [])
       } catch (error) {
         console.error("Error cargando la vacante:", error);
       } finally {
@@ -66,15 +68,23 @@ const EditarVacantes= () => {
   }, [nvacantes]);
 
   const handleChange = (e) => {
-    setVacante({
-      ...vacante,
-      [e.target.name]: e.target.value,
+    const { name, value } = e.target;
+    setVacante(prev => {
+      let updated = { ...prev, [name]: value };
+      if (name === "ciudad") {
+        updated.departamento = departamentoColombia[value] || "";
+      }
+
+      return updated;
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if(selected.length > 5 || selected.length < 2){
+      modal("Selecciona maximo 5 y minimo 2 aptitudes", "warning");
+      return
+    }
     try {
       const res = await fetch(`${API_CLIENT_URL}/api/vacantes/edit/${vacante.nvacantes}`, {
         method: "PUT",
@@ -135,12 +145,13 @@ const EditarVacantes= () => {
                 <input
                   type="number"
                   id="sueldo"
+                  min={0} 
                   name="sueldo"
                   value={vacante.sueldo || ""}
                   onChange={handleChange}
                 />
               </div>
-              <input type="text" name="departamento" value={departamentoColombia[vacante.ciudad]} required hidden />
+              <input type="text" name="departamento" value={vacante.departamento} hidden />
             </div>
 
             {/* Fecha de publicación */}
@@ -209,6 +220,8 @@ const EditarVacantes= () => {
                   type="number"
                   id="experiencia"
                   name="experiencia"
+                  min={0} 
+                  max={99}
                   value={vacante.experiencia || ""}
                   onChange={handleChange}
                 />
@@ -241,21 +254,20 @@ const EditarVacantes= () => {
 
             <div>
               <h2 className="mb-2 text-lg font-semibold">Aptitudes Requeridas</h2>
-
               <div className="flex flex-wrap gap-3">
                 {Object.entries(listAptitudes).map(([key, label]) => (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => handleClick(key)}
-                    className={`px-4 py-2 rounded-2xl border transition-all duration-200 ${selected.includes(key)
-                      ? "bg-blue-600 text-white border-blue-600 shadow-md scale-105"
-                      : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"
-                      }`}
-                  >
-                    {label}
-                  </button>
-                ))}
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => handleClick(key)}
+                  className={`z-[30] px-4 py-2 rounded-2xl border transition-all duration-200 ${selected.includes(key)
+                    ? "bg-blue-600 text-white border-blue-600 shadow-md scale-105"
+                    : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"
+                    }`}
+                >
+                  {label}
+                </button>
+              ))}
               </div>
             </div>
 

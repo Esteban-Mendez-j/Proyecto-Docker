@@ -46,7 +46,7 @@ const JobList = ({
     }
   }
 
-  if(loading){return <Loading/>}
+  // if(loading){return <Loading/>}
 
   if (!jobs || jobs.length == 0) {
     return (
