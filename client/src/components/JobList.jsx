@@ -70,6 +70,7 @@ const JobList = ({
               cambiarEstado={cambiarEstado}
               verSeccionEdit={true}
               presentaion={presentacion}
+              
             />
           ))
         )}

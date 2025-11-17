@@ -266,6 +266,37 @@ export default function ResumenVacante({job, rol, id}) {
               </div>
             </div>
           </div>
+                {/* 🔹 Video de presentación de la empresa */}
+  {jobResumen.videoLink && (
+  <div className="flex items-center mb-9"> {/* subido un poco arriba */}
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="mt-1 mr-3 text-primary"
+    >
+      <polygon points="5 3 19 12 5 21 5 3" />
+    </svg>
+    <div className="flex flex-col">
+      <p className="text-sm text-text-light mb-1">Video de presentación</p>
+      <a
+        href={jobResumen.videoLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-sm text-white bg-gradient-primary py-1 px-3 rounded-lg shadow hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 no-underline inline-block"
+      >
+        Ver video
+      </a>
+    </div>
+  </div>
+)}
+
+
 
           {rol === "CANDIDATO" ? (
             <>

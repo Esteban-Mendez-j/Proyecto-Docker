@@ -27,6 +27,8 @@ import PerfilCandidatoPublic from "./page/candidato/PerfilCandidatoPublic.jsx"
 import PoliticaPrivacidad from "./page/invitado/PoliticaPrivacidad.jsx";
 import TerminosCondiciones from "./page/invitado/TerminosCondiciones.jsx";
 import Notificaciones from "./page/candidato/Notificaciones.jsx";
+import ShortsPage from './components/ShortsPage';
+
 
 function App() {
 
@@ -73,6 +75,7 @@ function App() {
         <Route path="/perfil/candidato/editar" element={<PerfilCandidatoEditar/>}/>
         <Route path="/politicas/privacidad" element={<PoliticaPrivacidad/>}/>
         <Route path="/terminos/condiciones" element={<TerminosCondiciones/>}/>
+        <Route path="/shorts" element={<ShortsPage />} />
         <Route path="*" element={<NotFound/>} />
         
       </Routes>

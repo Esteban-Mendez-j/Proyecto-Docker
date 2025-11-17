@@ -18,6 +18,7 @@ const EditarPerfilEmpresa = () => {
     imagen: "",
     sitioWeb: "",
     descripcion: "",
+    videoLink: "",
   }
 
   const navigate = useNavigate();
@@ -72,25 +73,28 @@ const EditarPerfilEmpresa = () => {
   };
 
   async function handleSubmit(e) {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-      formData.set(
-        "empresa",
-        new Blob([JSON.stringify(empresa)], { type: "application/json" })
-      );
-     
-      if (fotoRef.current?.files[0]) {
-        formData.append("img", fotoRef.current.files[0]);
-      }
+  e.preventDefault();
 
-    const result = await send(`/api/empresas/edit/${empresa.idUsuario}`, "PUT", formData, null);
-    if (result.status === 200) {
-      const isOk = await modalResponse(result.mensaje, "success");
-      if (isOk) {
-        navigate("/perfil/empresa");
-      }
+  const formData = new FormData();
+  formData.append(
+    "empresa",
+    new Blob([JSON.stringify(empresa)], { type: "application/json" })
+  );
+
+  if (fotoRef.current?.files[0]) {
+    formData.append("img", fotoRef.current.files[0]);
+  }
+
+  const result = await send(`/api/empresas/edit/${empresa.idUsuario}`, "PUT", formData, null);
+
+  if (result.status === 200) {
+    const isOk = await modalResponse(result.mensaje, "success");
+    if (isOk) {
+      navigate("/perfil/empresa");
     }
   }
+}
+
 
   return (
     <Layout>
@@ -196,7 +200,7 @@ const EditarPerfilEmpresa = () => {
                     value={empresa.nit}
                     className="empresa-info-input"
                     placeholder={"NIT de la empresa"}
-                    handleOnChange={handleOnChange}
+                    onChange={handleOnChange}
                     error={error}
                     minL={9}
                   />
@@ -225,7 +229,7 @@ const EditarPerfilEmpresa = () => {
                     value={empresa.correo}
                     className="empresa-info-input"
                     placeholder={"Correo electrónico"}
-                    handleOnChange={handleOnChange}
+                    onChange={handleOnChange}
                     error={error}
                   />
                 </div>
@@ -252,7 +256,7 @@ const EditarPerfilEmpresa = () => {
                     value={empresa.telefono}
                     className="empresa-info-input"
                     placeholder={"Teléfono de contacto"}
-                    handleOnChange={handleOnChange}
+                    onChange={handleOnChange}
                     error={error}
                     minL={10}
                   />
@@ -282,7 +286,7 @@ const EditarPerfilEmpresa = () => {
                     value={empresa.sitioWeb}
                     className="empresa-info-input"
                     placeholder={"Sitio web (ejemplo.com)"}
-                    handleOnChange={handleOnChange}
+                    onChange={handleOnChange}
                     error={error}
                   />
                 </div>
@@ -301,6 +305,34 @@ const EditarPerfilEmpresa = () => {
               />
               <p className= {`error-text ${error?.descripcion? null : "hidden" } `} >{error?.descripcion}</p>
             </div>
+            {/* --- Video de Presentación --- */}
+            <div className="empresa-info-item">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+              </svg>
+              <div className="empresa-info-content">
+                <span className="empresa-info-label">Video Presentación</span>
+                <InputForm
+                  type={"text"}
+                  name={"videoLink"}
+                  value={empresa.videoLink}
+                  className="empresa-info-input"
+                  placeholder={"https://youtu.be/abc123"}
+                  onChange={handleOnChange}   
+                  error={error}
+                />
+              </div>
+</div>
+
 
             {/* Botones */}
             <div className="empresa-form-actions">

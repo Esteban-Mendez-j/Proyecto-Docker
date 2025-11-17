@@ -21,6 +21,7 @@ export default function CrearVacante() {
     experiencia: '',
     descripcion: '',
     requerimientos: '',
+    videoLink: '', 
     aptitudes: []
   });
 
@@ -163,6 +164,20 @@ export default function CrearVacante() {
                 value={formData.requerimientos} onChange={handleChange} required />
             </div>
           </div>
+        <div className="form-row">
+        <div className="form-group full-width">
+          <label htmlFor="videoLink">Link del video de presentación</label>
+          <input
+          type="text"
+          id="videoLink"
+          name="videoLink"
+          placeholder="https://youtu.be/..."
+          value={formData.videoLink || ""}
+          onChange={handleChange}
+        />
+        </div>
+      </div>
+
 
           {/* ---------- Aptitudes ---------- */}
           <div className='form-group full-width"'>

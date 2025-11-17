@@ -134,6 +134,28 @@ const PerfilEmpresa = () => {
                 {empresa.descripcion || "No registrada"}
               </p>
             </div>
+            {/* Sección Video de Presentación */}
+              <div className="empresa-video-section">
+                <h2 className="empresa-section-title">Presentación en video</h2>
+
+                {empresa.videoLink ? (
+                  <div className="empresa-video-container">
+                    <div className="video-wrapper">
+                      <iframe
+                        className="empresa-video"
+                        src={empresa.videoLink.replace("watch?v=", "embed/")}
+                        title="Video de presentación"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <p className="empresa-no-video">La empresa aún no ha agregado un video de presentación.</p>
+                )}
+              </div>
+
           </div>
         </div>
       </div>

@@ -49,6 +49,7 @@ export default function Header () {
         ],
         CANDIDATO: [
             { name: "Inicio", path: "/" },
+            { name: "Shorts", path: "/shorts" }, // 👈 NUEVA OPCIÓN AQUÍ
             { name: "Chats", path: "/chat/candidato" },
             { name: "Empleos", path: "/empleos" },
             { name: "Postulaciones", path: "/postulaciones" },
