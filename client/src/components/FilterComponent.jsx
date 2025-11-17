@@ -59,7 +59,7 @@ export default function FilterComponent({ filtersLocal, clearAllFilters, handleF
       </div>
       
       <div className="filter-group">
-        <h4 className="filter-group-title">Postulados</h4>
+        <h4 className="filter-group-title">Postulados Minimos</h4>
         <input
           type="number"
           min={0}

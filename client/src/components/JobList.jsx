@@ -4,6 +4,7 @@ import "../style/invitado/jobcard.css";
 import Paginacion from "./Paginacion";
 import JobCard from "./JobCard";
 import TableJob from "./TableJob";
+import Loading from "./Loading";
 
 const JobList = ({
   jobs,
@@ -12,6 +13,7 @@ const JobList = ({
   totalPages,
   fetchAllJobs,
   presentacion,
+  loading
 }) => {
   async function cambiarEstado(id, estado) {
     let mensaje = estado ? "activar" : "desactivar";
@@ -44,6 +46,8 @@ const JobList = ({
     }
   }
 
+  // if(loading){return <Loading/>}
+
   if (!jobs || jobs.length == 0) {
     return (
       <div className="flex flex-col items-center justify-center h-96 text-center p-4">
@@ -70,7 +74,7 @@ const JobList = ({
               cambiarEstado={cambiarEstado}
               verSeccionEdit={true}
               presentaion={presentacion}
-              
+              fetchAllJobs={fetchAllJobs}
             />
           ))
         )}
