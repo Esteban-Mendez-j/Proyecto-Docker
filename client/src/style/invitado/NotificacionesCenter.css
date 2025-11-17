@@ -49,6 +49,13 @@
   padding-bottom: 6px;
 }
 
+.notification-list {
+  max-height: 250px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  padding-right: 5px;
+}
+
 /* Cada notificación */
 .notification-item {
   display: flex;
@@ -181,6 +188,10 @@
   background: #f3f4f6;
   transform: translateY(-1px);
 }
+.notification-info{
+  display: flex;
+  flex-direction: column;
+}
 
 .notification-info h4 {
   margin: 0;
@@ -208,19 +219,13 @@
 }
 
 .delete-btn {
-  background: #ef4444;
-  color: white;
   border: none;
   border-radius: 6px;
   padding: 6px 10px;
   font-size: 13px;
   cursor: pointer;
-  transition: background 0.2s ease;
 }
 
-.delete-btn:hover {
-  background: #dc2626;
-}
 
 /* Animación */
 @keyframes fadeIn {

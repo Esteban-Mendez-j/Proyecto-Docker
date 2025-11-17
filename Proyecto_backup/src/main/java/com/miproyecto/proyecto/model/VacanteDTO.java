@@ -80,6 +80,16 @@ public class VacanteDTO {
 
     private Integer visitas = 0;
 
+    private Double Prediccion = 0.0;
+
+    public Double getPrediccion() {
+        return Prediccion;
+    }
+
+    public void setPrediccion(Double prediccion) {
+        Prediccion = prediccion;
+    }
+
     public Integer getVisitas() {
         return visitas;
     }

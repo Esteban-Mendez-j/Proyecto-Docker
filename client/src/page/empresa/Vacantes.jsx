@@ -26,9 +26,14 @@ export default function CrearVacante() {
   });
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
+    const { name, value } = e.target;
+    setFormData(prev => {
+      let updated = { ...prev, [name]: value };
+      if (name === "ciudad") {
+        updated.departamento = departamentoColombia[value] || "";
+      }
+
+      return updated;
     });
   };
 
@@ -36,10 +41,10 @@ export default function CrearVacante() {
     let updated;
     if (selected.includes(key)) {
       updated = selected.filter((item) => item !== key);
-    } else if (selected.length <= 5) {
+    } else if (selected.length < 5) {
       updated = [...selected, key];
     } else {
-      modal("Solo puedes seleccionar hasta 5 aptitudes", "error");
+      modal("Selecciona maximo 5 y minimo 2 aptitudes", "warning");
       return;
     }
 
@@ -55,7 +60,10 @@ export default function CrearVacante() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if(selected.length > 5 || selected.length < 2){
+      modal("Selecciona maximo 5 y minimo 2 aptitudes", "warning");
+      return
+    }
     try {
       const res = await fetch(`${API_CLIENT_URL}/api/vacantes/add`, {
         method: 'POST',
@@ -110,10 +118,10 @@ export default function CrearVacante() {
             </div>
             <div className="form-group">
               <label htmlFor="sueldo">Sueldo</label>
-              <input type="number" id="sueldo" name="sueldo" placeholder="Ej: 3000000" step="0.01"
+              <input type="number" id="sueldo" name="sueldo" min={0} placeholder="Ej: 3000000" step="0.01"
                 value={formData.sueldo} onChange={handleChange} />
             </div>
-            <input type="text" name="departamento" value={departamentoColombia[formData.ciudad]} required hidden />
+            <input type="text" name="departamento" value={formData.departamento} hidden />
           </div>
 
           {/* Tercera fila */}
@@ -146,7 +154,7 @@ export default function CrearVacante() {
             </div>
             <div className="form-group">
               <label htmlFor="experiencia">Experiencia</label>
-              <input type="text" id="experiencia" name="experiencia" placeholder="Ej: 2 años en desarrollo web"
+              <input type="number" id="experiencia" name="experiencia" min={0} max={99} placeholder="Ej: 2 años en desarrollo web"
                 value={formData.experiencia} onChange={handleChange} />
             </div>
           </div>

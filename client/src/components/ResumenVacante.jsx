@@ -359,13 +359,16 @@ export default function ResumenVacante({job, rol, id}) {
         <br />
         <br />
 
-        {rol === "CANDIDATO" && prediccionActiva  ? (
-          <Prediccion id={id} />
-        ) : (
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-lg">
-            Completa tu perfil para activar tu predicción de afinidad y recibir mejores oportunidades.
-          </div>
-        )}
+        {rol === "CANDIDATO" && (
+          prediccionActiva ? (
+            <Prediccion id={id} />
+          ) : (
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-lg">
+              Completa tu perfil para activar tu predicción de afinidad y recibir mejores oportunidades.
+            </div>
+          )
+        )
+        }
       </div>
     );
 }

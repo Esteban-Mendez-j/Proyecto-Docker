@@ -16,6 +16,7 @@ public class NotificacioSocketController {
     @Autowired
     private NotificacionService notificacionService;
 
+
     @MessageMapping("/enviar/notificacion")
     public void sendNotificacion (NotificacionDTO notificacionDTO){
         
@@ -26,4 +27,25 @@ public class NotificacioSocketController {
             notificacionDTO
         );
     }
+
+    @MessageMapping("/enviar/evento")
+    public void sendEvento(NotificacionDTO notificacionDTO) {
+
+        String user = notificacionDTO.getDestinatario();
+
+        // Enviar a la bandeja de notificaciones principal
+        messagingTemplate.convertAndSendToUser(
+            user,
+            "/queue/notificacion",
+            notificacionDTO
+        );
+
+        // Enviar también al canal de eventos
+        messagingTemplate.convertAndSendToUser(
+            user,
+            "/queue/notificacion/evento",
+            notificacionDTO
+        );
+    }
+
 }

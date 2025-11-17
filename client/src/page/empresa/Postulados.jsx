@@ -20,6 +20,7 @@ export default function Postulados() {
         fechaEnvio: "",
         destinatario: "",
         remitente: "",
+        idRemitente: "",
         nameRemitente: "",
         isVisible: true,
         estadoEnvio: "",
@@ -127,15 +128,16 @@ export default function Postulados() {
     };
 
     const sendNotificacion = (estadoPostulacion, idPostulacion) => {
-        const { asunto, cuerpo } = mensajesNotificaciones[estadoPostulacion];
         const postulacion = postulados.find(p => p.nPostulacion === idPostulacion);
+        const { asunto, cuerpo } = mensajesNotificaciones(postulacion.vacante.titulo, estadoPostulacion);
         const destinatario = postulacion.candidato.correo ;
 
         const notificacion = {
             asunto: asunto,
             cuerpo: cuerpo,
             destinatario: destinatario,
-            remitente: remitenteId,
+            idRemitente: remitenteId,
+            idVacante: postulacion.vacante.id
         }
 
         sendMessage("/app/enviar/notificacion", notificacion);

@@ -68,7 +68,7 @@ public class NotificacionesResource {
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
 
-        response.put("notificaciones", notificacionService.findByDestinatarioRecientes(idUsuario, true));
+        response.put("notificaciones", notificacionService.findByDestinatarioRecientes(idUsuario, true, EstadoEnvio.ENVIADO));
         return ResponseEntity.ok(response);
     }
 

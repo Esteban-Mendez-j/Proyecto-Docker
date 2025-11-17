@@ -34,16 +34,18 @@ public class PostuladoService {
     private final CandidatoService candidatoService;
     private final VacanteService vacanteService;
     private final ChatService chatService;
+    private final PrediccionService prediccionService;
 
     public PostuladoService(PostuladoRepository postuladoRepository, VacanteRepository vacanteRepository,
             CandidatoRepository candidatoRepository, CandidatoService candidatoService, VacanteService vacanteService,
-            ChatService chatService) {
+            ChatService chatService, PrediccionService prediccionService) {
         this.postuladoRepository = postuladoRepository;
         this.vacanteRepository = vacanteRepository;
         this.candidatoRepository = candidatoRepository;
         this.candidatoService = candidatoService;
         this.vacanteService = vacanteService;
         this.chatService = chatService;
+        this.prediccionService = prediccionService;
     }
 
     public List<PostuladoDTO> findAll() {
@@ -92,11 +94,17 @@ public class PostuladoService {
                 .orElseThrow(NotFoundException::new);
     }
     
-    public Long create(final PostuladoDTO postuladoDTO, CandidatoResumenDTO candidatoResumenDTO, Long nVacante) {
+    public Long create(final PostuladoDTO postuladoDTO, CandidatoResumenDTO candidatoResumenDTO, Long nVacante) throws Exception {
         
         Vacante vacante = vacanteRepository.findById(nVacante).orElseThrow(NotFoundException::new);
         vacante.setTotalpostulaciones(vacante.getTotalpostulaciones()+1);
         vacanteRepository.save(vacante);
+
+        Map<String, Object> resultado = prediccionService.predecirDesdeComparacion(nVacante, candidatoResumenDTO.getId());
+        Object valor = resultado.get("porcentajeMatch");
+        if (valor != null) {
+            postuladoDTO.setPorcentajePrediccion(Double.parseDouble(valor.toString()));
+        }
 
         postuladoDTO.setVacante(vacanteService.findVacanteResumenById(nVacante));
         postuladoDTO.setCandidato(candidatoResumenDTO);

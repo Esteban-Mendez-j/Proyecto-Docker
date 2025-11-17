@@ -13,6 +13,7 @@ const JobBoard = ({ fetchUrl, rol }) => {
     const [totalElement, setTotalElement] = useState(0) 
     const [totalPages, setTotalPages] = useState(1);
     const [filteredJobs, setFilteredJobs] = useState([]);
+    const [loading, setLoading] = useState(false);
     const itemsPerPage = 20;
     const initialFiltros = {
         titulo: null,
@@ -25,7 +26,8 @@ const JobBoard = ({ fetchUrl, rol }) => {
         ciudad: null,
         sueldo: null,
         totalpostulaciones: null,
-        isFavorita: false
+        isFavorita: false,
+        estado: rol === "empresa"? "todos" : undefined
     }
 
     const [filters, setFilters] = useState(readLocalStore("filtro", initialFiltros));
@@ -44,6 +46,7 @@ const JobBoard = ({ fetchUrl, rol }) => {
     },[filters])
 
     const fetchAllJobs = async () => {
+        setLoading(true)
         try {
             const res = await fetch(`${fetchUrl}?page=${currentPage - 1}&size=${itemsPerPage}`, {
                 method: "POST",
@@ -62,6 +65,8 @@ const JobBoard = ({ fetchUrl, rol }) => {
             
         } catch (error) {
             console.error('Error cargando vacantes:', error);
+        } finally{
+            setLoading(false)
         }
     };
 
@@ -76,6 +81,7 @@ const JobBoard = ({ fetchUrl, rol }) => {
             [name]: value,
             [name]: name === "isFavorita" ? value === "true" : value
         }));
+        setCurrentPage(1)
     };
 
     const handleEstadoChange = (event) => {
@@ -161,6 +167,7 @@ const JobBoard = ({ fetchUrl, rol }) => {
                         totalPages={totalPages}
                         fetchAllJobs={fetchAllJobs}
                         presentacion = {presentacion}
+                        loading={loading}
                     />
                 </div>
             </div>
