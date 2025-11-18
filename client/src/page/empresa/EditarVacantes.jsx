@@ -25,6 +25,7 @@ const EditarVacantes= () => {
     experiencia: '',
     descripcion: '',
     requerimientos: '',
+    videoLink: '', 
     aptitudes: []
   });
   const [loading, setLoading] = useState(true);
@@ -251,6 +252,21 @@ const EditarVacantes= () => {
                 />
               </div>
             </div>
+
+                      <div className="form-row">
+            <div className="form-group full-width">
+              <label htmlFor="videoLink">Link del video de presentación</label>
+              <input
+                type="text"
+                id="videoLink"
+                name="videoLink"
+                placeholder="https://youtu.be/..."
+                value={vacante.videoLink || ""}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
 
             <div>
               <h2 className="mb-2 text-lg font-semibold">Aptitudes Requeridas</h2>

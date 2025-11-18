@@ -1,17 +1,36 @@
 // src/components/ShortsPage.jsx
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { useSendForm } from "../hooks/useFetch";
 import { useNavigate } from "react-router-dom";
+import { API_CLIENT_URL } from "../services/Api";
+import { RoleContext } from "../services/RoleContext";
 
 const ShortsPage = () => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [shortsData, setShortsData] = useState([]);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
-  const [likedShorts, setLikedShorts] = useState({}); // Estado para controlar los likes
+  const [likedShorts, setLikedShorts] = useState({}); 
   const videoRef = useRef(null);
   const navigate = useNavigate();
   const { data, send } = useSendForm();
+  const itemsPerPage = 20;
+  const {rol} = useContext(RoleContext);
+  const initialFiltros = {
+        titulo: null,
+        tipo: "todos",
+        experiencia: null,
+        modalidad: null,
+        active: rol === "EMPRESA"? null : true,
+        activaPorEmpresa: rol === "EMPRESA"? null : true,
+        cargo: null,
+        ciudad: null,
+        sueldo: null,
+        totalpostulaciones: null,
+        isFavorita: false,
+        estado: rol === "EMPRESA"? "todos" : undefined
+    }
+
 
   const styles = {
     container: {
@@ -244,23 +263,23 @@ const ShortsPage = () => {
     }));
   };
 
-  // Función para obtener el número de likes actualizado
-  const getCurrentLikes = (short) => {
-    const baseLikes = parseInt(short.likes.replace('K', '000').replace('.', '')) || parseInt(short.likes);
-    const isLiked = likedShorts[short.id];
+  // // Función para obtener el número de likes actualizado
+  // const getCurrentLikes = (short) => {
+  //   const baseLikes = parseInt(short.likes.replace('K', '000').replace('.', '')) || parseInt(short.likes);
+  //   const isLiked = likedShorts[short.nvacantes];
     
-    if (isLiked === undefined) {
-      return short.likes; // Devuelve el valor original si no hay interacción
-    }
+  //   if (isLiked === undefined) {
+  //     return short.likes; // Devuelve el valor original si no hay interacción
+  //   }
     
-    const newLikes = isLiked ? baseLikes + 1 : baseLikes - 1;
+  //   const newLikes = isLiked ? baseLikes + 1 : baseLikes - 1;
     
-    // Formatear el número (convertir a K si es grande)
-    if (newLikes >= 1000) {
-      return (newLikes / 1000).toFixed(1) + 'K';
-    }
-    return newLikes.toString();
-  };
+  //   // Formatear el número (convertir a K si es grande)
+  //   if (newLikes >= 1000) {
+  //     return (newLikes / 1000).toFixed(1) + 'K';
+  //   }
+  //   return newLikes.toString();
+  // };
 
   // Función para regresar a la página principal
   const handleBack = () => {
@@ -269,14 +288,16 @@ const ShortsPage = () => {
 
   // Cargar shorts desde la API
   useEffect(() => {
-    send("/api/shorts", "GET");
+    send(`/api/vacantes/listar/filtradas?page=${currentVideoIndex - 1}&size=${itemsPerPage}`, "POST", JSON.stringify(initialFiltros));
+
   }, []);
 
   useEffect(() => {
-    if (data) {
-      setShortsData(data);
-    }
-  }, [data]);
+  if (data && data.vacantes) {
+    setShortsData(data.vacantes);
+  }
+}, [data]);
+
 
   // Datos de ejemplo con DESCRIPCIÓN BREVE
   const exampleShorts = [
@@ -401,8 +422,8 @@ const ShortsPage = () => {
     </div>
   );
 
-  const isLiked = likedShorts[currentShort.id];
-  const currentLikes = getCurrentLikes(currentShort);
+  const isLiked = likedShorts[currentShort.nvacantes];
+  // const currentLikes = getCurrentLikes(currentShort);
 
   return (
     <div style={styles.container}>
@@ -415,15 +436,22 @@ const ShortsPage = () => {
         {/* Panel del video */}
         <div style={styles.videoPanel}>
           <div style={styles.videoContainer} onClick={handleVideoClick}>
-            <video
-              ref={videoRef}
-              src={currentShort.videoUrl}
-              style={styles.video}
-              autoPlay={isPlaying}
-              muted={isMuted}
-              loop={false}
-              onEnded={handleVideoEnd}
-            />
+            <iframe
+          style={{ width: "100%", height: "100%", border: "none" }}
+          src={
+            currentShort.videoLink
+              ? currentShort.videoLink
+                  .replace("watch?v=", "embed/")
+                  .concat(
+                    "?autoplay=1&mute=1&controls=0&loop=1&playlist=" +
+                      currentShort.videoLink.split("v=")[1]
+                  )
+              : "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&controls=0&loop=1&playlist=dQw4w9WgXcQ"
+          }
+          allow="autoplay; encrypted-media"
+          allowFullScreen
+            ></iframe>
+
             
             {/* Botón silenciar */}
             <button style={styles.muteButton} onClick={toggleMute}>
@@ -465,7 +493,7 @@ const ShortsPage = () => {
             </div>
             <div style={styles.profileInfo}>
               <h3 style={styles.companyName}>
-                {currentShort.company} {currentShort.isVerified && "✅"}
+                {currentShort.nameEmpresa} {currentShort.isVerified && "✅"}
               </h3>
               <p style={styles.jobInfo}>{currentShort.jobCount}</p>
             </div>
@@ -473,14 +501,19 @@ const ShortsPage = () => {
 
           {/* Información de la vacante */}
           <div style={styles.vacancyInfo}>
-            <h4 style={styles.vacancyTitle}>{currentShort.title}</h4>
+            <h4 style={styles.vacancyTitle}>{currentShort.titulo}</h4>
+
             
-            <p style={styles.description}>{currentShort.description}</p>
+            <p style={styles.description}>{currentShort.descripcion}</p>
 
             {/* Botón Ver más información */}
-            <button style={styles.moreInfoButton}>
+            <button
+              style={styles.verMasButton}
+              onClick={() => navigate(`/panel/candidato/vacante/${currentShort.nvacantes}`)}
+            >
               Ver más información
             </button>
+
 
             {/* Hashtags */}
             <div style={styles.hashtags}>
@@ -492,7 +525,7 @@ const ShortsPage = () => {
           <div style={styles.actionsSection}>
             <button 
               style={styles.likeButton}
-              onClick={() => handleLike(currentShort.id)}
+              onClick={() => handleLike(currentShort.nvacantes)}
             >
               <span 
                 style={{
@@ -502,7 +535,7 @@ const ShortsPage = () => {
               >
                 {isLiked ? "❤️" : "🤍"}
               </span>
-              <span>{currentLikes}</span>
+              {/* <span>{currentLikes}</span> */}
             </button>
             <button style={styles.applyButton}>
               Postularme ahora
