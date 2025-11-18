@@ -6,8 +6,9 @@ import "../../style/invitado/registroEmpresa.css"
 import Loading from "../../components/Loading";
 import useVisible from "../../hooks/useVisible";
 import { modalResponse } from "../../services/Modal";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { sectores } from "../../services/data";
+import { useState } from "react";
 export default function RegistroEmpresa (){
     
     const initialData = {
@@ -21,6 +22,7 @@ export default function RegistroEmpresa (){
     }
     
     const {send , data, error, setError, loading} = useSendForm();
+    const [submitted, setSubmitted] = useState(false);
     const { validarPassword, dataFrom, setDataFrom } = useValidation(initialData);
     const [handleOnClick, visible] = useVisible();
     const [handleOnClick2, visible2] = useVisible();
@@ -36,6 +38,7 @@ export default function RegistroEmpresa (){
 
     async function handleSubmit(e) {
         e.preventDefault();
+        setSubmitted(true)
         setError(null);
         if (!validarPassword) {
             setError(prev => ({
@@ -110,6 +113,7 @@ export default function RegistroEmpresa (){
                                     handleOnChange={handleOnChange}
                                     error={error}
                                     autoComplete={"email"}
+                                    submitted={submitted}
                                 />
                                 <p className="form-hint">Usarás este correo para iniciar sesión</p>
                             </div>
@@ -313,7 +317,7 @@ export default function RegistroEmpresa (){
                     </form>
 
                     <div className="login-container">
-                        <p>¿Ya tienes una cuenta? <a href="/login" className="login-link">Iniciar sesión</a></p>
+                        <p>¿Ya tienes una cuenta? <Link to="/login" className="login-link">Iniciar sesión</Link></p>
                     </div>
                 </div>
             </div>
