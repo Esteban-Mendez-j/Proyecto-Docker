@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -205,4 +206,5 @@ public class VacanteResource {
         vacanteService.updateNumCompartidos(idVacante);
         return ResponseEntity.ok().build();
     }
+    
 }   
