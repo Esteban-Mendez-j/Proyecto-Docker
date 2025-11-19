@@ -9,6 +9,7 @@ import { modalResponse } from "../../services/Modal";
 import { Link, useNavigate } from "react-router-dom";
 import { sectores } from "../../services/data";
 import { useState } from "react";
+import { formRulesEmpresa, validateForm } from "../../services/validacionForm";
 export default function RegistroEmpresa (){
     
     const initialData = {
@@ -39,14 +40,28 @@ export default function RegistroEmpresa (){
     async function handleSubmit(e) {
         e.preventDefault();
         setSubmitted(true)
-        setError(null);
+        const newErrors = validateForm(dataFrom, formRulesEmpresa);
+        const combinedErrors = { ...newErrors };
+
         if (!validarPassword) {
-            setError(prev => ({
-                ...prev,
-                contrasena: "Contraseña Invalida"
-            }));
-            return;
+            combinedErrors.contrasena = "Contraseña inválida";
         }
+
+        if (Object.keys(combinedErrors).length > 0) {
+            setError(combinedErrors);
+
+            // Foco en el primer campo con error
+            const firstErrorField = Object.keys(combinedErrors)[0];
+            const el = document.getElementById(firstErrorField);
+            if (el) {
+                el.scrollIntoView({ behavior: "smooth", block: "center" });
+                el.focus();
+            }
+
+            return; // detener envío o acción
+        }
+        setError(null);
+
         const result = await send("/api/empresas/add", "POST", JSON.stringify(dataFrom));
         if(result.status === 201){
             const isOk = await modalResponse(result.mensaje, "success");
@@ -74,6 +89,7 @@ export default function RegistroEmpresa (){
                                     value={dataFrom.nombre}
                                     handleOnChange={handleOnChange}
                                     error={error}
+                                    submitted={submitted}
                                 />
                             </div>
 
@@ -87,6 +103,7 @@ export default function RegistroEmpresa (){
                                         value={dataFrom.nit}
                                         handleOnChange={handleOnChange}
                                         error={error}
+                                        submitted={submitted}
                                         minL={9}
                                         maxL={9}
                                     />
@@ -94,12 +111,22 @@ export default function RegistroEmpresa (){
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="sectorEmpresa">Sector Empresa <span className="required">*</span></label>
-                                    <select id="sectorEmpresa" value={dataFrom.sectorEmpresa} name="sectorEmpresa" className= {`form-control ${error?.sectorEmpresa ? "error-input" : ""}`} required onChange={handleOnChange}>
-                                        <option value={""} disabled>Selecciona tu sector</option>
+                                    <InputForm
+                                        as="select"
+                                        name="sectorEmpresa"
+                                        value={dataFrom.sectorEmpresa}
+                                        handleOnChange={handleOnChange}
+                                        error={error}
+                                        rules={formRulesEmpresa} // define las reglas de validación para este campo
+                                        submitted={submitted}
+                                        className={`form-control ${error?.sectorEmpresa ? "error-input" : ""}`}
+                                    >
+                                        <option value="" disabled>Selecciona tu sector</option>
                                         {sectores.map((sector, index) => (
-                                            <option key={index} value={sector} >{sector}</option>
+                                            <option key={index} value={sector}>{sector}</option>
                                         ))}
-                                    </select>
+                                    </InputForm>
+
                                 </div>
                             </div>
 
@@ -112,8 +139,8 @@ export default function RegistroEmpresa (){
                                     value={dataFrom.correo}
                                     handleOnChange={handleOnChange}
                                     error={error}
-                                    autoComplete={"email"}
                                     submitted={submitted}
+                                    autoComplete={"email"}
                                 />
                                 <p className="form-hint">Usarás este correo para iniciar sesión</p>
                             </div>
@@ -127,6 +154,7 @@ export default function RegistroEmpresa (){
                                     value={dataFrom.telefono}
                                     handleOnChange={handleOnChange}
                                     error={error}
+                                    submitted={submitted}
                                     maxL={10}
                                 />
                             </div>
@@ -142,6 +170,7 @@ export default function RegistroEmpresa (){
                                             value={dataFrom.contrasena}
                                             handleOnChange={handleOnChange}
                                             error={error}
+                                            submitted={submitted}
                                             autoComplete={"new-password"}
                                         >
                                             <button
@@ -197,6 +226,7 @@ export default function RegistroEmpresa (){
                                             value={dataFrom.contraseñaVerificada}
                                             handleOnChange={handleOnChange}
                                             error={error}
+                                            submitted={submitted}
                                             autoComplete={"new-password"}
                                         >
                                             <button

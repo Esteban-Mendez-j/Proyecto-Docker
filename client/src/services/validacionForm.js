@@ -187,7 +187,49 @@ export const formRulesVacante = {
 
 };
 
-// export const formRulesVacante
+
+export const formRulesEmpresa = {
+  nombre: [
+    rules.required(),
+    rules.minLength(3, "Debe tener al menos 3 caracteres"),
+    rules.maxLength(100, "Debe tener máximo 100 caracteres"),
+  ],
+
+  nit: [
+    rules.required("NIT es obligatorio"),
+    rules.number("Debe ser un número"),
+    rules.minNumber(100000000, "Debe tener al menos 9 dígitos"),
+    rules.maxNumber(999999999, "No puede tener más de 9 dígitos"),
+  ],
+
+  sectorEmpresa: [
+    rules.required("Selecciona un sector"),
+  ],
+
+  correo: [
+    rules.required("Correo corporativo obligatorio"),
+    rules.email("Correo inválido"),
+  ],
+
+  telefono: [
+    rules.required("Teléfono obligatorio"),
+    rules.number("Debe ser un número"),
+    rules.minLength(10, "Debe tener mínimo 10 dígitos"),
+    rules.maxLength(10, "Debe tener máximo 10 dígitos"),
+  ],
+
+  contrasena: [
+    rules.required("Contraseña obligatoria"),
+    rules.minLength(8, "La contraseña debe tener al menos 8 caracteres"),
+    rules.maxLength(15, "La contraseña debe tener máximo 15 caracteres"),
+    // podrías agregar reglas personalizadas para mayúsculas, minúsculas, números
+  ],
+
+  contraseñaVerificada: [
+    rules.required("Confirmar contraseña es obligatorio"),
+    // Puedes agregar una regla custom para validar que coincida con 'contrasena'
+  ],
+};
 
 export function validateRule(rule, value) {
   const v = typeof value === "string" ? value.trim() : value;
