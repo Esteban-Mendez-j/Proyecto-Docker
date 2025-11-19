@@ -340,7 +340,9 @@ export default function RegistroEmpresa (){
                             </div>
 
                             <div className="step-buttons">
-                                <button type="button" className="btn btn-outline" id="btnCancelar">Cancelar</button>
+                                <Link to="/registro" className="btn btn-outline">
+                                    Cancelar
+                                </Link>
                                 <button type="submit" className="btn btn-primary">Completar registro</button>
                             </div>
                         </div>

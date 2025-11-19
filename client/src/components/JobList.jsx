@@ -4,7 +4,9 @@ import "../style/invitado/jobcard.css";
 import Paginacion from "./Paginacion";
 import JobCard from "./JobCard";
 import TableJob from "./TableJob";
-import Loading from "./Loading";
+import { useContext, useEffect, useState } from "react";
+import { useSendForm } from "../hooks/useFetch";
+import { RoleContext } from "../services/RoleContext";
 
 const JobList = ({
   jobs,
@@ -13,8 +15,13 @@ const JobList = ({
   totalPages,
   fetchAllJobs,
   presentacion,
-  loading
+  loading,
+  verPrediccion,
+  setVerPrediccion
 }) => {
+  const {rol} = useContext(RoleContext);
+  const { data ,send} = useSendForm();
+
   async function cambiarEstado(id, estado) {
     let mensaje = estado ? "activar" : "desactivar";
     const isConfirmed = await QuestionModal(
@@ -45,8 +52,29 @@ const JobList = ({
       modal("Hubo un problema al intentar modificar la vacante", "error");
     }
   }
+     
+  useEffect(() => {
+    if (rol === "CANDIDATO") {
+      send("/api/candidatos/perfil", "GET");
+    }
+  }, [rol]);
 
-  // if(loading){return <Loading/>}
+  useEffect(() => {
+    if (!data) return;
+
+    const { experiencia, aptitudes, nivelEducativo } = data.candidato;
+
+    const tieneExperiencia = experiencia && experiencia.trim() !== "";
+    const tieneAptitudes = Array.isArray(aptitudes) && aptitudes.length > 0;
+    const tieneNivel = nivelEducativo && nivelEducativo.trim() !== "";
+
+    if (tieneExperiencia && tieneAptitudes && tieneNivel) {
+      setVerPrediccion(true);
+    } else {
+      setVerPrediccion(false);
+    }
+  }, [data])
+  
 
   if (!jobs || jobs.length == 0) {
     return (
@@ -65,7 +93,7 @@ const JobList = ({
     <div>
       <div className={presentacion == 1 ? "jobs-grid" : "jobs-column"}>
         {presentacion == 3 ? (
-          <TableJob jobs={jobs} verSeccionEdit={true} />
+          <TableJob jobs={jobs} verSeccionEdit={true} verPrediccion={verPrediccion} />
         ) : (
           jobs.map((job) => (
             <JobCard
@@ -75,6 +103,7 @@ const JobList = ({
               verSeccionEdit={true}
               presentaion={presentacion}
               fetchAllJobs={fetchAllJobs}
+              verPrediccion={verPrediccion}
             />
           ))
         )}

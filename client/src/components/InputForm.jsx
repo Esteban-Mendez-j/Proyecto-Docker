@@ -51,6 +51,7 @@ export default function InputForm({
         {...(as === "input" && type === "text" ? { maxLength: maxL } : {})}
         {...(as === "select" ? { children } : {})} 
       />
+      {as != "select" && children} 
       {(submitted && fieldError) && <p className="error-text">{fieldError}</p>}
     </>
   );

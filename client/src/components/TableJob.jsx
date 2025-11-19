@@ -5,7 +5,7 @@ import { Link } from "react-router-dom"
 import { toggleFavoritoRequest } from "../services/ToggleFavoritosRequest";
 import { QuestionModal } from "../services/Modal";
 
-export default function TableJob({ jobs, onFavoritoChange, cambiarEstado, verSeccionEdit }) {
+export default function TableJob({ jobs, onFavoritoChange, cambiarEstado, verSeccionEdit, verPrediccion}) {
     // const [isFavorite, setIsFavorite] = useState(false);
     const { rol } = useContext(RoleContext)
 
@@ -119,7 +119,7 @@ export default function TableJob({ jobs, onFavoritoChange, cambiarEstado, verSec
                         <th className="px-4 py-2">Ciudad</th>
                         <th className="px-4 py-2">Tipo</th>
                         <th className="px-4 py-2">Experiencia</th>
-                        {rol == "CANDIDATO" && <th className="px-4 py-2 max-w-[100px]">Afinidad</th>}
+                        {(rol == "CANDIDATO" && verPrediccion)&& <th className="px-4 py-2 max-w-[100px]">Afinidad</th>}
                         <th className="px-4 py-2 max-w-[100px]">Postulaciones</th>
                         {/* {rol == "CANDIDATO" &&<th className="px-4 py-2 text-center">Favorito</th>} */}
                         {rol == "EMPRESA" &&<th className="px-4 py-2 text-center">Acciones</th>}
@@ -160,7 +160,7 @@ export default function TableJob({ jobs, onFavoritoChange, cambiarEstado, verSec
                             <td className="px-4 py-2">{job.ciudad}</td>
                             <td className="px-4 py-2">{job.tipo}</td>
                             <td className="px-4 py-2">{job.experiencia} años</td>
-                            {rol == "CANDIDATO" && <td className="px-4 py-2">{job.prediccion}%</td>}
+                            {(rol == "CANDIDATO" && verPrediccion) && <td className="px-4 py-2">{job.prediccion}%</td>}
                             <td className="px-4 py-2">{job.totalpostulaciones}</td>
 
                             {/* {"CANDIDATO" == rol && <td className="px-4 py-2 text-center">

@@ -77,29 +77,3 @@ public class Aptitudes {
         this.nombreAptitud = nombreAptitud;
     }
 }
-
-    // @Column(nullable = false, length = 80)
-    // private String nombreAptitud;
-
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "id_usuario_id")
-    // private Candidato idUsuario;
-
-
-
-    // public String getNombreAptitud() {
-    //     return nombreAptitud;
-    // }
-
-    // public void setNombreAptitud(String nombreAptitud) {
-    //     this.nombreAptitud = nombreAptitud;
-    // }
-
-    // public Candidato getIdUsuario() {
-    //     return idUsuario;
-    // }
-
-    // public void setIdUsuario(Candidato idUsuario) {
-    //     this.idUsuario = idUsuario;
-    // }
-    

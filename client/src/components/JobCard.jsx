@@ -6,7 +6,7 @@ import { RoleContext } from "../services/RoleContext";
 import { toggleFavoritoRequest } from '../services/ToggleFavoritosRequest';
 import { ListSvg } from "./Icons";
 
-export default function JobCard({ job, onFavoritoChange, cambiarEstado, verSeccionEdit, presentaion, fetchAllJobs }) {
+export default function JobCard({ job, onFavoritoChange, cambiarEstado, verSeccionEdit, presentaion, fetchAllJobs, verPrediccion }) {
 
     const [isFavorite, setIsFavorite] = useState(false);
     const { rol } = useContext(RoleContext)
@@ -150,7 +150,7 @@ export default function JobCard({ job, onFavoritoChange, cambiarEstado, verSecci
                             </svg>
                             <span>{job.totalpostulaciones} postulados</span>
                         </div>
-                        {rol === "CANDIDATO" && (
+                        {(rol === "CANDIDATO" && verPrediccion) && (
                             <div className="detail">
                                 <ListSvg name={"prediccion"} height={18} width={18} />
                                 <span>{job.prediccion}%</span>
@@ -222,7 +222,7 @@ export default function JobCard({ job, onFavoritoChange, cambiarEstado, verSecci
                                 <ListSvg name={"usuario"} width={16} height={16} /> {job.totalpostulaciones}
                                 <ListSvg name={"maleta"} width={16} height={16} /> {job.tipo}  
                                 <ListSvg name={"reloj"} width={16} height={16} /> {job.experiencia} años de experiencia
-                                {rol === "CANDIDATO" && (
+                                {(rol === "CANDIDATO"&& verPrediccion) && (
                                 <>
                                     <ListSvg name={"prediccion"} height={18} width={18} />
                                     {job.prediccion}%

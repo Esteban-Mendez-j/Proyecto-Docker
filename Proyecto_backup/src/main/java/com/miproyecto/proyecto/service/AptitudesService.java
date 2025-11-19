@@ -18,62 +18,6 @@ public class AptitudesService {
     public AptitudesService(final AptitudesRepository aptitudesRepository) {
         this.aptitudesRepository = aptitudesRepository;
     }
-// //listar todos las aptitudes
-//     public List<AptitudesDTO> findAll() {
-//         final List<Aptitudes> aptitudes = aptitudesRepository.findAll(Sort.by("idAptitud"));
-//         return aptitudes.stream()
-//                 .map(aptitud -> mapToDTO(aptitud, new AptitudesDTO()))
-//                 .toList();
-//     }
-//  //borrar y reemplazar aptitudes
-//     @Transactional
-//     public void replaceAptitudes(Long candidatoId, List<AptitudesDTO> nuevosDTO) {
-//         aptitudesRepository.deleteByIdUsuario_IdUsuario(candidatoId);
-//         List<Aptitudes> nuevos = nuevosDTO.stream()
-//                 .map(dto -> mapToEntity(dto, new Aptitudes()))
-//                 .toList();
-//         aptitudesRepository.saveAll(nuevos);
-
-//     } 
-
-
-//         //Aptitudes por idUsuario
-//     public List<AptitudesDTO> getAptitudesByIdUsuario(final Long idUsuario) {
-//         final Candidato candidato = candidatoRepository.findById(idUsuario)
-//         .orElseThrow(NotFoundException::new);
-//         final List<Aptitudes> idUsuarioAptitudes = aptitudesRepository.findByCandidato(candidato);
-//         if (idUsuarioAptitudes != null) {
-//             return idUsuarioAptitudes.stream()
-//             .map(aptitudes -> mapToDTO(aptitudes, new AptitudesDTO()))
-//             .toList();
-//         }
-//         return null;
-//     }
-
-
-//     public AptitudesDTO get(final Long idAptitud){
-//         return aptitudesRepository.findById(idAptitud)
-//                 .map(aptitudes -> mapToDTO(aptitudes, new AptitudesDTO()))
-//                 .orElseThrow(NotFoundException::new);
-
-//     }
-
-//         public Long create(final AptitudesDTO aptitudesDTO) {
-//         final Aptitudes aptitudes = new Aptitudes();
-//         mapToEntity(aptitudesDTO, aptitudes);
-//         return aptitudesRepository.save(aptitudes).getIdAptitud();
-//     }
-
-//     public void update(final Long idAptitudes, final AptitudesDTO aptitudesDTO) {
-//         final Aptitudes aptitudes = aptitudesRepository.findById(idAptitudes)
-//                 .orElseThrow(NotFoundException::new);
-//         mapToEntity(aptitudesDTO, aptitudes);
-//         aptitudesRepository.save(aptitudes);
-//     }
-
-//     public void delete(final Long idAptitudes) {
-//         aptitudesRepository.deleteById(idAptitudes);
-//     }
 
     public List<Aptitudes> mapToListEntity(final List<String> listAptitudesDTO) {
         List<Aptitudes> listAptitudes = new ArrayList<>();

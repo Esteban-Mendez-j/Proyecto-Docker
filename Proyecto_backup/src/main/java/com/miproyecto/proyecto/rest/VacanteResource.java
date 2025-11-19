@@ -1,6 +1,5 @@
 package com.miproyecto.proyecto.rest;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.miproyecto.proyecto.model.CandidatoDTO;
 import com.miproyecto.proyecto.model.FiltroVacanteDTO;
 import com.miproyecto.proyecto.model.VacanteDTO;
+import com.miproyecto.proyecto.service.CandidatoService;
 import com.miproyecto.proyecto.service.VacanteService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
@@ -35,12 +36,14 @@ import jakarta.validation.Valid;
 @RequestMapping(value = "/api/vacantes", produces = MediaType.APPLICATION_JSON_VALUE)
 public class VacanteResource {
 
+    private final CandidatoService candidatoService;
     private final VacanteService vacanteService;
     private final JwtUtils jwtUtils;
 
-    public VacanteResource(VacanteService vacanteService, JwtUtils jwtUtils) {
+    public VacanteResource(VacanteService vacanteService, JwtUtils jwtUtils, CandidatoService candidatoService) {
         this.vacanteService = vacanteService;
         this.jwtUtils = jwtUtils;
+        this.candidatoService = candidatoService;
     }
 
     // 🔥 NUEVO: Endpoint para registrar visitas
@@ -106,7 +109,7 @@ public class VacanteResource {
         return ResponseEntity.ok(Map.of("vacantes", vacantes));
     }
 
-    @Operation(summary = "Listar vacantes filtradas", description = "Filtra y ordena por prediccion las vacantes activas para candidatos e invitados.")
+    @Operation(summary = "Listar vacantes filtradas", description = "Filtra y ordena por predicción las vacantes activas para candidatos e invitados.")
     @PostMapping("/listar/filtradas")
     public ResponseEntity<Map<String, Object>> listarVacantesFiltradas(
             HttpSession session,
@@ -115,22 +118,37 @@ public class VacanteResource {
             @RequestBody FiltroVacanteDTO filtro) {
 
         Long idUsuario = 0L;
-        String rol = "ROLE_INVITADO";
-        Map<String, Object> response = new HashMap<>();
+        String rol = "INVITADO"; // rol por defecto
+        boolean perfilCompleto = false;
+        Map<String, Object> response;
+
+        // Si existe token, extraemos info del candidato
         if (jwtToken != null) {
             DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
             idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
             rol = decodedJWT.getClaim("rolPrincipal").asString();
+            rol = rol != null ? rol.toUpperCase() : "INVITADO";
+
+            if ("CANDIDATO".equals(rol)) {
+                CandidatoDTO candidato = candidatoService.get(idUsuario);
+                perfilCompleto = candidato != null &&
+                        candidato.getNivelEducativo() != null && !candidato.getNivelEducativo().isBlank() &&
+                        candidato.getAptitudes() != null && !candidato.getAptitudes().isEmpty() &&
+                        candidato.getExperiencia() != null && !candidato.getExperiencia().isBlank();
+            }
         }
+
         filtro.setActive(true);
         filtro.setRolUser(rol);
-        if(rol.equals("CANDIDATO")){
+
+        if ("CANDIDATO".equals(rol) && perfilCompleto) {
             response = vacanteService.buscarVacantesConFiltrosAndOrdenByPrediccion(idUsuario, filtro, pageable);
-        }else{
+        } else {
             response = vacanteService.buscarVacantesConFiltros(idUsuario, filtro, pageable);
         }
         return ResponseEntity.ok(response);
     }
+
 
     @Operation(summary = "Seleccionar vacante", description = "Obtiene la información de una vacante por su ID. Si el usuario es candidato, también valida permisos.")
     @GetMapping("/seleccion/{nvacantes}")

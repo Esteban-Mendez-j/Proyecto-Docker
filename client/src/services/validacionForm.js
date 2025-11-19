@@ -51,6 +51,12 @@ export const rules = {
     type: "youtubeUrl",
     message,
   }),
+
+  maxMb: (max, message) => ({
+    type: "maxMb",
+    max,
+    message: message || `Debe tener máximo ${max}megabyte`,
+  }),
 };
 
 
@@ -80,10 +86,11 @@ export function validateForm(form, formRules) {
           break;
 
         case "minLength":
-          if (String(v).length < rule.min) {
+          if (v && String(v).length < rule.min) {
             error = rule.message;
           }
           break;
+
 
         case "maxLength":
           if (String(v).length > rule.max) {
@@ -98,22 +105,32 @@ export function validateForm(form, formRules) {
           break;
 
         case "number":
-          if (v === "" || isNaN(Number(v))) {
+          if (v !== "" && isNaN(Number(v))) {
             error = rule.message;
           }
           break;
 
         case "positive":
-          if (Number(v) < 0) {
+          if (v !== "" && Number(v) < 0) {
             error = rule.message;
           }
           break;
+
         case "youtubeUrl":
           const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{11}([&?].*)?$/;
           if (value && !youtubeRegex.test(value)) {
             error = rule.message;
           }
           break;
+        case "maxMb":
+    
+        if (value) {
+          const maxBytes = rule.max * 1024 * 1024; // convertir MB a bytes
+          if (value.size > maxBytes) {
+            error = rule.message;
+          }
+        }
+        break;
       }
 
       if (error) {
@@ -136,7 +153,7 @@ export function validateForm(form, formRules) {
 export const formRulesVacante = {
   titulo: [
     rules.required(),
-    rules.minLength(3),
+    rules.minLength(10),
     rules.maxLength(100),
   ],
 
@@ -160,8 +177,8 @@ export const formRulesVacante = {
 
   cargo: [
     rules.required(),
-    rules.minLength(3),
-    rules.maxLength(100),
+    rules.minLength(5),
+    rules.maxLength(50),
   ],
 
   experiencia: [
@@ -174,11 +191,13 @@ export const formRulesVacante = {
   descripcion: [
     rules.required(),
     rules.minLength(20),
+    rules.maxLength(400)
   ],
 
   requerimientos: [
     rules.required(),
     rules.minLength(20),
+    rules.maxLength(400)
   ],
 
   videoLink: [
@@ -192,7 +211,7 @@ export const formRulesEmpresa = {
   nombre: [
     rules.required(),
     rules.minLength(3, "Debe tener al menos 3 caracteres"),
-    rules.maxLength(100, "Debe tener máximo 100 caracteres"),
+    rules.maxLength(50, "Debe tener máximo  50 caracteres"),
   ],
 
   nit: [
@@ -209,13 +228,14 @@ export const formRulesEmpresa = {
   correo: [
     rules.required("Correo corporativo obligatorio"),
     rules.email("Correo inválido"),
+    rules.maxLength(100)
   ],
 
   telefono: [
     rules.required("Teléfono obligatorio"),
     rules.number("Debe ser un número"),
-    rules.minLength(10, "Debe tener mínimo 10 dígitos"),
-    rules.maxLength(10, "Debe tener máximo 10 dígitos"),
+    rules.minLength(10, "Debe tener 10 dígitos"),
+    rules.maxLength(10, "Debe tener 10 dígitos"),
   ],
 
   contrasena: [
@@ -229,6 +249,84 @@ export const formRulesEmpresa = {
     rules.required("Confirmar contraseña es obligatorio"),
     // Puedes agregar una regla custom para validar que coincida con 'contrasena'
   ],
+
+  descripcion: [
+    rules.minLength(20),
+    rules.maxLength(400)
+  ],
+
+  imagen: [
+    rules.maxMb(4)
+  ]
+};
+
+export const formRulesCandidato = {
+  nombre: [
+    rules.required(),
+    rules.minLength(3, "Debe tener al menos 3 caracteres"),
+    rules.maxLength(50, "Debe tener máximo  50 caracteres"),
+  ],
+
+  identificacion: [
+    rules.required(),
+    rules.number("Debe ser un número"),
+    rules.minLength(10, "Debe tener 10 dígitos"),
+    rules.maxLength(10, "Debe tener 10 dígitos"),
+  ],
+
+  apellido: [
+    rules.required(),
+    rules.minLength(3, "Debe tener al menos 3 caracteres"),
+    rules.maxLength(20, "Debe tener máximo 20 caracteres"),
+  ],
+
+  correo: [
+    rules.required("Correo obligatorio"),
+    rules.email("Correo inválido"),
+    rules.maxLength(100)
+  ],
+
+  telefono: [
+    rules.required("Teléfono obligatorio"),
+    rules.number("Debe ser un número"),
+    rules.minLength(10, "Debe tener 10 dígitos"),
+    rules.maxLength(10, "Debe tener 10 dígitos"),
+  ],
+
+  contrasena: [
+    rules.required("Contraseña obligatoria"),
+    rules.minLength(8, "La contraseña debe tener al menos 8 caracteres"),
+    rules.maxLength(15, "La contraseña debe tener máximo 15 caracteres"),
+    // podrías agregar reglas personalizadas para mayúsculas, minúsculas, números
+  ],
+
+  contraseñaVerificada: [
+    rules.required("Confirmar contraseña es obligatorio"),
+    // Puedes agregar una regla custom para validar que coincida con 'contrasena'
+  ],
+
+  nivelEducativo:[
+    rules.maxLength(30)
+  ],
+
+  descripcion: [
+    rules.minLength(20),
+    rules.maxLength(400)
+  ],
+
+  imagen: [
+    rules.maxMb(4)
+  ],
+
+  curriculo: [
+    rules.maxMb(4)
+  ],
+
+  experiencia: [
+    rules.number(),
+    rules.positive(),
+    rules.maxNumber(90)
+  ],
 };
 
 export function validateRule(rule, value) {
@@ -240,7 +338,9 @@ export function validateRule(rule, value) {
       break;
 
     case "minLength":
-      if (String(v).length < rule.min) return rule.message;
+      if (v && String(v).length < rule.min) {
+        error = rule.message;
+      }
       break;
 
     case "maxLength":
@@ -253,12 +353,17 @@ export function validateRule(rule, value) {
       break;
 
     case "number":
-      if (v === "" || isNaN(Number(v))) return rule.message;
+      if (v !== "" && isNaN(Number(v))) {
+        error = rule.message;
+      }
       break;
 
     case "positive":
-      if (Number(v) < 0) return rule.message;
+      if (v !== "" && Number(v) < 0) {
+        error = rule.message;
+      }
       break;
+
 
     case "youtubeUrl":
       const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{11}([&?].*)?$/;
@@ -271,6 +376,15 @@ export function validateRule(rule, value) {
 
     case "maxNumber":
       if (v > rule.max) return rule.message;
+      break;
+
+    case "maxMb":
+      if (value instanceof File) {
+        const maxBytes = rule.max * 1024 * 1024; // convertir MB a bytes
+        if (value.size > maxBytes) {
+          return rule.message;
+        }
+      }
       break;
 
   }
