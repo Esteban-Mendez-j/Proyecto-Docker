@@ -8,6 +8,7 @@ import { modalResponse } from "../../services/Modal";
 import Loading from "../../components/Loading";
 import useValidation from "../../hooks/useValidation";
 import useVisible from "../../hooks/useVisible";
+import { formRulesCandidato, validateForm } from "../../services/validacionForm";
 
 export default function RegistroCandidato() {
 
@@ -31,6 +32,7 @@ export default function RegistroCandidato() {
     const { send , data, error, setError, loading } = useSendForm();
     const { validarPassword, dataFrom, setDataFrom } = useValidation(initialData);
     const [handleOnClick, visible] = useVisible();
+    const [submitted, setSubmitted] = useState(false);
     const [handleOnClick2, visible2] = useVisible();
     const navigate = useNavigate();
 
@@ -45,14 +47,30 @@ export default function RegistroCandidato() {
 
     async function handleSubmit(e) {
         e.preventDefault();
-        setError(null);
+        setSubmitted(true)
+        const newErrors = validateForm(dataFrom, formRulesCandidato);
+        const combinedErrors = { ...newErrors };
+
         if (!validarPassword) {
-            setError(prev => ({
-                ...prev,
-                contrasena: "Contraseña Invalida"
-            }));
-            return;
+            combinedErrors.contrasena = "Contraseña inválida";
         }
+
+        if (Object.keys(combinedErrors).length > 0) {
+            console.log(combinedErrors)
+            setError(combinedErrors);
+
+            // Foco en el primer campo con error
+            const firstErrorField = Object.keys(combinedErrors)[0];
+            const el = document.getElementById(firstErrorField);
+            if (el) {
+                el.scrollIntoView({ behavior: "smooth", block: "center" });
+                el.focus();
+            }
+
+            return; // detener envío o acción
+        }
+        setError(null);
+
         const result = await send("/api/candidatos/add", "POST", JSON.stringify(dataFrom));
         if(result.status === 201){
             const isOk = await modalResponse(result.mensaje, "success");
@@ -94,6 +112,7 @@ export default function RegistroCandidato() {
                                         value={dataFrom.nombre}
                                         handleOnChange={handleOnChange}
                                         error={error}
+                                        submitted={submitted}
                                     />
                                 </div>
 
@@ -108,6 +127,7 @@ export default function RegistroCandidato() {
                                         value={dataFrom.apellido}
                                         handleOnChange={handleOnChange}
                                         error={error}
+                                        submitted={submitted}
                                     />
                                 </div>
                             </div>
@@ -123,6 +143,7 @@ export default function RegistroCandidato() {
                                     value={dataFrom.correo}
                                     handleOnChange={handleOnChange}
                                     error={error}
+                                    submitted={submitted}
                                     autoComplete={"email"}
                                 />
                                 <p className="form-hint">
@@ -140,6 +161,7 @@ export default function RegistroCandidato() {
                                         value={dataFrom.telefono}
                                         handleOnChange={handleOnChange}
                                         error={error}
+                                        submitted={submitted}
                                     />
                                 </div>
 
@@ -154,6 +176,7 @@ export default function RegistroCandidato() {
                                         value={dataFrom.identificacion}
                                         handleOnChange={handleOnChange}
                                         error={error}
+                                        submitted={submitted}
                                     />
                                 </div>
                             </div>
@@ -171,6 +194,7 @@ export default function RegistroCandidato() {
                                             value={dataFrom.contrasena}
                                             handleOnChange={handleOnChange}
                                             error={error}
+                                            submitted={submitted}
                                             autoComplete={"new-password"}
                                         >
                                             <button
@@ -228,6 +252,7 @@ export default function RegistroCandidato() {
                                             value={dataFrom.contraseñaVerificada}
                                             handleOnChange={handleOnChange}
                                             error={error}
+                                            submitted={submitted}
                                             autoComplete={"new-password"}
                                         >
                                             <button

@@ -17,6 +17,9 @@ public class ArchivoConfig implements WebMvcConfigurer {
     @Value("${app.upload-dir.pdf}")
     private String pdfUploadDir;
 
+    @Value("${app.upload-dir.video}")
+    private String videoUploadDir;
+
     @Override
     public void addResourceHandlers( @NonNull ResourceHandlerRegistry registry) {
         // Servir imágenes desde el directorio 'uploads/img'
@@ -25,6 +28,9 @@ public class ArchivoConfig implements WebMvcConfigurer {
 
         // Servir PDFs desde el directorio 'uploads/pdf'
         registry.addResourceHandler("/pdf/**")
+                .addResourceLocations("file:" + pdfUploadDir + "/");
+        
+        registry.addResourceHandler("/video/**")
                 .addResourceLocations("file:" + pdfUploadDir + "/");
     }
 }

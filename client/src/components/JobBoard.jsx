@@ -1,17 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { manejarRespuesta } from "../services/ManejarRespuesta";
 import FilterComponent from './FilterComponent';
 import FiltroSuperior from './FiltroSuperior';
 import JobList from './JobList';
 import { ListSvg } from './Icons';
 import { readLocalStore, saveLocalStore } from '../services/localStore';
+import { RoleContext } from '../services/RoleContext';
 
 
 const JobBoard = ({ fetchUrl, rol }) => {
+    const {rol:rolAuth} = useContext(RoleContext);
     const [currentPage, setCurrentPage] = useState(readLocalStore("PaginaActual", 1));
     const [presentacion, setPresentacion] = useState(readLocalStore("presentacion", 1)); // 1:CARD, 2:HORIZONTAL, 3:TABLA
     const [totalElement, setTotalElement] = useState(0) 
     const [totalPages, setTotalPages] = useState(1);
+    const [verPrediccion, setVerPrediccion] = useState(false);
     const [filteredJobs, setFilteredJobs] = useState([]);
     const [loading, setLoading] = useState(false);
     const itemsPerPage = 20;
@@ -27,7 +30,8 @@ const JobBoard = ({ fetchUrl, rol }) => {
         sueldo: null,
         totalpostulaciones: null,
         isFavorita: false,
-        estado: rol === "empresa"? "todos" : undefined
+        estado: rol === "empresa"? "todos" : undefined,
+        estadoPostulacion: rol === "empresa"? null : "SinPostulacion"
     }
 
     const [filters, setFilters] = useState(readLocalStore("filtro", initialFiltros));
@@ -125,6 +129,7 @@ const JobBoard = ({ fetchUrl, rol }) => {
 
     return (
         <>  
+            { (rolAuth === "CANDIDATO" && !verPrediccion ) && <h1 className='title text-center'>Completa tu perfil para obtener mejores recomendaciones</h1>}
             <div className="page-header">
                 <FiltroSuperior 
                     filtersLocal={filtersLocal} 
@@ -168,6 +173,8 @@ const JobBoard = ({ fetchUrl, rol }) => {
                         fetchAllJobs={fetchAllJobs}
                         presentacion = {presentacion}
                         loading={loading}
+                        verPrediccion={verPrediccion}
+                        setVerPrediccion={setVerPrediccion}
                     />
                 </div>
             </div>

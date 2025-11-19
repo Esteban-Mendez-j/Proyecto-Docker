@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.miproyecto.proyecto.domain.Empresa;
+import com.miproyecto.proyecto.domain.Postulado;
 import com.miproyecto.proyecto.domain.Vacante;
 import com.miproyecto.proyecto.domain.VacanteFavorita;
 import com.miproyecto.proyecto.model.FiltroVacanteDTO;
@@ -12,9 +13,11 @@ import com.miproyecto.proyecto.model.FiltroVacanteDTO;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 public class VacanteSpecifications {
-    public static Specification<Vacante> conFiltros(FiltroVacanteDTO filtro) {
+    public static Specification<Vacante> conFiltros(Long idUserAut,  FiltroVacanteDTO filtro) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -87,6 +90,54 @@ public class VacanteSpecifications {
             } else if (filtro.getModalidad() != null) {
                 predicates.add(criteriaBuilder.equal(root.get("modalidad"), filtro.getModalidad()));
             }
+
+            if ("CANDIDATO".equalsIgnoreCase(filtro.getRolUser())
+                    && filtro.getEstadoPostulacion() != null
+                    && !filtro.getEstadoPostulacion().isEmpty()) {
+
+                if (filtro.getEstadoPostulacion().equals("SinPostulacion") && idUserAut != null) {
+                    // Subquery: vacantes donde el candidato actual ya tiene postulación
+                    Subquery<Long> subquery = query.subquery(Long.class);
+                    Root<Postulado> postuladoRoot = subquery.from(Postulado.class);
+                    subquery.select(postuladoRoot.get("vacante").get("nvacantes"))
+                            .where(criteriaBuilder.equal(postuladoRoot.get("candidato").get("idUsuario"), idUserAut));
+
+                    // Excluir esas vacantes
+                    predicates.add(criteriaBuilder.not(root.get("nvacantes").in(subquery)));
+                } else if (filtro.getEstadoPostulacion() != null) {
+                    Join<Vacante, Postulado> postuladoJoin = root.join("litarpostulados", JoinType.INNER);
+                    if (idUserAut != null) {
+                        predicates
+                                .add(criteriaBuilder.equal(postuladoJoin.get("candidato").get("idUsuario"), idUserAut));
+                    }
+                    predicates.add(criteriaBuilder.equal(postuladoJoin.get("estado"), filtro.getEstadoPostulacion()));
+                }
+
+                query.distinct(true);
+
+                // if (filtro.getEstadoPostulacion().equals("SinPostulacion")) {
+                // // Vacantes que NO tienen postulaciones del candidato actual
+                // if (idUserAut != null) {
+                // predicates.add(
+                // criteriaBuilder.or(
+                // criteriaBuilder.isNull(postuladoJoin.get("candidato")),
+                // criteriaBuilder.notEqual(postuladoJoin.get("candidato").get("idUsuario"),
+                // idUserAut)));
+                // } else {
+                // predicates.add(criteriaBuilder.isNull(postuladoJoin.get("candidato")));
+                // }
+                // } else {
+                // if (idUserAut != null) {
+                // predicates
+                // .add(criteriaBuilder.equal(postuladoJoin.get("candidato").get("idUsuario"),
+                // idUserAut));
+                // }
+                // predicates.add(criteriaBuilder.equal(postuladoJoin.get("estado"),
+                // filtro.getEstadoPostulacion()));
+                // }
+                // query.distinct(true);
+            }
+
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };

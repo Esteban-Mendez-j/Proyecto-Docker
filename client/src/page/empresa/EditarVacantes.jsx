@@ -8,12 +8,16 @@ import { modal, modalResponse } from "../../services/Modal";
 import { ciudadesColombia, departamentoColombia, listAptitudes } from "../../services/data";
 import Loading from "../../components/Loading"
 import Layout from "../../layouts/Layout";
+import InputForm from "../../components/InputForm";
+import { formRulesVacante, validateForm } from "../../services/validacionForm";
 
 
 const EditarVacantes= () => {
   const { nvacantes } = useParams();
   const navigate = useNavigate();
+  const [submitted, setSubmitted] = useState(false);
   const [selected, setSelected] = useState([]);
+  const [errors, setErrors] = useState({});
   const [vacante, setVacante] = useState({
     titulo: '',
     ciudad: '',
@@ -82,10 +86,30 @@ const EditarVacantes= () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitted(true)
+    // 1. Validar con tus reglas
+    const newErrors = validateForm(vacante, formRulesVacante);
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+
+      const firstErrorField = Object.keys(newErrors)[0];
+      const el = document.getElementById(firstErrorField);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.focus();
+      }
+      return; // no enviar
+    }
+
     if(selected.length > 5 || selected.length < 2){
       modal("Selecciona maximo 5 y minimo 2 aptitudes", "warning");
       return
     }
+
+    // 3. Limpiar errores si todo está bien
+    setErrors({});
+    
     try {
       const res = await fetch(`${API_CLIENT_URL}/api/vacantes/edit/${vacante.nvacantes}`, {
         method: "PUT",
@@ -114,146 +138,97 @@ const EditarVacantes= () => {
       <div className="registro-container">
         <h1 className="registroEmpresa-title">Editar Oferta</h1>
         <p className="subtitle">Modifica los campos necesarios</p>
-          <form  className="form" onSubmit={handleSubmit}>
-            <input type="hidden" name="nvacantes" value={vacante.nvacantes} />
 
-            {/* Primera fila */}
-              <div className="form-group">
-                <label htmlFor="titulo">Título del Puesto</label>
-                <input
-                  type="text"
-                  id="titulo"
-                  name="titulo"
-                  value={vacante.titulo || ""}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+        <form className="form" onSubmit={handleSubmit}>
+          <input type="hidden" name="nvacantes" value={vacante.nvacantes} />
 
-            {/* Segunda fila */}
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="ciudad">Ciudad</label>
-                <select value={vacante.ciudad} name="ciudad" className={"w-full rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"} required onChange={handleChange}>
-                  <option value={""} disabled>Selecciona tu ciudad</option>
-                  {ciudadesColombia.map((ciudad, index) => (
-                    <option key={index} value={ciudad} >{ciudad}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group">
-                <label htmlFor="sueldo">Sueldo</label>
-                <input
-                  type="number"
-                  id="sueldo"
-                  min={0} 
-                  name="sueldo"
-                  value={vacante.sueldo || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              <input type="text" name="departamento" value={vacante.departamento} hidden />
-            </div>
+          {/* Primera fila */}
+          <div className="form-group">
+            <label htmlFor="titulo">Título del Puesto</label>
 
-            {/* Fecha de publicación */}
-            <input
-              type="date"
-              name="fechaPublicacion"
-              value={vacante.fechaPublicacion?.split("T")[0] || ""}
-              readOnly
-              hidden
+            <InputForm
+              type="text"
+              name="titulo"
+              value={vacante.titulo}
+              placeholder="Título del puesto"
+              handleOnChange={handleChange}
+              error={errors}           
+              rules={formRulesVacante}
+              submitted={submitted}  
+              maxL={60}
             />
+          </div>
 
-            {/* Tercera fila */}
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="tipo">Vacante o Práctica</label>
-                <select
-                  id="tipo"
-                  name="tipo"
-                  value={vacante.tipo || ""}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="" disabled>
-                    Seleccionar
-                  </option>
-                  <option value="Practica">Práctica</option>
-                  <option value="Vacante">Vacante</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="modalidad">Modalidad</label>
-                <select
-                  id="modalidad"
-                  name="modalidad"
-                  value={vacante.modalidad || ""}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="" disabled>
-                    Seleccionar
-                  </option>
-                  <option value="Presencial">Presencial</option>
-                  <option value="Remoto">Remoto</option>
-                  <option value="Hibrido">Híbrido</option>
-                </select>
-              </div>
+          {/* Segunda fila */}
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="ciudad">Ciudad</label>
+              <InputForm
+                as="select"
+                name="ciudad"
+                value={vacante.ciudad}
+                handleOnChange={handleChange}
+                error={errors}
+                rules={formRulesVacante}
+                submitted={submitted}
+              >
+                <option value="" disabled>Selecciona tu ciudad</option>
+                {ciudadesColombia.map((c, i) => (
+                  <option key={i} value={c}>{c}</option>
+                ))}
+              </InputForm>
             </div>
 
-            {/* Cuarta fila */}
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="cargo">Cargo</label>
-                <input
-                  type="text"
-                  id="cargo"
-                  name="cargo"
-                  value={vacante.cargo || ""}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="experiencia">Experiencia</label>
-                <input
-                  type="number"
-                  id="experiencia"
-                  name="experiencia"
-                  min={0} 
-                  max={99}
-                  value={vacante.experiencia || ""}
-                  onChange={handleChange}
-                />
-              </div>
+            <div className="form-group">
+              <label htmlFor="sueldo">Sueldo</label>
+              <InputForm
+                type="number"
+                name="sueldo"
+                value={vacante.sueldo}
+                handleOnChange={handleChange}
+                error={errors}
+                rules={formRulesVacante}
+                submitted={submitted} 
+                minL={0}
+              />
             </div>
 
-            {/* Descripción */}
-            <div className="form-row">
-              <div className="form-group full-width">
-                <label htmlFor="descripcion">Descripción del Puesto</label>
-                <textarea
-                  id="descripcion"
-                  name="descripcion"
-                  value={vacante.descripcion || ""}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="form-group full-width">
-                <label htmlFor="requerimientos">Requerimientos del Puesto</label>
-                <textarea
-                  id="requerimientos"
-                  name="requerimientos"
-                  value={vacante.requerimientos || ""}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+            <input type="text" name="departamento" value={vacante.departamento} hidden />
+          </div>
+
+          {/* Tercera fila */}
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="cargo">Cargo</label>
+              <InputForm
+                type="text"
+                name="cargo"
+                value={vacante.cargo}
+                handleOnChange={handleChange}
+                error={errors}
+                rules={formRulesVacante}
+                submitted={submitted} 
+                maxL={40}
+              />
             </div>
 
-                      <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="experiencia">Experiencia</label>
+              <InputForm
+                type="number"
+                name="experiencia"
+                value={vacante.experiencia}
+                handleOnChange={handleChange}
+                error={errors}
+                rules={formRulesVacante}
+                submitted={submitted} 
+                minL={0}
+                maxL={2}
+              />
+            </div>
+          </div>
+          
+           <div className="form-row">
             <div className="form-group full-width">
               <label htmlFor="videoLink">Link del video de presentación</label>
               <input
@@ -267,42 +242,73 @@ const EditarVacantes= () => {
             </div>
           </div>
 
+          {/* Descripción */}
+          <div className="form-group full-width">
+            <label htmlFor="descripcion">Descripción del Puesto</label>
 
-            <div>
-              <h2 className="mb-2 text-lg font-semibold">Aptitudes Requeridas</h2>
-              <div className="flex flex-wrap gap-3">
-                {Object.entries(listAptitudes).map(([key, label]) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => handleClick(key)}
-                  className={`z-[30] px-4 py-2 rounded-2xl border transition-all duration-200 ${selected.includes(key)
+            <InputForm
+              as="textarea"
+              name="descripcion"
+              value={vacante.descripcion}
+              handleOnChange={handleChange}
+              placeholder="Descripción del puesto"
+              rules={formRulesVacante}
+              submitted={submitted}
+            />
+          </div>
+
+          {/* Requerimientos */}
+          <div className="form-group full-width">
+            <label htmlFor="requerimientos">Requerimientos del Puesto</label>
+
+            <InputForm
+              as="textarea"
+              name="requerimientos"
+              value={vacante.requerimientos}
+              handleOnChange={handleChange}
+              placeholder="Requerimientos del puesto"
+              rules={formRulesVacante}
+              submitted={submitted}
+            />
+          </div>
+
+          {/* Aptitudes */}
+          <h2 className="mb-2 text-lg font-semibold">Aptitudes Requeridas</h2>
+          <p className="text-lg text-gray-700">Selecciona minimo 2 y maximo 5 aptitude.</p>
+          <div className="flex flex-wrap gap-3">
+            {Object.entries(listAptitudes).map(([key, label]) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => handleClick(key)}
+                className={`z-[30] px-4 py-2 rounded-2xl border transition-all duration-200 ${selected.includes(key)
                     ? "bg-blue-600 text-white border-blue-600 shadow-md scale-105"
                     : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"
-                    }`}
-                >
-                  {label}
-                </button>
-              ))}
-              </div>
-            </div>
-
-            {/* Botones */}
-            <div className="form-actions">
-              <button
-                type="button"
-                className="btn btn-outline"
-                onClick={() => navigate("/empresa/listado/vacantes")}
+                  }`}
               >
-                Cancelar
+                {label}
               </button>
-              <button type="submit" className="btn btn-submit">
-                Guardar Cambios
-              </button>
-            </div>
-          </form>
+            ))}
+          </div>
+
+          {/* Botones */}
+          <div className="form-actions">
+            <button
+              type="button"
+              className="btn btn-outline"
+              onClick={() => navigate("/empresa/listado/vacantes")}
+            >
+              Cancelar
+            </button>
+            <button type="submit" className="btn btn-submit">
+              Guardar Cambios
+            </button>
+          </div>
+        </form>
       </div>
+
     </Layout>
   );
 }
 export default EditarVacantes;
+

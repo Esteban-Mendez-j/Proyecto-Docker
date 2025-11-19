@@ -1,5 +1,10 @@
 package com.miproyecto.proyecto.service;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,8 +14,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.miproyecto.proyecto.domain.Empresa;
 import com.miproyecto.proyecto.domain.Postulado;
@@ -40,6 +48,8 @@ public class VacanteService {
     private final PostuladoRepository postuladoRepository;
     private final AptitudesService aptitudesService;
     private final PrediccionService prediccionService;
+    @Value("${app.upload-dir.video}")
+    private String videoUploadDir;
 
     public VacanteService(VacanteFavoritaRepository vacanteFavoritaRepository, VacanteRepository vacanteRepository,
             EmpresaRepository empresaRepository, PostuladoRepository postuladoRepository,
@@ -50,6 +60,46 @@ public class VacanteService {
         this.postuladoRepository = postuladoRepository;
         this.aptitudesService = aptitudesService;
         this.prediccionService = prediccionService;
+    }
+
+    public String guardarVideo(MultipartFile file, Long nVacante) throws IOException {
+        String tipo = file.getContentType();
+
+        // Verifica si es video valido 
+        String carpeta;
+        if (tipo != null && tipo.startsWith("image/")) {
+            carpeta = videoUploadDir;
+        } else {
+            throw new IllegalArgumentException("Solo se permiten archivos de imagen o PDF.");
+        }
+
+        // Crear carpeta si no existe
+        Path rutaCarpeta = Path.of(carpeta).toAbsolutePath();
+        Files.createDirectories(rutaCarpeta);
+
+        // Crear nombre único para el archivo
+        String nombreArchivo = nVacante + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path rutaArchivo = rutaCarpeta.resolve(nombreArchivo);
+
+        // Guardar el archivo en el servidor
+        try (InputStream is = file.getInputStream()) {
+            Files.copy(is, rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        return nombreArchivo;
+    }
+
+    public void eliminarVideo(String fileName) throws IOException {
+        // Determinar la carpeta dependiendo si es imagen o PDF
+        String carpeta = videoUploadDir;
+        Path ruta = Path.of(carpeta, fileName);
+
+        // Eliminar el archivo si existe
+        if (Files.exists(ruta)) {
+            Files.delete(ruta);
+        } else {
+            throw new IOException("El archivo no existe: " + ruta);
+        }
     }
 
     //  Método para incrementar visitas
@@ -110,7 +160,7 @@ public class VacanteService {
             page = vacanteFavoritaRepository.findAll(specFav, pageable)
                     .map(vf -> mapToDTO(idPsotulacion, idPsotulacion, vf.getVacanteFavorita(), new VacanteDTO()));
         }else{
-            Specification<Vacante> specification = VacanteSpecifications.conFiltros(filtro);
+            Specification<Vacante> specification = VacanteSpecifications.conFiltros(idPsotulacion, filtro);
             page = vacanteRepository.findAll(specification, pageable).map(vacante -> mapToDTO(idPsotulacion,idPsotulacion,vacante, new VacanteDTO()));
         }
         return mapResponse(page, "vacantes");         
@@ -132,7 +182,7 @@ public class VacanteService {
             page = vacanteFavoritaRepository.findAll(specFav, pageableBackend)
                     .map(vf -> mapToDTO(idPsotulacion, idPsotulacion, vf.getVacanteFavorita(), new VacanteDTO()));
         } else {
-            Specification<Vacante> specification = VacanteSpecifications.conFiltros(filtro);
+            Specification<Vacante> specification = VacanteSpecifications.conFiltros(idPsotulacion, filtro);
             page = vacanteRepository.findAll(specification, pageableBackend)
                     .map(vacante -> mapToDTO(idPsotulacion, idPsotulacion, vacante, new VacanteDTO()));
         }
