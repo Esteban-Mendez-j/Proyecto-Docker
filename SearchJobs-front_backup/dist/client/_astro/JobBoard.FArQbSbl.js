@@ -1,1 +1,0 @@
-import{default as f}from"./JobBoard.C_A-HXGW.js";import"./sweetalert2.all.BzjA5z2z.js";import"./index.BVOCwoKb.js";/* empty css                       */import"./Paginacion.DN2WiRaF.js";import"./ManejarRespuesta.Bd8-Nm9C.js";export{f as default};
