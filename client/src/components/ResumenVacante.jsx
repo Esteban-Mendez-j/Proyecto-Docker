@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useFetch, useSendForm } from "../hooks/useFetch";
 import { modal } from "../services/Modal";
-import { API_CLIENT_URL } from "../services/Api";
+import { API_CLIENT_URL, URL_VIDEO } from "../services/Api";
 import Prediccion from "./Prediccion";
 
 export default function ResumenVacante({job, rol, id}) {
@@ -285,7 +285,7 @@ export default function ResumenVacante({job, rol, id}) {
     <div className="flex flex-col">
       <p className="text-sm text-text-light mb-1">Video de presentación</p>
       <a
-        href={jobResumen.videoLink}
+        href={URL_VIDEO + jobResumen.videoLink}
         target="_blank"
         rel="noopener noreferrer"
         className="text-sm text-white bg-gradient-primary py-1 px-3 rounded-lg shadow hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 no-underline inline-block"

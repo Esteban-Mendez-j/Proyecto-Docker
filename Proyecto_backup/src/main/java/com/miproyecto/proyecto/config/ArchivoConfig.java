@@ -31,6 +31,6 @@ public class ArchivoConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:" + pdfUploadDir + "/");
         
         registry.addResourceHandler("/video/**")
-                .addResourceLocations("file:" + pdfUploadDir + "/");
+                .addResourceLocations("file:" + videoUploadDir + "/");
     }
 }

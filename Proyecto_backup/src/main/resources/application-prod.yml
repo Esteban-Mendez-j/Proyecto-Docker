@@ -37,6 +37,7 @@ app:
   upload-dir:
     img: ${UPLOAD_DIR_IMG}
     pdf: ${UPLOAD_DIR_PDF}
+    video: ${UPLOAD_DIR_VIDEO}
     
 security:
   jwt:

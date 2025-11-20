@@ -16,6 +16,7 @@ app:
   upload-dir:
     img: uploads/img
     pdf: uploads/pdf
+    video: uploads/video
 
 security:
   jwt:

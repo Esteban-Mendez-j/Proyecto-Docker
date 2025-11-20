@@ -1,8 +1,8 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 // import '../../style/invitado/editarVacantes.css';
-import { API_CLIENT_URL } from "../../services/Api";
+import { API_CLIENT_URL, URL_VIDEO } from "../../services/Api";
 import manejarRespuesta from "../../services/ManejarRespuesta";
 import { modal, modalResponse } from "../../services/Modal";
 import { ciudadesColombia, departamentoColombia, listAptitudes } from "../../services/data";
@@ -16,6 +16,10 @@ const EditarVacantes= () => {
   const { nvacantes } = useParams();
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
+  const videoRef = useRef(null)
+  const maxMB = 7
+  const [eliminarVideo, setEliminarVideo] = useState(false)
+  const [previewVideo, setPreviewVideo] = useState(null)
   const [selected, setSelected] = useState([]);
   const [errors, setErrors] = useState({});
   const [vacante, setVacante] = useState({
@@ -33,6 +37,55 @@ const EditarVacantes= () => {
     aptitudes: []
   });
   const [loading, setLoading] = useState(true);
+
+  const handleVideoChange = (e) => {
+  const file = e.target.files[0];
+
+  // Si no seleccionó archivo
+  if (!file) {
+    setPreviewVideo(null);
+    return;
+  }
+
+  // Validaciones
+  const maxSize = maxMB * 1024 * 1024; // 7MB
+
+  if (file.type !== "video/mp4") {
+    setErrors(prev => ({
+      ...prev,
+      video: "Solo se permiten videos en formato MP4."
+    }));
+    e.target.value = "";
+    return;
+  }
+
+  if (file.size > maxSize) {
+    setErrors(prev => ({
+      ...prev,
+      video: `El video no puede exceder los ${maxMB} MB.`
+    }));
+    e.target.value = "";
+    return;
+  }
+
+  setErrors(prev => ({
+    ...prev,
+    video: undefined
+  }));
+
+  setEliminarVideo(false);
+  const url = URL.createObjectURL(file);
+  setPreviewVideo(url);
+};
+
+
+  const handleEliminarVideo = () => {
+    setPreviewVideo(null);
+    setEliminarVideo(true)
+    if (videoRef.current) {
+      videoRef.current.value = "";
+    }
+  };
 
   const handleClick = (key) => {
     let updated;
@@ -92,7 +145,7 @@ const EditarVacantes= () => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-
+      console.log(newErrors)
       const firstErrorField = Object.keys(newErrors)[0];
       const el = document.getElementById(firstErrorField);
       if (el) {
@@ -109,14 +162,16 @@ const EditarVacantes= () => {
 
     // 3. Limpiar errores si todo está bien
     setErrors({});
-    
+    const fd = new FormData();
+    fd.append("vacante", new Blob([JSON.stringify(vacante)], { type: "application/json" }));
+    fd.append("eliminarVideo", new Blob([JSON.stringify(eliminarVideo)], { type: "application/json" }));
+    if (videoRef.current?.files[0]) {
+      fd.append("video", videoRef.current.files[0]);
+    }
     try {
       const res = await fetch(`${API_CLIENT_URL}/api/vacantes/edit/${vacante.nvacantes}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(vacante),
+        body: fd,
       });
 
       if (!res.ok) throw new Error("Error al guardar los cambios");
@@ -227,20 +282,6 @@ const EditarVacantes= () => {
               />
             </div>
           </div>
-          
-           <div className="form-row">
-            <div className="form-group full-width">
-              <label htmlFor="videoLink">Link del video de presentación</label>
-              <input
-                type="text"
-                id="videoLink"
-                name="videoLink"
-                placeholder="https://youtu.be/..."
-                value={vacante.videoLink || ""}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
 
           {/* Descripción */}
           <div className="form-group full-width">
@@ -270,6 +311,113 @@ const EditarVacantes= () => {
               rules={formRulesVacante}
               submitted={submitted}
             />
+          </div>
+
+          {/* ------------------- Video ------------------- */}
+          <div className="form-row">
+            <div className="form-group full-width">
+              <label htmlFor="videoLink" className="block text-lg font-semibold text-gray-800 mb-1">
+                Video de presentación
+              </label>
+
+              <p className="text-gray-600 text-sm mb-3">
+                Sube un video corto para mejorar la visibilidad de tu vacante.
+              </p>
+
+              {/* Caja elegante de recomendaciones */}
+              <div className=" border border-blue-200 rounded-xl p-4 mb-4">
+                <h3 className="font-semibold text-blue-700">Recomendaciones</h3>
+                <ol className="list-decimal list-inside mt-2 text-sm text-blue-700 space-y-1">
+                  <li>Menos de 1 minuto</li>
+                  <li>Presenta los puntos más importantes</li>
+                  <li>Se creativo</li>
+                </ol>
+              </div>
+
+              {/* Vista previa del video */}
+              <div className="flex flex-col items-center mb-3">
+                {(previewVideo || (!eliminarVideo && vacante?.videoLink)) &&(
+                  <video
+                    src={
+                      previewVideo
+                        ? previewVideo
+                        : vacante.videoLink
+                          ? `${URL_VIDEO}${vacante.videoLink}`
+                          : null
+                    }
+                    className="w-64 h-40 rounded-xl shadow-md object-cover bg-gray-200"
+                    controls
+                  ></video>
+                )}
+              </div>
+
+              {/* Botones de acción */}
+              <div className="flex items-center gap-4 mt-4">
+
+                <label
+                  className="cursor-pointer inline-flex flex-row items-center justify-center 
+                  gap-2 px-5 py-2.5 rounded-xl 
+                  border border-blue-600 text-blue-600 
+                  font-semibold text-sm
+                  hover:bg-blue-100 active:scale-[0.98]
+                  transition"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 stroke-blue-600 inline-block"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round"
+                      d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12" />
+                  </svg>
+
+                  <span className="inline-block leading-none">
+                    Subir video
+                  </span>
+
+                  <input
+                    type="file"
+                    name="video"
+                    accept="video/mp4"
+                    ref={videoRef}
+                    className="hidden"
+                    onChange={handleVideoChange}
+                  />
+                </label>
+
+                {/* Botón eliminar */}
+                <button
+                  type="button"
+                  onClick={handleEliminarVideo}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl 
+                  bg-gray-200 text-gray-800 text-sm font-medium 
+                  shadow hover:bg-gray-300 active:scale-[0.98] 
+                  transition-all duration-200"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Eliminar video
+                </button>
+
+              </div>
+
+
+              <p className="text-sm text-gray-600 mt-2">
+                Formato permitido: <strong>MP4</strong> — Máximo <strong>{maxMB}MB</strong>.
+              </p>
+
+              {errors.video &&<p className="error-text">{errors.video}</p>}
+            </div>
           </div>
 
           {/* Aptitudes */}

@@ -200,10 +200,6 @@ export const formRulesVacante = {
     rules.maxLength(400)
   ],
 
-  videoLink: [
-    rules.youtubeUrl()
-  ],
-
 };
 
 
@@ -339,7 +335,7 @@ export function validateRule(rule, value) {
 
     case "minLength":
       if (v && String(v).length < rule.min) {
-        error = rule.message;
+        return rule.message;
       }
       break;
 
@@ -354,13 +350,13 @@ export function validateRule(rule, value) {
 
     case "number":
       if (v !== "" && isNaN(Number(v))) {
-        error = rule.message;
+        return rule.message;
       }
       break;
 
     case "positive":
       if (v !== "" && Number(v) < 0) {
-        error = rule.message;
+        return rule.message;
       }
       break;
 

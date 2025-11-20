@@ -563,7 +563,6 @@ const NOMBRES_APTITUDES = {
                     </div>
 
                     {data && <ResumenVacante job={data.vacanteSeleccionada} rol={rol} id={id}/>}
-                    {/* {rol == "CANDIDATO" && <Prediccion id={id}/>} */}
                 </div>
             </div>
         </Layout>

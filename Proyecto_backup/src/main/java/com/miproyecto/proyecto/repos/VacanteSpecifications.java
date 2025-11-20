@@ -73,6 +73,10 @@ public class VacanteSpecifications {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("fechaPublicacion"), filtro.getFechaPublicacion()));
             }
 
+            if(filtro.getVideo()){
+                predicates.add(criteriaBuilder.isNotNull(root.get("videoLink")));
+            }
+
             if ("todos".equals(filtro.getTipo())) {
                 predicates.add(criteriaBuilder.or(
                     criteriaBuilder.equal(root.get("tipo"), "Practica"),
@@ -115,30 +119,7 @@ public class VacanteSpecifications {
 
                 query.distinct(true);
 
-                // if (filtro.getEstadoPostulacion().equals("SinPostulacion")) {
-                // // Vacantes que NO tienen postulaciones del candidato actual
-                // if (idUserAut != null) {
-                // predicates.add(
-                // criteriaBuilder.or(
-                // criteriaBuilder.isNull(postuladoJoin.get("candidato")),
-                // criteriaBuilder.notEqual(postuladoJoin.get("candidato").get("idUsuario"),
-                // idUserAut)));
-                // } else {
-                // predicates.add(criteriaBuilder.isNull(postuladoJoin.get("candidato")));
-                // }
-                // } else {
-                // if (idUserAut != null) {
-                // predicates
-                // .add(criteriaBuilder.equal(postuladoJoin.get("candidato").get("idUsuario"),
-                // idUserAut));
-                // }
-                // predicates.add(criteriaBuilder.equal(postuladoJoin.get("estado"),
-                // filtro.getEstadoPostulacion()));
-                // }
-                // query.distinct(true);
             }
-
-
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }
@@ -159,6 +140,10 @@ public class VacanteSpecifications {
             if (filtro.getIdUsuario() != null && filtro.getIdUsuario() > 0) {
                 Join<Vacante, Empresa> empresaJoin = vacanteJoin.join("idUsuario", JoinType.INNER);
                 predicates.add(cb.equal(empresaJoin.get("idUsuario"), filtro.getIdUsuario()));
+            }
+
+            if(filtro.getVideo()){
+                predicates.add(cb.isNotNull(root.get("videoLink")));
             }
 
             if (filtro.getTotalpostulaciones() >= 0){

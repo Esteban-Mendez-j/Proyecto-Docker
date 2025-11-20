@@ -27,7 +27,7 @@ import PerfilCandidatoPublic from "./page/candidato/PerfilCandidatoPublic.jsx"
 import PoliticaPrivacidad from "./page/invitado/PoliticaPrivacidad.jsx";
 import TerminosCondiciones from "./page/invitado/TerminosCondiciones.jsx";
 import Notificaciones from "./page/candidato/Notificaciones.jsx";
-import ShortsPage from './components/ShortsPage';
+import ShortsPage from './page/candidato/ShortsPage.jsx';
 
 
 function App() {
@@ -59,10 +59,12 @@ function App() {
           <Route path="/admin/index" element={<AdminIndex/>} /> 
           <Route path="/admin/vacantes" element={<AdminVacantes/>} />
           <Route path="/admin/usuarios" element={<AdminUsuarios/>} />
-
         </Route>
         <Route element={<RouteProtection accessRole={["EMPRESA","CANDIDATO","ROLE_INVITADO"]} />}> 
           <Route path="/" element={<Index />} />
+        </Route>
+        <Route element={<RouteProtection accessRole={["CANDIDATO","ROLE_INVITADO"]} />}> 
+          <Route path="/shorts" element={<ShortsPage />} />
         </Route>
         <Route element={<RouteProtection accessRole={["EMPRESA","ADMIN","SUPER_ADMIN"]} />}> 
           <Route path="/empresa/postulados/:vacanteId" element={<Postulados/>} />
@@ -75,7 +77,6 @@ function App() {
         <Route path="/perfil/candidato/editar" element={<PerfilCandidatoEditar/>}/>
         <Route path="/politicas/privacidad" element={<PoliticaPrivacidad/>}/>
         <Route path="/terminos/condiciones" element={<TerminosCondiciones/>}/>
-        <Route path="/shorts" element={<ShortsPage />} />
         <Route path="*" element={<NotFound/>} />
         
       </Routes>

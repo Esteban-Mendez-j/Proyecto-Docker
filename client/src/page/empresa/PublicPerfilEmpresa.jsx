@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"; // Para capturar `id` de la ruta
 import Layout from "../../layouts/Layout";
-import { API_CLIENT_URL } from "../../services/Api";
+import { API_CLIENT_URL, URL_IMAGEN } from "../../services/Api";
 import { manejarRespuesta } from "../../services/ManejarRespuesta";
 import "../../style/invitado/empresa.css";
 
@@ -40,7 +40,7 @@ export default function EmpresaPerfil() {
             <img
               src={
                 empresa.imagen
-                  ? `${API_CLIENT_URL}/img/${empresa.imagen}`
+                  ? `${URL_IMAGEN}${empresa.imagen}`
                   : `${API_CLIENT_URL}/images/imgEmpresa.png`
               }
               alt={empresa.nombre}

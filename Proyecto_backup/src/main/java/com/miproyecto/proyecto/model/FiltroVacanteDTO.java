@@ -19,7 +19,14 @@ public class FiltroVacanteDTO {
     private Boolean activaPorEmpresa;
     private Boolean isFavorita;
     private String estadoPostulacion;
+    private Boolean video = false;
 
+    public Boolean getVideo() {
+        return video;
+    }
+    public void setVideo(Boolean video) {
+        this.video = video;
+    }
     public String getEstadoPostulacion() {
         return estadoPostulacion;
     }

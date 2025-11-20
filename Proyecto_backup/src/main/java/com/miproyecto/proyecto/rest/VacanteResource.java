@@ -11,7 +11,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +27,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.model.CandidatoDTO;
 import com.miproyecto.proyecto.model.FiltroVacanteDTO;
 import com.miproyecto.proyecto.model.VacanteDTO;
-import com.miproyecto.proyecto.model.ValidationGroups;
 import com.miproyecto.proyecto.service.CandidatoService;
 import com.miproyecto.proyecto.service.VacanteService;
 import com.miproyecto.proyecto.util.JwtUtils;
@@ -37,7 +35,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import jakarta.validation.groups.Default;
 
 @Tag(name = "Vacantes", description = "Operaciones relacionadas con la gestión y consulta de vacantes")
 @RestController
@@ -180,44 +177,40 @@ public class VacanteResource {
         return ResponseEntity.ok(Map.of("vacanteSeleccionada", vacanteSeleccionada));
     }
 
-    // @Operation(summary = "Crear vacante", description = "Crea una nueva vacante asociada al usuario autenticado.")
-    // @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    // public ResponseEntity<Map<String, Object>> createVacante(
-    //         @RequestBody @Valid final VacanteDTO vacanteDTO,
-    //         @CookieValue(name = "jwtToken", required = true) String jwtToken,
-    //         @RequestPart(name = "video", required = true) MultipartFile video) {
+    @Operation(summary = "Crear vacante", description = "Crea una nueva vacante asociada al usuario autenticado.")
+    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, Object>> createVacante(
+            @RequestPart("vacante") @Valid VacanteDTO vacanteDTO,
+            @CookieValue(name = "jwtToken", required = true) String jwtToken,
+            @RequestPart(name = "video", required = false) MultipartFile video) {
 
-    //     Map<String, Object> response = new HashMap<>();
-    //     try {
-    //         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
-    //         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+        Map<String, Object> response = new HashMap<>();
+        try {
+            DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+            Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
 
-    //         if (video != null && !video.isEmpty()) {
-    //             if (vacanteDTO.getImagen() != null && !vacanteDTO.getImagen().isEmpty()) {
+            if (video != null && !video.isEmpty()) {
+                String rutaVideo = vacanteService.guardarVideo(video);
+                vacanteDTO.setVideoLink(rutaVideo);
+            }
 
-    //                 vacanteService.eliminarArchivo(vacanteDTO.getImagen(), true);
-    //             }
-    //             String rutaVideo = vacanteService.guardarVideo(video, idUsuario);
-    //             // vacanteDTO.setImagen(rutaVideo);
-    //         }
-
-    //         // Actualizar los datos
-    //         vacanteDTO.setIdUsuario(idUsuario);
-    //         vacanteService.create(vacanteDTO);
-    //         return ResponseEntity.ok(Map.of(
-    //                 "status", HttpStatus.CREATED.value(),
-    //                 "mensaje", vacanteDTO.getTipo() + " creada con exito!"
-    //         ));
-    //     } catch (IOException e) {
-    //         response.put("status", HttpStatus.BAD_REQUEST.value());
-    //         response.put("mensaje", "Error al guardar la el video.");
-    //         return ResponseEntity.badRequest().body(response);
-    //     } catch (Exception e) {
-    //         response.put("status", HttpStatus.BAD_REQUEST.value());
-    //         response.put("mensaje", "Error al Crear la vacante.");
-    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-    //     }
-    // }
+            // Actualizar los datos
+            vacanteDTO.setIdUsuario(idUsuario);
+            vacanteService.create(vacanteDTO);
+            return ResponseEntity.ok(Map.of(
+                    "status", HttpStatus.CREATED.value(),
+                    "mensaje", vacanteDTO.getTipo() + " creada con exito!"
+            ));
+        } catch (IOException e) {
+            response.put("status", HttpStatus.BAD_REQUEST.value());
+            response.put("mensaje", "Error al guardar la el video.");
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            response.put("status", HttpStatus.BAD_REQUEST.value());
+            response.put("mensaje", "Error al Crear la vacante.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 
     @Operation(summary = "Obtener vacante", description = "Obtiene los datos de una vacante específica.")
     @GetMapping("/edit/{nvacantes}")
@@ -228,16 +221,50 @@ public class VacanteResource {
     }
 
     @Operation(summary = "Actualizar vacante", description = "Actualiza la información de una vacante existente.")
-    @PutMapping("/edit/{nvacantes}")
+    @PutMapping(value = "/edit/{nvacantes}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> updateVacante(
             @PathVariable Long nvacantes,
-            @RequestBody @Valid final VacanteDTO vacanteDTO) {
+            @RequestPart("vacante") @Valid VacanteDTO vacanteDTO,
+            @RequestPart(name = "video", required = false) MultipartFile video,
+            @RequestPart(name = "eliminarVideo", required = false) Boolean eliminarVideo) {
 
-        vacanteService.update(nvacantes, vacanteDTO);
-        return ResponseEntity.ok(Map.of(
-                "status", HttpStatus.CREATED.value(),
-                "mensaje", vacanteDTO.getTipo() + " actualizada con exito!"
-        ));
+        Map<String, Object> response = new HashMap<>();
+        try {
+
+            //  Si marcaron eliminar video → elimínalo
+            if (Boolean.TRUE.equals(eliminarVideo)) {
+                if (vacanteDTO.getVideoLink() != null) {
+                    vacanteService.eliminarVideo(vacanteDTO.getVideoLink());
+                }
+                vacanteDTO.setVideoLink(null);
+            }
+
+            // 2️⃣ Si enviaron un video nuevo → reemplazarlo
+            else if (video != null && !video.isEmpty()) {
+
+                // si antes ya había uno → eliminarlo
+                if (vacanteDTO.getVideoLink() != null) {
+                    vacanteService.eliminarVideo(vacanteDTO.getVideoLink());
+                }
+
+                String rutaVideo = vacanteService.guardarVideo(video);
+                vacanteDTO.setVideoLink(rutaVideo);
+            }
+
+            // 3️⃣ Si no enviaron video y no quieren eliminar → mantener el existente
+
+            vacanteService.update(nvacantes, vacanteDTO);
+
+            return ResponseEntity.ok(Map.of(
+                    "status", HttpStatus.CREATED.value(),
+                    "mensaje", "Vacante actualizada con éxito!"));
+
+        } catch (Exception e) {
+            response.put("status", HttpStatus.BAD_REQUEST.value());
+            response.put("mensaje", "Error al actualizar la vacante.");
+            System.out.println( e + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @Operation(summary = "Cambiar estado de vacante", description = "Activa o desactiva una vacante.")

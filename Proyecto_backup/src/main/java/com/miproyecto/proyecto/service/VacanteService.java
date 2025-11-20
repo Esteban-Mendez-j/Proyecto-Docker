@@ -62,15 +62,15 @@ public class VacanteService {
         this.prediccionService = prediccionService;
     }
 
-    public String guardarVideo(MultipartFile file, Long nVacante) throws IOException {
+    public String guardarVideo(MultipartFile file) throws IOException {
         String tipo = file.getContentType();
 
         // Verifica si es video valido 
         String carpeta;
-        if (tipo != null && tipo.startsWith("image/")) {
+        if (tipo != null && tipo.startsWith("video/mp4")) {
             carpeta = videoUploadDir;
         } else {
-            throw new IllegalArgumentException("Solo se permiten archivos de imagen o PDF.");
+            throw new IllegalArgumentException("Solo se permiten archivos de video");
         }
 
         // Crear carpeta si no existe
@@ -78,7 +78,7 @@ public class VacanteService {
         Files.createDirectories(rutaCarpeta);
 
         // Crear nombre único para el archivo
-        String nombreArchivo = nVacante + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+        String nombreArchivo = System.currentTimeMillis() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
         Path rutaArchivo = rutaCarpeta.resolve(nombreArchivo);
 
         // Guardar el archivo en el servidor
