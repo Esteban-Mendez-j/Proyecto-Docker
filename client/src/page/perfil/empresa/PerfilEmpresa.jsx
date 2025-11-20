@@ -27,6 +27,8 @@ const PerfilEmpresa = () => {
     fetchEmpresa();
   }, []);
 
+
+
   return (
     <Layout >
       
@@ -134,31 +136,44 @@ const PerfilEmpresa = () => {
                 {empresa.descripcion || "No registrada"}
               </p>
             </div>
+
+            <hr class="my-4 w-1/2 mx-auto border-gray-400" />
+
             {/* Sección Video de Presentación */}
-              <div className="empresa-video-section">
-                <h2 className="empresa-section-title">Presentación en video</h2>
+          <div className="empresa-info-item">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            >
+          </svg>
 
-                {empresa.videoLink ? (
-                  <div className="empresa-video-container">
-                    <div className="video-wrapper">
-                      <iframe
-                        className="empresa-video"
-                        src={empresa.videoLink.replace("watch?v=", "embed/")}
-                        title="Video de presentación"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <p className="empresa-no-video">La empresa aún no ha agregado un video de presentación.</p>
-                )}
-              </div>
-
-          </div>
+          <div className="empresa-info-content">
+             <h2 className="mb-2 text-lg font-semibold">Video de Presentación</h2>
+            
+            {empresa.videoLink ? (
+              <a
+                href={empresa.videoLink}
+                target="_blank"
+            rel="noopener noreferrer"
+            className="block p-4 border rounded-xl shadow-sm hover:shadow-md transition -ml-5"
+            
+          >
+            🎥 Video de presentación de la empresa
+            
+          </a>
+            ) : (
+              <p className="italic text-gray-500">la empresa aún no ha agregado un video de presentación.</p>
+            )}
         </div>
       </div>
+</div>
+      </div>
+    </div>
 
       
     </Layout>
