@@ -1,6 +1,7 @@
 package com.miproyecto.proyecto.rest;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -281,6 +282,14 @@ public class VacanteResource {
     public  ResponseEntity<Void> incrementNumCompartidos(@PathVariable Long idVacante){
         vacanteService.updateNumCompartidos(idVacante);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/sugerencias")
+    public List<String> obtenerSugerencias(@RequestParam String query) {
+        if (query == null || query.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return vacanteService.findSugerencias(query.toLowerCase());
     }
     
 }   

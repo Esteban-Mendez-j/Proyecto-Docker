@@ -14,7 +14,7 @@ import jakarta.persistence.criteria.Predicate;
 
 public class UsuarioSpecifications {
 
-    public static Specification<Usuario> conFiltros(String rolUsuario, String nombre, String rol, Boolean estado) {
+    public static Specification<Usuario> conFiltros(String rolUsuario, String nombre, String rol, Boolean estado, String correo) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -23,6 +23,12 @@ public class UsuarioSpecifications {
                 predicates.add(criteriaBuilder.like(
                     criteriaBuilder.lower(root.get("nombre")),
                     "%" + nombre.toLowerCase() + "%"));
+            }
+
+            if (correo != null && !correo.isEmpty()) {
+                predicates.add(criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get("correo")),
+                    "%" + correo.toLowerCase() + "%"));
             }
 
             // Filtro por estado de actividad

@@ -50,12 +50,12 @@ export default function Index (){
                             Conectamos empresas con los mejores talentos a través de una plataforma intuitiva y moderna
                         </p>
                         <div className="hero-cta">
-                            <Link to={rol == "EMPRESA" ? "/empleos":"/empleos"} className="btn btn-primary">
+                            <Link to={rol == "EMPRESA" ? "/empresa/listado/vacantes":"/empleos"} className="btn btn-primary">
                                 {rol == "EMPRESA" ? "Mis Vacantes":"Buscar Empleo"}
                             </Link>
                             {
                                 rol == "EMPRESA" ? (
-                                    <Link to="/Publicar" className="btn btn-outline">
+                                    <Link to="/empresa/vacantes" className="btn btn-outline">
                                         Publicar vacante
                                     </Link>
                             ) : (
@@ -113,7 +113,7 @@ export default function Index (){
             </section>
 
             {
-                rol === "ROLE_INVIDATO" &&
+                rol === "ROLE_INVITADO" &&
 
                 <section className="cta-section section">
                     <div className="container">

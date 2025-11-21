@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import Layout from "../../../layouts/Layout";
-import { API_CLIENT_URL } from "../../../services/Api";
+import { URL_IMAGEN } from "../../../services/Api";
 import "../../../style/invitado/empresa.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useFetch, useSendForm } from "../../../hooks/useFetch";
@@ -113,8 +113,8 @@ const EditarPerfilEmpresa = () => {
                   preview
                     ? preview
                     : empresa.imagen
-                    ? `${API_CLIENT_URL}/img/${empresa.imagen}`
-                    : `${API_CLIENT_URL}/images/imgEmpresa.png`
+                    ? `${URL_IMAGEN}${empresa.imagen}`
+                    : `/imgEmpresa.png`
                 }
                 alt="Logo"
                 className="w-28 h-28 md:w-32 md:h-32 rounded-full border-4 border-white shadow-lg object-cover ring-4 ring-sky-200"

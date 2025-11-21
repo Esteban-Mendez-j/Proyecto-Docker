@@ -41,7 +41,7 @@ export default function EmpresaPerfil() {
               src={
                 empresa.imagen
                   ? `${URL_IMAGEN}${empresa.imagen}`
-                  : `${API_CLIENT_URL}/images/imgEmpresa.png`
+                  : `/imgEmpresa.png`
               }
               alt={empresa.nombre}
               className="empresa-logo"

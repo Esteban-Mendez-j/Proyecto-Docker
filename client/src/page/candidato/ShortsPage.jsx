@@ -5,20 +5,17 @@ import { API_CLIENT_URL, URL_VIDEO } from "../../services/Api";
 import { RoleContext } from "../../services/RoleContext";
 import "../../style/invitado/short.css";
 import Loading from "../../components/Loading";
-import Header from "../../layouts/Header";
 import { toggleFavoritoRequest } from "../../services/ToggleFavoritosRequest";
 import { modal } from "../../services/Modal";
-import { readLocalStore, saveLocalStore } from "../../services/localStore";
 
 const ShortsPage = () => {
-  const [currentVideoIndex, setCurrentVideoIndex] = useState();
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [shortsData, setShortsData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(readLocalStore("PaginaActualVideos", 0));
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPage, setTotalPage] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
-  const [likedShorts, setLikedShorts] = useState({});
   const [currentShort, setCurrentShort] = useState(null);
-  const {send:sendCandidato, data:dataCandidato } = useSendForm();
+  const { send: sendCandidato, data: dataCandidato } = useSendForm();
   const videoRef = useRef(null);
   const navigate = useNavigate();
   const { data, send, loading } = useSendForm();
@@ -39,35 +36,58 @@ const ShortsPage = () => {
     isFavorita: false,
     estado: rol === "EMPRESA" ? "todos" : undefined,
     video: true,
-    estadoPostulacion: rol === "empresa"? null : "SinPostulacion"
+    estadoPostulacion: rol === "empresa" ? null : "SinPostulacion"
   };
 
+  // hace la peticion cuando currentPage (pagina actual) cambia
   useEffect(() => {
-    saveLocalStore("PaginaActualVideos", currentPage)
-    setCurrentVideoIndex(0)
     send(`/api/vacantes/listar/filtradas?page=${currentPage}&size=${itemsPerPage}`, "POST", JSON.stringify(filtrosIniciales));
   }, [currentPage]);
 
+  //cambia de pagina cuando el index del video es igual el numero de elementos
   useEffect(() => {
-    if (currentVideoIndex === shortsData.length - 1) {
+    if(!shortsData || !totalPage){return}
+    if (currentVideoIndex > shortsData.length -1 && currentPage < totalPage ) {
       setCurrentPage(prev => prev + 1);
     }
-
   }, [currentVideoIndex])
 
+  // cuando data cambia guarda los datos en el estado 
   useEffect(() => {
-    if (data && data.vacantes){ 
+    if (data && data.vacantes) {
       setShortsData(data.vacantes)
-      setCurrentPage(data.pageActual.pageNumber)
+      setTotalPage(data.totalPage)
     };
   }, [data]);
+
+
+// ► Ir al siguiente video
+  const nextVideo = () => {
+    if (currentVideoIndex < shortsData.length - 1) {
+      setCurrentVideoIndex(prev => prev + 1);
+    } else if (currentPage < totalPage - 1) {
+      setCurrentPage(prev => prev + 1);
+      setCurrentVideoIndex(0)
+    }
+  };
+
+  // ► Ir al anterior video
+  const prevVideo = () => {
+    if (currentVideoIndex > 0) {
+      setCurrentVideoIndex(prev => prev - 1);
+    } else if (currentPage > 0) {
+      setCurrentPage(prev => prev - 1);
+      setCurrentVideoIndex(shortsData.length-1)
+    }
+  };
 
   useEffect(() => {
     if (rol === "CANDIDATO") {
       sendCandidato("/api/candidatos/perfil", "GET");
     }
   }, [rol]);
-  
+
+  // obtinen los datos de una vacante en especifico dependiendo el index
   useEffect(() => {
     setCurrentShort(shortsData[currentVideoIndex]);
   }, [shortsData, currentVideoIndex]);
@@ -111,27 +131,14 @@ const ShortsPage = () => {
     }
   };
 
-  const nextVideo = () => {
-    if (currentVideoIndex < shortsData.length - 1)
-      setCurrentVideoIndex(currentVideoIndex + 1);
-  };
+  
 
-  const prevVideo = () => {
-    if (currentVideoIndex > 0)
-      setCurrentVideoIndex(currentVideoIndex - 1);
-  };
-
-  // if (loading) return <Loading/>;
+if (loading) return <Loading />;
 
   if (!currentShort) {
     return (
       <div className="no-shorts-container">
         <div className="no-shorts-card">
-          {/* <img
-            src="/images/no-data.svg" // Cambia a tu ilustración
-            alt="No hay videos"
-            className="no-shorts-img"
-          /> */}
           <h2 className="no-shorts-title">¡Ups! No hay videos disponibles</h2>
           <p className="no-shorts-text">
             Aún no se han publicado shorts. Vuelve más tarde o explora otras vacantes.
@@ -148,7 +155,6 @@ const ShortsPage = () => {
   }
 
 
-  const isLiked = likedShorts[currentShort.nvacantes];
 
   return (
     <>
@@ -177,8 +183,8 @@ const ShortsPage = () => {
             </button>
 
             <div className="arrows">
-              <button disabled={currentVideoIndex === 0} onClick={prevVideo}>▲</button>
-              <button disabled={currentVideoIndex === shortsData.length - 1} onClick={nextVideo}>▼</button>
+              <button disabled={currentVideoIndex === 0 && currentPage === 0  } onClick={prevVideo}>▲</button>
+              <button disabled={currentVideoIndex === shortsData.length || currentPage === totalPage } onClick={nextVideo}>▼</button>
             </div>
           </div>
         </div>
@@ -191,7 +197,7 @@ const ShortsPage = () => {
                   src={
                     currentShort.imagenEmpresa
                       ? `${URL_IMAGEN}${currentShort.imagenEmpresa}`
-                      : `${API_CLIENT_URL}/images/imgEmpresa.png`
+                      : `/imgEmpresa.png`
                   }
                   className="profile-icon"
                 />

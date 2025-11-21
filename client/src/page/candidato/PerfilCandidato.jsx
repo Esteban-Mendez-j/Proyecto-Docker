@@ -63,7 +63,7 @@ const NOMBRES_APTITUDES = {
                 src={
                   candidato.imagen
                     ? `${URL_IMAGEN}${candidato.imagen}`
-                    : `${API_CLIENT_URL}/images/imgCandidato.png`
+                    : `/imgCandidato.png`
                 }
                 alt={`${candidato.nombre} ${candidato.apellido}`}
                 className="h-32 w-32 object-cover shadow"

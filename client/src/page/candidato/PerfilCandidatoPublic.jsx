@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Loading from "../../components/Loading.jsx";
 import { useFetch } from "../../hooks/useFetch.jsx";
 import Layout from "../../layouts/Layout.jsx";
-import { API_CLIENT_URL } from "../../services/Api.js";
+import { API_CLIENT_URL, URL_IMAGEN } from "../../services/Api.js";
 import "../../style/invitado/candidato.css";
 import { useParams } from "react-router-dom";
 
@@ -48,8 +48,8 @@ function PerfilCandidatoPublic() {
               <img
                 src={
                   candidato.imagen
-                    ? `${API_CLIENT_URL}/img/${candidato.imagen}`
-                    : `${API_CLIENT_URL}/images/imgCandidato.png`
+                    ? `${URL_IMAGEN}${candidato.imagen}`
+                    : `/imgCandidato.png`
                 }
                 alt={`${candidato.nombre} ${candidato.apellido}`}
                 className="h-32 w-32 object-cover shadow"

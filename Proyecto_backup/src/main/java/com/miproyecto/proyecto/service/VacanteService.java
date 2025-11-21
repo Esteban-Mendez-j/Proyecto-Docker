@@ -110,6 +110,12 @@ public class VacanteService {
         vacanteRepository.save(vacante);
     }
 
+    // filrado autocompletado
+    public List<String> findSugerencias(String query) {
+        // Aquí puedes agregar lógica adicional si quieres
+        return vacanteRepository.findTituloByTitulo(query.toLowerCase());
+    }
+
     // listado de todas las vacantes activas 
     public Map<String,Object> findAllByEstado(boolean estado, Pageable pageable, String nameList) {
         final Page<Vacante> vacantes = vacanteRepository.findByIsActiveOrderByFechaPublicacionDesc(estado, pageable);

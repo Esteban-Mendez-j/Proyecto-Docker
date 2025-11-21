@@ -1,6 +1,7 @@
 package com.miproyecto.proyecto.config;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +27,8 @@ public class SecurityConfig {
 
     private final JwtUtils jwtUtils;
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+    @Value("${app.url.frontEnd}")
+    private String urlFront; 
 
     public SecurityConfig(JwtUtils jwtUtils, CustomAuthenticationFailureHandler customAuthenticationFailureHandler) {
         this.jwtUtils = jwtUtils;
@@ -106,8 +109,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .formLogin(formLogin -> formLogin                       
-				// .loginPage("http://localhost:4321/login")
-				.loginPage("http://localhost:5173/login")
+				.loginPage(urlFront +"/login")
                 .loginProcessingUrl("/api/usuarios/login")
                 .failureHandler(customAuthenticationFailureHandler)
                 .successHandler(customSuccessHandler(jwtUtils))
@@ -115,8 +117,7 @@ public class SecurityConfig {
 			)
 			.logout(logout -> logout                                   
 				.logoutUrl("/usuarios/cerrarSesion")
-				// .logoutSuccessUrl("http://localhost:4321/?logout")
-				.logoutSuccessUrl("http://localhost:5173/login?logout")
+				.logoutSuccessUrl(urlFront +"/login?logout")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID", "jwtToken")
 				.permitAll()

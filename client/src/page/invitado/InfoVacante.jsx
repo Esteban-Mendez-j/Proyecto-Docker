@@ -4,7 +4,7 @@ import Loding from "../../components/Loading"
 import ResumenVacante from "../../components/ResumenVacante"
 import { useFetch } from "../../hooks/useFetch"
 import Layout from "../../layouts/Layout"
-import { API_CLIENT_URL } from "../../services/Api"
+import { API_CLIENT_URL, URL_IMAGEN } from "../../services/Api"
 import { modalTime } from "../../services/Modal"
 import { RoleContext } from "../../services/RoleContext"
 import { toggleFavoritoRequest } from "../../services/ToggleFavoritosRequest"
@@ -162,7 +162,7 @@ const NOMBRES_APTITUDES = {
                             >
                                 <div className="flex-shrink-0 w-20 h-20 overflow-hidden rounded-lg">
                                     <img
-                                        src={job.imagenEmpresa ? `${API_CLIENT_URL}` + "/img/" + job.imagenEmpresa : `${API_CLIENT_URL}/images/imgEmpresa.png`}
+                                        src={job.imagenEmpresa ? `${URL_IMAGEN}` +  job.imagenEmpresa : `/imgEmpresa.png`}
                                         alt={`${job.nameEmpresa} logo`}
                                         className="object-cover w-full h-full"
                                     />

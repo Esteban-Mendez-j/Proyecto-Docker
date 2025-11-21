@@ -25,7 +25,10 @@ export default function Login (){
             case "EMPRESA":
                 navigate("/", {replace:true})
                 break;
-            case "ADMIN" || "SUPER_ADMIN":
+            case "ADMIN":
+                navigate("/admin/index", {replace:true})
+                break;
+            case "SUPER_ADMIN":
                 navigate("/admin/index", {replace:true})
                 break;
             default:

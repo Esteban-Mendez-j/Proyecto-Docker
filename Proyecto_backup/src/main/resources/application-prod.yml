@@ -38,6 +38,8 @@ app:
     img: ${UPLOAD_DIR_IMG}
     pdf: ${UPLOAD_DIR_PDF}
     video: ${UPLOAD_DIR_VIDEO}
+  url:
+    frontEnd: ${URL_FRONTEND}
     
 security:
   jwt:

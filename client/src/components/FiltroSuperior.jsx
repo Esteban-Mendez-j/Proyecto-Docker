@@ -1,6 +1,37 @@
+import { useEffect, useState } from "react";
 import {ciudadesColombia} from "../services/data"
 import AutocompleteInput from "./AutocompleteInput";
+import { API_CLIENT_URL } from "../services/Api";
 export default function FiltroSuperior({ filtersLocal, handleFilterChange, setFilters }) {
+
+    const [query, setQuery] = useState(filtersLocal.titulo || "");
+    const [sugerencias, setSugerencias] = useState([]);
+    const [debouncedQuery, setDebouncedQuery] = useState(query);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedQuery(query);
+        }, 500); // espera 300ms después de que el usuario deja de escribir
+
+        return () => clearTimeout(handler);
+    }, [query]);
+
+    // Sincroniza query cuando filtros externos cambien
+    useEffect(() => {
+        setQuery(filtersLocal.titulo || "");
+    }, [filtersLocal.titulo]);
+
+    // Petición al backend cuando debouncedQuery cambia
+    useEffect(() => {
+        if (debouncedQuery.length < 2) {
+            setSugerencias([]);
+            return;
+        }
+
+        fetch(`${API_CLIENT_URL}/api/vacantes/sugerencias?query=${debouncedQuery}`)
+            .then(res => res.json())
+            .then(data => setSugerencias(data));
+    }, [debouncedQuery]);
 
     return (
         <div className="search-container" >
@@ -22,12 +53,16 @@ export default function FiltroSuperior({ filtersLocal, handleFilterChange, setFi
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
 
-                    <input
+                    <AutocompleteInput
                         type="text"
                         placeholder="Titulo de la vacante"
                         name="titulo"
-                        onChange={handleFilterChange}
-                        value={filtersLocal.titulo || ""}
+                        options={sugerencias}
+                        value={query} 
+                        onChange={(e) => {
+                            handleFilterChange(e, query)
+                            setQuery(e.target.value)
+                        }}
                         className="search-input-sup"
                     />
                 </div>

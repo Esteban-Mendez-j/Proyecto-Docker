@@ -56,7 +56,6 @@ export default function RegistroCandidato() {
         }
 
         if (Object.keys(combinedErrors).length > 0) {
-            console.log(combinedErrors)
             setError(combinedErrors);
 
             // Foco en el primer campo con error

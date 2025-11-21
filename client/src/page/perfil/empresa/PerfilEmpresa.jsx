@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Layout from "../../../layouts/Layout.jsx";
-import { API_CLIENT_URL } from "../../../services/Api";
+import { API_CLIENT_URL, URL_IMAGEN } from "../../../services/Api";
 import { manejarRespuesta } from "../../../services/ManejarRespuesta.js";
 import "../../../style/invitado/empresa.css";
 import { Link } from "react-router-dom";
@@ -40,8 +40,8 @@ const PerfilEmpresa = () => {
               <img
                 src={
                   empresa.imagen
-                    ? `${API_CLIENT_URL}/img/${empresa.imagen}`
-                    : `${API_CLIENT_URL}/images/imgEmpresa.png`
+                    ? `${URL_IMAGEN}${empresa.imagen}`
+                    : `/imgEmpresa.png`
                 }
                 alt={empresa.nombre}
                 className="empresa-logo"

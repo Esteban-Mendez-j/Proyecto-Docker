@@ -32,27 +32,29 @@ services:
       MONGODB_URI: ${MONGODB_URI}
       UPLOAD_DIR_IMG: ${UPLOAD_DIR_IMG}
       UPLOAD_DIR_PDF: ${UPLOAD_DIR_PDF}
+      UPLOAD_DIR_VIDEO: ${UPLOAD_DIR_VIDEO}
+      URL_FRONTEND: ${URL_FRONTEND}
     networks:
       - app-network
     volumes:
       - ./Proyecto_backup/uploads:/app/uploads
 
-  astro:
-    build:
-      context: ./SearchJobs-front_backup
-      dockerfile: Dockerfile
-    container_name: astro-app
-    depends_on:
-      - backend
-    ports:
-      - "4321:4321"
-    environment:
-      PUBLIC_API_URL: ${PUBLIC_API_URL}
-      PUBLIC_CLIENT_API_URL: ${PUBLIC_CLIENT_API_URL}
-      PUBLIC_WS_URL: ${PUBLIC_WS_URL}
-      PUBLIC_CLIENT_WS_URL: ${PUBLIC_CLIENT_WS_URL}
-    networks:
-      - app-network
+  # astro:
+  #   build:
+  #     context: ./SearchJobs-front_backup
+  #     dockerfile: Dockerfile
+  #   container_name: astro-app
+  #   depends_on:
+  #     - backend
+  #   ports:
+  #     - "4321:4321"
+  #   environment:
+  #     PUBLIC_API_URL: ${PUBLIC_API_URL}
+  #     PUBLIC_CLIENT_API_URL: ${PUBLIC_CLIENT_API_URL}
+  #     PUBLIC_WS_URL: ${PUBLIC_WS_URL}
+  #     PUBLIC_CLIENT_WS_URL: ${PUBLIC_CLIENT_WS_URL}
+  #   networks:
+  #     - app-network
 
 volumes:
   mysql_data:

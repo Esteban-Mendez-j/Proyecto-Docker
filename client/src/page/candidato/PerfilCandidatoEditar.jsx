@@ -4,7 +4,7 @@ import InputForm from "../../components/InputForm.jsx";
 import Loading from "../../components/Loading.jsx";
 import { useFetch, useSendForm } from "../../hooks/useFetch";
 import Layout from "../../layouts/Layout.jsx";
-import { API_CLIENT_URL } from "../../services/Api";
+import { API_CLIENT_URL, URL_IMAGEN } from "../../services/Api";
 import { modal, modalResponse } from "../../services/Modal";
 import "../../style/invitado/candidato.css";
 import { listEducacion, listAptitudes } from "../../services/data.js"
@@ -245,8 +245,8 @@ const PerfilCandidatoEditar = () => {
                   previewImg
                     ? previewImg
                     : candidato.imagen
-                      ? `${API_CLIENT_URL}/img/${candidato.imagen}`
-                      : `${API_CLIENT_URL}/images/imgCandidato.png`
+                      ? `${URL_IMAGEN}${candidato.imagen}`
+                      : `/imgCandidato.png`
                 }
                 alt="avatar"
                 className="h-32 w-32 rounded-full object-cover shadow"

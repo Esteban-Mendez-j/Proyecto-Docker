@@ -9,7 +9,7 @@ export default function InputForm({
   placeholder,
   error,
   handleOnChange,
-  autoComplete,
+  autoComplete=undefined,
   children,
   className = "form-control",
   minL = 0,
@@ -45,6 +45,7 @@ export default function InputForm({
         value={value}
         onChange={handleOnChange}
         placeholder={placeholder}
+        autoComplete={autoComplete}
         className={`${className} ${fieldError ? "error-input" : ""}`}
         {...(type ? { type } : {})}
         {...(as === "input" && type === "number" ? { min: minL } : {})}

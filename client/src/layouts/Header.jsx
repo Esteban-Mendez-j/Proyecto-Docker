@@ -39,7 +39,6 @@ export default function Header () {
         SUPER_ADMIN: [
             { name: "Inicio", path: "/admin/index" },
             { name: "Empleos", path: "/admin/vacantes" },
-            { name: "Crear admins", path: "/404" },
             { name: "Usuarios", path: "/admin/usuarios" },
         ],
         ADMIN: [
@@ -49,7 +48,7 @@ export default function Header () {
         ],
         CANDIDATO: [
             { name: "Inicio", path: "/" },
-            { name: "Shorts", path: "/shorts" }, // 👈 NUEVA OPCIÓN AQUÍ
+            { name: "Shorts", path: "/shorts" }, 
             { name: "Chats", path: "/chat/candidato" },
             { name: "Empleos", path: "/empleos" },
             { name: "Postulaciones", path: "/postulaciones" },
@@ -126,8 +125,7 @@ export default function Header () {
                             Cerrar Sesion
                         </button>
                     }
-                    {/* {rol == "CANDIDATO" && <Notificaciones />} // jesus */}
-                    {["CANDIDATO", "EMPRESA"].includes(rol) && <BandejaNotificacion/>}
+                    {["CANDIDATO"].includes(rol) && <BandejaNotificacion/>}
                     {["CANDIDATO", "EMPRESA"].includes(rol) &&
                         <Link to={"/perfil/"+ rol.toLowerCase()} className="perfil-link">
                             <picture className="perfil-header">

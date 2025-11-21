@@ -17,6 +17,8 @@ const UsuariosActivos = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [searchInput, setSearchInput] = useState('');
+  const [searchInputCorreo, setSearchInputCorreo] = useState('');
+  const [searchCorreo, setSearchCorreo] = useState('');
   const [searchTipoInput, setSearchTipoInput] = useState('');
   const [tipoUsuario, setTipoUsuario] = useState('');
   const [verBaneados, setVerBaneados] = useState(false);
@@ -25,7 +27,7 @@ const UsuariosActivos = () => {
   
     const fetchUsuarios = async () => {
       try {
-        const url = `${API_CLIENT_URL}/api/admin/listar/filtrados?nombre=${searchTerm}&rolPrinciapl=${tipoUsuario}&estado=${!verBaneados}&page=${currentPage - 1}&size=${pageSize}`;
+        const url = `${API_CLIENT_URL}/api/admin/listar/filtrados?correo=${searchCorreo}&nombre=${searchTerm}&rolPrinciapl=${tipoUsuario}&estado=${!verBaneados}&page=${currentPage - 1}&size=${pageSize}`;
         const res = await fetch(url, { credentials: 'include' });
         const data = await manejarRespuesta(res); 
         if(!data){return}
@@ -54,7 +56,7 @@ const UsuariosActivos = () => {
 
   useEffect(() => {
     fetchUsuarios();
-  }, [currentPage, pageSize, searchTerm, tipoUsuario, verBaneados, AdminId]);
+  }, [currentPage, pageSize, searchTerm, tipoUsuario, verBaneados, AdminId, searchCorreo]);
 
 
 const crearAdmin = async (idUsuario, estado) => {
@@ -120,19 +122,38 @@ const crearAdmin = async (idUsuario, estado) => {
   const aplicarFiltros = () => {
     setSearchTerm(searchInput);
     setTipoUsuario(searchTipoInput);
+    setSearchCorreo(searchInputCorreo)
+    setCurrentPage(1);
+  };
+
+  const EliminarFiltros = () => {
+    setSearchInput("")
+    setSearchInputCorreo("")
+    setSearchTipoInput("")
+    setSearchTerm("");
+    setTipoUsuario("");
+    setSearchCorreo("")
     setCurrentPage(1);
   };
 
   return (
     <div className="flex-1">
-      <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Gestión de Usuarios</h1>
+      <div className="flex items-center justify-between mb-6">
         <div className="flex gap-2">
           <input
             type="text"
-            placeholder="Buscar usuarios..."
+            placeholder="Buscar por Nombre ..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
+            className="py-2 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+
+          <input
+            type="text"
+            placeholder="Buscar por correo ..."
+            value={searchInputCorreo}
+            onChange={(e) => setSearchInputCorreo(e.target.value)}
             className="py-2 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
 
@@ -156,6 +177,9 @@ const crearAdmin = async (idUsuario, estado) => {
           </button>
           <button onClick={() => setVerBaneados(!verBaneados)} className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
             {verBaneados ? 'Ver Activos' : 'Ver Baneados'}
+          </button>
+          <button onClick={EliminarFiltros} className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700">
+            Eliminar Filtros
           </button>
         </div>
       </div>
@@ -199,10 +223,11 @@ const crearAdmin = async (idUsuario, estado) => {
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   {userRol !== 'ADMIN' && (
                     <button
-                      onClick={() => crearAdmin(user.idUsuario, true)}
-                      className="hover:underline font-semibold text-purple-600 hover:text-purple-800"
+                      onClick={() => crearAdmin(user.idUsuario, !user.roles.includes("ADMIN"))}
+                      className="hover:underline font-semibold text-purple-600 hover:text-purple-800 mr-3"
+                      title={user.roles.includes("ADMIN")? "Remover Permisos" : "Darle Permisos"}
                     >
-                      + Admin
+                      {user.roles.includes("ADMIN")? "- Admin" : "+ Admin"}
                     </button>
                   )}
 

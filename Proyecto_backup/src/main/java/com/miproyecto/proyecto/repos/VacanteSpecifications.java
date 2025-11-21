@@ -48,9 +48,34 @@ public class VacanteSpecifications {
                 predicates.add(criteriaBuilder.equal(root.get("activaPorEmpresa"), filtro.isActivaPorEmpresa()));
             }
 
+            if (filtro.getTitulo() != null && !filtro.getTitulo().trim().isEmpty()) {
 
-            if (filtro.getTitulo() != null && !filtro.getTitulo().isEmpty()) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("titulo")), "%" + filtro.getTitulo().toLowerCase() + "%"));
+                String[] palabras = filtro.getTitulo().toLowerCase().split("\\s+");
+
+                List<Predicate> andPredicates = new ArrayList<>();
+
+                for (String palabra : palabras) {
+
+                    List<Predicate> orPredicates = new ArrayList<>();
+
+                    orPredicates
+                            .add(criteriaBuilder.like(criteriaBuilder.lower(root.get("titulo")), "%" + palabra + "%"));
+                    orPredicates.add(
+                            criteriaBuilder.like(criteriaBuilder.lower(root.get("descripcion")), "%" + palabra + "%"));
+                    orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("requerimientos")),
+                            "%" + palabra + "%"));
+                    orPredicates
+                            .add(criteriaBuilder.like(criteriaBuilder.lower(root.get("cargo")), "%" + palabra + "%"));
+
+                    // OR para una palabra
+                    Predicate orGroup = criteriaBuilder.or(orPredicates.toArray(new Predicate[0]));
+
+                    // Se agrega al AND general
+                    andPredicates.add(orGroup);
+                }
+
+                // AND final entre todas las palabras
+                predicates.add(criteriaBuilder.and(andPredicates.toArray(new Predicate[0])));
             }
 
             if (filtro.getCargo() != null && !filtro.getCargo().isEmpty()) {

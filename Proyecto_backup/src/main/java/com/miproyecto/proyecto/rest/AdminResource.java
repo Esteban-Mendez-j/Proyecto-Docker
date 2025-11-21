@@ -59,6 +59,7 @@ public class AdminResource {
             HttpSession session,
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             @Parameter(description = "Nombre del usuario a filtrar") @RequestParam(required = false) String nombre,
+            @Parameter(description = "Nombre del usuario a filtrar") @RequestParam(required = false) String correo,
             @Parameter(description = "Rol principal a filtrar") @RequestParam(name = "rolPrinciapl", required = false) String rol,
             @Parameter(description = "Estado activo/inactivo") @RequestParam(required = false) Boolean estado) {
 
@@ -68,7 +69,7 @@ public class AdminResource {
         String rolUsuario = decodedJWT.getClaim("rolPrincipal").asString();
 
         Map<String, Object> response = usuarioService.buscarUsuariosConFiltros(idUsuario, rolUsuario, nombre, rol,
-                estado, pageable);
+                estado, pageable, correo);
         return ResponseEntity.ok(response);
     }
 
@@ -105,7 +106,8 @@ public class AdminResource {
     public ResponseEntity<Map<String, String>> addAdminRole(@RequestParam Long idUsuario, @RequestParam boolean estado) {
         adminService.modificarRoles(idUsuario, estado);
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Rol de admin agregado exitosamente");
+        String mensaje = estado? "agregado":"removido";
+        response.put("message", "Rol de admin" + mensaje + "exitosamente");
         return ResponseEntity.ok(response);
     }
 
