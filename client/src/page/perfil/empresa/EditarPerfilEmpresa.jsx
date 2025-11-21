@@ -18,7 +18,7 @@ const EditarPerfilEmpresa = () => {
     imagen: "",
     sitioWeb: "",
     descripcion: "",
-    videoLink: "",
+     linkvideo: "",
   }
 
   const navigate = useNavigate();
@@ -73,28 +73,27 @@ const EditarPerfilEmpresa = () => {
   };
 
   async function handleSubmit(e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  const formData = new FormData();
-  formData.append(
-    "empresa",
-    new Blob([JSON.stringify(empresa)], { type: "application/json" })
-  );
+    const formData = new FormData();
+    formData.append(
+      "empresa",
+      new Blob([JSON.stringify(empresa)], { type: "application/json" })
+    );
 
-  if (fotoRef.current?.files[0]) {
-    formData.append("img", fotoRef.current.files[0]);
-  }
+    if (fotoRef.current?.files[0]) {
+      formData.append("img", fotoRef.current.files[0]);
+    }
 
-  const result = await send(`/api/empresas/edit/${empresa.idUsuario}`, "PUT", formData, null);
+    const result = await send(`/api/empresas/edit/${empresa.idUsuario}`, "PUT", formData, null);
 
-  if (result.status === 200) {
-    const isOk = await modalResponse(result.mensaje, "success");
-    if (isOk) {
-      navigate("/perfil/empresa");
+    if (result.status === 200) {
+      const isOk = await modalResponse(result.mensaje, "success");
+      if (isOk) {
+        navigate("/perfil/empresa");
+      }
     }
   }
-}
-
 
   return (
     <Layout>
@@ -140,6 +139,7 @@ const EditarPerfilEmpresa = () => {
 
               <input
                 id="logo-upload"
+                ref={fotoRef}
                 type="file"
                 name="img"
                 accept="image/*"
@@ -147,28 +147,35 @@ const EditarPerfilEmpresa = () => {
                 onChange={handleLogoChange}
               />
 
-              <input type="hidden" name="imagen" defaultValue={empresa.imagen || ""} />
+              <input type="hidden" name="imagen" value={empresa.imagen || ""} />
               <p className="error-text hidden" id="error-imagen"></p>
             </div>
 
             {/* Nombre & Sector */}
             <div className="flex-1 w-full space-y-4">
-              <InputForm
-                type={"text"}
-                name={"nombre"}
-                value={empresa.nombre}
-                placeholder={"Nombre de la empresa"}
+              <input
+                type="text"
+                name="nombre"
+                value={empresa.nombre || ""}
+                placeholder="Nombre de la empresa"
                 className="w-full text-3xl font-semibold bg-transparent border-b-2 border-sky-200 focus:border-sky-500 focus:outline-none"
                 onChange={handleOnChange}
-                error={error}
               />
+              {error?.nombre && <p className="error-text">{error.nombre}</p>}
 
-              <select value={empresa.sectorEmpresarial} name="sectorEmpresarial" className={`form-control ${error?.sectorEmpresarial ? "error-input" : ""}`} required onChange={handleOnChange}>
-                <option value={""} disabled>Selecciona tu sector{empresa.sectorEmpresarial}</option>
+              <select 
+                value={empresa.sectorEmpresarial || ""} 
+                name="sectorEmpresarial" 
+                className={`form-control ${error?.sectorEmpresarial ? "error-input" : ""}`} 
+                required 
+                onChange={handleOnChange}
+              >
+                <option value="" disabled>Selecciona tu sector</option>
                 {sectores.map((sector, index) => (
-                  <option key={index} value={sector} >{sector}</option>
+                  <option key={index} value={sector}>{sector}</option>
                 ))}
               </select>
+              {error?.sectorEmpresarial && <p className="error-text">{error.sectorEmpresarial}</p>}
             </div>
           </div>
 
@@ -194,16 +201,16 @@ const EditarPerfilEmpresa = () => {
                 </svg>
                 <div className="empresa-info-content">
                   <span className="empresa-info-label">NIT</span>
-                  <InputForm
-                    type={"number"}
-                    name={"nit"}
-                    value={empresa.nit}
+                  <input
+                    type="number"
+                    name="nit"
+                    value={empresa.nit || ""}
                     className="empresa-info-input"
-                    placeholder={"NIT de la empresa"}
+                    placeholder="NIT de la empresa"
                     onChange={handleOnChange}
-                    error={error}
-                    minL={9}
+                    minLength="9"
                   />
+                  {error?.nit && <p className="error-text">{error.nit}</p>}
                 </div>
               </div>
 
@@ -223,15 +230,15 @@ const EditarPerfilEmpresa = () => {
                 </svg>
                 <div className="empresa-info-content">
                   <span className="empresa-info-label">Correo</span>
-                  <InputForm
-                    type={"email"}
-                    name={"correo"}
-                    value={empresa.correo}
+                  <input
+                    type="email"
+                    name="correo"
+                    value={empresa.correo || ""}
                     className="empresa-info-input"
-                    placeholder={"Correo electrónico"}
+                    placeholder="Correo electrónico"
                     onChange={handleOnChange}
-                    error={error}
                   />
+                  {error?.correo && <p className="error-text">{error.correo}</p>}
                 </div>
               </div>
 
@@ -250,16 +257,16 @@ const EditarPerfilEmpresa = () => {
                 </svg>
                 <div className="empresa-info-content">
                   <span className="empresa-info-label">Teléfono</span>
-                  <InputForm
-                    type={"number"}
-                    name={"telefono"}
-                    value={empresa.telefono}
+                  <input
+                    type="number"
+                    name="telefono"
+                    value={empresa.telefono || ""}
                     className="empresa-info-input"
-                    placeholder={"Teléfono de contacto"}
+                    placeholder="Teléfono de contacto"
                     onChange={handleOnChange}
-                    error={error}
-                    minL={10}
+                    minLength="10"
                   />
+                  {error?.telefono && <p className="error-text">{error.telefono}</p>}
                 </div>
               </div>
 
@@ -280,15 +287,15 @@ const EditarPerfilEmpresa = () => {
                 </svg>
                 <div className="empresa-info-content">
                   <span className="empresa-info-label">Sitio Web</span>
-                  <InputForm
-                    type={"url"}
-                    name={"sitioWeb"}
-                    value={empresa.sitioWeb}
+                  <input
+                    type="url"
+                    name="sitioWeb"
+                    value={empresa.sitioWeb || ""}
                     className="empresa-info-input"
-                    placeholder={"Sitio web (ejemplo.com)"}
+                    placeholder="Sitio web (ejemplo.com)"
                     onChange={handleOnChange}
-                    error={error}
                   />
+                  {error?.sitioWeb && <p className="error-text">{error.sitioWeb}</p>}
                 </div>
               </div>
             </div>
@@ -298,14 +305,15 @@ const EditarPerfilEmpresa = () => {
               <h2 className="empresa-section-title">Descripción</h2>
               <textarea
                 name="descripcion"
-                value={empresa.descripcion}
-                className={`empresa-descripcion-input ${error?.sectorEmpresa ? "error-input" : ""}`}
+                value={empresa.descripcion || ""}
+                className={`empresa-descripcion-input ${error?.descripcion ? "error-input" : ""}`}
                 placeholder="Describe tu empresa, su misión, visión y valores..."
                 onChange={handleOnChange}
               />
-              <p className= {`error-text ${error?.descripcion? null : "hidden" } `} >{error?.descripcion}</p>
+              {error?.descripcion && <p className="error-text">{error.descripcion}</p>}
             </div>
-            {/* --- Video de Presentación --- */}
+
+            {/* Video de Presentación */}
             <div className="empresa-info-item">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -321,18 +329,18 @@ const EditarPerfilEmpresa = () => {
               </svg>
               <div className="empresa-info-content">
                 <span className="empresa-info-label">Video Presentación</span>
-                <InputForm
-                  type={"text"}
-                  name={"videoLink"}
-                  value={empresa.videoLink}
-                  className="empresa-info-input"
-                  placeholder={"https://youtu.be/abc123"}
-                  onChange={handleOnChange}   
-                  error={error}
-                />
-              </div>
-</div>
+                <input
+              type="text"
+              name="videoLink"
+              value={empresa.videoLink || ""}
+              className="empresa-info-input"
+              placeholder="https://youtu.be/abc123"
+              onChange={handleOnChange}
+            />
 
+                {error?.linkvideo && <p className="error-text">{error.linkvideo}</p>}
+              </div>
+            </div>
 
             {/* Botones */}
             <div className="empresa-form-actions">
@@ -346,8 +354,6 @@ const EditarPerfilEmpresa = () => {
           </div>
         </form>
       </div>
-
-      
     </Layout>
   );
 };
