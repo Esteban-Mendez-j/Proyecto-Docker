@@ -267,7 +267,7 @@ export default function ResumenVacante({job, rol, id}) {
             </div>
           </div>
                 {/* 🔹 Video de presentación de la empresa */}
-  {jobResumen.videoLink && (
+  {(jobResumen.videoLink && rol != "ROLE_INVITADO") && (
   <div className="flex items-center mb-9"> {/* subido un poco arriba */}
     <svg
       xmlns="http://www.w3.org/2000/svg"

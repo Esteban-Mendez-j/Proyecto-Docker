@@ -27,16 +27,16 @@ const ShortsPage = () => {
     tipo: "todos",
     experiencia: null,
     modalidad: null,
-    active: rol === "EMPRESA" ? null : true,
-    activaPorEmpresa: rol === "EMPRESA" ? null : true,
+    active: true,
+    activaPorEmpresa: true,
     cargo: null,
     ciudad: null,
     sueldo: null,
     totalpostulaciones: null,
     isFavorita: false,
-    estado: rol === "EMPRESA" ? "todos" : undefined,
+    estado: undefined,
     video: true,
-    estadoPostulacion: rol === "empresa" ? null : "SinPostulacion"
+    estadoPostulacion: "SinPostulacion"
   };
 
   // hace la peticion cuando currentPage (pagina actual) cambia
