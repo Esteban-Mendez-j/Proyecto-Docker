@@ -19,7 +19,7 @@ export const API_CLIENT_URL = import.meta.env.VITE_CLIENT_API_URL;
 export const WS_CLIENT_URL  = import.meta.env.VITE_CLIENT_WS_URL;
 
 // Rutas de archivos
-export const URL_VIDEO  = `${API_CLIENT_URL}/video/`;
+export const URL_VIDEO  = `${API_CLIENT_URL}/video/`; 
 export const URL_IMAGEN = `${API_CLIENT_URL}/img/`;
 export const URL_PDF    = `${API_CLIENT_URL}/pdf/`;
 
