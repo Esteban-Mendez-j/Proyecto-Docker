@@ -8,6 +8,7 @@ import { API_CLIENT_URL, URL_IMAGEN } from "../../services/Api";
 import { modal, modalResponse } from "../../services/Modal";
 import "../../style/invitado/candidato.css";
 import { listEducacion, listAptitudes } from "../../services/data.js"
+import { formRulesCandidato, formRulesCandidatoEditar, validateForm } from "../../services/validacionForm.js";
 
 const tmpId = () => crypto.randomUUID();
 
@@ -50,12 +51,14 @@ const PerfilCandidatoEditar = () => {
   }
   const navigate = useNavigate()
   const { data, loading } = useFetch("/api/candidatos/perfil", "GET");
-  const { error, send } = useSendForm();
+  const { error, send, setError } = useSendForm();
   const [selected, setSelected] = useState([]);
   const [candidato, setCandidato] = useState(initialData);
   const [estudios, setEstudios] = useState([]);
   const [historialLaboral, setHistorial] = useState([]);
   const [previewImg, setPreviewImg] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
+
 
   const handleClick = (key) => {
     let updated;
@@ -164,6 +167,9 @@ const PerfilCandidatoEditar = () => {
     const historialEnviar = historialLaboral.map(({ _tmpId, ...rest }) => rest);
 
     /* ----------- 3. Enviar estudios e historial en paralelo ------------ */
+    
+    
+    
     try {
       const [respEst, respHist] = await Promise.all([
         fetch(`${API_CLIENT_URL}/api/estudios/replace/${candidato.idUsuario}`, {
@@ -189,6 +195,24 @@ const PerfilCandidatoEditar = () => {
         throw new Error(`${mensajeEst} ${mensajeHist}`.trim() || "Error al actualizar datos");
       }
 
+      setSubmitted(true)
+      const newErrors = validateForm(candidato, formRulesCandidatoEditar);
+      
+      if (Object.keys(newErrors).length > 0) {
+        console.log(newErrors)
+        setError(newErrors);
+
+        // Foco en el primer campo con error
+        const firstErrorField = Object.keys(newErrors)[0];
+        const el = document.getElementById(firstErrorField);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          el.focus();
+        }
+
+        return; // detener envío o acción
+      }
+      setError(null);
 
       const formData = new FormData(e.target);
       formData.set(
@@ -279,7 +303,9 @@ const PerfilCandidatoEditar = () => {
                     placeholder={"Ingresa tu nombre completo"}
                     value={candidato.nombre}
                     handleOnChange={handleOnChange}
+                    rules={formRulesCandidatoEditar}
                     error={error}
+                    submitted={submitted}
                     className={"w-full rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 "}
                   />
                 </div>
@@ -295,7 +321,9 @@ const PerfilCandidatoEditar = () => {
                     placeholder={"Ingresa tu apellido completo"}
                     value={candidato.apellido}
                     handleOnChange={handleOnChange}
+                    rules={formRulesCandidatoEditar}
                     error={error}
+                    submitted={submitted}
                     className={"w-full rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 "}
                   />
                 </div>
@@ -308,12 +336,23 @@ const PerfilCandidatoEditar = () => {
                     <label htmlFor="nivelEducativo" className="mb-1 text-sm font-medium">
                       Nivel Educativo
                     </label>
-                    <select value={candidato.nivelEducativo} name="nivelEducativo" className={"w-full rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"} required onChange={handleOnChange}>
-                      <option value={""} disabled>Selecciona tu nivel educativo</option>
+                    <InputForm
+                      as="select"
+                      name="nivelEducativo"
+                      value={candidato.nivelEducativo}
+                      handleOnChange={handleOnChange}
+                      error={error}
+                      rules={formRulesCandidatoEditar}
+                      submitted={submitted}
+                      className="w-full rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                    >
+                      <option value="" disabled>Selecciona tu nivel educativo</option>
                       {listEducacion.map((nivel, index) => (
-                        <option key={index} value={nivel} >{nivel}</option>
+                        <option key={index} value={nivel}>{nivel}</option>
                       ))}
-                    </select>
+                    </InputForm>
+
+
                   </div>
                 </div>
               </div>
@@ -385,7 +424,9 @@ const PerfilCandidatoEditar = () => {
                 placeholder={"Ingresa tu correo"}
                 value={candidato.correo}
                 handleOnChange={handleOnChange}
+                rules={formRulesCandidatoEditar}
                 error={error}
+                submitted={submitted}
                 className={"w-full rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 "}
               />
             </div>
@@ -401,7 +442,9 @@ const PerfilCandidatoEditar = () => {
                 placeholder={"Ingresa tu telefono completo"}
                 value={candidato.telefono}
                 handleOnChange={handleOnChange}
+                rules={formRulesCandidatoEditar}
                 error={error}
+                submitted={submitted}
                 className={"w-full rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 "}
               />
             </div>
@@ -417,7 +460,9 @@ const PerfilCandidatoEditar = () => {
                 placeholder={"Ingresa tu identificacion completo"}
                 value={candidato.identificacion}
                 handleOnChange={handleOnChange}
+                rules={formRulesCandidatoEditar}
                 error={error}
+                submitted={submitted}
                 className={"w-full rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 "}
               />
             </div>
@@ -431,7 +476,9 @@ const PerfilCandidatoEditar = () => {
                 placeholder={"Años de experiencia"}
                 value={candidato.experiencia}
                 handleOnChange={handleOnChange}
+                rules={formRulesCandidatoEditar}
                 error={error}
+                submitted={submitted}
                 className={"w-full rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 "}
               />
             </div>
@@ -440,25 +487,28 @@ const PerfilCandidatoEditar = () => {
           {/* ---------- DESCRIPCIÓN ---------- */}
           <div>
             <h2 className="mb-2 text-lg font-semibold">Descripción</h2>
-            <textarea
+            <InputForm
               className="h-32 w-full resize-none rounded-2xl border border-gray-300 p-4 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"
               placeholder="Cuéntanos sobre ti, tus habilidades y experiencia…"
               value={candidato.descripcion}
               name="descripcion"
-              onChange={handleOnChange}
-              required
+              handleOnChange={handleOnChange}
+              rules={formRulesCandidatoEditar}
+              submitted={submitted}
+              as="textarea"
             />
-            {error?.descripcion && <p className="error-text" id="error-descripcion">{error.descripcion}</p>}
           </div>
                     {/* ---------- VIDEO PRESENTACIÓN ---------- */}
           <div>
             <h2 className="mb-2 text-lg font-semibold">Video de Presentación</h2>
-            <input
+            <InputForm
               type="text"
               name="videoLink"
-              placeholder="URL de tu video (YouTube / Vimeo)"
+              placeholder="URL de tu video (YouTube)"
               value={candidato.videoLink}
-              onChange={handleOnChange}
+              rules={formRulesCandidatoEditar}
+              submitted={submitted}
+              handleOnChange={handleOnChange}
               className="w-full rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"
             />
             <p className="text-xs text-gray-500 mt-1">
@@ -487,13 +537,6 @@ const PerfilCandidatoEditar = () => {
                 </button>
               ))}
             </div>
-
-            {/* Si quieres mostrar errores de validación */}
-            {/* {error?.aptitudes && (
-        <p className="error-text hidden" id="error-descripcion">
-          {error.aptitudes}
-        </p>
-      )} */}
           </div>
 
 
