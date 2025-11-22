@@ -1,10 +1,10 @@
 import { useParams } from "react-router-dom";
-import Layout from "../../layouts/Layout";
+import Layout from "../../layouts/Layout.jsx";
 import "../../style/invitado/empleos.css"
 import "../../style/invitado/postulados.css"
 import { useEffect, useState } from "react";
 import Swal from 'sweetalert2';
-import Pagination from "../../components/Paginacion";
+import Pagination from "../../components/Paginacion.jsx";
 import manejarRespuesta from "../../services/ManejarRespuesta";
 import { API_CLIENT_URL } from "../../services/Api";
 import { modal } from "../../services/Modal";
@@ -13,23 +13,22 @@ import { mensajesNotificaciones } from "../../services/data";
 
 export default function Postulados() {
 
-    const initialNotificacion = {
-        Id: "",
-        asunto: "",
-        cuerpo: "",
-        fechaEnvio: "",
-        destinatario: "",
-        remitente: "",
-        idRemitente: "",
-        nameRemitente: "",
-        isVisible: true,
-        estadoEnvio: "",
-        porcentajePrediccion: ""
-    }
+    // const initialNotificacion = {
+    //     Id: "",
+    //     asunto: "",
+    //     cuerpo: "",
+    //     fechaEnvio: "",
+    //     destinatario: "",
+    //     remitente: "",
+    //     idRemitente: "",
+    //     nameRemitente: "",
+    //     isVisible: true,
+    //     estadoEnvio: "",
+    //     porcentajePrediccion: ""
+    // }
     const { vacanteId } = useParams()
     const itemsPerPage = 10;
     const [remitenteId, setRemitenteId] = useState(null)
-    const [notificacion, setNotificacion] = useState(initialNotificacion);
     const [postulados, setPostulados] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);

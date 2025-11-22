@@ -3,16 +3,15 @@ import Swal from 'sweetalert2';
 import { API_CLIENT_URL } from '../services/Api';
 import { manejarRespuesta } from '../services/ManejarRespuesta';
 import '../style/invitado/empleos.css';
-import Paginacion from './Paginacion';
+import Paginacion from './Paginacion.jsx';
 import { Link } from 'react-router-dom';
 
 const VacantesActivas = () => {
   const [vacantes, setVacantes] = useState([]);
-  const [npostulaciones, setnPostulaciones] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
-  const [fade, setFade] = useState(true);
+  const [fade] = useState(true);
   const [totalElements, setTotalElements] = useState(0);
 
   const [searchTerm, setSearchTerm] = useState('');

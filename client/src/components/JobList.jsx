@@ -1,12 +1,12 @@
 import { modal, modalTime, QuestionModal } from "../services/Modal";
 import { API_CLIENT_URL } from "../services/Api";
 import "../style/invitado/jobcard.css";
-import Paginacion from "./Paginacion";
-import JobCard from "./JobCard";
-import TableJob from "./TableJob";
-import { useContext, useEffect, useState } from "react";
-import { useSendForm } from "../hooks/useFetch";
-import { RoleContext } from "../services/RoleContext";
+import Paginacion from "./Paginacion.jsx";
+import JobCard from "./JobCard.jsx";
+import TableJob from "./TableJob.jsx";
+import { useContext, useEffect} from "react";
+import { useSendForm } from "../hooks/useFetch.jsx";
+import { RoleContext } from "../services/RoleContext.jsx";
 
 const JobList = ({
   jobs,
@@ -15,7 +15,6 @@ const JobList = ({
   totalPages,
   fetchAllJobs,
   presentacion,
-  loading,
   verPrediccion,
   setVerPrediccion
 }) => {

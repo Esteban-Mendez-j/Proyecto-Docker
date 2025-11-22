@@ -6,9 +6,9 @@ import { API_CLIENT_URL, URL_VIDEO } from "../../services/Api";
 import manejarRespuesta from "../../services/ManejarRespuesta";
 import { modal, modalResponse } from "../../services/Modal";
 import { ciudadesColombia, departamentoColombia, listAptitudes } from "../../services/data";
-import Loading from "../../components/Loading"
-import Layout from "../../layouts/Layout";
-import InputForm from "../../components/InputForm";
+import Loading from "../../components/Loading.jsx"
+import Layout from "../../layouts/Layout.jsx";
+import InputForm from "../../components/InputForm.jsx";
 import { formRulesVacante, validateForm } from "../../services/validacionForm";
 
 

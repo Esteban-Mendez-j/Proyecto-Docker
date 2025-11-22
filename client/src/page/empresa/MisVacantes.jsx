@@ -1,5 +1,5 @@
-import Layout from "../../layouts/Layout";
-import JobBoard from "../../components/JobBoard";
+import Layout from "../../layouts/Layout.jsx";
+import JobBoard from "../../components/JobBoard.jsx";
 import "../../style/invitado/empleos.css";
 import { API_CLIENT_URL } from "../../services/Api";
 

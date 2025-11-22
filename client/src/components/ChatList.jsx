@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { API_CLIENT_URL } from '../services/Api';
 import manejarRespuesta from "../services/ManejarRespuesta";
-import Loading from "../components/Loading"
+import Loading from "../components/Loading.jsx"
 
 const ChatList = ({ searchText, Estado , onSelectChat }) => {
   const [userRole, setUserRole] = useState(null);

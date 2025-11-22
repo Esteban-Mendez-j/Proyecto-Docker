@@ -2,13 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import InputForm from "../../components/InputForm.jsx";
 import Loading from "../../components/Loading.jsx";
-import { useFetch, useSendForm } from "../../hooks/useFetch";
+import { useFetch, useSendForm } from "../../hooks/useFetch.jsx";
 import Layout from "../../layouts/Layout.jsx";
 import { API_CLIENT_URL, URL_IMAGEN } from "../../services/Api";
 import { modal, modalResponse } from "../../services/Modal";
 import "../../style/invitado/candidato.css";
 import { listEducacion, listAptitudes } from "../../services/data.js"
-import { formRulesCandidato, formRulesCandidatoEditar, validateForm } from "../../services/validacionForm.js";
+import { formRulesCandidatoEditar, validateForm } from "../../services/validacionForm.js";
 
 const tmpId = () => crypto.randomUUID();
 
@@ -37,18 +37,18 @@ const PerfilCandidatoEditar = () => {
     videoLink: ""
   }
 
-  const initialDataEstudios = {
-    academia: "",
-    idEstudio: "",
-    idUsuario: "",
-    titulo: ""
-  }
-  const initialDataHistorial = {
-    academia: "",
-    idEstudio: "",
-    idUsuario: "",
-    titulo: ""
-  }
+  // const initialDataEstudios = {
+  //   academia: "",
+  //   idEstudio: "",
+  //   idUsuario: "",
+  //   titulo: ""
+  // }
+  // const initialDataHistorial = {
+  //   academia: "",
+  //   idEstudio: "",
+  //   idUsuario: "",
+  //   titulo: ""
+  // }
   const navigate = useNavigate()
   const { data, loading } = useFetch("/api/candidatos/perfil", "GET");
   const { error, send, setError } = useSendForm();

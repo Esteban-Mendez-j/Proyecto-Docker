@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"; // Para capturar `id` de la ruta
-import Layout from "../../layouts/Layout";
+import Layout from "../../layouts/Layout.jsx";
 import { API_CLIENT_URL, URL_IMAGEN } from "../../services/Api";
 import { manejarRespuesta } from "../../services/ManejarRespuesta";
 import "../../style/invitado/empresa.css";

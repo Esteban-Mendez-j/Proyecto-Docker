@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
-import { useSendForm } from "../../hooks/useFetch";
+import { useSendForm } from "../../hooks/useFetch.jsx";
 import { Link, useNavigate } from "react-router-dom";
-import { API_CLIENT_URL, URL_VIDEO } from "../../services/Api";
-import { RoleContext } from "../../services/RoleContext";
+import { API_CLIENT_URL, URL_IMAGEN, URL_VIDEO } from "../../services/Api";
+import { RoleContext } from "../../services/RoleContext.jsx";
 import "../../style/invitado/short.css";
-import Loading from "../../components/Loading";
+import Loading from "../../components/Loading.jsx";
 import { toggleFavoritoRequest } from "../../services/ToggleFavoritosRequest";
 import { modal } from "../../services/Modal";
 

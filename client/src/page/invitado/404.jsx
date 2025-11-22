@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import "../../style/invitado/404.css"
-import { RoleContext } from "../../services/RoleContext";
+import { RoleContext } from "../../services/RoleContext.jsx";
 
 export default function NotFound() {
 

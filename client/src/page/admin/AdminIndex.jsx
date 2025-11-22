@@ -1,5 +1,5 @@
 
-import Layout from "../../layouts/Layout";
+import Layout from "../../layouts/Layout.jsx";
 
 export default function AdminIndex() {
   return (

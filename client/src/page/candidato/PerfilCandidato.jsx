@@ -6,17 +6,17 @@ import { API_CLIENT_URL, URL_IMAGEN } from "../../services/Api.js";
 import "../../style/invitado/candidato.css";
 
 function PerfilCandidato() {
-  const initialData = {
-    nombre: "",
-    apellido: "",
-    correo: "",
-    contrasena: "",
-    telefono: "",
-    identificacion: "",
-    contraseñaVerificada: "",
-    nivelEducativo: "",
+  // const initialData = {
+  //   nombre: "",
+  //   apellido: "",
+  //   correo: "",
+  //   contrasena: "",
+  //   telefono: "",
+  //   identificacion: "",
+  //   contraseñaVerificada: "",
+  //   nivelEducativo: "",
 
-  }
+  // }
   const [candidato, setCandidato] = useState(null);
   const [estudios, setEstudios] = useState([]);
   const [historialLaboral, setHistorialLaboral] = useState([]);

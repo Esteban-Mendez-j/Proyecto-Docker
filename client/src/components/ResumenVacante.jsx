@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useFetch, useSendForm } from "../hooks/useFetch";
+import { useFetch, useSendForm } from "../hooks/useFetch.jsx";
 import { modal } from "../services/Modal";
 import { API_CLIENT_URL, URL_VIDEO } from "../services/Api";
-import Prediccion from "./Prediccion";
+import Prediccion from "./Prediccion.jsx";
 
 export default function ResumenVacante({job, rol, id}) {
 

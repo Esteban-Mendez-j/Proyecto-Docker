@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 
-import Layout from "../../../layouts/Layout";
+import Layout from "../../../layouts/Layout.jsx";
 import { URL_IMAGEN } from "../../../services/Api";
 import "../../../style/invitado/empresa.css";
 import { Link, useNavigate } from "react-router-dom";
-import { useFetch, useSendForm } from "../../../hooks/useFetch";
-import InputForm from "../../../components/InputForm";
+import { useFetch, useSendForm } from "../../../hooks/useFetch.jsx";
 import { modalResponse } from "../../../services/Modal";
 
 const EditarPerfilEmpresa = () => {

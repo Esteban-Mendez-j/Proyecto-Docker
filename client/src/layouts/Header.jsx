@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { useSendForm } from "../hooks/useFetch";
-import useVisible from "../hooks/useVisible";
+import { useSendForm } from "../hooks/useFetch.jsx";
+import useVisible from "../hooks/useVisible.jsx";
 import { API_CLIENT_URL } from "../services/Api";
-import { RoleContext } from "../services/RoleContext";
+import { RoleContext } from "../services/RoleContext.jsx";
 import "../style/invitado/header.css";
 import { clearLocalStore } from "../services/localStore"
-import BandejaNotificacion from "../components/BandejaNotificacion";
+import BandejaNotificacion from "../components/BandejaNotificacion.jsx";
 
 export default function Header () {
 

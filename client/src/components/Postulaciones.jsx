@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { API_CLIENT_URL } from '../services/Api';
 import { manejarRespuesta } from '../services/ManejarRespuesta';
-import Paginacion from './Paginacion';
+import Paginacion from './Paginacion.jsx';
 
 const Postulaciones = ({ itemsPerPage = 10 }) => {
   const [postulaciones, setPostulaciones] = useState([]);

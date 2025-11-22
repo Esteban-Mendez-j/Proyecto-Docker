@@ -7,10 +7,9 @@ import { manejarRespuesta } from '../services/ManejarRespuesta';
 const ChatBox = ({ chatId }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
   const [chatInfo, setChatInfo] = useState(null);
   const [chatChange, setChatChange] = useState(null);
-  const [userRole, setUserRole] = useState(null);
+  const [ setUserRole] = useState(null);
   const stompClient = useRef(null);
   const messagesEndRef = useRef(null);
   useEffect(() => {
@@ -58,7 +57,7 @@ const ChatBox = ({ chatId }) => {
   useEffect(() => {
     if (!chatInfo) return;
 
-    const { userId , tipoChat} = chatInfo;
+    const { tipoChat} = chatInfo;
 
     const client = new Client({
       brokerURL: `${WS_CLIENT_URL}/chats`,
@@ -68,10 +67,10 @@ const ChatBox = ({ chatId }) => {
         console.log("✅ Conectado a WebSocket");
         if (tipoChat === "Grupo") {
           // CHAT PÚBLICO
-          client.subscribe(`/topic/vacantes/${vacanteId}`, (msg) => {
-            const message = JSON.parse(msg.body);
-            setMessages((prev) => [...prev, message]);
-          });
+          // client.subscribe(`/topic/vacantes/${vacanteId}`, (msg) => {
+          //   const message = JSON.parse(msg.body);
+          //   setMessages((prev) => [...prev, message]);
+          // });
         } else {
           // CHAT PRIVADO
           client.subscribe(`/user/queue/messages`, (msg) => {

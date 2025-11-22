@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import { useFetch } from "../hooks/useFetch";
+import { useFetch } from "../hooks/useFetch.jsx";
 import { modalResponse } from "./Modal";
 import { API_CLIENT_URL } from "./Api";
 

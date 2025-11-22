@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import { deleteLocalStore } from "../services/localStore";
-import { RoleContext, RoleSesion } from "../services/RoleContext";
+import { RoleContext, RoleSesion } from "../services/RoleContext.jsx";
 
-export default function FilterComponent({ filtersLocal, clearAllFilters, handleFilterChange, setFilters, rol,handleEstadoChange }) {
+export default function FilterComponent({ filtersLocal, clearAllFilters, handleFilterChange, rol,handleEstadoChange }) {
   
   const {rol:RoleSesion} = useContext(RoleContext);
 

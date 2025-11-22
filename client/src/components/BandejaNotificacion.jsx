@@ -1,13 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useFetch, useSendForm } from "../hooks/useFetch"
-import stompClient, { connect, sendMessage, subscribe } from "../services/Websocket";
-import { RoleContext } from "../services/RoleContext";
-import useVisible from "../hooks/useVisible"
-import Loading from "../components/Loading"
+import { useFetch, useSendForm } from "../hooks/useFetch.jsx"
+import { connect, sendMessage, subscribe } from "../services/Websocket";
+import { RoleContext } from "../services/RoleContext.jsx";
+import useVisible from "../hooks/useVisible.jsx"
+import Loading from "../components/Loading.jsx"
 import { modalTime, QuestionModal } from "../services/Modal";
-import "../style/invitado/notificacionesCenter.css";
-import { ListSvg } from "./Icons";
+import "../style/invitado/NotificacionesCenter.css";
+import { ListSvg } from "./Icons.jsx";
 
 
 export default function BandejaNotificacion() {

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
-import UsuariosActivos from "../../components/UsuariosActivos";
-import Layout from "../../layouts/Layout";
+import UsuariosActivos from "../../components/UsuariosActivos.jsx";
+import Layout from "../../layouts/Layout.jsx";
 
 export default function AdminUsuarios() {
-  const [activeTab, setActiveTab] = useState("activos");
+  // const [activeTab, setActiveTab] = useState("activos");
   const [modalBanear, setModalBanear] = useState(false);
   const [modalDesbanear, setModalDesbanear] = useState(false);
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState("");
@@ -19,10 +19,10 @@ export default function AdminUsuarios() {
     setModalBanear(false);
   };
 
-  const handleDesbanear = (nombre) => {
-    setUsuarioSeleccionado(nombre);
-    setModalDesbanear(true);
-  };
+  // const handleDesbanear = (nombre) => {
+  //   setUsuarioSeleccionado(nombre);
+  //   setModalDesbanear(true);
+  // };
 
   const handleConfirmarDesbanear = () => {
     Swal.fire({ text: "Usuario desbaneado correctamente", icon: "success" });

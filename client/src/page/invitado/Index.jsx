@@ -1,16 +1,16 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
-import FeatureCard from "../../components/FeatureCard";
-import JobCard from "../../components/JobCard";
-import { useFetch } from "../../hooks/useFetch";
-import Layout from "../../layouts/Layout";
-import { RoleContext } from "../../services/RoleContext";
+import FeatureCard from "../../components/FeatureCard.jsx";
+import JobCard from "../../components/JobCard.jsx";
+import { useFetch } from "../../hooks/useFetch.jsx";
+import Layout from "../../layouts/Layout.jsx";
+import { RoleContext } from "../../services/RoleContext.jsx";
 import "../../style/invitado/index.css";
 export default function Index (){
 
     const { rol } = useContext(RoleContext)
     const url = rol == "EMPRESA"? "/api/vacantes/popular/listar" : "/api/vacantes/Top/listar";
-    const {data, loading, error} = useFetch(url,"GET")
+    const {data } = useFetch(url,"GET")
     const features = [
         {
             id: "1",

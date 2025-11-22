@@ -1,10 +1,9 @@
-import { useSendForm } from "../../hooks/useFetch";
-import useValidation from "../../hooks/useValidation";
-import Layout from "../../layouts/Layout";
-import InputForm from "../../components/InputForm";
+import { useSendForm } from "../../hooks/useFetch.jsx";
+import useValidation from "../../hooks/useValidation.jsx";
+import Layout from "../../layouts/Layout.jsx";
+import InputForm from "../../components/InputForm.jsx";
 import "../../style/invitado/registroEmpresa.css"
-import Loading from "../../components/Loading";
-import useVisible from "../../hooks/useVisible";
+import useVisible from "../../hooks/useVisible.jsx";
 import { modalResponse } from "../../services/Modal";
 import { Link, useNavigate } from "react-router-dom";
 import { sectores } from "../../services/data";

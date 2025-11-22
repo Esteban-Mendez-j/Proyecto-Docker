@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import Loding from "../../components/Loading"
-import ResumenVacante from "../../components/ResumenVacante"
-import { useFetch } from "../../hooks/useFetch"
-import Layout from "../../layouts/Layout"
+import Loding from "../../components/Loading.jsx";
+import ResumenVacante from "../../components/ResumenVacante.jsx";
+import { useFetch } from "../../hooks/useFetch.jsx";
+import Layout from "../../layouts/Layout.jsx"
 import { API_CLIENT_URL, URL_IMAGEN } from "../../services/Api"
 import { modalTime } from "../../services/Modal"
-import { RoleContext } from "../../services/RoleContext"
+import { RoleContext } from "../../services/RoleContext.jsx"
 import { toggleFavoritoRequest } from "../../services/ToggleFavoritosRequest"
 
 export default function InfoVacante() {

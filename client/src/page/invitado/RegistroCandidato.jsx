@@ -1,13 +1,13 @@
 import Layout from "../../layouts/Layout";
 import "../../style/invitado/registroCandidato.css"
-import { useSendForm } from "../../hooks/useFetch"
-import InputFrom from "../../components/InputForm";
-import { useState, useEffect } from "react";
+import { useSendForm } from "../../hooks/useFetch.jsx"
+import InputFrom from "../../components/InputForm.jsx";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { modalResponse } from "../../services/Modal";
-import Loading from "../../components/Loading";
-import useValidation from "../../hooks/useValidation";
-import useVisible from "../../hooks/useVisible";
+import Loading from "../../components/Loading.jsx";
+import useValidation from "../../hooks/useValidation.jsx";
+import useVisible from "../../hooks/useVisible.jsx";
 import { formRulesCandidato, validateForm } from "../../services/validacionForm";
 
 export default function RegistroCandidato() {

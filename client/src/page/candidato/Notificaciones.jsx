@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useFetch } from "../../hooks/useFetch";
-import { useSendForm } from "../../hooks/useFetch";
-import Pagination from "../../components/Paginacion";
-import "../../style/invitado/notificacionesCenter.css";
-import Loading from "../../components/Loading";
-import { ListSvg } from "../../components/Icons";
+import { useFetch } from "../../hooks/useFetch.jsx";
+import { useSendForm } from "../../hooks/useFetch.jsx";
+import Pagination from "../../components/Paginacion.jsx";
+import "../../style/invitado/NotificacionesCenter.css";
+import Loading from "../../components/Loading.jsx";
+import { ListSvg } from "../../components/Icons.jsx";
 import { modalTime, QuestionModal } from "../../services/Modal";
-import Layout from "../../layouts/Layout";
+import Layout from "../../layouts/Layout.jsx";
 import { Link } from "react-router-dom";
-import { RoleContext } from "../../services/RoleContext";
+import { RoleContext } from "../../services/RoleContext.jsx";
 import { connect, sendMessage, subscribe } from "../../services/Websocket";
 
 const Notificaciones = () => {

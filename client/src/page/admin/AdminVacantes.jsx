@@ -1,5 +1,5 @@
 
-import VacantesActivas from "../../components/VacantesActivas";
+import VacantesActivas from "../../components/VacantesActivas.jsx";
 import Layout from "../../layouts/Layout.jsx";
 
 export default function AdminVacantes() {

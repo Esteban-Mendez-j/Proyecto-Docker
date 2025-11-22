@@ -3,7 +3,7 @@ import Swal from 'sweetalert2'; //Esta importacion se debe cambiar para llamarlo
 import { API_CLIENT_URL } from '../services/Api';
 import { manejarRespuesta } from '../services/ManejarRespuesta';
 import '../style/invitado/empleos.css';
-import Paginacion from './Paginacion';
+import Paginacion from './Paginacion.jsx';
 
 
 const UsuariosActivos = () => {
@@ -11,7 +11,6 @@ const UsuariosActivos = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
-  const [fade] = useState(true);
   const [totalElements, setTotalElements] = useState(0);
    const [AdminId,setAdminId] = useState('');
 

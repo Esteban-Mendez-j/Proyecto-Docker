@@ -7,15 +7,15 @@ import "../../style/invitado/candidato.css";
 import { useParams } from "react-router-dom";
 
 function PerfilCandidatoPublic() {
-  const initialData = {
-    nombre: "",
-    apellido: "",
-    correo: "",
-    contrasena: "",
-    telefono: "",
-    identificacion: "",
-    contraseñaVerificada: ""
-  }
+  // const initialData = {
+  //   nombre: "",
+  //   apellido: "",
+  //   correo: "",
+  //   contrasena: "",
+  //   telefono: "",
+  //   identificacion: "",
+  //   contraseñaVerificada: ""
+  // }
   const {id} = useParams();
   const [candidato, setCandidato] = useState(null);
   const [estudios, setEstudios] = useState([]);

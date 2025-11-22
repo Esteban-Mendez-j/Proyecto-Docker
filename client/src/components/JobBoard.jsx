@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from 'react';
 import { manejarRespuesta } from "../services/ManejarRespuesta";
-import FilterComponent from './FilterComponent';
-import FiltroSuperior from './FiltroSuperior';
-import JobList from './JobList';
-import { ListSvg } from './Icons';
+import FilterComponent from './FilterComponent.jsx';
+import FiltroSuperior from './FiltroSuperior.jsx';
+import JobList from './JobList.jsx';
+import { ListSvg } from './Icons.jsx';
 import { readLocalStore, saveLocalStore } from '../services/localStore';
-import { RoleContext } from '../services/RoleContext';
+import { RoleContext } from '../services/RoleContext.jsx';
 
 
 const JobBoard = ({ fetchUrl, rol }) => {

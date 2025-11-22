@@ -1,6 +1,6 @@
-import Header from './Header';
-import Footer from './Footer';
-import ScrollTop from '../components/ScrollTop';
+import Header from './Header.jsx';
+import Footer from './Footer.jsx';
+import ScrollTop from '../components/ScrollTop.jsx';
 
 
 export default function Layout({ children }) {
