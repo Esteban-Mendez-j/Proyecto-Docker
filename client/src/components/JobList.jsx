@@ -1,0 +1,120 @@
+import { modal, modalTime, QuestionModal } from "../services/Modal";
+import { API_CLIENT_URL } from "../services/Api";
+import "../style/invitado/jobcard.css";
+import Paginacion from "./Paginacion";
+import JobCard from "./JobCard";
+import TableJob from "./TableJob";
+import { useContext, useEffect, useState } from "react";
+import { useSendForm } from "../hooks/useFetch";
+import { RoleContext } from "../services/RoleContext";
+
+const JobList = ({
+  jobs,
+  setCurrentPage,
+  currentPage,
+  totalPages,
+  fetchAllJobs,
+  presentacion,
+  loading,
+  verPrediccion,
+  setVerPrediccion
+}) => {
+  const {rol} = useContext(RoleContext);
+  const { data ,send} = useSendForm();
+
+  async function cambiarEstado(id, estado) {
+    let mensaje = estado ? "activar" : "desactivar";
+    const isConfirmed = await QuestionModal(
+      `¿Estás seguro de que deseas ${mensaje} esta vacante?`
+    );
+    if (!isConfirmed) return; // e
+
+    try {
+      const response = await fetch(
+        `${API_CLIENT_URL}/api/vacantes/estado/${id}?estado=${estado}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
+      );
+
+      if (response.ok) {
+        modalTime(`Exito al ${mensaje} la vacante`)
+        fetchAllJobs()
+      } else {
+        modal(`Error al ${mensaje} la vacante`, "error");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+      modal("Hubo un problema al intentar modificar la vacante", "error");
+    }
+  }
+     
+  useEffect(() => {
+    if (rol === "CANDIDATO") {
+      send("/api/candidatos/perfil", "GET");
+    }
+  }, [rol]);
+
+  useEffect(() => {
+    if (!data) return;
+
+    const { experiencia, aptitudes, nivelEducativo } = data.candidato;
+
+    const tieneExperiencia = experiencia && experiencia.trim() !== "";
+    const tieneAptitudes = Array.isArray(aptitudes) && aptitudes.length > 0;
+    const tieneNivel = nivelEducativo && nivelEducativo.trim() !== "";
+
+    if (tieneExperiencia && tieneAptitudes && tieneNivel) {
+      setVerPrediccion(true);
+    } else {
+      setVerPrediccion(false);
+    }
+  }, [data])
+  
+
+  if (!jobs || jobs.length == 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96 text-center p-4">
+        <h2 className="text-2xl font-semibold text-gray-700 mb-2">
+          No se encontraron resultados
+        </h2>
+        <p className="text-gray-500">
+          Intenta cambiar los filtros o revisar tu búsqueda.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className={presentacion == 1 ? "jobs-grid" : "jobs-column"}>
+        {presentacion == 3 ? (
+          <TableJob jobs={jobs} verSeccionEdit={true} verPrediccion={verPrediccion} />
+        ) : (
+          jobs.map((job) => (
+            <JobCard
+              job={job}
+              key={job.nvacantes}
+              cambiarEstado={cambiarEstado}
+              verSeccionEdit={true}
+              presentaion={presentacion}
+              fetchAllJobs={fetchAllJobs}
+              verPrediccion={verPrediccion}
+            />
+          ))
+        )}
+      </div>
+      <Paginacion
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        totalPages={totalPages}
+      />
+    </div>
+  );
+};
+
+export default JobList;

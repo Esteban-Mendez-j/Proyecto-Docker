@@ -22,8 +22,14 @@ import com.miproyecto.proyecto.service.UsuarioService;
 import com.miproyecto.proyecto.service.VacanteService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 
+@Tag(name = "Administrador", description = "Operaciones relacionadas con la gestión de roles, vacantes y usuarios")
 @RestController
 @RequestMapping("/api/admin")  
 public class AdminResource {
@@ -39,61 +45,38 @@ public class AdminResource {
     @Autowired
     private JwtUtils jwtUtils ;
 
-
+    @Operation(
+        summary = "Lista usuarios filtrados",
+        description = "Devuelve un listado de usuarios aplicando filtros opcionales como nombre, rol y estado."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Listado obtenido correctamente"),
+        @ApiResponse(responseCode = "401", description = "No autorizado")
+    })
+    
     @GetMapping("/listar/filtrados")
     public ResponseEntity<Map<String, Object>> listarUsuariosFiltrados(
             HttpSession session,
             @PageableDefault(page = 0, size = 10) Pageable pageable,
-            @RequestParam(name = "nombre", required = false) String nombre,
-            @RequestParam(name = "rolPrinciapl", required = false) String rol,
-            @RequestParam(name = "estado", required = false) Boolean estado) {
+            @Parameter(description = "Nombre del usuario a filtrar") @RequestParam(required = false) String nombre,
+            @Parameter(description = "Nombre del usuario a filtrar") @RequestParam(required = false) String correo,
+            @Parameter(description = "Rol principal a filtrar") @RequestParam(name = "rolPrinciapl", required = false) String rol,
+            @Parameter(description = "Estado activo/inactivo") @RequestParam(required = false) Boolean estado) {
 
         String jwtToken = (String) session.getAttribute("jwtToken");
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
         String rolUsuario = decodedJWT.getClaim("rolPrincipal").asString();
-        
-        Map<String, Object> response = usuarioService.buscarUsuariosConFiltros(idUsuario,rolUsuario, nombre, rol, estado, pageable);
-        // System.out.println("este es el rol de la sesion actual y su id: "+ rolUsuario +" "+ idUsuario) ;
+
+        Map<String, Object> response = usuarioService.buscarUsuariosConFiltros(idUsuario, rolUsuario, nombre, rol,
+                estado, pageable, correo);
         return ResponseEntity.ok(response);
     }
 
-
-
-
-    // Obtener usuarios activos
-    // @GetMapping("/listUser/activos")
-    // public ResponseEntity<Map<String, Object>> getActiveUsers(HttpSession session, Pageable pageable) {
-    //     String jwtToken = (String) session.getAttribute("jwtToken");
-    //     DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
-    //     Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
-        
-    //     List<UsuarioDTO> usuarios = usuarioService.findAllByBannedStatus(true, idUsuario, pageable);
-    //     Map<String, Object> response = new HashMap<>();
-    //     response.put("usuarios", usuarios);
-    //     response.put("userIsActive", true);
-    //     response.put("isSUPER_ADMIN", usuarioService.get(idUsuario).getRoles().contains("SUPER_ADMIN"));
-
-    //     return ResponseEntity.ok(response);
-    // }
-
-    // // Obtener usuarios baneados
-    // @GetMapping("/listUser/baneados")
-    // public ResponseEntity<Map<String, Object>> getBannedUsers(HttpSession session) {
-    //     String jwtToken = (String) session.getAttribute("jwtToken");
-    //     DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
-    //     Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
-
-    //     List<UsuarioDTO> usuarios = usuarioService.findAllByBannedStatus(false, idUsuario);
-    //     Map<String, Object> response = new HashMap<>();
-    //     response.put("usuarios", usuarios);
-    //     response.put("userIsActive", false);
-    //     response.put("isSUPER_ADMIN", usuarioService.get(idUsuario).getRoles().contains("SUPER_ADMIN"));
-
-    //     return ResponseEntity.ok(response);
-    // }
-
-    // Obtener vacantes activas
+    @Operation(
+        summary = "Lista vacantes con filtros",
+        description = "Obtiene las vacantes disponibles aplicando los filtros enviados en el cuerpo de la petición."
+    )
     @PostMapping("/listar/filtrovacantes")
     public ResponseEntity<Map<String, Object>> listarVacantes(
         HttpSession session, @PageableDefault(page = 0, size = 10) Pageable pageable,
@@ -103,38 +86,52 @@ public class AdminResource {
         return ResponseEntity.ok(response);
     }
 
-    // Obtener vacantes desactivadas
+    @Operation(
+        summary = "Lista vacantes desactivadas",
+        description = "Devuelve un listado paginado de todas las vacantes desactivadas."
+    )
     @GetMapping("/listVacantes/desactivadas")
-     public ResponseEntity<Map<String, Object>> getInactiveVacancies(@PageableDefault(page = 0, size = 10) Pageable pageable) {
-         Map<String, Object> response = vacanteService
-             .findAllByEstado(false, pageable, "vacantesDesactivadas");
-         return ResponseEntity.ok(response);
-     }
-
-    // Agregar rol de administrador a un usuario
-    @PostMapping("/agregarRol")
-    public ResponseEntity<Map<String, String>> addAdminRole(@RequestParam("idUsuario") Long idUsuario, @RequestParam("estado") boolean estado) {
-        adminService.modificarRoles(idUsuario, estado);
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Rol de admin agregado exitosamente");
+    public ResponseEntity<Map<String, Object>> getInactiveVacancies(
+            @PageableDefault(page = 0, size = 10) Pageable pageable) {
+        Map<String, Object> response = vacanteService
+                .findAllByEstado(false, pageable, "vacantesDesactivadas");
         return ResponseEntity.ok(response);
     }
 
-    // Eliminar rol de administrador de un usuario
+    @Operation(
+        summary = "Agrega rol de administrador",
+        description = "Asigna o activa el rol de administrador a un usuario existente."
+    )
+    @PostMapping("/agregarRol")
+    public ResponseEntity<Map<String, String>> addAdminRole(@RequestParam Long idUsuario, @RequestParam boolean estado) {
+        adminService.modificarRoles(idUsuario, estado);
+        Map<String, String> response = new HashMap<>();
+        String mensaje = estado? "agregado":"removido";
+        response.put("message", "Rol de admin" + mensaje + "exitosamente");
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+        summary = "Remueve rol de administrador",
+        description = "Elimina o desactiva el rol de administrador de un usuario."
+    )
     @PostMapping("/removerRol")
-    public ResponseEntity<Map<String, String>> removeAdminRole(@RequestParam("idUsuario") Long idUsuario) {
+    public ResponseEntity<Map<String, String>> removeAdminRole(@RequestParam Long idUsuario) {
         adminService.modificarRoles(idUsuario, false);
         Map<String, String> response = new HashMap<>();
         response.put("message", "Rol de admin removido exitosamente");
         return ResponseEntity.ok(response);
     }
 
-    // Cambiar estado de un usuario
+     @Operation(
+        summary = "Cambia el estado de un usuario",
+        description = "Activa o desactiva un usuario y actualiza sus postulaciones asociadas."
+    )
     @PostMapping("/cambiar-estado/usuario")
     public ResponseEntity<Map<String, String>> changeUserStatus(
-            @RequestParam("idUsuario") Long idUsuario,
-            @RequestParam("estado") boolean estado,
-            @RequestParam("comentario") String comentario) {
+            @RequestParam Long idUsuario,
+            @RequestParam boolean estado,
+            @RequestParam String comentario) {
 
         if (estado == usuarioService.get(idUsuario).getIsActive()) {
             Map<String, String> errorResponse = new HashMap<>();
@@ -150,18 +147,19 @@ public class AdminResource {
         return ResponseEntity.ok(response);
     }
 
-    // Cambiar estado de vacante
+    @Operation(
+        summary = "Cambia el estado de una vacante",
+        description = "Habilita o deshabilita una vacante según el estado enviado."
+    )
     @PostMapping("/cambiar-estado/vacantes")
     public ResponseEntity<Map<String, String>> changeVacancyStatus(
-            @RequestParam("nvacante") Long nvacante,
-            @RequestParam("estado") boolean estado,
-            @RequestParam("comentario") String comentario) {
+            @RequestParam Long nvacante,
+            @RequestParam boolean estado,
+            @RequestParam String comentario) {
 
         if (estado == vacanteService.get(0L,nvacante).isActive()) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "La vacante ya está " + estado);
-            System.out.println("Mensaje desde admin resource: "+ estado);
-            System.out.println("Mensaje desde adninresource: "+ vacanteService.get(0L,nvacante).isActive());
             return ResponseEntity.badRequest().body(errorResponse);
         }
 

@@ -3,7 +3,6 @@ package com.miproyecto.proyecto.domain;
 import java.time.LocalDate;
 import java.util.List;
 
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -76,9 +75,20 @@ public class Usuario {
     @OneToMany(mappedBy = "admin")
     private List<Apelacion> apelacionesComoAdmin;
 
+    @OneToMany(mappedBy = "usuarioFavorita")
+    private List<VacanteFavorita> listaVacanteFavoritas;
+
         
     public Usuario() {
     }
+
+    public Usuario(Long id, String correo, String contrasena, List<Roles> roles) {
+        this.idUsuario = id;
+        this.correo = correo;
+        this.contrasena = contrasena;
+        this.roles = roles;
+    }
+
 
     public LocalDate getFechaRegistro() {
         return fechaRegistro;

@@ -17,6 +17,8 @@ public class EstudioDTO {
     @Size(max = 80)
     private String academia;
 
+
+
     private Long idUsuario;
 
     public Long getIdEstudio() {
@@ -42,6 +44,8 @@ public class EstudioDTO {
     public void setAcademia(String academia) {
         this.academia = academia;
     }
+    
+
 
     public Long getIdUsuario() {
         return idUsuario;
@@ -53,7 +57,7 @@ public class EstudioDTO {
 
     @Override
     public String toString() {
-        return "EstudioDTO [idEstudio=" + idEstudio + ", titulo=" + titulo + ", academia=" + academia + ", idUsuario="
+        return "EstudioDTO [idEstudio=" + idEstudio + ", titulo=" + titulo + ", academia=" + academia  +", idUsuario="
                 + idUsuario + "]";
     }
 

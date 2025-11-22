@@ -34,16 +34,18 @@ public class PostuladoService {
     private final CandidatoService candidatoService;
     private final VacanteService vacanteService;
     private final ChatService chatService;
+    private final PrediccionService prediccionService;
 
     public PostuladoService(PostuladoRepository postuladoRepository, VacanteRepository vacanteRepository,
             CandidatoRepository candidatoRepository, CandidatoService candidatoService, VacanteService vacanteService,
-            ChatService chatService) {
+            ChatService chatService, PrediccionService prediccionService) {
         this.postuladoRepository = postuladoRepository;
         this.vacanteRepository = vacanteRepository;
         this.candidatoRepository = candidatoRepository;
         this.candidatoService = candidatoService;
         this.vacanteService = vacanteService;
         this.chatService = chatService;
+        this.prediccionService = prediccionService;
     }
 
     public List<PostuladoDTO> findAll() {
@@ -62,7 +64,6 @@ public class PostuladoService {
 
         return mapResponse(postulados, "postulados");
     }
-
 
     public Map<String, Object> findByIdUsuario(Long idUsuario, String estado, String titulo, String empresa, LocalDate fechaMinima, Pageable pageable) {
         Candidato candidato = candidatoRepository.findById(idUsuario)
@@ -93,11 +94,17 @@ public class PostuladoService {
                 .orElseThrow(NotFoundException::new);
     }
     
-    public Long create(final PostuladoDTO postuladoDTO, CandidatoResumenDTO candidatoResumenDTO, Long nVacante) {
+    public Long create(final PostuladoDTO postuladoDTO, CandidatoResumenDTO candidatoResumenDTO, Long nVacante) throws Exception {
         
         Vacante vacante = vacanteRepository.findById(nVacante).orElseThrow(NotFoundException::new);
         vacante.setTotalpostulaciones(vacante.getTotalpostulaciones()+1);
         vacanteRepository.save(vacante);
+
+        Map<String, Object> resultado = prediccionService.predecirDesdeComparacion(nVacante, candidatoResumenDTO.getId());
+        Object valor = resultado.get("porcentajeMatch");
+        if (valor != null) {
+            postuladoDTO.setPorcentajePrediccion(Double.parseDouble(valor.toString()));
+        }
 
         postuladoDTO.setVacante(vacanteService.findVacanteResumenById(nVacante));
         postuladoDTO.setCandidato(candidatoResumenDTO);
@@ -152,8 +159,8 @@ public class PostuladoService {
         postuladoRepository.actualizarEstadoPostulacionesPorUsuario(idUsuario, estado);
     }
 
-    public void cancelarPostulacion (Long idUsuario, boolean estado, Long nVacante){
-        Postulado postulado = postuladoRepository.findById(idUsuario).orElse(null);
+    public void cancelarPostulacion (Long nPostulacion, boolean estado, Long nVacante){
+        Postulado postulado = postuladoRepository.findById(nPostulacion).orElse(null);
         postulado.setActive(estado);
         postulado.setEstado("Cancelada");
         postuladoRepository.save(postulado);
@@ -165,6 +172,7 @@ public class PostuladoService {
         ChatDTO chat = chatService.findByVacanteIdAndCandidatoId(
                     postulado.getVacante().getNvacantes(), 
                     postulado.getCandidato().getIdUsuario());
+        System.out.println(chat);
         if (chat != null) {
             chatService.cambiarEstadoChat(chat.getId(), false, "El candidato cancelo la postulacion");
         }
@@ -188,6 +196,8 @@ public class PostuladoService {
         postuladoDTO.setEstado(postulado.getEstado());
         postuladoDTO.setActive(postulado.isActive());
         postuladoDTO.setVacanteIsActive(postulado.isVacanteIsActive());
+        postuladoDTO.setPorcentajePrediccion(postulado.getPorcentajePrediccion());      
+
         postuladoDTO.setVacante(
             vacanteService.mapToResumenDTO(postulado.getVacante(), new VacanteResumenDTO())
         );
@@ -207,7 +217,8 @@ public class PostuladoService {
                 .orElseThrow(() -> new NotFoundException("idUsuario not found"));
         postulado.setCandidato(idUsuario);
         postulado.setActive(postuladoDTO.isActive());
-        postulado.setVacanteIsActive(postuladoDTO.isVacanteIsActive());       
+        postulado.setVacanteIsActive(postuladoDTO.isVacanteIsActive()); 
+        postulado.setPorcentajePrediccion(postuladoDTO.getPorcentajePrediccion());      
         return postulado;
     }
 

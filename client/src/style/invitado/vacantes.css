@@ -1,0 +1,138 @@
+/* Estilo mejorado para formulario horizontal */
+.vacante-form-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #FFFFFF;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.vacante-form-title {
+  font-size: 1.8rem;
+  color: #1A202C;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.vacante-form-subtitle {
+  font-size: 1rem;
+  color: #718096;
+  font-weight: 400;
+  margin-bottom: 2rem;
+}
+
+/* Diseño horizontal */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 0;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
+  color: #4A5568;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background-color: #F8FAFC;
+}
+
+/* Área de descripción (ocupa todo el ancho) */
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 0.75rem 1rem;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background-color: #F8FAFC;
+  resize: none;
+}
+
+/* Estilo para los botones como en la imagen */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #EDF2F7;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+}
+
+.btn-cancel {
+  background: transparent;
+  color: #718096;
+  border: 1px solid #E2E8F0;
+}
+
+.btn-cancel:hover {
+  background: #F8FAFC;
+}
+
+.btn-submit {
+  background: #4299E1;
+  color: white;
+  border: none;
+}
+
+.btn-submit:hover {
+  background: #3182CE;
+}
+
+/* Efectos de focus */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #4299E1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+  background-color: #FFFFFF;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .vacante-form-container {
+    padding: 1.5rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+}

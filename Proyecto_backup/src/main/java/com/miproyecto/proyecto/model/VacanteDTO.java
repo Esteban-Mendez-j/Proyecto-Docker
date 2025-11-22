@@ -1,10 +1,10 @@
 package com.miproyecto.proyecto.model;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
 
 public class VacanteDTO {
 
@@ -67,6 +67,68 @@ public class VacanteDTO {
 
     private String estadoPostulacion;
 
+    private int numeroGuardadosFavoritos;
+
+    private Boolean vacanteGuardada = false;
+
+    private int numCompartidos;
+
+    private List <String> aptitudes;
+
+    private String videoLink;
+
+
+    private Integer visitas = 0;
+
+    private Double Prediccion = 0.0;
+
+    public Double getPrediccion() {
+        return Prediccion;
+    }
+
+    public void setPrediccion(Double prediccion) {
+        Prediccion = prediccion;
+    }
+
+    public Integer getVisitas() {
+        return visitas;
+    }
+
+    public void setVisitas(Integer visitas) {
+        this.visitas = visitas;
+    }
+
+    public List<String> getAptitudes() {
+        return aptitudes;
+    }
+
+    public void setAptitudes(List<String> aptitudes) {
+        this.aptitudes = aptitudes;
+    }
+
+    public int getNumCompartidos() {
+        return numCompartidos;
+    }
+
+    public void setNumCompartidos(int numCompartidos) {
+        this.numCompartidos = numCompartidos;
+    }
+
+    public Boolean getVacanteGuardada() {
+        return vacanteGuardada;
+    }
+
+    public void setVacanteGuardada(Boolean vacanteGuardada) {
+        this.vacanteGuardada = vacanteGuardada;
+    }
+
+    public int getNumeroGuardadosFavoritos() {
+        return numeroGuardadosFavoritos;
+    }
+
+    public void setNumeroGuardadosFavoritos(int numeroGuardadosFavoritos) {
+        this.numeroGuardadosFavoritos = numeroGuardadosFavoritos;
+    }
 
     public String getEstadoPostulacion() {
         return estadoPostulacion;
@@ -203,6 +265,15 @@ public class VacanteDTO {
     public void setRequerimientos(String requerimientos) {
         this.requerimientos = requerimientos;
     }
+
+    public String getVideoLink() {
+    return videoLink;
+    }
+
+    public void setVideoLink(String videoLink) {
+        this.videoLink = videoLink;
+    }
+
 
     public boolean isActive() {
         return isActive;

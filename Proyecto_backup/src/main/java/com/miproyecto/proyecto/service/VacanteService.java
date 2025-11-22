@@ -1,53 +1,125 @@
 package com.miproyecto.proyecto.service;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.miproyecto.proyecto.domain.Empresa;
 import com.miproyecto.proyecto.domain.Postulado;
 import com.miproyecto.proyecto.domain.Vacante;
+import com.miproyecto.proyecto.domain.VacanteFavorita;
 import com.miproyecto.proyecto.model.FiltroVacanteDTO;
 import com.miproyecto.proyecto.model.VacanteDTO;
 import com.miproyecto.proyecto.model.VacanteResumenDTO;
-import com.miproyecto.proyecto.repos.EmpresaRepository;
-import com.miproyecto.proyecto.repos.PostuladoRepository;
-import com.miproyecto.proyecto.repos.VacanteRepository;
-import com.miproyecto.proyecto.repos.VacanteSpecifications;
+import com.miproyecto.proyecto.repos.*;
 import com.miproyecto.proyecto.util.NotFoundException;
 import com.miproyecto.proyecto.util.ReferencedWarning;
-
 
 @Service
 @Transactional
 public class VacanteService {
 
+    private final VacanteFavoritaRepository vacanteFavoritaRepository;
     private final VacanteRepository vacanteRepository;
     private final EmpresaRepository empresaRepository;
     private final PostuladoRepository postuladoRepository;
+    private final AptitudesService aptitudesService;
+    private final PrediccionService prediccionService;
+    @Value("${app.upload-dir.video}")
+    private String videoUploadDir;
 
-    public VacanteService(final VacanteRepository vacanteRepository,
-            final EmpresaRepository empresaRepository,
-            final PostuladoRepository postuladoRepository) {
+    public VacanteService(VacanteFavoritaRepository vacanteFavoritaRepository, VacanteRepository vacanteRepository,
+            EmpresaRepository empresaRepository, PostuladoRepository postuladoRepository,
+            AptitudesService aptitudesService, PrediccionService prediccionService) {
+        this.vacanteFavoritaRepository = vacanteFavoritaRepository;
         this.vacanteRepository = vacanteRepository;
         this.empresaRepository = empresaRepository;
         this.postuladoRepository = postuladoRepository;
+        this.aptitudesService = aptitudesService;
+        this.prediccionService = prediccionService;
     }
 
-    // listado de todas las vacantes activas
+    public String guardarVideo(MultipartFile file) throws IOException {
+        String tipo = file.getContentType();
+
+        // Verifica si es video valido 
+        String carpeta;
+        if (tipo != null && tipo.startsWith("video/mp4")) {
+            carpeta = videoUploadDir;
+        } else {
+            throw new IllegalArgumentException("Solo se permiten archivos de video");
+        }
+
+        // Crear carpeta si no existe
+        Path rutaCarpeta = Path.of(carpeta).toAbsolutePath();
+        Files.createDirectories(rutaCarpeta);
+
+        // Crear nombre único para el archivo
+        String nombreArchivo = System.currentTimeMillis() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path rutaArchivo = rutaCarpeta.resolve(nombreArchivo);
+
+        // Guardar el archivo en el servidor
+        try (InputStream is = file.getInputStream()) {
+            Files.copy(is, rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        return nombreArchivo;
+    }
+
+    public void eliminarVideo(String fileName) throws IOException {
+        // Determinar la carpeta dependiendo si es imagen o PDF
+        String carpeta = videoUploadDir;
+        Path ruta = Path.of(carpeta, fileName);
+
+        // Eliminar el archivo si existe
+        if (Files.exists(ruta)) {
+            Files.delete(ruta);
+        } else {
+            throw new IOException("El archivo no existe: " + ruta);
+        }
+    }
+
+    //  Método para incrementar visitas
+    public void incrementarVisitas(final Long nvacantes) {
+        final Vacante vacante = vacanteRepository.findById(nvacantes)
+                .orElseThrow(NotFoundException::new);
+        vacante.incrementarVisitas();
+        vacanteRepository.save(vacante);
+    }
+
+    // filrado autocompletado
+    public List<String> findSugerencias(String query) {
+        // Aquí puedes agregar lógica adicional si quieres
+        return vacanteRepository.findTituloByTitulo(query.toLowerCase());
+    }
+
+    // listado de todas las vacantes activas 
     public Map<String,Object> findAllByEstado(boolean estado, Pageable pageable, String nameList) {
         final Page<Vacante> vacantes = vacanteRepository.findByIsActiveOrderByFechaPublicacionDesc(estado, pageable);
-        final Page<VacanteDTO> vacantesDTO = vacantes.map(vacante -> mapToDTO(0L,vacante, new VacanteDTO()));
+        final Page<VacanteDTO> vacantesDTO = vacantes.map(vacante -> mapToDTO(0L, 0L ,vacante, new VacanteDTO()));
         return mapResponse(vacantesDTO, nameList) ;       
     }
 
@@ -61,7 +133,7 @@ public class VacanteService {
         return response;
     }
 
-    // listado de las vacantes que esten relacionados con el idUsuario
+    // listado de las vacantes que esten relacionados con el idUsuario  
     public Map<String,Object> findByIdUsuario(Long idUsuario, Pageable pageable) {
         // Obtener la empresa usando su id
         Empresa empresa = empresaRepository.findById(idUsuario)
@@ -71,7 +143,7 @@ public class VacanteService {
         Page<Vacante> vacantes = vacanteRepository.findByIdUsuario(empresa, pageable);
         
         // Convertir cada vacante a VacanteDTO y devolver la lista
-        Page<VacanteDTO> vacantesDTO = vacantes.map(vacante -> mapToDTO(0L,vacante, new VacanteDTO()));
+        Page<VacanteDTO> vacantesDTO = vacantes.map(vacante -> mapToDTO(0L, idUsuario ,vacante, new VacanteDTO()));
         return mapResponse(vacantesDTO, "vacantes");
                 
     }
@@ -81,16 +153,100 @@ public class VacanteService {
                 .orElse(null);
 
         return vacanteRepository.findByIdUsuarioAndNvacantes(empresa, nVacante)
-            .map(vacante -> mapToDTO(0L,vacante, new VacanteDTO()))
+            .map(vacante -> mapToDTO(0L,idUsuario,vacante, new VacanteDTO()))
             .orElse(null);
     }
-    
-    public Map<String, Object> buscarVacantesConFiltros( Long idLogin, FiltroVacanteDTO filtro, Pageable pageable) {
-        Specification<Vacante> specification = VacanteSpecifications.conFiltros(filtro);
-        Page<VacanteDTO> page = vacanteRepository.findAll(specification, pageable).map(vacante -> mapToDTO(idLogin,vacante, new VacanteDTO()));
+
+    public Map<String, Object> buscarVacantesConFiltros( Long idPsotulacion, FiltroVacanteDTO filtro, Pageable pageable) {
         
+        Page<VacanteDTO> page = null;
+
+        if (Boolean.TRUE.equals(filtro.getIsFavorita())) {
+            Specification<VacanteFavorita> specFav = VacanteSpecifications.favoritaConFiltros(idPsotulacion, filtro);
+            page = vacanteFavoritaRepository.findAll(specFav, pageable)
+                    .map(vf -> mapToDTO(idPsotulacion, idPsotulacion, vf.getVacanteFavorita(), new VacanteDTO()));
+        }else{
+            Specification<Vacante> specification = VacanteSpecifications.conFiltros(idPsotulacion, filtro);
+            page = vacanteRepository.findAll(specification, pageable).map(vacante -> mapToDTO(idPsotulacion,idPsotulacion,vacante, new VacanteDTO()));
+        }
         return mapResponse(page, "vacantes");         
     }
+
+    //Obtiene 200 vacantes, calcula la afinidad con el usuario autenticado y ordena por la prediccion 
+    public Map<String, Object> buscarVacantesConFiltrosAndOrdenByPrediccion(
+            Long idPsotulacion, FiltroVacanteDTO filtro, Pageable pageableFront) {
+
+        // 1. Definir el número de bloque del backend (cada bloque = 200 vacantes)
+        int pageNumber = pageableFront.getPageNumber() / 10;
+        Pageable pageableBackend = PageRequest.of(pageNumber, 200);
+
+        // 2. Consultar vacantes del bloque
+        Page<VacanteDTO> page;
+
+        if (Boolean.TRUE.equals(filtro.getIsFavorita())) {
+            Specification<VacanteFavorita> specFav = VacanteSpecifications.favoritaConFiltros(idPsotulacion, filtro);
+            page = vacanteFavoritaRepository.findAll(specFav, pageableBackend)
+                    .map(vf -> mapToDTO(idPsotulacion, idPsotulacion, vf.getVacanteFavorita(), new VacanteDTO()));
+        } else {
+            Specification<Vacante> specification = VacanteSpecifications.conFiltros(idPsotulacion, filtro);
+            page = vacanteRepository.findAll(specification, pageableBackend)
+                    .map(vacante -> mapToDTO(idPsotulacion, idPsotulacion, vacante, new VacanteDTO()));
+        }
+
+        List<VacanteDTO> vacantes = new ArrayList<>(page.getContent());
+        long totalResultados = page.getTotalElements();
+
+        // 3. Calcular predicción por vacante
+        vacantes.forEach(v -> {
+            try {
+                Map<String, Object> resultados = prediccionService.predecirDesdeComparacion(v.getNvacantes(),
+                        idPsotulacion);
+
+                Object valor = resultados.get("porcentajeMatch");
+                if (valor != null) {
+                    v.setPrediccion(Double.parseDouble(valor.toString()));
+                }
+            } catch (Exception e) {
+                System.out.println("Error calculando predicción para vacante " + v.getNvacantes());
+            }
+        });
+
+        // 4. Ordenar por predicción
+        vacantes.sort(Comparator.comparing(VacanteDTO::getPrediccion).reversed());
+
+        // ⚠️ 5. Si el total es MENOR a 200, paginar normalmente
+        if (totalResultados < 200) {
+            int start = (int) pageableFront.getOffset();
+            int end = Math.min(start + pageableFront.getPageSize(), vacantes.size());
+
+            if (start >= end) {
+                return mapResponse(
+                        new PageImpl<>(Collections.emptyList(), pageableFront, totalResultados),
+                        "vacantes");
+            }
+
+            List<VacanteDTO> manualPage = vacantes.subList(start, end);
+            Page<VacanteDTO> finalPage = new PageImpl<>(manualPage, pageableFront, totalResultados);
+
+            return mapResponse(finalPage, "vacantes");
+        }
+
+        // 6. Paginación normal para bloques de 200 (más de 200 resultados totales)
+        int pageInsideBlock = pageableFront.getPageNumber() % 10;
+        int start = pageInsideBlock * pageableFront.getPageSize();
+        int end = Math.min(start + pageableFront.getPageSize(), vacantes.size());
+
+        if (start >= end) {
+            return mapResponse(
+                    new PageImpl<>(Collections.emptyList(), pageableFront, totalResultados),
+                    "vacantes");
+        }
+
+        List<VacanteDTO> pageContent = vacantes.subList(start, end);
+        Page<VacanteDTO> finalPage = new PageImpl<>(pageContent, pageableFront, totalResultados);
+        return mapResponse(finalPage, "vacantes");
+    }
+
 
     public List<VacanteDTO> TopVacantesPorPostulados(Long idEmpresa){
         
@@ -98,7 +254,7 @@ public class VacanteService {
                 .orElse(null);
 
         return vacanteRepository.findTop6ByIdUsuarioOrderByTotalpostulacionesDesc(empresa).stream()
-            .map(v -> mapToDTO(0L, v, new VacanteDTO()))
+            .map(v -> mapToDTO(0L,idEmpresa, v, new VacanteDTO()))
             .collect(Collectors.toList());  
         
     }
@@ -113,13 +269,13 @@ public class VacanteService {
         // Convertir a DTO
         return topVacantes.stream()
             .filter(vacante -> vacante != null)
-            .map(vacante -> mapToDTO(idLogin ,vacante, new VacanteDTO()))
+            .map(vacante -> mapToDTO(idLogin, idLogin ,vacante, new VacanteDTO()))
             .collect(Collectors.toList());
     }
 
     public VacanteDTO get(Long idLogin, final Long nvacantes) {
         return vacanteRepository.findById(nvacantes)
-                .map(vacante -> mapToDTO(idLogin,vacante, new VacanteDTO()))
+                .map(vacante -> mapToDTO(idLogin,idLogin, vacante, new VacanteDTO()))
                 .orElseThrow(NotFoundException::new);
     }
 
@@ -132,9 +288,9 @@ public class VacanteService {
     public void create(final VacanteDTO vacanteDTO) {
         final Vacante vacante = new Vacante();
         vacanteDTO.setFechaPublicacion(LocalDate.now());
+        vacanteDTO.setActive(true);
+        vacanteDTO.setActivaPorEmpresa(true);
         mapToEntity(vacanteDTO, vacante);
-        vacante.setIsActive(true);
-        vacante.setActivaPorEmpresa(true);
         vacanteRepository.save(vacante);
     }
 
@@ -149,6 +305,13 @@ public class VacanteService {
         vacanteRepository.save(vacante);
     }
 
+    public void updateNumCompartidos (Long nVacantes){
+        final Vacante vacante = vacanteRepository.findById(nVacantes)
+                .orElseThrow(NotFoundException::new);
+        vacante.setIncrementNumCompartidos(1);
+        vacanteRepository.save(vacante);
+    }
+
     public void cambiarEstado(final Long nvacantes, boolean estado) {
         final Vacante vacante = vacanteRepository.findById(nvacantes)
                 .orElseThrow(NotFoundException::new);
@@ -156,7 +319,7 @@ public class VacanteService {
         vacanteRepository.save(vacante);
     }
     
-    public VacanteDTO mapToDTO(Long idPostulaciones, final Vacante vacante, final VacanteDTO vacanteDTO) {
+    public VacanteDTO mapToDTO(Long idPostulaciones, Long idUsuarioAut, final Vacante vacante, final VacanteDTO vacanteDTO) {
         vacanteDTO.setNvacantes(vacante.getNvacantes());
         vacanteDTO.setCargo(vacante.getCargo());
         vacanteDTO.setFechaPublicacion(vacante.getFechaPublicacion());
@@ -169,14 +332,23 @@ public class VacanteService {
         vacanteDTO.setTipo(vacante.getTipo());
         vacanteDTO.setDescripcion(vacante.getDescripcion());
         vacanteDTO.setRequerimientos(vacante.getRequerimientos());
-        vacanteDTO.setActive(vacante.getIsActive());
+        vacanteDTO.setActive(Boolean.TRUE.equals(vacante.getIsActive()));
         vacanteDTO.setComentarioAdmin(vacante.getComentarioAdmin());
         vacanteDTO.setIdUsuario(vacante.getIdUsuario() == null ? null : vacante.getIdUsuario().getIdUsuario());
         vacanteDTO.setNameEmpresa(vacante.getIdUsuario() != null ? vacante.getIdUsuario().getNombre() : "Empresa Desconocida");
         vacanteDTO.setImagenEmpresa(vacante.getIdUsuario() != null ? vacante.getIdUsuario().getImagen() : "null");
-        vacanteDTO.setnPostulados(vacante.getLitarpostulados().size());
         vacanteDTO.setTotalpostulaciones(vacante.getTotalpostulaciones());
         vacanteDTO.setActivaPorEmpresa(vacante.isActivaPorEmpresa());
+        vacanteDTO.setNumCompartidos(vacante.getNumCompartidos());
+        vacanteDTO.setnPostulados(vacante.getLitarpostulados() != null? vacante.getLitarpostulados().size(): 0);
+        vacanteDTO.setVisitas(vacante.getVisitas());
+        vacanteDTO.setVideoLink(vacante.getVideoLink());
+
+        
+        vacanteDTO.setAptitudes(
+                vacante.getAptitudes().stream()
+                        .map(aptitud -> aptitud.getNombreAptitud())
+                        .collect(Collectors.toList()));
         vacanteDTO.setCandidatoPostulado(
             vacante.getLitarpostulados()
                 .stream()
@@ -186,6 +358,17 @@ public class VacanteService {
             .filter(p -> p.getCandidato().getIdUsuario().equals(idPostulaciones))
             .findFirst()
             .ifPresent(p -> vacanteDTO.setEstadoPostulacion(p.getEstado())); // o p.getEstado().name()
+        vacanteDTO.setNumeroGuardadosFavoritos(vacante.getListaVacnatesFavoritas().size());
+        //TODO lo que hcae es que verifica si esta en la lista de favooritos pero no verifica si la lista es del usuario autenticado
+        vacante.getListaVacnatesFavoritas()
+        .forEach(favoritaVacante -> { 
+
+            Long idUsuarioFav = favoritaVacante.getUsuarioFavorita().getIdUsuario();
+            Long nVacanteFav = favoritaVacante.getVacanteFavorita().getNvacantes();
+            if (nVacanteFav.equals(vacante.getNvacantes()) && idUsuarioFav.equals(idUsuarioAut)){
+                vacanteDTO.setVacanteGuardada(true);
+            } 
+        }); 
         return vacanteDTO;
     }
 
@@ -196,6 +379,8 @@ public class VacanteService {
         vacanteResumenDTO.setTipo(vacante.getTipo());
         vacanteResumenDTO.setActivaPorEmpresa(vacante.isActivaPorEmpresa());
         vacanteResumenDTO.setIsActive(vacante.getIsActive());
+        vacanteResumenDTO.setNameEmpresa(vacante.getIdUsuario().getNombre());
+        vacanteResumenDTO.setModalidad(vacante.getModalidad());
         return vacanteResumenDTO;
     }
 
@@ -214,9 +399,16 @@ public class VacanteService {
         vacante.setIsActive(vacanteDTO.isActive());
         vacante.setActivaPorEmpresa(vacanteDTO.isActivaPorEmpresa());
         vacante.setComentarioAdmin(vacanteDTO.getComentarioAdmin());
+        vacante.setNumCompartidos(vacanteDTO.getNumCompartidos());
+        vacante.setVideoLink(vacanteDTO.getVideoLink());
+
+        // 🔥 NUEVO: Mapear el campo de visitas
+        vacante.setVisitas(vacanteDTO.getVisitas());
+        
         final Empresa idUsuario = vacanteDTO.getIdUsuario() == null ? null : empresaRepository.findById(vacanteDTO.getIdUsuario())
                 .orElseThrow(() -> new NotFoundException("idUsuario not found"));
         vacante.setIdUsuario(idUsuario);
+        vacante.setAptitudes(aptitudesService.mapToListEntity(vacanteDTO.getAptitudes()));
         return vacante;
     }
 
@@ -231,6 +423,7 @@ public class VacanteService {
             return referencedWarning;
         }
         return null;
-    }
 
+        
+    }
 }

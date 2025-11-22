@@ -1,0 +1,35 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: 
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+
+app:
+  upload-dir:
+    img: uploads/img
+    pdf: uploads/pdf
+    video: uploads/video
+  url:
+    frontEnd: http://localhost:5173
+
+security:
+  jwt:
+    key:
+      private: "ClaveTest"
+    user:
+      generator: SEARCHJOBS-BACKEND-TEST
+    expiration: 7000000
+
+  user:
+    name: test
+    password: test
+
+    

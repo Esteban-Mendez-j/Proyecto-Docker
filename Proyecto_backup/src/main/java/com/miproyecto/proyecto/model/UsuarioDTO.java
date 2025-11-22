@@ -1,6 +1,7 @@
 package com.miproyecto.proyecto.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -10,8 +11,7 @@ public class UsuarioDTO {
     
     Long idUsuario;
 
-
-    private List<String> roles;
+    private List<String> roles = new ArrayList<>();
 
     @NotNull
     @Size(max = 50)

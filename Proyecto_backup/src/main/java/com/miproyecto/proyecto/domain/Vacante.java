@@ -1,8 +1,12 @@
 package com.miproyecto.proyecto.domain;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,9 +14,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-
 
 @Entity
 public class Vacante {
@@ -43,7 +48,6 @@ public class Vacante {
     @Column(nullable = false, length = 50)
     private String departamento;
 
-
     @Column(nullable = false, length = 100)
     private String titulo;
 
@@ -55,6 +59,9 @@ public class Vacante {
 
     @Column(length = 400)
     private String requerimientos;
+
+    @Column(name = "video_link")
+    private String videoLink;
 
     @Column
     private int totalpostulaciones;
@@ -68,14 +75,73 @@ public class Vacante {
     @Column
     private String comentarioAdmin;
 
+    @Column
+    private int numCompartidos;
+
+    // 🔥 NUEVO CAMPO: Contador de visitas
+    @Column(nullable = false)
+    private Integer visitas = 0;
 
     @OneToMany(mappedBy = "vacante")
     private Set<Postulado> litarpostulados;
 
+    @OneToMany(mappedBy = "vacanteFavorita")
+    private Set<VacanteFavorita> listaVacnatesFavoritas;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario_id")
     private Empresa idUsuario;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinTable(name = "vacante_aptitudes", joinColumns = @JoinColumn(name = "nvacantes"), inverseJoinColumns = @JoinColumn(name = "Id_aptitud"))
+    private List<Aptitudes> aptitudes;
+
+
+    public Vacante() {
+        this.litarpostulados = new HashSet<>();
+        this.listaVacnatesFavoritas = new HashSet<>();
+        this.aptitudes = new ArrayList<>();
+    }
+
+    public Integer getVisitas() {
+        return visitas;
+    }
+
+    public void setVisitas(Integer visitas) {
+        this.visitas = visitas;
+    }
+
+    public void incrementarVisitas() {
+        this.visitas++;
+    }
+    
+    public List<Aptitudes> getAptitudes() {
+        return aptitudes;
+    }
+
+    public void setAptitudes(List<Aptitudes> aptitudes) {
+        this.aptitudes = aptitudes;
+    }
+
+    public int getNumCompartidos() {
+        return numCompartidos;
+    }
+
+    public void setNumCompartidos(int numCompartidos) {
+        this.numCompartidos = numCompartidos;
+    }
+
+    public void setIncrementNumCompartidos(int increment) {
+        this.numCompartidos += increment;
+    }
+    
+    public Set<VacanteFavorita> getListaVacnatesFavoritas() {
+        return listaVacnatesFavoritas;
+    }
+
+    public void setListaVacnatesFavoritas(Set<VacanteFavorita> listaVacnatesFavoritas) {
+        this.listaVacnatesFavoritas = listaVacnatesFavoritas;
+    }
 
     public Long getNvacantes() {
         return nvacantes;
@@ -181,6 +247,15 @@ public class Vacante {
         this.requerimientos = requerimientos;
     }
 
+    public String getVideoLink() {
+    return videoLink;
+    }
+
+    public void setVideoLink(String videoLink) {
+        this.videoLink = videoLink;
+    }
+
+
     public Set<Postulado> getLitarpostulados() {
         return litarpostulados;
     }
@@ -205,7 +280,6 @@ public class Vacante {
         this.totalpostulaciones = totalpostulaciones;
     }
 
-
     public Boolean getIsActive() {
         return isActive;
     }
@@ -221,5 +295,4 @@ public class Vacante {
     public void setComentarioAdmin(String comentarioAdmin) {
         this.comentarioAdmin = comentarioAdmin;
     }
-
 }

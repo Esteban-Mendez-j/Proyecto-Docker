@@ -1,13 +1,5 @@
 package com.miproyecto.proyecto.service;
 
-import com.miproyecto.proyecto.domain.Candidato;
-import com.miproyecto.proyecto.domain.Roles;
-import com.miproyecto.proyecto.model.CandidatoDTO;
-import com.miproyecto.proyecto.model.CandidatoResumenDTO;
-import com.miproyecto.proyecto.repos.CandidatoRepository;
-import com.miproyecto.proyecto.repos.RolesRepository;
-import com.miproyecto.proyecto.util.NotFoundException;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,21 +9,33 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.miproyecto.proyecto.domain.Aptitudes;
+import com.miproyecto.proyecto.domain.Candidato;
+import com.miproyecto.proyecto.domain.Roles;
+import com.miproyecto.proyecto.model.CandidatoDTO;
+import com.miproyecto.proyecto.model.CandidatoResumenDTO;
+import com.miproyecto.proyecto.repos.CandidatoRepository;
+import com.miproyecto.proyecto.repos.RolesRepository;
+import com.miproyecto.proyecto.util.NotFoundException;
+
 
 @Service
 @Transactional
 public class CandidatoService{
 
+    private final PrediccionService prediccionService;
     private final CandidatoRepository candidatoRepository;
     private final PasswordEncoder passwordEncoder;
     private final RolesRepository rolesRepository;
+    private final AptitudesService aptitudesService;
 
-
-    public CandidatoService(CandidatoRepository candidatoRepository, PasswordEncoder passwordEncoder,
-            RolesRepository rolesRepository) {
+    public CandidatoService(PrediccionService prediccionService, CandidatoRepository candidatoRepository,
+            PasswordEncoder passwordEncoder, RolesRepository rolesRepository, AptitudesService aptitudesService) {
+        this.prediccionService = prediccionService;
         this.candidatoRepository = candidatoRepository;
         this.passwordEncoder = passwordEncoder;
         this.rolesRepository = rolesRepository;
+        this.aptitudesService = aptitudesService;
     }
 
     // busca un candidato por su id
@@ -69,13 +73,15 @@ public class CandidatoService{
         candidatoRepository.save(candidato);
     }
 
-    
     // busca y actualiza un objeto candidato en la base de datos 
-    public void update(final Long idUsuario, final CandidatoDTO candidatoDTO) {
+    public void update(final Long idUsuario, final CandidatoDTO candidatoDTO) throws Exception {
         final Candidato candidato = candidatoRepository.findById(idUsuario)
                 .orElseThrow(NotFoundException::new);
         mapToEntity(candidatoDTO, candidato, false);
+        
         candidatoRepository.save(candidato);
+
+        prediccionService.ActualizarAfinidad(idUsuario);
     }
 
     public void delete(final Long idUsuario) {
@@ -99,7 +105,14 @@ public class CandidatoService{
         candidatoDTO.setComentarioAdmin(candidato.getComentarioAdmin());
         candidatoDTO.setFechaInicioSesion(candidato.getFechaInicioSesion());
         candidatoDTO.setFechaRegistro(candidato.getFechaRegistro());
+        List<Aptitudes> aptitudes = candidato.getAptitudes() != null ? candidato.getAptitudes() : new ArrayList<>();
+            candidatoDTO.setAptitudes(
+                aptitudes.stream().map(Aptitudes::getNombreAptitud).collect(Collectors.toList())
+            );
+        candidatoDTO.setVideoLink(candidato.getVideoLink());
 
+        candidatoDTO.setNivelEducativo(candidato.getNivelEducativo());
+                        
         candidatoDTO.setRoles(
             candidato.getRoles().stream()
                     .map(roles -> roles.getRol())
@@ -113,6 +126,7 @@ public class CandidatoService{
         candidatoResumenDTO.setNombre(candidato.getNombre());
         candidatoResumenDTO.setExperiencia(candidato.getExperiencia());
         candidatoResumenDTO.setCurriculo(candidato.getCurriculo());
+        candidatoResumenDTO.setCorreo(candidato.getCorreo());
         return candidatoResumenDTO;
     }
     
@@ -134,8 +148,12 @@ public class CandidatoService{
         candidato.setIdentificacion(candidatoDTO.getIdentificacion());
         candidato.setIsActive(candidatoDTO.getIsActive());
         candidato.setComentarioAdmin(candidatoDTO.getComentarioAdmin());
-        candidatoDTO.setFechaInicioSesion(candidato.getFechaInicioSesion());
-        candidatoDTO.setFechaRegistro(candidato.getFechaRegistro());
+        candidato.setFechaInicioSesion(candidatoDTO.getFechaInicioSesion());
+        candidato.setFechaRegistro(candidatoDTO.getFechaRegistro());
+        List<String> aptitudes = candidatoDTO.getAptitudes() != null ? candidatoDTO.getAptitudes() : new ArrayList<>();
+        candidato.setAptitudes(aptitudesService.mapToListEntity(aptitudes));
+        candidato.setNivelEducativo(candidatoDTO.getNivelEducativo());
+        candidato.setVideoLink(candidatoDTO.getVideoLink());
         return candidato;
     }
 

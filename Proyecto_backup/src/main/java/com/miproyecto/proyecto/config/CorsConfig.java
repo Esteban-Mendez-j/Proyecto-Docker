@@ -1,5 +1,6 @@
 package com.miproyecto.proyecto.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -11,11 +12,14 @@ import java.util.List;
 @Configuration
 public class CorsConfig {
 
+    @Value("${app.url.frontEnd}")
+    private String urlFront; 
+
     @Bean(name = "customCorsConfig")
-    public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of("http://localhost:4321")); 
+        configuration.setAllowedOrigins(List.of(urlFront)); 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE","PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true); 

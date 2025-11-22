@@ -42,26 +42,48 @@ public class ChatService {
 
     public ChatDTO crearChat(String candidatoId, String vacanteId, String empresaId) {
     
-    Chat chat = chatRepository.findByVacanteIdAndCandidatoId(vacanteId, candidatoId)
-                .orElse(null);
+        Chat chat = chatRepository.findByVacanteIdAndCandidatoId(vacanteId, candidatoId)
+                    .orElse(null);
 
-    if (chat == null) {
-        chat = new Chat(); 
-        chat.setEmpresaId(empresaId);  
-        chat.setCandidatoId(candidatoId);
-        chat.setVacanteId(vacanteId);
-        chat.setHoraUltimoMensaje(LocalDateTime.now());
-        chat.setIsActive(true);
-        chat.setNombreCandidato(usuarioService.get(Long.parseLong(candidatoId)).getNombre());
-        chat.setNombreEmpresa(usuarioService.get(Long.parseLong(empresaId)).getNombre());
-        chat.setTituloVacante(vacanteService.get(0L,Long.parseLong(vacanteId)).getTitulo());
-        chat = chatRepository.save(chat);     
+        if (chat == null) {
+            chat = new Chat(); 
+            chat.setEmpresaId(empresaId);  
+            chat.setCandidatoId(candidatoId);
+            chat.setVacanteId(vacanteId);
+            chat.setTipoChat("Privado");
+            chat.setHoraUltimoMensaje(LocalDateTime.now());
+            chat.setIsActive(true);
+            chat.setNombreCandidato(usuarioService.get(Long.parseLong(candidatoId)).getNombre());
+            chat.setNombreEmpresa(usuarioService.get(Long.parseLong(empresaId)).getNombre());
+            chat.setTituloVacante(vacanteService.get(0L,Long.parseLong(vacanteId)).getTitulo());
+            chat = chatRepository.save(chat);     
+        }
+        if(!chat.getIsActive()){chat.setIsActive(true);}
+
+        return mapToDTO(chat, new ChatDTO());
     }
-    if(!chat.getIsActive()){chat.setIsActive(true);}
 
-    return mapToDTO(chat, new ChatDTO());
-}
 
+    public ChatDTO crearChatPorVacante(String vacanteId, String empresaId) {
+    
+        Chat chat = chatRepository.findByVacanteIdAndEmpresaId(vacanteId, empresaId)
+                    .orElse(null);
+
+        if (chat == null) {
+            chat = new Chat(); 
+            chat.setEmpresaId(empresaId);  
+            chat.setVacanteId(vacanteId);
+            chat.setHoraUltimoMensaje(LocalDateTime.now());
+            chat.setIsActive(true);
+            chat.setTipoChat("Grupo");
+            chat.setNombreEmpresa(usuarioService.get(Long.parseLong(empresaId)).getNombre());
+            chat.setTituloVacante(vacanteService.get(0L,Long.parseLong(vacanteId)).getTitulo());
+            chat = chatRepository.save(chat);     
+        }
+        if(!chat.getIsActive()){chat.setIsActive(true);}
+
+        return mapToDTO(chat, new ChatDTO());
+    }
 
     public ChatDTO findById(String chatId) {
         return chatRepository.findById(chatId)
@@ -104,7 +126,7 @@ public class ChatService {
     }
 
     public ChatDTO findByVacanteIdAndCandidatoId(Long vacanteId, Long candidatoId) {
-        Chat chat = chatRepository.findByVacanteIdAndCandidatoId(vacanteId, candidatoId)
+        Chat chat = chatRepository.findByVacanteIdAndCandidatoId( vacanteId.toString(), candidatoId.toString())
             .orElse(null);
         if (chat == null) {
             return null;  
@@ -176,7 +198,7 @@ public class ChatService {
         }
         String empresaId = usuarioService.get(Long.parseLong(chat.getEmpresaId())).getCorreo();
         String candidatoId = usuarioService.get(Long.parseLong(chat.getCandidatoId())).getCorreo();
-            
+        System.out.println("mensaje: "+ mensajeContent);
         messagingTemplate.convertAndSendToUser(empresaId, "/queue/chat-change", mensajeContent);
         messagingTemplate.convertAndSendToUser(candidatoId, "/queue/chat-change", mensajeContent);
     }
@@ -193,6 +215,7 @@ public class ChatService {
         chatDTO.setNombreCandidato(chat.getNombreCandidato());
         chatDTO.setNombreEmpresa(chat.getNombreEmpresa());
         chatDTO.setTituloVacante(chat.getTituloVacante());
+        chatDTO.setTipoChat(chat.getTipoChat());
         return chatDTO;
     }
 
@@ -206,6 +229,7 @@ public class ChatService {
         chat.setNombreCandidato(chatDTO.getNombreCandidato());
         chat.setNombreEmpresa(chatDTO.getNombreEmpresa());
         chat.setTituloVacante(chatDTO.getTituloVacante());
+        chat.setTipoChat(chatDTO.getTipoChat());
         return chat;
     }
 
@@ -218,7 +242,7 @@ public class ChatService {
         return response;
     }
 
-    public Mensaje mensajeMapToEntity(MensajeDTO mensajeDTO, Mensaje mensaje) { 
+    public Mensaje  mensajeMapToEntity(MensajeDTO mensajeDTO, Mensaje mensaje) { 
         mensaje.setChatId(mensajeDTO.getChatId());
         mensaje.setSenderId(mensajeDTO.getSenderId());
         mensaje.setReceiverId(mensajeDTO.getReceiverId());

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.model.CandidatoDTO;
 import com.miproyecto.proyecto.model.PostuladoDTO;
@@ -32,10 +33,15 @@ import com.miproyecto.proyecto.service.PostuladoService;
 import com.miproyecto.proyecto.service.UsuarioService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.groups.Default;
 
+@Tag(name = "Candidatos", description = "Operaciones relacionadas con la gestión de candidatos")
 
 @RestController
 @RequestMapping(value = "/api/candidatos", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -58,11 +64,20 @@ public class CandidatoResource {
         this.historialLaboralService = historialLaboralService;
         this.usuarioService = usuarioService;
     }
-    
+    @Operation(
+        summary = "Mostrar perfil de candidato",
+        description = "Obtiene la información completa del perfil de un candidato, incluyendo estudios e historial laboral. Si no se especifica un ID de usuario, se obtiene del token JWT en sesión."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Perfil encontrado"),
+        @ApiResponse(responseCode = "401", description = "Token de sesión no encontrado"),
+        @ApiResponse(responseCode = "404", description = "Candidato o postulación no encontrada"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @GetMapping("/perfil")
     public ResponseEntity<Map<String, Object>> mostrarPerfil(
-        @RequestParam(name = "idUsuario", required = false) Long idUsuario,
-        @RequestParam(name = "nPostulacion", required = false) Long nPostulacion,
+        @RequestParam(required = false) Long idUsuario,
+        @RequestParam(required = false) Long nPostulacion,
         Model model, HttpSession session) {
 
         Map<String, Object> response = new HashMap<>();
@@ -105,12 +120,21 @@ public class CandidatoResource {
             response.put("candidato", candidatoDTO);
             return ResponseEntity.ok(response);
 
-        } catch (Exception e) {
-            response.put("error", "Error interno: " + e.getMessage());
+        }catch (TokenExpiredException expired){
+            response.put("message", "Sesion expirada, inicia nuevamente");
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        } 
+        catch (Exception e) {
+            response.put("message", "Error interno: " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @Operation(
+        summary = "Crear nuevo candidato",
+        description = "Crea un nuevo registro de candidato a partir de los datos enviados."
+    )
+    @ApiResponse(responseCode = "201", description = "Candidato creado correctamente")
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> createCandidato(@RequestBody  @Valid  CandidatoDTO candidatoDTO) {
         Map<String, Object> response = new HashMap<>();
@@ -120,12 +144,20 @@ public class CandidatoResource {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(
+        summary = "Obtener candidato por ID",
+        description = "Devuelve la información de un candidato específico."
+    )
     @GetMapping("/edit/{idUsuario}")
     public ResponseEntity<CandidatoDTO> getCandidato(
-            @PathVariable(name = "idCandidato") final Long idCandidato) {
-        return ResponseEntity.ok(candidatoService.get(idCandidato));
+            @PathVariable final Long idUsuario) {
+        return ResponseEntity.ok(candidatoService.get(idUsuario));
     }
 
+    @Operation(
+        summary = "Editar candidato (con archivos)",
+        description = "Permite actualizar los datos de un candidato, incluyendo imagen de perfil y currículum en PDF."
+    )
     @PutMapping(value = "/edit/{idUsuario}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> editCandidato(
             @RequestPart("candidato") @Validated({ValidationGroups.OnUpdate.class, Default.class}) CandidatoDTO candidatoDTO,
@@ -171,20 +203,47 @@ public class CandidatoResource {
         }
     }
 
-
+    @Operation(
+        summary = "Actualizar candidato",
+        description = "Actualiza los datos de un candidato usando su ID."
+    )
     @PutMapping("/edit/{idUsuario}")
     public ResponseEntity<Long> updateCandidato(
-            @PathVariable(name = "idCandidato") final Long idCandidato,
-            @RequestBody @Valid final CandidatoDTO candidatoDTO) {
+            @PathVariable(name = "idUsuario") final Long idCandidato,
+            @RequestBody @Valid final CandidatoDTO candidatoDTO) throws Exception {
         candidatoService.update(idCandidato, candidatoDTO);
         return ResponseEntity.ok(idCandidato);
     }
 
+    @Operation(
+        summary = "Eliminar candidato",
+        description = "Elimina un candidato del sistema usando su ID."
+    )
     @DeleteMapping("/delete/{idCandidato}")
     public ResponseEntity<Void> deleteCandidato(
-            @PathVariable(name = "idCandidato") final Long idCandidato) {
+            @PathVariable final Long idCandidato) {
         candidatoService.delete(idCandidato);
         return ResponseEntity.noContent().build();
     }
+    @PutMapping("/perfil")
+    public ResponseEntity<Void> updatePerfil(@RequestBody CandidatoDTO dto) throws Exception {
+    candidatoService.update(dto.getIdUsuario(), dto);
+    return ResponseEntity.ok().build();
+}
 
+
+    @PostMapping("/registro/automatio")
+    public ResponseEntity<Map<String, String>> postMethodName( 
+        @RequestPart(name = "pdf", required = true) MultipartFile curriculo) {
+        Map<String, String> response = new HashMap<>();
+        
+        try {
+            
+        } catch (Exception e) {
+            
+        }
+        
+        return ResponseEntity.ok(response);
+    }
+    
 }

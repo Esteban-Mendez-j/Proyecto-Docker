@@ -23,7 +23,10 @@ public class Estudio {
 
     @Column(nullable = false, length = 80)
     private String academia;
-
+    
+    // @Column(nullable = false, length = 80)
+    // private String nivelEducacion;
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario_id")
     private Candidato idUsuario;
@@ -51,6 +54,14 @@ public class Estudio {
     public void setAcademia(final String academia) {
         this.academia = academia;
     }
+    
+    //     public String getNivelEducacion() {
+    //     return nivelEducacion;
+    // }
+
+    // public void setNivelEducacion(String nivelEducacion) {
+    //     this.nivelEducacion = nivelEducacion;
+    // }
 
     public Candidato getIdUsuario() {
         return idUsuario;

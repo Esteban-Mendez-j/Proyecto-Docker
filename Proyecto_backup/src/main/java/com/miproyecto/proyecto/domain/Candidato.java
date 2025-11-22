@@ -1,11 +1,17 @@
 package com.miproyecto.proyecto.domain;
 
+import java.util.List;
+import java.util.Set;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrimaryKeyJoinColumn;
-
-import java.util.Set;
 
 
 @Entity
@@ -24,6 +30,10 @@ public class Candidato extends Usuario {
     @Column(unique = true, length = 11)
     private String identificacion;
 
+    @Column(name = "video_link", length = 255)
+    private String videoLink;
+
+
     @OneToMany(mappedBy = "candidato")
     private Set<Postulado> listarPostulados;
 
@@ -32,6 +42,29 @@ public class Candidato extends Usuario {
 
     @OneToMany(mappedBy = "idUsuario")
     private Set<HistorialLaboral> listarHistorial;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinTable(name = "candidato_aptitudes", joinColumns = @JoinColumn(name = "idCandidato"), inverseJoinColumns = @JoinColumn(name = "Id_aptitud"))
+    private List<Aptitudes> aptitudes;
+
+    @Column (length = 30)
+    private String nivelEducativo;
+
+    public String getNivelEducativo() {
+        return nivelEducativo;
+    }
+
+    public void setNivelEducativo(String nivelEducativo) {
+        this.nivelEducativo = nivelEducativo;
+    }
+
+    public List<Aptitudes> getAptitudes() {
+        return aptitudes;
+    }
+
+    public void setAptitudes(List<Aptitudes> aptitudes) {
+        this.aptitudes = aptitudes;
+    }
 
     public String getApellido() {
         return apellido;
@@ -64,6 +97,15 @@ public class Candidato extends Usuario {
     public void setIdentificacion(final String identificacion) {
         this.identificacion = identificacion;
     }
+
+    public String getVideoLink() {
+    return videoLink;
+    }
+
+    public void setVideoLink(String videoLink) {
+        this.videoLink = videoLink;
+    }
+
 
     public Set<Postulado> getListarPostulados() {
         return listarPostulados;

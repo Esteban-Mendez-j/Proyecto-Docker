@@ -34,9 +34,19 @@ public class Postulado {
     @JoinColumn(name = "id_usuario_id")
     private Candidato candidato;
 
+    private Double porcentajePrediccion;
+
     private boolean isActive;
 
     private boolean vacanteIsActive; 
+
+    public Double getPorcentajePrediccion() {
+        return porcentajePrediccion;
+    }
+
+    public void setPorcentajePrediccion(Double porcentajePrediccionNew) {
+        porcentajePrediccion = porcentajePrediccionNew;
+    }
 
     public boolean isActive() {
         return isActive;

@@ -1,43 +1,64 @@
 
 services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_DATABASE: mydb
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+
   backend:
     build:
       context: ./Proyecto_backup        
       dockerfile: Dockerfile
     container_name: springboot-app
+    env_file:
+      - .env
     ports:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_DATASOURCE_PASSWORD: ""
       SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
       MY_SECRET_KEY: ${MY_SECRET_KEY}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
       MONGODB_URI: ${MONGODB_URI}
       UPLOAD_DIR_IMG: ${UPLOAD_DIR_IMG}
       UPLOAD_DIR_PDF: ${UPLOAD_DIR_PDF}
+      UPLOAD_DIR_VIDEO: ${UPLOAD_DIR_VIDEO}
+      URL_FRONTEND: ${URL_FRONTEND}
     networks:
       - app-network
     volumes:
       - ./Proyecto_backup/uploads:/app/uploads
 
-  astro:
-    build:
-      context: ./SearchJobs-front_backup
-      dockerfile: Dockerfile
-    container_name: astro-app
-    depends_on:
-      - backend
-    ports:
-      - "4321:4321"
-    environment:
-      PUBLIC_API_URL: ${PUBLIC_API_URL}
-      PUBLIC_CLIENT_API_URL: ${PUBLIC_CLIENT_API_URL}
-      PUBLIC_WS_URL: ${PUBLIC_WS_URL}
-      PUBLIC_CLIENT_WS_URL: ${PUBLIC_CLIENT_WS_URL}
-    networks:
-      - app-network
+  # astro:
+  #   build:
+  #     context: ./SearchJobs-front_backup
+  #     dockerfile: Dockerfile
+  #   container_name: astro-app
+  #   depends_on:
+  #     - backend
+  #   ports:
+  #     - "4321:4321"
+  #   environment:
+  #     PUBLIC_API_URL: ${PUBLIC_API_URL}
+  #     PUBLIC_CLIENT_API_URL: ${PUBLIC_CLIENT_API_URL}
+  #     PUBLIC_WS_URL: ${PUBLIC_WS_URL}
+  #     PUBLIC_CLIENT_WS_URL: ${PUBLIC_CLIENT_WS_URL}
+  #   networks:
+  #     - app-network
+
+volumes:
+  mysql_data:
 
 networks:
   app-network:
+

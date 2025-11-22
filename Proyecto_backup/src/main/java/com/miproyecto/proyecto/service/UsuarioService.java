@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -52,7 +51,7 @@ public class UsuarioService {
     }
 
     public List<UsuarioDTO> findAll() {
-        final List<Usuario> usuarios = usuarioRepository.findAll(Sort.by("idUsuario"));
+        final List<Usuario> usuarios = usuarioRepository.findAll();
         return usuarios.stream()
                 .map(usuario -> mapToDTO(usuario, new UsuarioDTO()))
                 .toList();
@@ -120,10 +119,11 @@ public class UsuarioService {
         return usuarioRepository.findByCorreoAndContrasena(correo, contrasena).isPresent();
     }
 
-    public Long create(final UsuarioDTO usuarioDTO) {
+    public UsuarioDTO create(final UsuarioDTO usuarioDTO) {
         final Usuario usuario = new Usuario();
         mapToEntity(usuarioDTO, usuario);
-        return usuarioRepository.save(usuario).getIdUsuario();
+        usuarioRepository.save(usuario);
+        return usuarioDTO ;
     }
 
     public void update(final Long idUsuario, final UsuarioDTO usuarioDTO) {
@@ -227,16 +227,6 @@ public class UsuarioService {
         return usuarioRepository.existsByTelefonoIgnoreCase(telefono);
     }
 
-    // public Map<String,Object> findUserByEstado(boolean estado, Pageable pageable, String nameList) {
-    //     final Page<Usuario> usuarios =  usuarioRepository.findIsActiveUsuariosByIsActive(estado, pageable);
-    //     final Page<UsuarioDTO> usuariosDTO = usuarios.map(usuario -> mapToDTO(usuario, new VacanteDTO()));
-    //     return mapResponse(usuariosDTO, nameList) ;       
-    // }
-
-
-
-
-
     public Map<String,Object> mapResponse(Page<UsuarioDTO> pageableResponse, String nameList){
         Map<String,Object> response = new HashMap<>();
 
@@ -246,30 +236,10 @@ public class UsuarioService {
         response.put("totalPage", pageableResponse.getTotalPages());
         return response;
     }
-    // public Map<String,Object> findByIdUsuario(Long idUsuario, Pageable pageable) {
-    //     // Obtener la empresa usando su id
-    //     Empresa empresa = empresaRepository.findById(idUsuario)
-    //             .orElseThrow(() -> new NotFoundException("Empresa no encontrada"));
-        
-    //     // Obtener las vacantes relacionadas con esa empresa
-    //     Page<Vacante> vacantes = vacanteRepository.findByIdUsuario(empresa, pageable);
-        
-    //     // Convertir cada vacante a VacanteDTO y devolver la lista
-    //     Page<VacanteDTO> vacantesDTO = vacantes.map(vacante -> mapToDTO(vacante, new VacanteDTO()));
-    //     return mapResponse(vacantesDTO, "vacantes");
-                
-    // }
-
-    
-//  buscar usuarios Activos o inactivos
-//     public Map<String,Object> findAllByEstado(boolean estado, Pageable pageable, String nameList) {
-//         final Page<Usuario> usuarios = usuarioRepository.findByIsActive(estado, pageable);
-//         final Page<UsuarioDTO> usuarioDTO = usuarios.map(Usuario -> mapToDTO(Usuario, new UsuarioDTO()));
-//         return mapResponse(usuarioDTO, nameList) ;       
-//     }
+   
     //FiltrosUsuarios
-    public Map<String, Object> buscarUsuariosConFiltros(Long idUsuario,String rolUsuario,String nombre , String rol, Boolean estado  , Pageable pageable) {
-        Specification<Usuario> specification = UsuarioSpecifications.conFiltros(rolUsuario,nombre,  rol,  estado);
+    public Map<String, Object> buscarUsuariosConFiltros(Long idUsuario,String rolUsuario,String nombre , String rol, Boolean estado  , Pageable pageable, String correo) {
+        Specification<Usuario> specification = UsuarioSpecifications.conFiltros(rolUsuario,nombre ,  rol,  estado, correo);
         
         Page<UsuarioDTO> page = usuarioRepository.findAll(specification, pageable)
         .map(usuario -> mapToDTO(usuario, new UsuarioDTO())); 
