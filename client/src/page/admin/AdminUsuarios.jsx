@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
 import UsuariosActivos from "../../components/UsuariosActivos";
-import Layout from "../../layouts/Layout.jsx";
+import Layout from "../../layouts/Layout";
 
 export default function AdminUsuarios() {
   const [activeTab, setActiveTab] = useState("activos");

@@ -1,7 +1,5 @@
 
-import AdminSidebar from "../../components/AdminSidebar";
 import VacantesActivas from "../../components/VacantesActivas";
-import Footer from "../../layouts/Footer";
 import Layout from "../../layouts/Layout";
 
 export default function AdminVacantes() {
