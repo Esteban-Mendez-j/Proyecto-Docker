@@ -1,10 +1,10 @@
 
 import VacantesActivas from "../../components/VacantesActivas.jsx";
-import Layout from "../../layouts/Layout.jsx";
+import Layout from "../../layouts/Layout";
 
 export default function AdminVacantes() {
   return (
-    <Layout title="Gestión de Vacantes | SearchJobs">
+    <Layout>
   
       <br />
       <div className="container px-4 py-6 mx-auto">
