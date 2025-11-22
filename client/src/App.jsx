@@ -8,7 +8,7 @@ import ListadoVacantes from "./page/candidato/ListadoVacantes";
 import PerfilCandidato from "./page/candidato/PerfilCandidato";
 import PerfilCandidatoEditar from "./page/candidato/PerfilCandidatoEditar.jsx";
 import PostuladosPage from "./page/candidato/Postulados.jsx";
-import Chat from "./page/chat/chat";
+import Chat from "./page/chat/Chat.jsx";
 import MisVacantes from "./page/empresa/MisVacantes.jsx";
 import Postulados from "./page/empresa/Postulados.jsx";
 import EmpresaPerfil from "./page/empresa/PublicPerfilEmpresa.jsx";
