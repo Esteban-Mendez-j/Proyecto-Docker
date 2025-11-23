@@ -7,6 +7,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useFetch, useSendForm } from "../../../hooks/useFetch";
 import InputForm from "../../../components/InputForm";
 import { modalResponse } from "../../../services/Modal";
+import {sectores} from "../../../services/data";
+import { formRulesEmpresaEditar, validateForm } from "../../../services/validacionForm";
 
 const EditarPerfilEmpresa = () => {
   const initialData = {
@@ -18,37 +20,17 @@ const EditarPerfilEmpresa = () => {
     imagen: "",
     sitioWeb: "",
     descripcion: "",
-     linkvideo: "",
+    linkvideo: "",
   }
 
   const navigate = useNavigate();
+  const [submitted, setSubmitted] = useState(false);
   const [empresa, setEmpresa] = useState(initialData);
   const [preview, setPreview] = useState(null);
   const {data} = useFetch("/api/empresas/perfil", "GET");
-  const { send , error} = useSendForm();
+  const { send , error, setError} = useSendForm();
   const fotoRef = useRef(null);
-
-  const sectores = [
-    "Tecnologia de la Informacion (TI) / Software",
-    "Salud y Medicina",
-    "Educacion y Formacion",
-    "Construccion e Infraestructura",
-    "Manufactura e Industria",
-    "Comercio y Ventas",
-    "Logistica y Transporte",
-    "Banca, Finanzas y Seguros",
-    "Agroindustria y Agricultura",
-    "Legal y Juridico",
-    "Turismo, Hoteleria y Gastronomia",
-    "Medios, Comunicacion y Publicidad",
-    "Energia y Mineria",
-    "Servicios Profesionales y Consultoria",
-    "Arte, Cultura y Entretenimiento",
-    "Bienes Raices e Inmobiliaria",
-    "Ciencia e Investigacion",
-    "Organizaciones sin Fines de Lucro y ONG",
-    "Otros",
-  ];
+  const maxImgSize = 500
 
   useEffect(() => {
     if(!data){return}
@@ -56,12 +38,30 @@ const EditarPerfilEmpresa = () => {
   }, [data]);
 
   const handleLogoChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (ev) => setPreview(ev.target.result);
-      reader.readAsDataURL(file);
+    
+    const file = e.target.files[0];
+
+    if (!file) {
+      setPreview(null);
+      return;
     }
+
+    if (file.size >( maxImgSize * 1024)) {
+      setError(prev => ({
+        ...prev,
+        img: `La imagen es demasiado pesada. Debe ser menor a ${maxImgSize}KB`
+      }));
+      e.target.value = "";
+      setPreview(null);
+      return;
+    }
+    
+    setError(prev => ({
+      ...prev,
+      img: null
+    }));
+    const url = URL.createObjectURL(file);
+    setPreview(url);
   };
 
   const handleOnChange = (event) => {
@@ -74,6 +74,25 @@ const EditarPerfilEmpresa = () => {
 
   async function handleSubmit(e) {
     e.preventDefault();
+
+    setSubmitted(true)
+    const newErrors = validateForm(empresa, formRulesEmpresaEditar);
+
+    if (Object.keys(newErrors).length > 0) {
+      console.log(newErrors)
+      setError(newErrors);
+
+      // Foco en el primer campo con error
+      const firstErrorField = Object.keys(newErrors)[0];
+      const el = document.getElementById(firstErrorField);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.focus();
+      }
+
+      return; // detener envío o acción
+    }
+    setError(null);
 
     const formData = new FormData();
     formData.append(
@@ -119,64 +138,74 @@ const EditarPerfilEmpresa = () => {
                 className="w-28 h-28 md:w-32 md:h-32 rounded-full border-4 border-white shadow-lg object-cover ring-4 ring-sky-200"
               />
 
-              <label
-                htmlFor="logo-upload"
-                className="absolute -bottom-2 -right-2 grid place-items-center h-10 w-10 rounded-full bg-sky-600 hover:bg-sky-700 transition shadow-md text-white cursor-pointer"
-                title="Cambiar logo"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
+                <label
+                  htmlFor="logo-upload"
+                  className="absolute -bottom-2 -right-2 grid place-items-center h-10 w-10 rounded-full bg-sky-600 hover:bg-sky-700 transition shadow-md text-white cursor-pointer"
+                  title="Cambiar logo"
                 >
-                  <path d="M3 7h2l2-3h10l2 3h2a2 2 0 0 1 2 2v9a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3V9a2 2 0 0 1 2-2Z"></path>
-                  <circle cx="12" cy="13" r="4"></circle>
-                </svg>
-              </label>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M3 7h2l2-3h10l2 3h2a2 2 0 0 1 2 2v9a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3V9a2 2 0 0 1 2-2Z"></path>
+                    <circle cx="12" cy="13" r="4"></circle>
+                  </svg>
+                </label>
 
-              <input
-                id="logo-upload"
-                ref={fotoRef}
-                type="file"
-                name="img"
-                accept="image/*"
-                className="hidden"
-                onChange={handleLogoChange}
-              />
+                <input
+                  id="logo-upload"
+                  ref={fotoRef}
+                  type="file"
+                  name="img"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleLogoChange}
+                />
 
-              <input type="hidden" name="imagen" value={empresa.imagen || ""} />
-              <p className="error-text hidden" id="error-imagen"></p>
+                <input type="hidden" name="imagen" value={empresa.imagen} />
+                {!error?.img &&<p className="text-sm text-gray-600 mt-2">
+                 Máximo <strong>{maxImgSize}KB</strong>.
+              </p>}
+
+                {error?.img &&<p className="error-text">{error.img}</p>}
             </div>
 
             {/* Nombre & Sector */}
             <div className="flex-1 w-full space-y-4">
-              <input
+              <InputForm
                 type="text"
                 name="nombre"
-                value={empresa.nombre || ""}
+                value={empresa.nombre}
                 placeholder="Nombre de la empresa"
+                error={error}
+                submitted={submitted}
+                rules={formRulesEmpresaEditar}
                 className="w-full text-3xl font-semibold bg-transparent border-b-2 border-sky-200 focus:border-sky-500 focus:outline-none"
-                onChange={handleOnChange}
+                handleOnChange={handleOnChange}
               />
-              {error?.nombre && <p className="error-text">{error.nombre}</p>}
 
-              <select 
-                value={empresa.sectorEmpresarial || ""} 
-                name="sectorEmpresarial" 
-                className={`form-control ${error?.sectorEmpresarial ? "error-input" : ""}`} 
-                required 
-                onChange={handleOnChange}
+              <InputForm
+                as="select"
+                name="sectorEmpresarial"
+                value={empresa.sectorEmpresarial}
+                handleOnChange={handleOnChange}
+                error={error}
+                submitted={submitted}
+                rules={formRulesEmpresaEditar}
+                className="form-control"
               >
                 <option value="" disabled>Selecciona tu sector</option>
                 {sectores.map((sector, index) => (
                   <option key={index} value={sector}>{sector}</option>
                 ))}
-              </select>
-              {error?.sectorEmpresarial && <p className="error-text">{error.sectorEmpresarial}</p>}
+              </InputForm>
+
             </div>
+            
           </div>
 
           {/* Contenido del perfil */}
@@ -201,16 +230,18 @@ const EditarPerfilEmpresa = () => {
                 </svg>
                 <div className="empresa-info-content">
                   <span className="empresa-info-label">NIT</span>
-                  <input
+                  <InputForm
                     type="number"
                     name="nit"
                     value={empresa.nit || ""}
                     className="empresa-info-input"
                     placeholder="NIT de la empresa"
-                    onChange={handleOnChange}
+                    handleOnChange={handleOnChange}
                     minLength="9"
+                    error={error}
+                    submitted={submitted}
+                    rules={formRulesEmpresaEditar}
                   />
-                  {error?.nit && <p className="error-text">{error.nit}</p>}
                 </div>
               </div>
 
@@ -230,15 +261,17 @@ const EditarPerfilEmpresa = () => {
                 </svg>
                 <div className="empresa-info-content">
                   <span className="empresa-info-label">Correo</span>
-                  <input
+                  <InputForm
                     type="email"
                     name="correo"
                     value={empresa.correo || ""}
                     className="empresa-info-input"
                     placeholder="Correo electrónico"
-                    onChange={handleOnChange}
+                    handleOnChange={handleOnChange}
+                    error={error}
+                    submitted={submitted}
+                    rules={formRulesEmpresaEditar}
                   />
-                  {error?.correo && <p className="error-text">{error.correo}</p>}
                 </div>
               </div>
 
@@ -257,16 +290,18 @@ const EditarPerfilEmpresa = () => {
                 </svg>
                 <div className="empresa-info-content">
                   <span className="empresa-info-label">Teléfono</span>
-                  <input
+                  <InputForm
                     type="number"
                     name="telefono"
                     value={empresa.telefono || ""}
                     className="empresa-info-input"
                     placeholder="Teléfono de contacto"
-                    onChange={handleOnChange}
+                    handleOnChange={handleOnChange}
                     minLength="10"
+                    error={error}
+                    submitted={submitted}
+                    rules={formRulesEmpresaEditar}
                   />
-                  {error?.telefono && <p className="error-text">{error.telefono}</p>}
                 </div>
               </div>
 
@@ -287,15 +322,17 @@ const EditarPerfilEmpresa = () => {
                 </svg>
                 <div className="empresa-info-content">
                   <span className="empresa-info-label">Sitio Web</span>
-                  <input
+                  <InputForm
                     type="url"
                     name="sitioWeb"
                     value={empresa.sitioWeb || ""}
                     className="empresa-info-input"
                     placeholder="Sitio web (ejemplo.com)"
-                    onChange={handleOnChange}
+                    handleOnChange={handleOnChange}
+                    error={error}
+                    submitted={submitted}
+                    rules={formRulesEmpresaEditar}
                   />
-                  {error?.sitioWeb && <p className="error-text">{error.sitioWeb}</p>}
                 </div>
               </div>
             </div>
@@ -303,14 +340,17 @@ const EditarPerfilEmpresa = () => {
             {/* Descripción */}
             <div className="empresa-descripcion-section">
               <h2 className="empresa-section-title">Descripción</h2>
-              <textarea
+              <InputForm
+                as="textarea"
+                rules={formRulesEmpresaEditar}
+                submitted={submitted}
                 name="descripcion"
-                value={empresa.descripcion || ""}
+                value={empresa.descripcion}
+                error={error}
                 className={`empresa-descripcion-input ${error?.descripcion ? "error-input" : ""}`}
                 placeholder="Describe tu empresa, su misión, visión y valores..."
-                onChange={handleOnChange}
+                handleOnChange={handleOnChange}
               />
-              {error?.descripcion && <p className="error-text">{error.descripcion}</p>}
             </div>
 
             {/* Video de Presentación */}
@@ -329,16 +369,17 @@ const EditarPerfilEmpresa = () => {
               </svg>
               <div className="empresa-info-content">
                 <span className="empresa-info-label">Video Presentación</span>
-                <input
-              type="text"
-              name="videoLink"
-              value={empresa.videoLink || ""}
-              className="empresa-info-input"
-              placeholder="https://youtu.be/abc123"
-              onChange={handleOnChange}
-            />
-
-                {error?.linkvideo && <p className="error-text">{error.linkvideo}</p>}
+                <InputForm
+                  type="text"
+                  name="videoLink"
+                  value={empresa.videoLink || ""}
+                  className="empresa-info-input"
+                  placeholder="https://youtu.be/abc123"
+                  handleOnChange={handleOnChange}
+                  error={error}
+                  submitted={submitted}
+                  rules={formRulesEmpresaEditar}
+                />
               </div>
             </div>
 

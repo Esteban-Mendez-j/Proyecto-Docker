@@ -7,9 +7,9 @@ export const DOCKER_URL_IMAGEN  = import.meta.env.PUBLIC_CLIENT_WS_URL  || `${AP
 export const DOCKER_URL_PDF  = import.meta.env.PUBLIC_CLIENT_WS_URL  || `${API_URL}/pdf/`;
 
 //local
-export const API_CLIENT_URL = import.meta.env.PUBLIC_CLIENT_API_URL || 'http://localhost:8080';
-export const WS_CLIENT_URL  = import.meta.env.PUBLIC_CLIENT_WS_URL  || 'ws://localhost:8080';
+export const API_CLIENT_URL =  'http://localhost:8080';
+export const WS_CLIENT_URL  = 'ws://localhost:8080';
 
-export const URL_VIDEO  = import.meta.env.PUBLIC_CLIENT_WS_URL  || `${API_CLIENT_URL}/video/`;
-export const URL_IMAGEN  = import.meta.env.PUBLIC_CLIENT_WS_URL  || `${API_CLIENT_URL}/img/`;
-export const URL_PDF  = import.meta.env.PUBLIC_CLIENT_WS_URL  || `${API_CLIENT_URL}/pdf/`;
+export const URL_VIDEO  =  `${API_CLIENT_URL}/video/`;
+export const URL_IMAGEN  =  `${API_CLIENT_URL}/img/`;
+export const URL_PDF  = `${API_CLIENT_URL}/pdf/`;

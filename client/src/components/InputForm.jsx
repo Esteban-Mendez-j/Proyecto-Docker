@@ -46,7 +46,7 @@ export default function InputForm({
         onChange={handleOnChange}
         placeholder={placeholder}
         autoComplete={autoComplete}
-        className={`${className} ${fieldError ? "error-input" : ""}`}
+        className={`${className} ${(fieldError && submitted) ? "error-input" : ""}`}
         {...(type ? { type } : {})}
         {...(as === "input" && type === "number" ? { min: minL } : {})}
         {...(as === "input" && type === "text" ? { maxLength: maxL } : {})}

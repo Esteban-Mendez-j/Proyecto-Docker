@@ -217,10 +217,6 @@ export const formRulesEmpresa = {
     rules.maxNumber(999999999, "No puede tener más de 9 dígitos"),
   ],
 
-  sectorEmpresa: [
-    rules.required("Selecciona un sector"),
-  ],
-
   correo: [
     rules.required("Correo corporativo obligatorio"),
     rules.email("Correo inválido"),
@@ -246,14 +242,49 @@ export const formRulesEmpresa = {
     // Puedes agregar una regla custom para validar que coincida con 'contrasena'
   ],
 
+};
+
+export const formRulesEmpresaEditar = {
+  nombre: [
+    rules.required(),
+    rules.minLength(3, "Debe tener al menos 3 caracteres"),
+    rules.maxLength(50, "Debe tener máximo  50 caracteres"),
+  ],
+
+  nit: [
+    rules.required("NIT es obligatorio"),
+    rules.number("Debe ser un número"),
+    rules.minNumber(100000000, "Debe tener al menos 9 dígitos"),
+    rules.maxNumber(999999999, "No puede tener más de 9 dígitos"),
+  ],
+
+  sectorEmpresarial: [
+    rules.required("Selecciona un sector"),
+  ],
+
+  correo: [
+    rules.required("Correo corporativo obligatorio"),
+    rules.email("Correo inválido"),
+    rules.maxLength(100)
+  ],
+
+  telefono: [
+    rules.required("Teléfono obligatorio"),
+    rules.number("Debe ser un número"),
+    rules.minLength(10, "Debe tener 10 dígitos"),
+    rules.maxLength(10, "Debe tener 10 dígitos"),
+  ],
+
   descripcion: [
+    rules.required(),
     rules.minLength(20),
     rules.maxLength(400)
   ],
 
-  imagen: [
-    rules.maxMb(4)
-  ]
+  videoLink:[
+    rules.youtubeUrl()
+  ],
+
 };
 
 export const formRulesCandidato = {
@@ -349,10 +380,6 @@ export const formRulesCandidatoEditar = {
   ],
 
   imagen: [
-    rules.maxMb(4)
-  ],
-
-  curriculo: [
     rules.maxMb(4)
   ],
 

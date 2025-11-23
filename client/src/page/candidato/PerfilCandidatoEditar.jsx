@@ -8,7 +8,7 @@ import { API_CLIENT_URL, URL_IMAGEN } from "../../services/Api";
 import { modal, modalResponse } from "../../services/Modal";
 import "../../style/invitado/candidato.css";
 import { listEducacion, listAptitudes } from "../../services/data.js"
-import { formRulesCandidato, formRulesCandidatoEditar, validateForm } from "../../services/validacionForm.js";
+import { formRulesCandidatoEditar, validateForm } from "../../services/validacionForm.js";
 
 const tmpId = () => crypto.randomUUID();
 
@@ -50,13 +50,16 @@ const PerfilCandidatoEditar = () => {
     titulo: ""
   }
   const navigate = useNavigate()
+  const maxImgSize = 500;  // 500kb
+  const maxPdfSize = 1; //1mb
   const { data, loading } = useFetch("/api/candidatos/perfil", "GET");
-  const { error, send, setError } = useSendForm();
+  const { error, send,  setError } = useSendForm();
   const [selected, setSelected] = useState([]);
   const [candidato, setCandidato] = useState(initialData);
   const [estudios, setEstudios] = useState([]);
   const [historialLaboral, setHistorial] = useState([]);
   const [previewImg, setPreviewImg] = useState(null);
+  const [previewPdf, setPreviewPdf] = useState(null);
   const [submitted, setSubmitted] = useState(false);
 
 
@@ -103,15 +106,57 @@ const PerfilCandidatoEditar = () => {
   /* Manejar cambio de imagen para mostrar preview */
   const handleFotoChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      // Crear URL para preview
-      const url = URL.createObjectURL(file);
-      setPreviewImg(url);
-    } else {
-      // Si no hay archivo, eliminar preview
+
+    if (!file) {
       setPreviewImg(null);
+      return;
     }
+
+    if (file.size >( maxImgSize * 1024)) {
+      setError(prev => ({
+        ...prev,
+        img: `La imagen es demasiado pesada. Debe ser menor a ${maxImgSize}KB`
+      }));
+      e.target.value = "";
+      setPreviewImg(null);
+      return;
+    }
+    
+    setError(prev => ({
+      ...prev,
+      img: null
+    }));
+    const url = URL.createObjectURL(file);
+    setPreviewImg(url);
   };
+
+  /* Manejar cambio de pdf para validar su peso */
+  const handlePdfChange = (e) => {
+    const file = e.target.files[0];
+
+    if (!file) {
+      setPreviewPdf(null);
+      return;
+    }
+
+    if (file.size > (maxPdfSize * 1024 * 1024)) {
+      setError(prev => ({
+        ...prev,
+        pdf: `El pdf es demasiado pesada. Debe ser menor a ${maxPdfSize}MB`
+      }));
+      e.target.value = "";
+      setPreviewPdf(null)
+      return;
+    }
+    
+    setError(prev => ({
+      ...prev,
+      pdf: null
+    }));
+    const url = URL.createObjectURL(file);
+    setPreviewPdf(url);
+  };
+
 
   /* ---- CRUD Estudios ---------------------------- */
   const agregarEstudio = () =>
@@ -199,7 +244,6 @@ const PerfilCandidatoEditar = () => {
       const newErrors = validateForm(candidato, formRulesCandidatoEditar);
       
       if (Object.keys(newErrors).length > 0) {
-        console.log(newErrors)
         setError(newErrors);
 
         // Foco en el primer campo con error
@@ -219,6 +263,7 @@ const PerfilCandidatoEditar = () => {
         "candidato",
         new Blob([JSON.stringify(candidato)], { type: "application/json" })
       );
+
       if (cvRef.current?.files[0]) {
         formData.append("pdf", cvRef.current.files[0]);
       }
@@ -286,7 +331,11 @@ const PerfilCandidatoEditar = () => {
                   onChange={handleFotoChange}
                 />
               </label>
-              <p className="error-text hidden" id="error-imagen"></p>
+              {!error?.img &&<p className="text-sm text-gray-600 mt-2">
+                 Máximo <strong>{maxImgSize}KB</strong>.
+              </p>}
+
+              {error?.img &&<p className="error-text">{error.img}</p>}
             </div>
 
             {/* Datos principales */}
@@ -351,8 +400,6 @@ const PerfilCandidatoEditar = () => {
                         <option key={index} value={nivel}>{nivel}</option>
                       ))}
                     </InputForm>
-
-
                   </div>
                 </div>
               </div>
@@ -379,14 +426,14 @@ const PerfilCandidatoEditar = () => {
                     name="pdf"
                     accept="application/pdf"
                     ref={cvRef}
+                    onChange={handlePdfChange}
                     className="hidden"
                   />
                 </label>
-
                 {/* Link para ver CV existente */}
-                {candidato.curriculo && (
+                {(candidato.curriculo || previewPdf) && (
                   <a
-                    href={`${API_CLIENT_URL}/pdf/${candidato.curriculo}`}
+                    href={previewPdf? previewPdf :`${API_CLIENT_URL}/pdf/${candidato.curriculo}`}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex w-max cursor-pointer items-center gap-2 rounded-full bg-blue-500 px-4 py-2 font-medium text-white shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -405,10 +452,11 @@ const PerfilCandidatoEditar = () => {
                   </a>
                 )}
 
-                {/* mensaje de error */}
-                <p id="error-curriculo" className="error-text hidden text-xs text-red-500" />
               </div>
-
+              {!error?.pdf &&<p className="text-sm text-gray-600 mt-2">
+                Máximo <strong>{maxPdfSize}MB</strong>.
+              </p>}
+              {error?.pdf && <p className="error-text">{error.pdf}</p>}
             </div>
           </div>
 
