@@ -14,7 +14,7 @@ export default function CrearVacante() {
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
   const videoRef = useRef(null)
-  const maxMB = 7;
+  const maxMB = 4;
   const [eliminarVideo, setEliminarVideo] = useState(false)
   const [previewVideo, setPreviewVideo] = useState(null)
   const [errors, setErrors] = useState({});

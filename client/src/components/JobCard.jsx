@@ -22,13 +22,7 @@ export default function JobCard({ job, onFavoritoChange, cambiarEstado, verSecci
                 await toggleFavoritoRequest(job.nvacantes);
                 setIsFavorite(true);
             } else {
-                // // Si YA está en favoritos → preguntar antes de quitar
-                // const confirmed = await QuestionModal(
-                //     "¿Quieres eliminar esta vacante de tus favoritos?",
-                //     "warning"
-                // );
-
-                // if (!confirmed) return; // Si cancela, no hacer nada
+               
                 await toggleFavoritoRequest(job.nvacantes);
                 setIsFavorite(false);
                 fetchAllJobs()

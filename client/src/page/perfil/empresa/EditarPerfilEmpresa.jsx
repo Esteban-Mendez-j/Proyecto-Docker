@@ -6,6 +6,7 @@ import "../../../style/invitado/empresa.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useFetch, useSendForm } from "../../../hooks/useFetch.jsx";
 import { modalResponse } from "../../../services/Modal";
+import { sectores } from "../../../services/data.js";
 
 const EditarPerfilEmpresa = () => {
   const initialData = {
@@ -26,28 +27,6 @@ const EditarPerfilEmpresa = () => {
   const {data} = useFetch("/api/empresas/perfil", "GET");
   const { send , error} = useSendForm();
   const fotoRef = useRef(null);
-
-  const sectores = [
-    "Tecnologia de la Informacion (TI) / Software",
-    "Salud y Medicina",
-    "Educacion y Formacion",
-    "Construccion e Infraestructura",
-    "Manufactura e Industria",
-    "Comercio y Ventas",
-    "Logistica y Transporte",
-    "Banca, Finanzas y Seguros",
-    "Agroindustria y Agricultura",
-    "Legal y Juridico",
-    "Turismo, Hoteleria y Gastronomia",
-    "Medios, Comunicacion y Publicidad",
-    "Energia y Mineria",
-    "Servicios Profesionales y Consultoria",
-    "Arte, Cultura y Entretenimiento",
-    "Bienes Raices e Inmobiliaria",
-    "Ciencia e Investigacion",
-    "Organizaciones sin Fines de Lucro y ONG",
-    "Otros",
-  ];
 
   useEffect(() => {
     if(!data){return}
