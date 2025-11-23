@@ -25,6 +25,8 @@ Thumbs.db
 **/.next/
 **/.turbo/
 **/.astro/
+/client/dist
+
 
 # Backend Java (Maven)
 target/
@@ -48,3 +50,4 @@ build/
 .settings/
 .springBeans
 .sts4-cache/
+.vercel

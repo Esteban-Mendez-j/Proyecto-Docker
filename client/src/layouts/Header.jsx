@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useSendForm } from "../hooks/useFetch.jsx";
 import useVisible from "../hooks/useVisible.jsx";
-import { API_CLIENT_URL } from "../services/Api";
+import { API_CLIENT_URL, URL_IMAGEN } from "../services/Api";
 import { RoleContext } from "../services/RoleContext.jsx";
 import "../style/invitado/header.css";
 import { clearLocalStore } from "../services/localStore"
@@ -24,13 +24,13 @@ export default function Header () {
         if (!rol || !data) return;
 
         const imagenPorDefecto = rol === "CANDIDATO"
-            ? "/images/imgCandidato.png"
-            : "/images/imgEmpresa.png";
+            ? "/imgCandidato.png"
+            : "/imgEmpresa.png";
 
         setUrlImagen(
             data?.imagen
-                ? `${API_CLIENT_URL}/img/${data.imagen}`
-                : API_CLIENT_URL+ imagenPorDefecto
+                ? `${URL_IMAGEN}${data.imagen}`
+                :  imagenPorDefecto
         );
     }, [data]);
 
