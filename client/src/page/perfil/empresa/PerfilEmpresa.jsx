@@ -6,15 +6,15 @@ import "../../../style/invitado/empresa.css";
 import { Link } from "react-router-dom";
 
 const PerfilEmpresa = () => {
-  
+
   const [empresa, setEmpresa] = useState({});
 
   useEffect(() => {
     const fetchEmpresa = async () => {
       try {
         const apiUrl = `${API_CLIENT_URL}/api/empresas/perfil`;
-        const res = await fetch(apiUrl, { 
-          headers: { "Content-Type": "application/json" } , 
+        const res = await fetch(apiUrl, {
+          headers: { "Content-Type": "application/json" },
           credentials: "include"
         });
         const data = await manejarRespuesta(res);
@@ -23,7 +23,7 @@ const PerfilEmpresa = () => {
         console.error("Error al cargar perfil de empresa:", error);
       }
     };
-   
+
     fetchEmpresa();
   }, []);
 
@@ -31,7 +31,7 @@ const PerfilEmpresa = () => {
 
   return (
     <Layout >
-      
+
 
       <div className="empresa-perfil-container">
         <div className="empresa-perfil">
@@ -78,7 +78,9 @@ const PerfilEmpresa = () => {
                 </svg>
                 <div className="empresa-info-content">
                   <span className="empresa-info-label">NIT</span>
-                  <span className="empresa-info-value">{empresa.nit}</span>
+                  <span className="empresa-info-value">{empresa.nit
+                    ? `${empresa.nit.slice(0, -1)}-${empresa.nit.slice(-1)}`
+                    : "No registrado"}</span>
                 </div>
               </div>
 
@@ -89,7 +91,7 @@ const PerfilEmpresa = () => {
                 </svg>
                 <div className="empresa-info-content">
                   <span className="empresa-info-label">Correo</span>
-                  <span className="empresa-info-value">{empresa.correo}</span>
+                  <span className="empresa-info-value">{empresa.correo || "No registrado"}</span>
                 </div>
               </div>
 
@@ -129,6 +131,39 @@ const PerfilEmpresa = () => {
               </div>
             </div>
 
+            {/* Sección Video de Presentación */}
+            <div className="empresa-info-item">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+              </svg>
+
+              <div className="empresa-info-content">
+                <h2 className="mb-2 text-lg font-semibold">Video de Presentación</h2>
+
+                {empresa.videoLink ? (
+                  <a
+                    href={empresa.videoLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block p-4 border rounded-xl shadow-sm hover:shadow-md transition -ml-5"
+
+                  >
+                    🎥 Video de presentación de la empresa
+
+                  </a>
+                ) : (
+                  <p className="italic text-gray-500">la empresa aún no ha agregado un video de presentación.</p>
+                )}
+              </div>
+            </div>
+
             {/* Sección descripción */}
             <div className="empresa-descripcion-section">
               <h2 className="empresa-section-title">Descripción</h2>
@@ -136,46 +171,31 @@ const PerfilEmpresa = () => {
                 {empresa.descripcion || "No registrada"}
               </p>
             </div>
+            <div className="empresa-estadisticas">
+              <h2 className="empresa-section-title">Estadísticas</h2>
 
-            <hr class="my-4 w-1/2 mx-auto border-gray-400" />
+              <div className="estadisticas-cards-simple">
+                <div className="estadistica-card-simple">
+                  <p className="estadistica-number-simple">{empresa.numeroVacantes}</p>
+                  <p className="estadistica-label-simple">Vacantes totales</p>
+                </div>
 
-            {/* Sección Video de Presentación */}
-          <div className="empresa-info-item">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            >
-          </svg>
+                <div className="estadistica-card-simple">
+                  <p className="estadistica-number-simple">{empresa.numeroVacantesActivas}</p>
+                  <p className="estadistica-label-simple">Vacantes Activas</p>
+                </div>
 
-          <div className="empresa-info-content">
-             <h2 className="mb-2 text-lg font-semibold">Video de Presentación</h2>
-            
-            {empresa.videoLink ? (
-              <a
-                href={empresa.videoLink}
-                target="_blank"
-            rel="noopener noreferrer"
-            className="block p-4 border rounded-xl shadow-sm hover:shadow-md transition -ml-5"
-            
-          >
-            🎥 Video de presentación de la empresa
-            
-          </a>
-            ) : (
-              <p className="italic text-gray-500">la empresa aún no ha agregado un video de presentación.</p>
-            )}
+                <div className="estadistica-card-simple">
+                  <p className="estadistica-number-simple">{empresa.porcentajeAceptacion}%</p>
+                  <p className="estadistica-label-simple">Aceptación</p>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
         </div>
       </div>
-</div>
-      </div>
-    </div>
-
-      
     </Layout>
   );
 };

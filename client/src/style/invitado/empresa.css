@@ -2,10 +2,6 @@
   max-width: 1000px; 
   margin: 2rem auto; 
   padding: 3rem 2rem; 
-  background-color: var(--background);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  border: 1px solid rgba(0, 0, 0, 0.05);
 }
   
 .empresa-perfil {
@@ -339,6 +335,47 @@
 .empresa-cancel-button:hover {
   background-color: #e5e7eb;
 }
+
+.empresa-estadisticas {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.empresa-section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.estadisticas-cards-simple {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.estadistica-card-simple {
+  background-color: var(--background-alt);
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  min-width: 120px;
+  text-align: center;
+}
+
+.estadistica-number-simple {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 0.25rem;
+}
+
+.estadistica-label-simple {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-light);
+}
+
   
   /* Estilos responsivos */
 @media (max-width: 768px) {

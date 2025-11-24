@@ -41,6 +41,7 @@ const AutocompleteInput = ({
         }}
         onBlur={() => setTimeout(() => setShowList(false), 100)}
         onFocus={() => setShowList(true)}
+        autoComplete="off"
         className={className}
       />
 

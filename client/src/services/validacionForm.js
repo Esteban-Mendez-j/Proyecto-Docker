@@ -57,6 +57,11 @@ export const rules = {
     max,
     message: message || `Debe tener máximo ${max}megabyte`,
   }),
+
+  nitValid: (message = "NIT inválido") => ({
+    type: "nitValid",
+    message,
+  }),
 };
 
 
@@ -123,14 +128,18 @@ export function validateForm(form, formRules) {
           }
           break;
         case "maxMb":
-    
-        if (value) {
-          const maxBytes = rule.max * 1024 * 1024; // convertir MB a bytes
-          if (value.size > maxBytes) {
-            error = rule.message;
+
+          if (value) {
+            const maxBytes = rule.max * 1024 * 1024; // convertir MB a bytes
+            if (value.size > maxBytes) {
+              error = rule.message;
+            }
           }
-        }
-        break;
+          break;
+        case "nitValid":
+          if (v && !isValidNit(String(v))) error =  rule.message;
+          break;
+
       }
 
       if (error) {
@@ -213,8 +222,9 @@ export const formRulesEmpresa = {
   nit: [
     rules.required("NIT es obligatorio"),
     rules.number("Debe ser un número"),
-    rules.minNumber(100000000, "Debe tener al menos 9 dígitos"),
-    rules.maxNumber(999999999, "No puede tener más de 9 dígitos"),
+    rules.minLength(9, "Debe tener 9 dígitos"),
+    rules.maxLength(9, "Debe tener 9 dígitos"),
+    rules.nitValid("NIT inválido"),
   ],
 
   correo: [
@@ -254,8 +264,9 @@ export const formRulesEmpresaEditar = {
   nit: [
     rules.required("NIT es obligatorio"),
     rules.number("Debe ser un número"),
-    rules.minNumber(100000000, "Debe tener al menos 9 dígitos"),
-    rules.maxNumber(999999999, "No puede tener más de 9 dígitos"),
+    rules.minLength(9, "Debe tener 9 dígitos"),
+    rules.maxLength(9, "Debe tener 9 dígitos"),
+    rules.nitValid("NIT inválido"),
   ],
 
   sectorEmpresarial: [
@@ -395,6 +406,30 @@ export const formRulesCandidatoEditar = {
   ],
 };
 
+function isValidNit(nit) {
+  const nitStr = nit.replace(/\D/g, '');
+  if (!/^\d{9}$/.test(nitStr)) return false; // debe tener exactamente 9 dígitos
+
+  const dv = Number(nitStr.slice(-1));
+  const numero = nitStr.slice(0, -1).split('').map(Number);
+  
+  const factores = [3, 7, 13, 17, 19, 23, 29, 37]; // del penúltimo hacia la izquierda
+
+  let suma = 0;
+  let j = factores.length - 1;
+  for (let i = numero.length - 1; i >= 0; i--) {
+    suma += numero[i] * factores[j];
+    j--;
+    if (j < 0) j = factores.length - 1;
+  }
+
+  let resto = suma % 11;
+  let verificadorCalc = resto === 0 || resto === 1 ? resto : 11 - resto;
+
+  return verificadorCalc === dv;
+}
+
+
 export function validateRule(rule, value) {
   const v = typeof value === "string" ? value.trim() : value;
 
@@ -430,7 +465,6 @@ export function validateRule(rule, value) {
       }
       break;
 
-
     case "youtubeUrl":
       const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{11}([&?].*)?$/;
       if (v && !youtubeRegex.test(v)) return rule.message;
@@ -452,6 +486,10 @@ export function validateRule(rule, value) {
         }
       }
       break;
+    case "nitValid":
+      if (v && !isValidNit(String(v))) return rule.message;
+      break;
+
 
   }
 

@@ -11,7 +11,7 @@ export default function FiltroSuperior({ filtersLocal, handleFilterChange, setFi
     useEffect(() => {
         const handler = setTimeout(() => {
             setDebouncedQuery(query);
-        }, 500); // espera 300ms después de que el usuario deja de escribir
+        }, 300); // espera 300ms después de que el usuario deja de escribir
 
         return () => clearTimeout(handler);
     }, [query]);
