@@ -1,4 +1,5 @@
 import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 import { useEffect, useRef, useState } from "react";
 import Swal from 'sweetalert2';
 import { API_CLIENT_URL, WS_CLIENT_URL } from '../services/Api';
@@ -9,7 +10,7 @@ const ChatBox = ({ chatId }) => {
   const [input, setInput] = useState("");
   const [chatInfo, setChatInfo] = useState(null);
   const [chatChange, setChatChange] = useState(null);
-  const [ setUserRole] = useState(null);
+  const [ userRole ,setUserRole] = useState(null);
   const stompClient = useRef(null);
   const messagesEndRef = useRef(null);
   useEffect(() => {
@@ -60,7 +61,8 @@ const ChatBox = ({ chatId }) => {
     const { tipoChat} = chatInfo;
 
     const client = new Client({
-      brokerURL: `${WS_CLIENT_URL}/chats`,
+      // brokerURL: `${WS_CLIENT_URL}/chats`,
+      webSocketFactory: () => new SockJS(`${WS_CLIENT_URL}/chats`),
       reconnectDelay: 5000,
 
       onConnect: () => {

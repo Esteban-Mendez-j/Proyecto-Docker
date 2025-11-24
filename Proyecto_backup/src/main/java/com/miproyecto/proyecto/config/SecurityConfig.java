@@ -115,13 +115,6 @@ public class SecurityConfig {
                 .successHandler(customSuccessHandler(jwtUtils))
 				.permitAll()
 			)
-			.logout(logout -> logout                                   
-				.logoutUrl("/usuarios/cerrarSesion")
-				.logoutSuccessUrl(urlFront +"/login?logout")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID", "jwtToken")
-				.permitAll()
-            )
             .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class);
         return http.build();
     }

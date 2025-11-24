@@ -1,9 +1,11 @@
 package com.miproyecto.proyecto.rest;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +24,14 @@ import com.miproyecto.proyecto.model.UsuarioDTO;
 import com.miproyecto.proyecto.service.UsuarioService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 
@@ -34,12 +41,40 @@ import jakarta.validation.Valid;
 @RequestMapping(value = "/api/usuarios", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UsuarioResource {
 
+    @Value("${app.url.frontEnd}")
+    private String urlFront;
     private final UsuarioService usuarioService;
     private final JwtUtils jwtUtils;
 
     public UsuarioResource(UsuarioService usuarioService, JwtUtils jwtUtils) {
         this.usuarioService = usuarioService;
         this.jwtUtils = jwtUtils;
+    }
+
+    @PostMapping("/cerrarSesion")
+    public ResponseEntity<Map<String, Object>> logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // Invalida la sesión HTTP (si existe)
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
+        // Borra cookies
+        Cookie jwtCookie = new Cookie("jwtToken", null);
+        jwtCookie.setPath("/");
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setMaxAge(0);
+        response.addCookie(jwtCookie);
+
+        Cookie jsessionCookie = new Cookie("JSESSIONID", null);
+        jsessionCookie.setPath("/");
+        jsessionCookie.setMaxAge(0);
+        response.addCookie(jsessionCookie);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("status", HttpStatus.UNAUTHORIZED.value());
+        responseMap.put("mensaje", "Sesion Cerrada");
+        return ResponseEntity.ok(responseMap);
     }
 
     @Operation(

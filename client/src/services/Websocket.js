@@ -1,10 +1,12 @@
 import { Client } from "@stomp/stompjs";
 import { WS_CLIENT_URL } from "./Api";
+import SockJS from "sockjs-client";
 
 const subscriptions = []; // ← almacena todas las suscripciones pendientes
 
 const stompClient = new Client({
-  brokerURL: `${WS_CLIENT_URL}/chats`,
+  // brokerURL: `${WS_CLIENT_URL}/chats`,
+  webSocketFactory: () => new SockJS(`${WS_CLIENT_URL}/chats`),
   reconnectDelay: 5000,
 
   onConnect: () => {

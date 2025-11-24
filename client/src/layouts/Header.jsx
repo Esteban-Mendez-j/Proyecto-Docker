@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useSendForm } from "../hooks/useFetch.jsx";
 import useVisible from "../hooks/useVisible.jsx";
-import { API_CLIENT_URL, URL_IMAGEN } from "../services/Api";
+import { URL_IMAGEN } from "../services/Api";
 import { RoleContext } from "../services/RoleContext.jsx";
 import "../style/invitado/header.css";
 import { clearLocalStore } from "../services/localStore"
@@ -10,7 +10,7 @@ import BandejaNotificacion from "../components/BandejaNotificacion.jsx";
 
 export default function Header () {
 
-    const {rol} = useContext(RoleContext);
+    const {rol, logout} = useContext(RoleContext);
     const [urlImagen, setUrlImagen] = useState(null);
     const [handleOnClick, visible] = useVisible()
     const { data, send }  = useSendForm();
@@ -120,7 +120,7 @@ export default function Header () {
                         <button className="nav-link"
                             onClick={() => {
                                 clearLocalStore()
-                                window.location.href = `${API_CLIENT_URL}/usuarios/cerrarSesion`;
+                                logout("Sesion cerrada", "success");
                             }}>
                             Cerrar Sesion
                         </button>

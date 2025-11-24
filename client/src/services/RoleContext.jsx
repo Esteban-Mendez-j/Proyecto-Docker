@@ -1,25 +1,29 @@
 import { createContext, useState, useEffect } from "react";
-import { useFetch } from "../hooks/useFetch.jsx";
+import { useFetch, useSendForm } from "../hooks/useFetch.jsx";
 import { modalResponse } from "./Modal";
-import { API_CLIENT_URL } from "./Api";
-
 export const RoleContext = createContext(null);
 
 export function RoleSesion({ children }) {
     const [rol, setRol] = useState(null);
     const {data, loading, error} = useFetch("/api/usuarios/rol", "GET");
-    
-    async function logout (mensaje) {
-        const res = await modalResponse(mensaje, "error");
-        if(res){
-            window.location.href = `${API_CLIENT_URL}/usuarios/cerrarSesion`;
-            return;
+    const {send} = useSendForm();
+
+    async function logout(mensaje, type) {
+        const res = await modalResponse(mensaje, type);
+        if (res) {
+            const resultado = await send("/api/usuarios/cerrarSesion", "POST");
+            if (resultado.ok) {
+                window.location.href = "/login";
+            } else {
+                console.error("Error al cerrar sesión");
+                window.location.href = "/login"; // opcionalmente siempre redirigir
+            }
         }
     }
 
     useEffect(()=>{
         if(error){
-            logout(error);
+            logout(error, "error");
         }
         if(!data){
             return;
@@ -28,7 +32,7 @@ export function RoleSesion({ children }) {
     },[data, error])
 
     return (
-        <RoleContext.Provider value={{ rol, setRol, loading, error}}>
+        <RoleContext.Provider value={{ rol, setRol, loading, error, logout}}>
             {children}
         </RoleContext.Provider>
     );
