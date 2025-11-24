@@ -28,7 +28,6 @@ import com.miproyecto.proyecto.util.JwtUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -52,30 +51,30 @@ public class UsuarioResource {
     }
 
     @PostMapping("/cerrarSesion")
-    public ResponseEntity<Map<String, Object>> logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ResponseEntity<Map<String, Object>> logout(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         // Invalida la sesión HTTP (si existe)
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
 
-        // Borra cookies
-        Cookie jwtCookie = new Cookie("jwtToken", null);
-        jwtCookie.setPath("/");
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setMaxAge(0);
-        response.addCookie(jwtCookie);
+        // Borra JWT
+        response.addHeader(
+                "Set-Cookie",
+                "jwtToken=; HttpOnly; Secure; Path=/; Max-Age=0; SameSite=None; Domain=searchjobs.up.railway.app");
 
-        Cookie jsessionCookie = new Cookie("JSESSIONID", null);
-        jsessionCookie.setPath("/");
-        jsessionCookie.setMaxAge(0);
-        response.addCookie(jsessionCookie);
+        // Borra JSESSIONID
+        response.addHeader(
+                "Set-Cookie",
+                "JSESSIONID=; HttpOnly; Secure; Path=/; Max-Age=0; SameSite=None; Domain=searchjobs.up.railway.app");
 
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("status", HttpStatus.UNAUTHORIZED.value());
-        responseMap.put("mensaje", "Sesion Cerrada");
+        responseMap.put("mensaje", "Sesión Cerrada");
         return ResponseEntity.ok(responseMap);
     }
+
 
     @Operation(
         summary = "Obtener rol de usuario",
