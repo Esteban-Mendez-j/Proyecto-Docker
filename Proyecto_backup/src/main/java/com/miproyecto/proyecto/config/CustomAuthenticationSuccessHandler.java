@@ -40,8 +40,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         // Crear cookie JWT correctamente
         ResponseCookie jwtCookie = ResponseCookie.from("jwtToken", jwtToken)
         .httpOnly(true)
-        .secure(false) // true si usas HTTPS en producción
-        .sameSite("lix") // O "Strict" según necesites
+        .secure(true) // true si usas HTTPS en producción
+        .sameSite("None") // O "Strict" según necesites
         .path("/")
         .maxAge(60*60)
         .build();

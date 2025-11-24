@@ -24,7 +24,6 @@ import com.miproyecto.proyecto.util.JwtUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.servlet.http.HttpSession;
 
 
 @RestController
@@ -73,7 +72,6 @@ public class VacanteFavoritaResource {
     
 @GetMapping("/listar")
 public ResponseEntity<Map<String, Object>> listarVacantesFavoritasPerfil(
-        HttpSession session,
         @PageableDefault(page = 0, size = 10) Pageable pageable,
         @CookieValue(name = "jwtToken", required = true) String jwtToken) {
     

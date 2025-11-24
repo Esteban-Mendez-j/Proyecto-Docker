@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,7 +38,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.groups.Default;
 
@@ -78,14 +78,14 @@ public class CandidatoResource {
     public ResponseEntity<Map<String, Object>> mostrarPerfil(
         @RequestParam(required = false) Long idUsuario,
         @RequestParam(required = false) Long nPostulacion,
-        Model model, HttpSession session) {
+        Model model, 
+        @CookieValue(name = "jwtToken", required = false) String jwtToken) {
 
         Map<String, Object> response = new HashMap<>();
         String rol = null; 
         try {
             // 1. Obtener ID del token si no viene por parámetro
             if (idUsuario == null) {
-                String jwtToken = (String) session.getAttribute("jwtToken");
                 if (jwtToken == null) {
                     response.put("error", "No se encontró token de sesión");
                     return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);

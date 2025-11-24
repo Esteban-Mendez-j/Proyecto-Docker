@@ -32,7 +32,6 @@ import com.miproyecto.proyecto.util.JwtUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.groups.Default;
 
@@ -62,13 +61,13 @@ public class EmpresaResource {
         }
     )
     @GetMapping("/perfil")
-    public ResponseEntity<Map<String, Object>> mostrarPerfil( Model model,HttpSession session,
+    public ResponseEntity<Map<String, Object>> mostrarPerfil( Model model,
+            @CookieValue(name = "jwtToken", required = true) String jwtToken,
             @RequestParam(required = false) Long idUsuario) {        
         
         Map<String, Object> response = new HashMap<>();     
         if (idUsuario == null) {
             // Sacamos el ID del usuario que inicia sesion
-            String jwtToken = (String) session.getAttribute("jwtToken");
             DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
             idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
         } 

@@ -34,7 +34,6 @@ import com.miproyecto.proyecto.util.JwtUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Tag(name = "Vacantes", description = "Operaciones relacionadas con la gestión y consulta de vacantes")
@@ -64,10 +63,9 @@ public class VacanteResource {
     @Operation(summary = "Listar vacantes propias", description = "Devuelve las vacantes creadas por el usuario autenticado (empresa).")
     @GetMapping
     public ResponseEntity<Map<String,Object>> list(
-            HttpSession session,
+            @CookieValue(name = "jwtToken", required = true) String jwtToken,
             @PageableDefault(page = 0, size = 10) Pageable pageable) {
 
-        String jwtToken = (String) session.getAttribute("jwtToken");
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
 
@@ -78,11 +76,10 @@ public class VacanteResource {
     @Operation(summary = "Buscar vacantes con filtros (empresa)", description = "Filtra las vacantes propias de la empresa autenticada.")
     @PostMapping("/listar")
     public ResponseEntity<Map<String, Object>> listarVacantes(
-            HttpSession session,
+            @CookieValue(name = "jwtToken", required = true) String jwtToken,
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             @RequestBody FiltroVacanteDTO filtro) {
 
-        String jwtToken = (String) session.getAttribute("jwtToken");
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         filtro.setIdUsuario(Long.parseLong(jwtUtils.extractUsername(decodedJWT)));
         Long idUsuarioPostulacion = 0L;
@@ -93,8 +90,8 @@ public class VacanteResource {
 
     @Operation(summary = "Vacantes más populares", description = "Devuelve las vacantes con más postulaciones para la empresa autenticada.")
     @GetMapping("/popular/listar")
-    public ResponseEntity<Map<String, Object>> TopVacantes(HttpSession session) {
-        String jwtToken = (String) session.getAttribute("jwtToken");
+    public ResponseEntity<Map<String, Object>> TopVacantes(
+        @CookieValue(name = "jwtToken", required = true) String jwtToken) {
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idEmpresa = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
 
@@ -118,7 +115,6 @@ public class VacanteResource {
     @Operation(summary = "Listar vacantes filtradas", description = "Filtra y ordena por predicción las vacantes activas para candidatos e invitados.")
     @PostMapping("/listar/filtradas")
     public ResponseEntity<Map<String, Object>> listarVacantesFiltradas(
-            HttpSession session,
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             @CookieValue(required = false) String jwtToken,
             @RequestBody FiltroVacanteDTO filtro) {

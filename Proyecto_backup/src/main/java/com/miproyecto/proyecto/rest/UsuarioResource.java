@@ -25,7 +25,6 @@ import com.miproyecto.proyecto.util.JwtUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 
@@ -50,8 +49,7 @@ public class UsuarioResource {
     @ApiResponse(responseCode = "200", description = "Rol obtenido correctamente")
     @GetMapping("/rol")
     public ResponseEntity<Map<String, Object>> getRol(
-            @CookieValue(required = false) String jwtToken,
-            HttpSession session) {
+            @CookieValue(required = false) String jwtToken) {
 
         Map<String, Object> response = new HashMap<>();
         if (jwtToken == null) {

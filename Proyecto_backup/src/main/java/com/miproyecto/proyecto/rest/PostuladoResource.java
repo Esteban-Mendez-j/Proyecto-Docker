@@ -34,7 +34,6 @@ import com.miproyecto.proyecto.util.JwtUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
 
 @Tag(name = "Postulados", description = "Operaciones relacionadas con las postulaciones a vacantes")
 @RestController
@@ -92,14 +91,13 @@ public class PostuladoResource {
     )
     @GetMapping("/lista/candidato")
     public ResponseEntity<Map<String, Object>> listaByIdUsuario(
-            HttpSession session,
+            @CookieValue(name = "jwtToken", required = true) String jwtToken,
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             @RequestParam(required = false) String estado,
             @RequestParam(required = false) LocalDate fechaMinima,
             @RequestParam(required = false) String tituloVacante,
             @RequestParam(required = false) String empresa
     ) {
-        String jwtToken = (String) session.getAttribute("jwtToken");
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
 
@@ -116,10 +114,9 @@ public class PostuladoResource {
     @PostMapping("/add/{nvacantes}")
     public ResponseEntity<Map<String, Object>> addPostulacion(
             @PathVariable Long nvacantes,
-            HttpSession session) throws Exception {
+            @CookieValue(name = "jwtToken", required = true) String jwtToken) throws Exception {
 
         Map<String, Object> response = new HashMap<>();
-        String jwtToken = (String) session.getAttribute("jwtToken");
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
 

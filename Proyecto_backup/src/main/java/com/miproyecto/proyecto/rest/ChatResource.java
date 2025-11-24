@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -186,9 +185,9 @@ public class ChatResource {
         @ApiResponse(responseCode = "403", description = "Solo la empresa que creó el chat puede cambiar su estado")
     })
     @PatchMapping("/{chatId}/estado")
-    public ResponseEntity<Void> cambiarEstadoChat(@PathVariable String chatId, @RequestParam boolean isActive, HttpSession session) {
+    public ResponseEntity<Void> cambiarEstadoChat(@PathVariable String chatId, @RequestParam boolean isActive, 
+        @CookieValue(name = "jwtToken", required = true) String jwtToken) {
         // Verificar que el chat existe
-        String jwtToken = (String) session.getAttribute("jwtToken");
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         String idUsuario = jwtUtils.extractUsername(decodedJWT);
 

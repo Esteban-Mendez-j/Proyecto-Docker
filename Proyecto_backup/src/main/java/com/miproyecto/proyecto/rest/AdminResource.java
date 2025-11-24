@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,7 +28,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
 
 @Tag(name = "Administrador", description = "Operaciones relacionadas con la gestión de roles, vacantes y usuarios")
 @RestController
@@ -56,14 +56,13 @@ public class AdminResource {
     
     @GetMapping("/listar/filtrados")
     public ResponseEntity<Map<String, Object>> listarUsuariosFiltrados(
-            HttpSession session,
+            @CookieValue(name = "jwtToken", required = false) String jwtToken,
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             @Parameter(description = "Nombre del usuario a filtrar") @RequestParam(required = false) String nombre,
             @Parameter(description = "Nombre del usuario a filtrar") @RequestParam(required = false) String correo,
             @Parameter(description = "Rol principal a filtrar") @RequestParam(name = "rolPrinciapl", required = false) String rol,
             @Parameter(description = "Estado activo/inactivo") @RequestParam(required = false) Boolean estado) {
 
-        String jwtToken = (String) session.getAttribute("jwtToken");
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
         String rolUsuario = decodedJWT.getClaim("rolPrincipal").asString();
@@ -79,7 +78,8 @@ public class AdminResource {
     )
     @PostMapping("/listar/filtrovacantes")
     public ResponseEntity<Map<String, Object>> listarVacantes(
-        HttpSession session, @PageableDefault(page = 0, size = 10) Pageable pageable,
+        @CookieValue(name = "jwtToken") String jwtToken,
+        @PageableDefault(page = 0, size = 10) Pageable pageable,
         @RequestBody FiltroVacanteDTO filtro) {
         Long idCadidato= 0L;
         Map<String, Object> response = vacanteService.buscarVacantesConFiltros(idCadidato, filtro, pageable);
