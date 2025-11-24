@@ -189,7 +189,7 @@ public class ChatService {
     public void cambiarEstadoChat(String chatId, boolean nuevoEstado, String mensajeContent) {
         Chat chat = chatRepository.findById(chatId).orElse(null);
         if(chat == null){return;}
-       
+        chat.setMensajeCierre(mensajeContent);
         chat.setIsActive(nuevoEstado);
         chatRepository.save(chat);
 
@@ -198,7 +198,6 @@ public class ChatService {
         }
         String empresaId = usuarioService.get(Long.parseLong(chat.getEmpresaId())).getCorreo();
         String candidatoId = usuarioService.get(Long.parseLong(chat.getCandidatoId())).getCorreo();
-        System.out.println("mensaje: "+ mensajeContent);
         messagingTemplate.convertAndSendToUser(empresaId, "/queue/chat-change", mensajeContent);
         messagingTemplate.convertAndSendToUser(candidatoId, "/queue/chat-change", mensajeContent);
     }
@@ -216,6 +215,7 @@ public class ChatService {
         chatDTO.setNombreEmpresa(chat.getNombreEmpresa());
         chatDTO.setTituloVacante(chat.getTituloVacante());
         chatDTO.setTipoChat(chat.getTipoChat());
+        chatDTO.setMensajeCierre(chat.getMensajeCierre());
         return chatDTO;
     }
 
@@ -230,6 +230,7 @@ public class ChatService {
         chat.setNombreEmpresa(chatDTO.getNombreEmpresa());
         chat.setTituloVacante(chatDTO.getTituloVacante());
         chat.setTipoChat(chatDTO.getTipoChat());
+        chat.setMensajeCierre(chatDTO.getMensajeCierre());
         return chat;
     }
 

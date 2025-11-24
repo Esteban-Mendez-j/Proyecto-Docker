@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Swal from 'sweetalert2';
 import { API_CLIENT_URL, WS_CLIENT_URL } from '../services/Api';
 import { manejarRespuesta } from '../services/ManejarRespuesta';
+import { modalTime } from "../services/Modal";
 
 const ChatBox = ({ chatId }) => {
   const [messages, setMessages] = useState([]);
@@ -84,7 +85,6 @@ const ChatBox = ({ chatId }) => {
         client.subscribe(`/user/queue/chat-change`, (msg) => {
           const contenido = msg.body;
           setChatChange(contenido);
-          console.log(contenido)
           localStorage.setItem(`chat-mensaje-${chatId}`, contenido);
         });
 
@@ -154,7 +154,7 @@ const ChatBox = ({ chatId }) => {
       });
 
       if (response.ok) {
-        await Swal.fire({ text: `Chat ${estado? "Abierto":"Cerrardo"} correctamente`, icon: 'info' });        
+        modalTime(`Chat ${estado? "Abierto":"Cerrardo"} correctamente`)      
         setChatInfo(prev => ({
           ...prev,
           chatInfo: {
@@ -248,7 +248,7 @@ const ChatBox = ({ chatId }) => {
 
       {!chatInfo.chatInfo.isActive && (
         <div className="p-4 border-t bg-white text-center text-red-600 font-semibold">
-          {chatChange}
+          {chatInfo.chatInfo.mensajeCierre? chatInfo.chatInfo.mensajeCierre : chatChange}
         </div>
       )}
 

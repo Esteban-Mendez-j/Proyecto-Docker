@@ -20,8 +20,15 @@ public class Chat {
     private String tituloVacante;
     private Boolean isActive;
     private String vacanteId;
-    private String tipoChat;    
+    private String tipoChat;  
+    private String mensajeCierre;
 
+    public String getMensajeCierre() {
+        return mensajeCierre;
+    }
+    public void setMensajeCierre(String mensajeCierre) {
+        this.mensajeCierre = mensajeCierre;
+    }
     public String getTipoChat() {
         return tipoChat;
     }

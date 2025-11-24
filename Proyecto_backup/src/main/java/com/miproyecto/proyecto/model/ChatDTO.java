@@ -15,7 +15,14 @@ public class ChatDTO {
     private String ContentUltimoMensaje;
     private LocalDateTime horaUltimoMensaje;
     private String tipoChat;
+    private String mensajeCierre;
 
+    public String getMensajeCierre() {
+        return mensajeCierre;
+    }
+    public void setMensajeCierre(String mensajeCierre) {
+        this.mensajeCierre = mensajeCierre;
+    }
     public String getTipoChat() {
         return tipoChat;
     }
