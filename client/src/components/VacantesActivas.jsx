@@ -120,9 +120,7 @@ const VacantesActivas = () => {
 
       await Swal.fire('Éxito', 'El estado de la vacante fue actualizado.', 'success');
 
-      const vacantesRes = await fetchVacantes();
-      const data = await vacantesRes.json();
-      setVacantes(data.vacantes || []);
+      await fetchVacantes(); // Esto ya actualiza las vacantes
 
     } catch (err) {
       console.error('Error al cambiar el estado de la vacante:', err);

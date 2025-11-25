@@ -122,60 +122,70 @@ const EditarPerfilEmpresa = () => {
           className="mx-auto w-full max-w-5xl space-y-10 rounded-3xl bg-white/90 backdrop-blur shadow-2xl ring-1 ring-sky-100 p-10"
         >
           {/* Cabecera */}
-          <div className="flex flex-col md:flex-row items-center gap-8">
-            {/* Logo */}
-            <div className="relative shrink-0">
+          <div className="flex flex-col md:flex-row items-center gap-4">
+
+            {/* Logo con botones arriba */}
+            <div className="relative shrink-0 pb-6 px-12">
+
               <img
                 id="logo-preview"
                 src={
                   preview
                     ? preview
                     : empresa.imagen
-                    ? `${URL_IMAGEN}${empresa.imagen}`
-                    : `/imgEmpresa.png`
+                      ? `${URL_IMAGEN}${empresa.imagen}`
+                      : `/imgEmpresa.png`
                 }
                 alt="Logo"
-                className="w-28 h-28 md:w-32 md:h-32 rounded-full border-4 border-white shadow-lg object-cover ring-4 ring-sky-200"
+                className="w-28 h-28 md:w-32 md:h-32 rounded-full border-4 border-white shadow-md object-cover ring-4 ring-sky-200"
               />
 
-                <label
-                  htmlFor="logo-upload"
-                  className="absolute -bottom-2 -right-2 grid place-items-center h-10 w-10 rounded-full bg-sky-600 hover:bg-sky-700 transition shadow-md text-white cursor-pointer"
-                  title="Cambiar logo"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
+              {/* BOTÓN EDITAR ENCIMA */}
+              <label
+                htmlFor="logo-upload"
+                className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2
+             bg-sky-600 hover:bg-sky-700 text-white text-sm
+             px-4 py-1.5 rounded-md cursor-pointer shadow-md flex items-center gap-1"
+              >
+                ✏️ Editar
+              </label>
+
+
+              <input
+                id="logo-upload"
+                ref={fotoRef}
+                type="file"
+                name="img"
+                accept="image/*"
+                className="hidden"
+                onChange={handleLogoChange}
+              />
+
+              <input type="hidden" name="imagen" value={empresa.imagen} />
+
+              {/* Mensaje fijo */}
+              <div className="h-5 mt-2">
+                {!error?.img && (
+                  <p className="text-ms text-gray-600 text-center">
+                    Máx. <strong>{maxImgSize}KB</strong>
+                  </p>
+                )}
+                {error?.img && (
+                  <p
+                    className="text-sm text-red-500 text-center font-medium  decoration-dotted cursor-help"
+                    title={error.img}
                   >
-                    <path d="M3 7h2l2-3h10l2 3h2a2 2 0 0 1 2 2v9a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3V9a2 2 0 0 1 2-2Z"></path>
-                    <circle cx="12" cy="13" r="4"></circle>
-                  </svg>
-                </label>
+                    Imagen muy Pesada
+                  </p>
 
-                <input
-                  id="logo-upload"
-                  ref={fotoRef}
-                  type="file"
-                  name="img"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleLogoChange}
-                />
+                )}
+              </div>
 
-                <input type="hidden" name="imagen" value={empresa.imagen} />
-                {!error?.img &&<p className="text-sm text-gray-600 mt-2">
-                 Máximo <strong>{maxImgSize}KB</strong>.
-              </p>}
-
-                {error?.img &&<p className="error-text">{error.img}</p>}
             </div>
 
-            {/* Nombre & Sector */}
-            <div className="flex-1 w-full space-y-4">
+            {/* Inputs */}
+            <div className="flex-1 w-full space-y-3">
+
               <InputForm
                 type="text"
                 name="nombre"
@@ -184,7 +194,8 @@ const EditarPerfilEmpresa = () => {
                 error={error}
                 submitted={submitted}
                 rules={formRulesEmpresaEditar}
-                className="w-full text-3xl font-semibold bg-transparent border-b-2 border-sky-200 focus:border-sky-500 focus:outline-none"
+                className="w-full text-2xl font-semibold bg-transparent border-b-2 border-sky-200 
+                 focus:border-sky-500 focus:outline-none pb-1"
                 handleOnChange={handleOnChange}
               />
 
@@ -196,7 +207,7 @@ const EditarPerfilEmpresa = () => {
                 error={error}
                 submitted={submitted}
                 rules={formRulesEmpresaEditar}
-                className="form-control"
+                className="form-control text-base px-3 py-2"
               >
                 <option value="" disabled>Selecciona tu sector</option>
                 {sectores.map((sector, index) => (
@@ -205,8 +216,10 @@ const EditarPerfilEmpresa = () => {
               </InputForm>
 
             </div>
-            
+
           </div>
+
+
 
           {/* Contenido del perfil */}
           <div className="empresa-perfil-content">
@@ -337,22 +350,6 @@ const EditarPerfilEmpresa = () => {
               </div>
             </div>
 
-            {/* Descripción */}
-            <div className="empresa-descripcion-section">
-              <h2 className="empresa-section-title">Descripción</h2>
-              <InputForm
-                as="textarea"
-                rules={formRulesEmpresaEditar}
-                submitted={submitted}
-                name="descripcion"
-                value={empresa.descripcion}
-                error={error}
-                className={`empresa-descripcion-input ${error?.descripcion ? "error-input" : ""}`}
-                placeholder="Describe tu empresa, su misión, visión y valores..."
-                handleOnChange={handleOnChange}
-              />
-            </div>
-
             {/* Video de Presentación */}
             <div className="empresa-info-item">
               <svg
@@ -383,6 +380,24 @@ const EditarPerfilEmpresa = () => {
               </div>
             </div>
 
+
+            {/* Descripción */}
+            <div className="empresa-descripcion-section">
+              <h2 className="empresa-section-title">Descripción</h2>
+              <InputForm
+                as="textarea"
+                rules={formRulesEmpresaEditar}
+                submitted={submitted}
+                name="descripcion"
+                value={empresa.descripcion}
+                error={error}
+                className={`empresa-descripcion-input ${error?.descripcion ? "error-input" : ""}`}
+                placeholder="Describe tu empresa, su misión, visión y valores..."
+                handleOnChange={handleOnChange}
+              />
+            </div>
+
+            
             {/* Botones */}
             <div className="empresa-form-actions">
               <button type="submit" className="empresa-save-button">

@@ -203,7 +203,6 @@ if (loading) return <Loading />;
                 />
                 <div>
                   <h1>{currentShort.nameEmpresa}</h1>
-                  <h1>{currentShort.nvacantes}</h1>
                 </div>
               </Link>
 

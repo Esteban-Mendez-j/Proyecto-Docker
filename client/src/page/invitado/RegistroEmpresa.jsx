@@ -318,25 +318,28 @@ export default function RegistroEmpresa (){
                                 </ul>
                             </div>
 
-                            <div className="terms-container">
-                                <h3>Términos y condiciones</h3>
-                                <div className="terms-content">
-                                    <p>Al registrarte como empresa en SearchJobs, aceptas:</p>
-                                    <ol>
-                                        <li>1. Publicar exclusivamente ofertas laborales verificables, vigentes y auténticas.</li>
-                                        <li>2. Mantener información precisa, completa y actualizada en tu perfil empresarial y publicaciones.</li>
-                                        <li>3. Cumplir con las leyes laborales, de privacidad y contratación de tu país o región.</li>
-                                        <li>4. Evitar cualquier contenido ofensivo, fraudulento o discriminatorio.</li>
-                                        <li>5. Usar los datos personales de los candidatos únicamente con fines legítimos de selección.</li>
-                                        <li>6. Abstenerse de realizar actividades fraudulentas como suplantación o phishing.</li>
-                                        <li>7. Aceptar que SearchJobs puede revisar, suspender o eliminar publicaciones que incumplan estas</li>
-                                    </ol>
-                                </div>
-                            </div>
-
                             <div className="checkbox-group">
                                 <input type="checkbox" id="aceptoTerminos" required />
-                                <label htmlFor="aceptoTerminos">Acepto los términos y condiciones <span className="required">*</span></label>
+                               <label htmlFor="aceptoTerminos" className="flex items-center gap-1 text-sm">
+                                        Acepto los{" "}
+                                        <Link
+                                            to="/terminos/condiciones"
+                                            className="text-blue-600 hover:underline"
+                                            target="_blank"
+                                        >
+                                            Términos y Condiciones 
+                                        </Link>
+                                        {" "} y la {" "}
+                                        <Link
+                                            to="/politicas/privacidad"
+                                            className="text-blue-600 hover:underline"
+                                            target="_blank"
+                                        >
+                                            Política de Privacidad
+                                        </Link>
+
+                                        <span className="required">*</span>
+                                    </label>
                             </div>
 
                             <div className="step-buttons">

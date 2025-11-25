@@ -20,38 +20,37 @@ function PerfilCandidato() {
   const [candidato, setCandidato] = useState(null);
   const [estudios, setEstudios] = useState([]);
   const [historialLaboral, setHistorialLaboral] = useState([]);
-  const { data , error , loading } = useFetch("/api/candidatos/perfil", "GET");
+  const { data, error, loading } = useFetch("/api/candidatos/perfil", "GET");
 
   useEffect(() => {
 
-    if(!data){return}
+    if (!data) { return }
     setCandidato(data.candidato);
     setEstudios(data.estudios || []);
     setHistorialLaboral(data.historialLaboral || []);
 
   }, [data, error]);
   // mapeo de aptitudes
-const NOMBRES_APTITUDES = {
-  PensamientoCritico: "Pensamiento Crítico",
-  Creatividad: "Creatividad",
-  AtencionDetalle: "Atención al Detalle",
-  AprendizajeContinuo: "Aprendizaje Continuo",
-  EticaProfesional: "Ética Profesional",
-  Autonomia: "Autonomía",
-  Responsabilidad: "Responsabilidad",
-  Liderazgo: "Liderazgo",
-  Adaptabilidad: "Adaptabilidad",
-  ResolucionProblemas: "Resolución de Problemas",
-  ComunicacionAfectiva: "Comunicación Afectiva",
-  TrabajoEquipo: "Trabajo en Equipo",
-};
+  const NOMBRES_APTITUDES = {
+    PensamientoCritico: "Pensamiento Crítico",
+    Creatividad: "Creatividad",
+    AtencionDetalle: "Atención al Detalle",
+    AprendizajeContinuo: "Aprendizaje Continuo",
+    EticaProfesional: "Ética Profesional",
+    Autonomia: "Autonomía",
+    Responsabilidad: "Responsabilidad",
+    Liderazgo: "Liderazgo",
+    Adaptabilidad: "Adaptabilidad",
+    ResolucionProblemas: "Resolución de Problemas",
+    ComunicacionAfectiva: "Comunicación Afectiva",
+    TrabajoEquipo: "Trabajo en Equipo",
+  };
   if (!data || !candidato || !estudios || !historialLaboral || loading || error) {
-    return <Loading/>;
+    return <Loading />;
   }
 
   return (
     <Layout>
-      
 
       <div className="candidato-perfil-container">
         <div className="candidato-perfil">
@@ -77,12 +76,12 @@ const NOMBRES_APTITUDES = {
               </h1>
               <p className="candidato-cargo">
                 {candidato.experiencia
-                  ? `${candidato.experiencia}${candidato.experiencia > 1?" años":" año"} laborando`
-                  : ""}    
+                  ? `${candidato.experiencia}${candidato.experiencia > 1 ? " años" : " año"} laborando`
+                  : ""}
               </p>
               <h1 className="text-base font-semibold text-[var(--text)]">
-                      {candidato.nivelEducativo}
-                    </h1>
+                {candidato.nivelEducativo}
+              </h1>
             </div>
 
             {/* Botones */}
@@ -121,14 +120,14 @@ const NOMBRES_APTITUDES = {
             {/* Contacto */}
             <div className="candidato-info-grid">
               <div className="candidato-info-item">
-                <span className="candidato-info-label">Correo</span>
+                <span className="text-gray-600">Correo:</span>
                 <span className="candidato-info-value">
                   {candidato.correo}
                 </span>
               </div>
 
               <div className="candidato-info-item">
-                <span className="candidato-info-label">Teléfono</span>
+                <span className="text-gray-600">Teléfono:</span>
                 <span className="candidato-info-value">
                   {candidato.telefono}
                 </span>
@@ -138,48 +137,51 @@ const NOMBRES_APTITUDES = {
             {/* Descripción */}
             <div className="candidato-section">
               <h2 className="candidato-section-title">Descripción</h2>
-              <p className="candidato-descripcion">{candidato.descripcion}</p>
+              {candidato.descripcion ? (
+                <p className="candidato-descripcion">{candidato.descripcion}</p>
+              ) : (
+                <p className="italic text-gray-500">El candidato no ha agregado una descripción.</p>
+              )}
             </div>
+            
             {/* Video Presentación */}
-          <section className="mb-6 pb-6 border-b border-[var(--border)]">
-            <h2 className="text-[1.125rem] font-semibold text-[var(--text)] mb-4 pl-4 relative flex items-center">
-              <span className="absolute left-0 top-1 h-4/5 w-1 bg-[var(--gradient-primary)] rounded"></span>
-              Video de Presentación
-            </h2>
+            <section className="mb-6 pb-6 border-b border-[var(--border)]">
+              <h2 className="text-[1.125rem] font-semibold text-[var(--text)] mb-4 pl-4 relative flex items-center">
+                <span className="absolute left-0 top-1 h-4/5 w-1 bg-[var(--gradient-primary)] rounded"></span>
+                Video de Presentación
+              </h2>
 
-    {candidato.videoLink ? (
-  <a
-    href={candidato.videoLink}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="block p-4 border rounded-xl shadow-sm hover:shadow-md transition"
-  >
-    🎥 Video de presentación del candidato
-  </a>
-) : (
-  <p className="italic text-gray-500">El candidato aún no ha agregado un video de presentación.</p>
-)}
-
-
-
-
-
-          </section>
-
-
+              {candidato.videoLink ? (
+                <a
+                  href={candidato.videoLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block p-4 border rounded-xl shadow-sm hover:shadow-md transition"
+                >
+                  🎥 Video de presentación del candidato
+                </a>
+              ) : (
+                <p className="italic text-gray-500">El candidato aún no ha agregado un video de presentación.</p>
+              )}
+            </section>
 
             <div className="candidato-section">
               <h2 className="candidato-section-title">Aptitudes</h2>
 
               <div className="flex flex-wrap gap-3">
-                {candidato.aptitudes.map((label) => (
-                  <label
-                    key={candidato.aptitudes.indexOf(label)}
-                    className={"px-4 py-2 rounded-2xl border transition-all duration-200 bg-blue-600 text-white border-blue-600 shadow-md scale-105"}
-                  >
-                   {NOMBRES_APTITUDES[label] || label}
-              </label>
-                ))}
+                {candidato.aptitudes && candidato.aptitudes.length > 0 ? (
+                  candidato.aptitudes.map((label, index) => (
+                    <label
+                      key={index}
+                      className="px-4 py-2 rounded-2xl border transition-all duration-200 bg-blue-600 text-white border-blue-600 shadow-md scale-105"
+                    >
+                      {NOMBRES_APTITUDES[label] || label}
+                    </label>
+                  ))
+                ) : (
+                  <p className="italic text-gray-500">El candidato no ha agregado aptitudes.</p>
+                )}
+
               </div>
             </div>
 
@@ -190,21 +192,24 @@ const NOMBRES_APTITUDES = {
                 Estudios
               </h2>
               <div className="space-y-6 mt-4">
-                {estudios.map((estudio, index) => (
-                  <div
-                    key={index}
-                    className="relative pl-6 border-l-2 border-[var(--border)] pb-4"
-                  >
-                    <div className="absolute -left-[0.4rem] top-0 w-3 h-3 bg-[var(--primary)] rounded-full border-2 border-white" />
-                    <h3 className="text-base font-semibold text-[var(--text)]">
-                      {estudio.titulo}
-                    </h3>
-                    <p className="text-sm text-[var(--primary)]">
-                      {estudio.academia}
-                    </p>
-                    
-                  </div>
-                ))}
+                {estudios.length === 0 ? (
+                  <p className="italic text-gray-500">No hay estudios registrados.</p>
+                ) : (
+                  estudios.map((estudio, index) => (
+                    <div
+                      key={index}
+                      className="relative pl-6 border-l-2 border-[var(--border)] pb-4"
+                    >
+                      <div className="absolute -left-[0.4rem] top-0 w-3 h-3 bg-[var(--primary)] rounded-full border-2 border-white" />
+                      <h3 className="text-base font-semibold text-[var(--text)]">
+                        {estudio.titulo}
+                      </h3>
+                      <p className="text-sm text-[var(--primary)]">
+                        {estudio.academia}
+                      </p>
+                    </div>
+                  ))
+                )}
               </div>
             </section>
 
@@ -215,28 +220,33 @@ const NOMBRES_APTITUDES = {
                 Historial Laboral
               </h2>
               <div className="space-y-6 mt-4">
-                {historialLaboral.map((exp, index) => (
-                  <div
-                    key={index}
-                    className="relative pl-6 border-l-2 border-[var(--border)] pb-4"
-                  >
-                    <div className="absolute -left-[0.4rem] top-0 w-3 h-3 bg-[var(--primary)] rounded-full border-2 border-white" />
-                    <h3 className="text-base font-semibold text-[var(--text)]">
-                      {exp.titulo}
-                    </h3>
-                    <p className="text-sm text-[var(--primary)]">
-                      {exp.empresa}
-                    </p>
-                  </div>
-                ))}
+                {historialLaboral.length === 0 ? (
+                  <p className="italic text-gray-500">No hay experiencia laboral registrada.</p>
+                ) : (
+                  historialLaboral.map((exp, index) => (
+                    <div
+                      key={index}
+                      className="relative pl-6 border-l-2 border-[var(--border)] pb-4"
+                    >
+                      <div className="absolute -left-[0.4rem] top-0 w-3 h-3 bg-[var(--primary)] rounded-full border-2 border-white" />
+                      <h3 className="text-base font-semibold text-[var(--text)]">
+                        {exp.titulo}
+                      </h3>
+                      <p className="text-sm text-[var(--primary)]">
+                        {exp.empresa}
+                      </p>
+                    </div>
+                  ))
+                )}
+
               </div>
             </section>
           </div>
         </div>
       </div>
     </Layout>
-   
-    
+
+
   );
 }
 

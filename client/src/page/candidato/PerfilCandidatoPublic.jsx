@@ -96,14 +96,14 @@ function PerfilCandidatoPublic() {
             {/* Contacto */}
             <div className="candidato-info-grid">
               <div className="candidato-info-item">
-                <span className="candidato-info-label">Correo</span>
+                <span className="text-gray-600">Correo:</span>
                 <span className="candidato-info-value">
                   {candidato.correo}
                 </span>
               </div>
 
               <div className="candidato-info-item">
-                <span className="candidato-info-label">Teléfono</span>
+                <span className="text-gray-600">Teléfono:</span>
                 <span className="candidato-info-value">
                   {candidato.telefono}
                 </span>
@@ -113,7 +113,11 @@ function PerfilCandidatoPublic() {
             {/* Descripción */}
             <div className="candidato-section">
               <h2 className="candidato-section-title">Descripción</h2>
-              <p className="candidato-descripcion">{candidato.descripcion}</p>
+              {candidato.descripcion ? (
+                <p className="candidato-descripcion">{candidato.descripcion}</p>
+              ) : (
+                <p className="italic text-gray-500">El candidato no ha agregado una descripción.</p>
+              )}
             </div>
 
             {/* Estudios */}
@@ -123,7 +127,11 @@ function PerfilCandidatoPublic() {
                 Estudios
               </h2>
               <div className="space-y-6 mt-4">
-                {estudios.map((estudio, index) => (
+
+                {estudios.length === 0 ? (
+                  <p className="italic text-gray-500">No hay estudios registrados.</p>
+                ) : (
+                  estudios.map((estudio, index) => (
                   <div
                     key={index}
                     className="relative pl-6 border-l-2 border-[var(--border)] pb-4"
@@ -139,7 +147,8 @@ function PerfilCandidatoPublic() {
                       {estudio.nivelEducacion}
                     </h3>
                   </div>
-                ))}
+                ))
+                )}
               </div>
             </section>
 

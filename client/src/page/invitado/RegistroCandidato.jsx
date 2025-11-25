@@ -344,43 +344,29 @@ export default function RegistroCandidato() {
                             </div>
 
                             <div className="form-group">
-                                <div className="terms-container">
-                                    <h3>Términos y condiciones</h3>
-                                    <div className="terms-content">
-                                        <p>
-                                            Al registrarte en SearchJobs, aceptas los siguientes
-                                            términos y condiciones:
-                                        </p>
-                                        <ol>
-                                            <li>
-                                                1. SearchJobs actúa como una plataforma de conexión
-                                                entre candidatos y empresas, pero no es responsable de
-                                                las ofertas laborales publicadas por terceros.
-                                            </li>
-                                            <li>
-                                                2. La información proporcionada en tu perfil debe ser
-                                                veraz y actualizada.
-                                            </li>
-                                            <li>
-                                                3. Eres responsable de mantener la confidencialidad de
-                                                tu contraseña y cuenta.
-                                            </li>
-                                            <li>
-                                                4. SearchJobs puede enviar notificaciones relacionadas
-                                                con ofertas de empleo y actualizaciones de la
-                                                plataforma.
-                                            </li>
-                                            <li>
-                                                5. Tu información personal será tratada de acuerdo con
-                                                nuestra Política de Privacidad.
-                                            </li>
-                                        </ol>
-                                    </div>
-                                </div>
 
                                 <div className="checkbox-group">
                                     <input type="checkbox" id="aceptoTerminos" required />
-                                    <label htmlFor="aceptoTerminos">Acepto los términos y condiciones <span className="required">*</span></label>
+                                    <label htmlFor="aceptoTerminos" className="flex items-center gap-1 text-sm">
+                                        Acepto los{" "}
+                                        <Link
+                                            to="/terminos/condiciones"
+                                            className="text-blue-600 hover:underline"
+                                            target="_blank"
+                                        >
+                                            Términos y Condiciones 
+                                        </Link>
+                                        {" "} y la {" "}
+                                        <Link
+                                            to="/politicas/privacidad"
+                                            className="text-blue-600 hover:underline"
+                                            target="_blank"
+                                        >
+                                            Política de Privacidad
+                                        </Link>
+
+                                        <span className="required">*</span>
+                                    </label>
                                 </div>
                             </div>
 
