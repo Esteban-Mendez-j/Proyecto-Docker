@@ -17,7 +17,7 @@ const EditarVacantes= () => {
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
   const videoRef = useRef(null)
-  const maxMB = 5
+  const maxMB = 7;
   const [eliminarVideo, setEliminarVideo] = useState(false)
   const [previewVideo, setPreviewVideo] = useState(null)
   const [selected, setSelected] = useState([]);
