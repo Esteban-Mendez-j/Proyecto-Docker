@@ -1,7 +1,5 @@
 import { useState } from "react";
-import Swal from "sweetalert2";
 import UsuariosActivos from "../../components/UsuariosActivos";
-import Footer from "../../layouts/Footer";
 import Layout from "../../layouts/Layout";
 
 export default function AdminUsuarios() {

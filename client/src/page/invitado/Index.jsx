@@ -14,25 +14,25 @@ export default function Index (){
     const features = [
         {
             id: "1",
-            iconName: "search",
+            iconName: "lupa",
             title: "Búsqueda Inteligente",
             description: "Encuentra el empleo perfecto con nuestros filtros avanzados y recomendaciones personalizadas.",
         },
         {
             id: "2",
-            iconName: "briefcase",
+            iconName: "maleta",
             title: "Publicación Sencilla",
             description: "Empresas pueden publicar vacantes en minutos con nuestro proceso simplificado.",
         },
         {
             id: "3",
-            iconName: "messageCircle",
+            iconName: "burbujaMensaje",
             title: "Chat en Tiempo Real",
             description: "Comunícate directamente con empresas o candidatos a través de nuestro chat integrado.",
         },
         {
             id: "4",
-            iconName: "user",
+            iconName: "usuario",
             title: "Perfiles Profesionales",
             description: "Crea un perfil atractivo para destacar tus habilidades y experiencia.",
         },

@@ -1,9 +1,9 @@
 import { Client } from "@stomp/stompjs";
 import { useEffect, useRef, useState } from "react";
-import Swal from 'sweetalert2';
 import { API_CLIENT_URL, WS_CLIENT_URL } from '../services/Api';
 import { manejarRespuesta } from '../services/ManejarRespuesta';
-import { modalTime } from "../services/Modal";
+import { modal, modalTime } from "../services/Modal";
+import { ListSvg } from "../components/Icons"
 
 const ChatBox = ({ chatId }) => {
   const [messages, setMessages] = useState([]);
@@ -164,20 +164,21 @@ const ChatBox = ({ chatId }) => {
         }));
         
       } else if (response.status === 403) {
-        await Swal.fire({ text: `No tienes permisos para ${mensaje} este chat`, icon: 'error' });      } else {
-        await Swal.fire({ text: `Ocurrió un error al ${mensaje} el chat`, icon: 'error' });      }
+        modal(`No tienes permisos para ${mensaje} este chat`,'error')
+        } else {
+        modal(`Ocurrió un error al ${mensaje} el chat`,'error')
+      }
     } catch (error) {
       console.error(`Error al ${mensaje} el chat:`, error);
-      await Swal.fire({ text: `Error de red o servidor al ${mensaje} el chat`, icon: 'error' });    }
+        modal(`Error de red o servidor al ${mensaje} el chat`)
+      }
   };
 
   if (!chatInfo) return (
       <div id="emptyChatState" className="empty-chat-state">
         <div className="empty-chat-content">
           <div className="empty-chat-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-            </svg>
+            <ListSvg name={"burbujaMensaje"} height={64} width={64}/>
           </div>
           <h3>Tus mensajes</h3>
           <p>Selecciona una conversación para ver tus mensajes o inicia una nueva</p>

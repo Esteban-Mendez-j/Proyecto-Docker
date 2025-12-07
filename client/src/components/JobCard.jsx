@@ -96,21 +96,7 @@ export default function JobCard({ job, onFavoritoChange, cambiarEstado, verSecci
                                     }}
                                     title="Agregar a favoritos"
                                 >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth={2}
-                                        stroke="currentColor"
-                                        fill={isFavorite ? "yellow" : "none"}
-                                        className={`w-5 h-5 transition-colors duration-200 ${isFavorite ? "text-yellow-400" : "text-gray-400"
-                                            }`}
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M11.48 3.499a.562.562 0 011.04 0l2.125 4.308a.563.563 0 00.424.308l4.756.691a.562.562 0 01.312.959l-3.44 3.352a.563.563 0 00-.162.498l.811 4.733a.562.562 0 01-.815.592L12 17.347l-4.26 2.24a.562.562 0 01-.815-.592l.811-4.733a.563.563 0 00-.162-.498L4.134 9.765a.562.562 0 01.312-.959l4.756-.691a.563.563 0 00.424-.308l2.125-4.308z"
-                                        />
-                                    </svg>
+                                    <ListSvg name={"estrella"} height={10} width={10} nameClass={`w-5 h-5 transition-colors duration-200 ${isFavorite ? "text-yellow-400 fill-yellow-400" : "text-gray-400 fill-gray-100 "}`}/>
                                 </button>}
                             </div>
                             <p className="company">{job.nameEmpresa}</p>
@@ -119,35 +105,19 @@ export default function JobCard({ job, onFavoritoChange, cambiarEstado, verSecci
 
                     <div className="details">
                         <div className="detail">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                <circle cx="12" cy="10" r="3"></circle>
-                            </svg>
+                            <ListSvg name={"ubicacion"} width={16} height={16}/>
                             <span>{job.ciudad}</span>
                         </div>
                         <div className="detail">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polyline points="12 6 12 12 16 14"></polyline>
-                            </svg>
+                            <ListSvg name={"reloj"} width={16} height={16}/>
                             <span>{job.tipo}</span>
                         </div>
                         <div className="detail">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon">
-                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                            </svg>
+                            <ListSvg name={"maleta"} width={16} height={16}/>
                             <span>{job.experiencia} años</span>
                         </div>
                         <div className="detail">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                                className="icon"
-                            >
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                <circle cx="12" cy="7" r="4" />
-                            </svg>
+                            <ListSvg name={"usuario"} width={18} height={18}/>
                             <span>{job.totalpostulaciones} postulados</span>
                         </div>
                         {(rol === "CANDIDATO" && verPrediccion) && (
@@ -246,21 +216,7 @@ export default function JobCard({ job, onFavoritoChange, cambiarEstado, verSecci
                                 }}
                                 title="Agregar a favoritos"
                             >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    strokeWidth={2}
-                                    stroke="currentColor"
-                                    fill={isFavorite ? "yellow" : "none"}
-                                    className={`w-5 h-5 transition-colors duration-200 ${isFavorite ? "text-yellow-400" : "text-gray-400"
-                                        }`}
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M11.48 3.499a.562.562 0 011.04 0l2.125 4.308a.563.563 0 00.424.308l4.756.691a.562.562 0 01.312.959l-3.44 3.352a.563.563 0 00-.162.498l.811 4.733a.562.562 0 01-.815.592L12 17.347l-4.26 2.24a.562.562 0 01-.815-.592l.811-4.733a.563.563 0 00-.162-.498L4.134 9.765a.562.562 0 01.312-.959l4.756-.691a.563.563 0 00.424-.308l2.125-4.308z"
-                                    />
-                                </svg>
+                                <ListSvg name={"estrella"} height={10} width={10} nameClass={`w-5 h-5 transition-colors duration-200 ${isFavorite ? "text-yellow-400 fill-yellow-400" : "text-gray-400 fill-gray-100 "}`}/>
                             </button>}
 
                         </span>

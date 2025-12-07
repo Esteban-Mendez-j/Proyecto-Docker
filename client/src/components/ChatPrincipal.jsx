@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ChatBox from "./ChatBox.jsx";
 import ChatList from "./ChatList.jsx";
+import { ListSvg } from "./Icons.jsx";
 
 
 export default function ChatApp({ chatId: initialChatId }) {
@@ -19,10 +20,7 @@ export default function ChatApp({ chatId: initialChatId }) {
         <div className="p-3">
            <div className="flex items-center gap-2 border border-blue-200 rounded-lg px-3 py-2 bg-blue-50 focus-within:ring-2 focus-within:ring-blue-300">
             <button onClick={() => setSearchText(searchTextLocal)}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
+              <ListSvg name={"lupa"} width={18} height={18} />
             </button>
 
             <input

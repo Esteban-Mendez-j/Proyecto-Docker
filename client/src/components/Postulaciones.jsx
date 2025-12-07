@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import Swal from 'sweetalert2';
 import { API_CLIENT_URL } from '../services/Api';
 import { manejarRespuesta } from '../services/ManejarRespuesta';
 import Paginacion from './Paginacion';
 import { useNavigate } from 'react-router-dom';
 import Loading from './Loading';
+import { ListSvg } from './Icons';
 
 const Postulaciones = ({ itemsPerPage = 10 }) => {
   const initialFiltro = {
@@ -164,9 +164,7 @@ const Postulaciones = ({ itemsPerPage = 10 }) => {
         <Loading/>
       ) : postulaciones.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-8 text-center text-gray-600">
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 mb-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v1m0 14v1m8-8h-1M5 12H4m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.021 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
-          </svg>
+          <ListSvg name={"info"} height={50} width={50} nameClass=' mb-4 text-gray-400 fill-gray-400'/>
           <p className="text-lg font-semibold">No tienes postulaciones aún</p>
           <p className="text-sm text-gray-500 mt-1">Una vez te postules a vacantes, aparecerán aquí.</p>
         </div>

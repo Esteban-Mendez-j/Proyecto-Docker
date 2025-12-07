@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import Swal from 'sweetalert2';
 import { API_CLIENT_URL } from '../services/Api';
 import { manejarRespuesta } from '../services/ManejarRespuesta';
 import '../style/invitado/empleos.css';

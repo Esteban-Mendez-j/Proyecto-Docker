@@ -3,7 +3,6 @@ import Layout from "../../layouts/Layout";
 import "../../style/invitado/empleos.css"
 import "../../style/invitado/postulados.css"
 import { useEffect, useState } from "react";
-import Swal from 'sweetalert2';
 import Pagination from "../../components/Paginacion";
 import manejarRespuesta from "../../services/ManejarRespuesta";
 import { API_CLIENT_URL } from "../../services/Api";

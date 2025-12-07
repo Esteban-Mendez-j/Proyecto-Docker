@@ -1,10 +1,11 @@
-import Swal from 'sweetalert2';
+import { modal, modalTime } from './Modal';
 
 export async function manejarFormulario({ form, validateForm, buildData, endpointUrl, redirectUrl, metodo, tipo = "application/json" }) {
   limpiarErrores();
 
   if (!validateForm()) {
-    await Swal.fire({ text: "Por favor, complete los campos correctamente.", icon: 'info' });    return;
+    modal("Por favor, complete los campos correctamente.", "info")
+    return;
   }
 
   try {
@@ -34,13 +35,15 @@ export async function manejarFormulario({ form, validateForm, buildData, endpoin
     const responseData = await response.json();
     if (responseData.status === 201) {
       form.reset();
-      await Swal.fire({ text: responseData.mensaje || "Formulario enviado correctamente", icon: 'success' }); if (redirectUrl) {
+      modalTime(responseData.mensaje || "Formulario enviado correctamente")
+      if (redirectUrl) {
         window.location.href = redirectUrl;
       }
     }
     else if (responseData.status === 200) {
       form.reset();
-      await Swal.fire({ text: responseData.mensaje || "Porceso exitoso!", icon: 'success' }); if (redirectUrl) {
+      modalTime(responseData.mensaje || "Porceso exitoso!");
+      if (redirectUrl) {
         window.location.href = redirectUrl;
       }
     }
@@ -48,11 +51,12 @@ export async function manejarFormulario({ form, validateForm, buildData, endpoin
       mostrarErrores(responseData.errors);
     }
     else {
-      await Swal.fire({ text: responseData.mensaje|| "Error desconocido", icon: 'error' });
+      modal(responseData.mensaje|| "Error desconocido","error")
     }
 
   } catch (error) {
-    await Swal.fire({ text: "Error al conectar con el servidor", icon: 'error' });    console.error(error);
+    modal("Error al conectar con el servidor")
+    console.error(error);
   }
 }
 
