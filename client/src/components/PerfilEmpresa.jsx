@@ -1,67 +1,41 @@
-import { useEffect, useState } from "react";
-import Layout from "../../../layouts/Layout.jsx";
-import { API_CLIENT_URL, URL_IMAGEN } from "../../../services/Api";
-import { manejarRespuesta } from "../../../services/ManejarRespuesta.js";
-import "../../../style/invitado/empresa.css";
+import { URL_IMAGEN } from "../services/Api";
+import { ListSvg } from "./Icons";
 import { Link } from "react-router-dom";
-import { ListSvg } from "../../../components/Icons.jsx";
+import "../style/invitado/empresa.css";
 
-const PerfilEmpresa = () => {
+export default function PerfilEmpresa({ empresa, isPublic }){
 
-  const [empresa, setEmpresa] = useState({});
-
-  useEffect(() => {
-    const fetchEmpresa = async () => {
-      try {
-        const apiUrl = `${API_CLIENT_URL}/api/empresas/perfil`;
-        const res = await fetch(apiUrl, {
-          headers: { "Content-Type": "application/json" },
-          credentials: "include"
-        });
-        const data = await manejarRespuesta(res);
-        setEmpresa(data.empresa || {});
-      } catch (error) {
-        console.error("Error al cargar perfil de empresa:", error);
-      }
-    };
-
-    fetchEmpresa();
-  }, []);
-
-
-
-  return (
-    <Layout >
-
-
-      <div className="empresa-perfil-container">
+    return(
+        <div className="empresa-perfil-container">
         <div className="empresa-perfil">
           {/* Cabecera del perfil */}
-          <div className="empresa-perfil-header">
-            {/* Logo */}
-            <div className="empresa-logo-container">
-              <img
-                src={
-                  empresa.imagen
-                    ? `${URL_IMAGEN}${empresa.imagen}`
-                    : `/imgEmpresa.png`
+            <div className="empresa-perfil-header">
+                {/* Logo */}
+                <div className="empresa-logo-container">
+                    <img
+                        src={
+                            empresa.imagen
+                                ? `${URL_IMAGEN}${empresa.imagen}`
+                                : `/imgEmpresa.png`
+                        }
+                        alt={empresa.nombre}
+                        className="empresa-logo"
+                    />
+                </div>
+
+                {/* Info encabezado */}
+                <div className="empresa-header-info">
+                    <h1 className="empresa-nombre">{empresa.nombre}</h1>
+                    <p className="empresa-sector">{empresa.sectorEmpresarial}</p>
+                </div>
+
+                {!isPublic &&
+                    <Link to="/perfil/empresa/editar" className="empresa-edit-button">
+                        <ListSvg name={"editar"} width={16} height={16} />
+                        Editar
+                    </Link>
                 }
-                alt={empresa.nombre}
-                className="empresa-logo"
-              />
             </div>
-
-            {/* Info encabezado */}
-            <div className="empresa-header-info">
-              <h1 className="empresa-nombre">{empresa.nombre}</h1>
-              <p className="empresa-sector">{empresa.sectorEmpresarial}</p>
-            </div>
-
-            <Link to="/perfil/empresa/editar" className="empresa-edit-button">
-              <ListSvg name={"editar"} width={16} height={16}/>
-              Editar
-            </Link>
-          </div>
 
           {/* Contenido */}
           <div className="empresa-perfil-content">
@@ -166,13 +140,8 @@ const PerfilEmpresa = () => {
                 </div>
               </div>
             </div>
-
-
           </div>
         </div>
       </div>
-    </Layout>
-  );
-};
-
-export default PerfilEmpresa;
+    )
+}

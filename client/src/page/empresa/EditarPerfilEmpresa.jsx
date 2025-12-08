@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 
-import Layout from "../../../layouts/Layout";
-import { URL_IMAGEN } from "../../../services/Api";
-import "../../../style/invitado/empresa.css";
+import Layout from "../../layouts/Layout";
+import { URL_IMAGEN } from "../../services/Api";
+import "../../style/invitado/empresa.css";
 import { Link, useNavigate } from "react-router-dom";
-import { useFetch, useSendForm } from "../../../hooks/useFetch";
-import InputForm from "../../../components/InputForm";
-import { modalResponse } from "../../../services/Modal";
-import {sectores} from "../../../services/data";
-import { formRulesEmpresaEditar, validateForm } from "../../../services/validacionForm";
-import { ListSvg } from "../../../components/Icons";
+import { useFetch, useSendForm } from "../../hooks/useFetch";
+import InputForm from "../../components/InputForm";
+import { modalResponse } from "../../services/Modal";
+import {sectores} from "../../services/data";
+import { formRulesEmpresaEditar, validateForm } from "../../services/validacionForm";
+import { ListSvg } from "../../components/Icons";
 
 const EditarPerfilEmpresa = () => {
   const initialData = {

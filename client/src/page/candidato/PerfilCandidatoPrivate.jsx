@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import Loading from "../../components/Loading.jsx";
 import { useFetch } from "../../hooks/useFetch.jsx";
 import Layout from "../../layouts/Layout.jsx";
-import { useParams } from "react-router-dom";
 import PerfilCandidato from "../../components/PerfilCandidato.jsx";
 
-function PerfilCandidatoPublic() {
+
+function PerfilCandidatoPrivate() {
   const initialData = {
     nombre: "",
     apellido: "",
@@ -13,25 +13,26 @@ function PerfilCandidatoPublic() {
     contrasena: "",
     telefono: "",
     identificacion: "",
-    contraseñaVerificada: ""
+    contraseñaVerificada: "",
+    nivelEducativo: "",
+
   }
-  const {id} = useParams();
   const [candidato, setCandidato] = useState(null);
   const [estudios, setEstudios] = useState([]);
   const [historialLaboral, setHistorialLaboral] = useState([]);
-  const { data , error , loading } = useFetch(`/api/candidatos/perfil?idUsuario=${id}`, "GET");
+  const { data, error, loading } = useFetch("/api/candidatos/perfil", "GET");
 
   useEffect(() => {
 
-    if(!data){return}
+    if (!data) { return }
     setCandidato(data.candidato);
     setEstudios(data.estudios || []);
     setHistorialLaboral(data.historialLaboral || []);
 
   }, [data, error]);
-
+  
   if (!data || !candidato || !estudios || !historialLaboral || loading || error) {
-    return <Loading/>;
+    return <Loading />;
   }
 
   return (
@@ -40,10 +41,10 @@ function PerfilCandidatoPublic() {
         candidato={candidato}
         estudios={estudios}
         historialLaboral={historialLaboral}
-        isPublic={true}
+        isPublic={false}
       />
     </Layout>
   );
 }
 
-export default PerfilCandidatoPublic;
+export default PerfilCandidatoPrivate;
