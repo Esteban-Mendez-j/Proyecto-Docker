@@ -6,47 +6,36 @@ import { useEffect, useState } from "react";
 import '../../style/invitado/empleos.css';
 import Pagination from "../../components/Paginacion";
 import { manejarRespuesta } from '../../services/ManejarRespuesta';
+import useFiltro from "../../hooks/useFiltro";
 
 export default function AdminVacantes() {
   const [vacantes, setVacantes] = useState([]);
-  const [npostulaciones, setnPostulaciones] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [fade, setFade] = useState(true);
   const [totalElements, setTotalElements] = useState(0);
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchInput, setSearchInput] = useState('');
-  const [searchCiudad, setSearchCiudad] = useState('');
-  const [searchCiudadInput, setSearchCiudadInput] = useState('');
-  const [searchUser, setSearchUser] = useState('');
-  const [searchUserInput, setSearchUserInput] = useState('');
-  const [searchTipo, setSearchTipo] = useState("todos");
-  const [searchTipoInput, setSearchTipoInput] = useState("todos");
-  const [searchIsActive, setSearchIsActive] = useState(true);
-  const [searchPostulado, setSearchPostulado] = useState(0);
-  const [searchPostuladoInput, setSearchPostuladoInput] = useState('');
+  const initialFiltro = {
+    titulo: "" ,
+    ciudad:"" ,
+    nameEmpresa: "",
+    tipo: "todos",
+    isActive: true,
+    totalpostulaciones: ""
+  };
+
+  const [filtrosLocal, filtrosAplicados, handleOnFilters, clearFilters, searchFilters, handleOnFilterAplicados ] = useFiltro(initialFiltro, setCurrentPage, "FiltrosAdminVacantes");
 
   const fetchVacantes = async () => {
     try {
-      const filtro = {
-        titulo: searchTerm,
-        ciudad: searchCiudad,
-        nameEmpresa: searchUser,
-        tipo: searchTipo,
-        isActive: searchIsActive,
-        totalpostulaciones: searchPostulado
-
-      }; // Filtros aqui
-
       const res = await fetch(`${API_CLIENT_URL}/api/admin/listar/filtrovacantes?page=${currentPage - 1}&size=${pageSize}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         credentials: 'include',
-        body: JSON.stringify(filtro)
+        body: JSON.stringify(filtrosAplicados)
       });
 
       const data = await manejarRespuesta(res);
@@ -58,36 +47,14 @@ export default function AdminVacantes() {
     }
   };
 
-  const aplicarFiltros = () => {
-    setSearchTerm(searchInput)
-    setSearchCiudad(searchCiudadInput)
-    setSearchUser(searchUserInput)
-    setSearchTipo(searchTipoInput)
-    setSearchPostulado(searchPostuladoInput)
-
-  };
-  const limpiarFIltros = () => {
-    setSearchTerm(null)
-    setSearchCiudad(null)
-    setSearchUser(null)
-    setSearchTipo("todos")
-    setSearchPostulado(0)
-
-    setSearchInput('')
-    setSearchCiudadInput('')
-    setSearchUserInput('')
-    setSearchTipoInput("todos")
-    setSearchPostuladoInput(0)
-
+  const handleOnIsActive = (e) => {
+    e.target = {name:"isActive", value:!filtrosAplicados.isActive}
+    handleOnFilterAplicados(e)
   }
-
 
   useEffect(() => {
     fetchVacantes();
-  },
-
-    [currentPage, pageSize, searchTerm, searchCiudad, searchUser, searchTipo, searchIsActive, searchPostulado]);
-
+  }, [currentPage, pageSize, filtrosAplicados]);
 
   const cambiarEstadoVacante = async (nvacante, estado) => {
     const { value: motivo } = await Swal.fire({
@@ -135,32 +102,35 @@ export default function AdminVacantes() {
             <div className="flex-1 max-w-7xl mx-auto px-4">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
                 <h1 className="text-2xl font-bold">Gestión de Vacantes</h1>
-
                 <div className="flex flex-wrap gap-2">
                   <input
                     type="text"
                     placeholder="Buscar Empresa..."
-                    value={searchUserInput}
-                    onChange={(e) => setSearchUserInput(e.target.value)}
+                    name="nameEmpresa"
+                    value={filtrosLocal.nameEmpresa}
+                    onChange={handleOnFilters}
                     className="w-44 py-2 pl-4 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <input
                     type="text"
                     placeholder="Buscar por Ciudad..."
-                    value={searchCiudadInput}
-                    onChange={(e) => setSearchCiudadInput(e.target.value)}
+                    name="ciudad"
+                    value={filtrosLocal.ciudad}
+                    onChange={handleOnFilters}
                     className="w-44 py-2 pl-4 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <input
                     type="text"
                     placeholder="Buscar por Título..."
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
+                    name="titulo"
+                    value={filtrosLocal.titulo}
+                    onChange={handleOnFilters}
                     className="w-44 py-2 pl-4 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <select
-                    value={searchTipoInput}
-                    onChange={(e) => setSearchTipoInput(e.target.value)}
+                    name="tipo"
+                    value={filtrosLocal.tipo}
+                    onChange={handleOnFilters}
                     className="w-44 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="todos">
@@ -172,18 +142,19 @@ export default function AdminVacantes() {
                   <input
                     placeholder="Buscar por Postulacion.."
                     type="number"
-                    value={searchPostuladoInput}
-                    onChange={(e) => setSearchPostuladoInput(e.target.value)}
+                    name="totalpostulaciones"
+                    value={filtrosLocal.totalpostulaciones}
+                    onChange={handleOnFilters}
                     min="0" // mínimo valor permitido
                     className="w-44 py-2 pl-4 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
-                  <button onClick={aplicarFiltros} className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                  <button onClick={searchFilters} className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700">
                     Buscar
                   </button>
-                  <button onClick={() => setSearchIsActive(!searchIsActive)} className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
-                    {searchIsActive ? 'Ver Baneados' : 'Ver Activos'}
+                  <button onClick={handleOnIsActive} className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
+                    {filtrosAplicados.isActive ? 'Ver Baneados' : 'Ver Activos'}
                   </button>
-                  <button onClick={limpiarFIltros} className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-gray-600">
+                  <button onClick={clearFilters} className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-gray-600">
                     Limpiar Filtros
                   </button>
 
@@ -194,7 +165,7 @@ export default function AdminVacantes() {
               <div className="mb-6">
                 <div className="border-b border-gray-200">
                   <nav className="flex -mb-px">
-                    {searchIsActive ? (
+                    {filtrosAplicados.isActive ? (
                       <button className="px-4 py-3 font-medium text-blue-600 border-b-2 border-blue-600 tab-button active">
                         Vacantes Activas ({totalElements})
                       </button>
@@ -213,16 +184,16 @@ export default function AdminVacantes() {
                   <table className="min-w-full divide-y divide-gray-200 text-sm">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className={`px-4 py-3 text-left text-xs font-semibold ${searchIsActive ? 'text-blue-900 uppercase' : 'text-red-900 uppercase'}`}>Título</th>
-                        <th className={`px-4 py-3 text-left text-xs font-semibold ${searchIsActive ? 'text-blue-900 uppercase' : 'text-red-900 uppercase'}`}>Empresa</th>
-                        <th className={`px-4 py-3 text-left text-xs font-semibold ${searchIsActive ? 'text-blue-900 uppercase' : 'text-red-900 uppercase'}`}>Ubicación</th>
-                        <th className={`px-4 py-3 text-left text-xs font-semibold ${searchIsActive ? 'text-blue-900 uppercase' : 'text-red-900 uppercase'}`}>Tipo</th>
-                        {searchIsActive ? (
+                        <th className={`px-4 py-3 text-left text-xs font-semibold ${filtrosAplicados.isActive ? 'text-blue-900 uppercase' : 'text-red-900 uppercase'}`}>Título</th>
+                        <th className={`px-4 py-3 text-left text-xs font-semibold ${filtrosAplicados.isActive ? 'text-blue-900 uppercase' : 'text-red-900 uppercase'}`}>Empresa</th>
+                        <th className={`px-4 py-3 text-left text-xs font-semibold ${filtrosAplicados.isActive ? 'text-blue-900 uppercase' : 'text-red-900 uppercase'}`}>Ubicación</th>
+                        <th className={`px-4 py-3 text-left text-xs font-semibold ${filtrosAplicados.isActive ? 'text-blue-900 uppercase' : 'text-red-900 uppercase'}`}>Tipo</th>
+                        {filtrosAplicados.isActive ? (
                           <th className="px-4 py-3 text-left text-xs font-semibold text-blue-900 uppercase">Postulaciones</th>
                         ) : (
                           <th className="px-4 py-3 text-left text-xs font-semibold text-red-900 uppercase">Motivo</th>
                         )}
-                        <th className={`px-4 py-3 text-right text-xs font-semibold ${searchIsActive ? 'text-blue-900 uppercase' : 'text-red-900 uppercase'}`}>Acciones</th>
+                        <th className={`px-4 py-3 text-right text-xs font-semibold ${filtrosAplicados.isActive ? 'text-blue-900 uppercase' : 'text-red-900 uppercase'}`}>Acciones</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -237,14 +208,14 @@ export default function AdminVacantes() {
                               {vacantes.tipo}
                             </span>
                           </td>
-                          {searchIsActive ? (<td className="px-4 py-4">{vacantes.totalpostulaciones}</td>
+                          {filtrosAplicados.isActive ? (<td className="px-4 py-4">{vacantes.totalpostulaciones}</td>
                           ) : (
                             <td className="px-4 py-4">{vacantes.comentarioAdmin}</td>
                           )}
 
                           <td className="px-4 py-4 flex justify-center">
                             <a href={`/empleos/${vacantes.nvacantes}`} className="mr-3 text-blue-600 hover:text-blue-900">Ver</a>
-                            {searchIsActive ? (
+                            {filtrosAplicados.isActive ? (
                               <button
                                 className="mr-3 text-red-600 hover:text-red-500"
                                 onClick={() => cambiarEstadoVacante(vacantes.nvacantes, false)}

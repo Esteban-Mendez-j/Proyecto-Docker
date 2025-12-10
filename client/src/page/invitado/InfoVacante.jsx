@@ -9,6 +9,7 @@ import { modalTime } from "../../services/Modal"
 import { RoleContext } from "../../services/RoleContext"
 import { toggleFavoritoRequest } from "../../services/ToggleFavoritosRequest"
 import { ListSvg } from "../../components/Icons"
+import { listAptitudes } from "../../services/data"
 
 export default function InfoVacante() {
     const initialJob = {
@@ -37,21 +38,6 @@ export default function InfoVacante() {
         numCompartidos: 0,
         aptitudes: []
     }
- // mapeo de aptitudes
-const NOMBRES_APTITUDES = {
-  PensamientoCritico: "Pensamiento Crítico",
-  Creatividad: "Creatividad",
-  AtencionDetalle: "Atención al Detalle",
-  AprendizajeContinuo: "Aprendizaje Continuo",
-  EticaProfesional: "Ética Profesional",
-  Autonomia: "Autonomía",
-  Responsabilidad: "Responsabilidad",
-  Liderazgo: "Liderazgo",
-  Adaptabilidad: "Adaptabilidad",
-  ResolucionProblemas: "Resolución de Problemas",
-  ComunicacionAfectiva: "Comunicación Afectiva",
-  TrabajoEquipo: "Trabajo en Equipo",
-};
     const {id} = useParams()
     const [location, setLocation] = useState("")
     const [job, setJob] = useState(initialJob);
@@ -94,7 +80,6 @@ const NOMBRES_APTITUDES = {
         window.open(`https://wa.me/?text=${message}`, "_blank");
         handleCompartir();
     };
-    
 
     const handleGmailShare = () => {
         window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=&su=${subject}&body=${message}`, "_blank");
@@ -118,23 +103,13 @@ const NOMBRES_APTITUDES = {
         setIsFavorite(data.vacanteSeleccionada.vacanteGuardada);
     }, [data]);
 
-    
-
-
     //SECCION DE FAVORITOS
-  const handleClick = async () => {
-    setIsFavorite(!isFavorite);
-    await toggleFavoritoRequest(job.nvacantes);
-  };
-
-  
-  
-
-
-
+    const handleClick = async () => {
+        setIsFavorite(!isFavorite);
+        await toggleFavoritoRequest(job.nvacantes);
+    };
 
     if (loading ) {return <Loding/>}
-    
 
     return (
         <Layout>
@@ -312,7 +287,7 @@ const NOMBRES_APTITUDES = {
                                             key={job.aptitudes.indexOf(label)}
                                             className={"px-4 py-2 rounded-2xl border transition-all duration-200 bg-blue-600 text-white border-blue-600 shadow-md scale-105"}
                                         >
-                                             {NOMBRES_APTITUDES[label] || label}
+                                             {listAptitudes[label] || label}
                                         </label>
                                     ))}
                                 </div>

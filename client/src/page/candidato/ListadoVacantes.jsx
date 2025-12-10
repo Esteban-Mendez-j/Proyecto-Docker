@@ -17,10 +17,7 @@ function Empleos() {
         </div>
 
         {/* JobBoard recibe props */}
-        <JobBoard
-          fetchUrl={`${API_CLIENT_URL}/api/vacantes/listar/filtradas`}
-          rol="candidato"
-        />
+        <JobBoard fetchUrl={`${API_CLIENT_URL}/api/vacantes/listar/filtradas`}/>
       </div>
     </Layout>
 

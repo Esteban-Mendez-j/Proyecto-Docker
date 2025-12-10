@@ -1,11 +1,47 @@
 import { useContext } from "react";
-import { deleteLocalStore } from "../services/localStore";
-import { RoleContext, RoleSesion } from "../services/RoleContext";
+import { RoleContext } from "../services/RoleContext";
 
-export default function FilterComponent({ filtersLocal, clearAllFilters, handleFilterChange, setFilters, rol,handleEstadoChange }) {
+export default function FilterComponent({ filtersLocal, clearAllFilters, handleOnFilters }) {
   
-  const {rol:RoleSesion} = useContext(RoleContext);
+  const { rol } = useContext(RoleContext);
 
+  const handleFavoritoChange = (e)=>{
+    const valor = new Boolean(e.target.value);
+    e.target = {name:"isFavorita" , value:valor };
+    handleOnFilters(e)
+  }
+
+  const handleEstadoChange = (e)=>{
+    const estadoSeleccionado = e.target.value;
+
+    const nuevoFiltro = {
+      estado: estadoSeleccionado,
+      active: undefined,
+      activaPorEmpresa: undefined
+    };
+
+    switch (estadoSeleccionado) {
+      case "activas":
+        nuevoFiltro.active = true;
+        nuevoFiltro.activaPorEmpresa = true;
+        break;
+      case "desactivadasAdmin":
+        nuevoFiltro.active = false;
+        break;
+      case "pausadasEmpresa":
+        nuevoFiltro.activaPorEmpresa = false;
+        break;
+      case "todas":
+        break;
+    }
+    e.target = {name:"estado" , value:nuevoFiltro.estado };
+    handleOnFilters(e)
+    e.target = {name:"active" , value:nuevoFiltro.active };
+    handleOnFilters(e)
+    e.target = {name:"activaPorEmpresa" , value:nuevoFiltro.activaPorEmpresa };
+    handleOnFilters(e)
+  }
+  
   return (
     <div className="filters-container">
       <div className="filter-group">
@@ -16,7 +52,7 @@ export default function FilterComponent({ filtersLocal, clearAllFilters, handleF
               type="radio"
               name="tipo"
               value="Vacante"
-              onChange={handleFilterChange}
+              onChange={handleOnFilters}
               checked={filtersLocal.tipo === "Vacante"}
             />
             <span>Vacantes</span>
@@ -26,7 +62,7 @@ export default function FilterComponent({ filtersLocal, clearAllFilters, handleF
               type="radio"
               name="tipo"
               value="Practica"
-              onChange={handleFilterChange}
+              onChange={handleOnFilters}
               checked={filtersLocal.tipo === "Practica"}
             />
             <span>Practicas</span>
@@ -40,7 +76,7 @@ export default function FilterComponent({ filtersLocal, clearAllFilters, handleF
           type="number"
           min={0}
           name="experiencia"
-          onChange={handleFilterChange}
+          onChange={handleOnFilters}
           value={filtersLocal.experiencia || ""}
           className="search-input"
         />
@@ -52,7 +88,7 @@ export default function FilterComponent({ filtersLocal, clearAllFilters, handleF
           type="number"
           name="sueldo"
           min={0}
-          onChange={handleFilterChange}
+          onChange={handleOnFilters}
           value={filtersLocal.sueldo || ""}
           className="search-input"
         />
@@ -64,7 +100,7 @@ export default function FilterComponent({ filtersLocal, clearAllFilters, handleF
           type="number"
           min={0}
           name="totalpostulaciones"
-          onChange={handleFilterChange}
+          onChange={handleOnFilters}
           value={filtersLocal.totalpostulaciones || ""}
           className="search-input"
         />
@@ -78,7 +114,7 @@ export default function FilterComponent({ filtersLocal, clearAllFilters, handleF
               type="radio"
               name="modalidad"
               value="Remoto"
-              onChange={handleFilterChange}
+              onChange={handleOnFilters}
               checked={filtersLocal.modalidad === "Remoto"}
             />
             <span>Remoto</span>
@@ -88,7 +124,7 @@ export default function FilterComponent({ filtersLocal, clearAllFilters, handleF
               type="radio"
               name="modalidad"
               value="Presencial"
-              onChange={handleFilterChange}
+              onChange={handleOnFilters}
               checked={filtersLocal.modalidad === "Presencial"}
             />
             <span>Presencial</span>
@@ -98,18 +134,18 @@ export default function FilterComponent({ filtersLocal, clearAllFilters, handleF
               type="radio"
               name="modalidad"
               value="Hibrido"
-              onChange={handleFilterChange}
+              onChange={handleOnFilters}
               checked={filtersLocal.modalidad === "Hibrido"}
             />
             <span>Híbrido</span>
           </label>
         </div>
       </div>
-      {RoleSesion === "CANDIDATO" && (
+      {rol === "CANDIDATO" && (
         <>
         <div className="filter-group">
           <h4 className="filter-group-title">Favoritas</h4>
-          <select name="isFavorita" value={filtersLocal.isFavorita?.toString() || "false"} onChange={handleFilterChange} className="search-input">
+          <select name="isFavorita" value={filtersLocal.isFavorita?.toString() || "false"} onChange={handleFavoritoChange} className="search-input">
             <option value="false">Todas</option>
             <option value="true">Favoritas</option>
           </select>
@@ -117,7 +153,7 @@ export default function FilterComponent({ filtersLocal, clearAllFilters, handleF
 
         <div className="filter-group">
           <h4 className="filter-group-title">Estado Postulacion</h4>
-          <select name="estadoPostulacion" value={filtersLocal.estadoPostulacion} onChange={handleFilterChange} className="search-input">
+          <select name="estadoPostulacion" value={filtersLocal.estadoPostulacion} onChange={handleOnFilters} className="search-input">
             <option value="">Todas</option>
             <option value="SinPostulacion">Sin postular</option>
             <option value="Aceptada">Aceptadas</option>
@@ -128,7 +164,7 @@ export default function FilterComponent({ filtersLocal, clearAllFilters, handleF
         </>
       )}
 
-      {rol === "empresa" && (
+      {rol === "EMPRESA" && (
         <div className="filter-group">
           <h4 className="filter-group-title">Estado</h4>
           <select name="estado" value={filtersLocal.estado} onChange={handleEstadoChange} className="search-input">
@@ -146,7 +182,7 @@ export default function FilterComponent({ filtersLocal, clearAllFilters, handleF
         <input
           type="text"
           name="cargo"
-          onChange={handleFilterChange}
+          onChange={handleOnFilters}
           value={filtersLocal.cargo || ""}
           className="search-input"
         />
@@ -157,7 +193,6 @@ export default function FilterComponent({ filtersLocal, clearAllFilters, handleF
           className="btn btn-primary filter-search-button"
           onClick={() => {
             clearAllFilters(); // resetea filtros 
-            deleteLocalStore("filtro")
           }}
         >
           Eliminar filtros

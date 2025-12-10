@@ -8,6 +8,7 @@ import Loading from "../../components/Loading.jsx";
 import { ListSvg } from "../../components/Icons.jsx";
 import manejarRespuesta from "../../services/ManejarRespuesta.js";
 import Paginacion from '../../components/Paginacion.jsx';
+import useFiltro from "../../hooks/useFiltro.jsx";
 
 export default function PostuladosPage() {
   const initialFiltro = {
@@ -21,10 +22,8 @@ export default function PostuladosPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [filtrosLocal, setFiltrosLocal] = useState(initialFiltro);
-  const [filtrosAplicados, setFiltrosAplicados] = useState(initialFiltro);
+  const [ filtrosLocal, filtrosAplicados, handleOnFilters, clearFilters, searchFilters ] = useFiltro(initialFiltro, setCurrentPage, "FiltrosCandidatoPostulado");
   const itemsPerPage = 10;
-
   const navigate = useNavigate();
 
   const fetchPostulaciones = async (page = 1) => {
@@ -49,26 +48,6 @@ export default function PostuladosPage() {
     fetchPostulaciones(currentPage);
   }, [currentPage, filtrosAplicados]);
 
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-
-    setFiltrosLocal((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const buscar = () => {
-    setFiltrosAplicados(filtrosLocal);
-    setCurrentPage(1);
-  };
-
-  const limpiarFiltros = () => {
-    setFiltrosLocal(initialFiltro);
-    setFiltrosAplicados(initialFiltro);
-    setCurrentPage(1);
-  };
-
   const irADetalleVacante = (id) => {
     navigate(`/empleos/${id}`);
   };
@@ -92,7 +71,7 @@ export default function PostuladosPage() {
                   type="text"
                   name="tituloVacante"
                   value={filtrosLocal.tituloVacante}
-                  onChange={handleFilterChange}
+                  onChange={handleOnFilters}
                   placeholder="Ej. Desarrollador"
                   className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
@@ -105,7 +84,7 @@ export default function PostuladosPage() {
                   type="text"
                   name="empresa"
                   value={filtrosLocal.empresa}
-                  onChange={handleFilterChange}
+                  onChange={handleOnFilters}
                   placeholder="Ej. Google"
                   className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
@@ -117,7 +96,7 @@ export default function PostuladosPage() {
                 <select
                   name="estado"
                   value={filtrosLocal.estado}
-                  onChange={handleFilterChange}
+                  onChange={handleOnFilters}
                   className="px-4 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 >
                   <option value="">Todos</option>
@@ -143,7 +122,7 @@ export default function PostuladosPage() {
                   type="date"
                   name="fechaMinima"
                   value={filtrosLocal.fechaMinima}
-                  onChange={handleFilterChange}
+                  onChange={handleOnFilters}
                   className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
@@ -152,14 +131,14 @@ export default function PostuladosPage() {
             {/* Botones */}
             <div className="mt-6 flex flex-wrap gap-4">
               <button
-                onClick={buscar}
+                onClick={searchFilters}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-transform duration-200 hover:scale-105"
               >
                 Buscar
               </button>
 
               <button
-                onClick={limpiarFiltros}
+                onClick={clearFilters}
                 className="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-transform duration-200 hover:scale-105"
               >
                 Limpiar

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.miproyecto.proyecto.model.FiltroUsuarioDTO;
 import com.miproyecto.proyecto.model.FiltroVacanteDTO;
 import com.miproyecto.proyecto.service.AdminService;
 import com.miproyecto.proyecto.service.PostuladoService;
@@ -23,7 +24,6 @@ import com.miproyecto.proyecto.service.VacanteService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -54,22 +54,19 @@ public class AdminResource {
         @ApiResponse(responseCode = "401", description = "No autorizado")
     })
     
-    @GetMapping("/listar/filtrados")
+    @PostMapping("/listar/filtrados")
     public ResponseEntity<Map<String, Object>> listarUsuariosFiltrados(
             HttpSession session,
             @PageableDefault(page = 0, size = 10) Pageable pageable,
-            @Parameter(description = "Nombre del usuario a filtrar") @RequestParam(required = false) String nombre,
-            @Parameter(description = "Nombre del usuario a filtrar") @RequestParam(required = false) String correo,
-            @Parameter(description = "Rol principal a filtrar") @RequestParam(name = "rolPrinciapl", required = false) String rol,
-            @Parameter(description = "Estado activo/inactivo") @RequestParam(required = false) Boolean estado) {
+            @RequestBody FiltroUsuarioDTO filtro    
+        ) {
 
         String jwtToken = (String) session.getAttribute("jwtToken");
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
         String rolUsuario = decodedJWT.getClaim("rolPrincipal").asString();
 
-        Map<String, Object> response = usuarioService.buscarUsuariosConFiltros(idUsuario, rolUsuario, nombre, rol,
-                estado, pageable, correo);
+        Map<String, Object> response = usuarioService.buscarUsuariosConFiltros(idUsuario, rolUsuario, filtro , pageable);
         return ResponseEntity.ok(response);
     }
 

@@ -9,6 +9,7 @@ import { API_CLIENT_URL } from "../../services/Api";
 import { modal } from "../../services/Modal";
 import {sendMessage} from "../../services/Websocket"
 import { mensajesNotificaciones } from "../../services/data";
+import useFiltro from "../../hooks/useFiltro";
 
 export default function Postulados() {
 
@@ -25,21 +26,21 @@ export default function Postulados() {
         estadoEnvio: "",
         porcentajePrediccion: ""
     }
+
+    const initialFiltro={
+        estado:"",
+        fechaMinima: "",
+        nombreCandidato: "",
+    }
     const { vacanteId } = useParams()
     const itemsPerPage = 10;
-    const [remitenteId, setRemitenteId] = useState(null)
-    const [notificacion, setNotificacion] = useState(initialNotificacion);
-    const [postulados, setPostulados] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [ filtrosLocal, filtrosAplicados, handleOnFilters, clearFilters, searchFilters ] = useFiltro(initialFiltro, setCurrentPage, "FiltrosEmpresaPostulado");
+    const [remitenteId, setRemitenteId] = useState(null)
+    const [postulados, setPostulados] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(false);
     const [userRole, setUserRole] = useState("ROLE_INVITADO");
-    const [filtroLocal, setFiltroLocal] = useState({
-        estado: '',
-        fechaMinima: '',
-        nombreCandidato: '',
-    });
-    const [filtroActivo, setFiltroActivo] = useState({ ...filtroLocal });
 
     const fetchUserRole = async () => {
         try {
@@ -57,7 +58,7 @@ export default function Postulados() {
 
     const fetchPostulados = async (page = 1) => {
         setLoading(true);
-        const { estado, fechaMinima, nombreCandidato } = filtroActivo;
+        const { estado, fechaMinima, nombreCandidato } = filtrosAplicados;
 
         const params = new URLSearchParams({
             nvacantes: vacanteId,
@@ -85,26 +86,9 @@ export default function Postulados() {
         fetchUserRole()
     };
 
-    const handleBuscar = () => {
-        setFiltroActivo({ ...filtroLocal });
-        setCurrentPage(1);
-    };
-
-    const handleReset = () => {
-        const valoresIniciales = { estado: '', fechaMinima: '', nombreCandidato: '' };
-        setFiltroLocal(valoresIniciales);
-        setFiltroActivo(valoresIniciales);
-        setCurrentPage(1);
-    };
-
-    const handleFilterChange = (e) => {
-        const { name, value } = e.target;
-        setFiltroLocal((prev) => ({ ...prev, [name]: value }));
-    };
-
     useEffect(() => {
         fetchPostulados(currentPage);
-    }, [vacanteId, currentPage, filtroActivo]);
+    }, [vacanteId, currentPage, filtrosAplicados]);
 
     const abrirChat = async (candidatoId, vacanteId) => {
         try {
@@ -189,8 +173,8 @@ export default function Postulados() {
                             <label className="text-sm font-semibold mb-1">Estado:</label>
                             <select
                                 name="estado"
-                                onChange={handleFilterChange}
-                                value={filtroLocal.estado}
+                                onChange={handleOnFilters}
+                                value={filtrosLocal.estado}
                                 className="border border-gray-300 rounded-md px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="">Todos</option>
@@ -206,8 +190,8 @@ export default function Postulados() {
                             <input
                                 type="date"
                                 name="fechaMinima"
-                                value={filtroLocal.fechaMinima}
-                                onChange={handleFilterChange}
+                                value={filtrosLocal.fechaMinima}
+                                onChange={handleOnFilters}
                                 className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
@@ -217,21 +201,21 @@ export default function Postulados() {
                             <input
                                 type="text"
                                 name="nombreCandidato"
-                                value={filtroLocal.nombreCandidato}
-                                onChange={handleFilterChange}
+                                value={filtrosLocal.nombreCandidato}
+                                onChange={handleOnFilters}
                                 className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
 
                         <div className="flex gap-2">
                             <button
-                                onClick={handleBuscar}
+                                onClick={searchFilters}
                                 className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md"
                             >
                                 Buscar
                             </button>
                             <button
-                                onClick={handleReset}
+                                onClick={clearFilters}
                                 className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-md"
                             >
                                 Borrar filtros

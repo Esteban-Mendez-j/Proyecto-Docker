@@ -6,7 +6,7 @@ import { RoleContext } from "../services/RoleContext";
 import { toggleFavoritoRequest } from '../services/ToggleFavoritosRequest';
 import { ListSvg } from "./Icons";
 
-export default function JobCard({ job, onFavoritoChange, cambiarEstado, verSeccionEdit, presentaion, fetchAllJobs, verPrediccion }) {
+export default function JobCard({ job, cambiarEstado, verSeccionEdit, presentaion, fetchAllJobs, verPrediccion }) {
 
     const [isFavorite, setIsFavorite] = useState(false);
     const { rol } = useContext(RoleContext)
@@ -17,30 +17,11 @@ export default function JobCard({ job, onFavoritoChange, cambiarEstado, verSecci
     }, [job.vacanteGuardada]);
 
     const handleToggleFavorito = async () => {
-        try {
-            if (!isFavorite) {
-                // Si NO está en favoritos → agregar directamente
-                await toggleFavoritoRequest(job.nvacantes);
-                setIsFavorite(true);
-            } else {
-                // // Si YA está en favoritos → preguntar antes de quitar
-                // const confirmed = await QuestionModal(
-                //     "¿Quieres eliminar esta vacante de tus favoritos?",
-                //     "warning"
-                // );
-
-                // if (!confirmed) return; // Si cancela, no hacer nada
-                await toggleFavoritoRequest(job.nvacantes);
-                setIsFavorite(false);
-                fetchAllJobs()
-            }
-
-            // 🔔 Avisamos al padre que algo cambió
-            if (onFavoritoChange) onFavoritoChange(job.nvacantes);
-
-        } catch (error) {
-            console.error("❌ Error al cambiar favorito:", error);
+        await toggleFavoritoRequest(job.nvacantes);
+        if (isFavorite) {
+            fetchAllJobs()
         }
+        setIsFavorite(!isFavorite)
     };
 
     // Muestra los empleos en forma de tarjetas

@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.miproyecto.proyecto.domain.Usuario;
+import com.miproyecto.proyecto.model.FiltroUsuarioDTO;
 import com.miproyecto.proyecto.model.UsuarioDTO;
 import com.miproyecto.proyecto.repos.RolesRepository;
 import com.miproyecto.proyecto.repos.UsuarioRepository;
@@ -238,8 +239,8 @@ public class UsuarioService {
     }
    
     //FiltrosUsuarios
-    public Map<String, Object> buscarUsuariosConFiltros(Long idUsuario,String rolUsuario,String nombre , String rol, Boolean estado  , Pageable pageable, String correo) {
-        Specification<Usuario> specification = UsuarioSpecifications.conFiltros(rolUsuario,nombre ,  rol,  estado, correo);
+    public Map<String, Object> buscarUsuariosConFiltros(Long idUsuario, String rolUsuario, FiltroUsuarioDTO filtro ,Pageable pageable) {
+        Specification<Usuario> specification = UsuarioSpecifications.conFiltros(rolUsuario, filtro);
         
         Page<UsuarioDTO> page = usuarioRepository.findAll(specification, pageable)
         .map(usuario -> mapToDTO(usuario, new UsuarioDTO())); 

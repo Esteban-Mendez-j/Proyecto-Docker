@@ -3,7 +3,7 @@ import {ciudadesColombia} from "../services/data"
 import AutocompleteInput from "./AutocompleteInput";
 import { API_CLIENT_URL } from "../services/Api";
 import { ListSvg } from "./Icons";
-export default function FiltroSuperior({ filtersLocal, handleFilterChange, setFilters }) {
+export default function FiltroSuperior({ filtersLocal, handleOnFilters, searchFilters }) {
 
     const [query, setQuery] = useState(filtersLocal.titulo || "");
     const [sugerencias, setSugerencias] = useState([]);
@@ -48,7 +48,7 @@ export default function FiltroSuperior({ filtersLocal, handleFilterChange, setFi
                         options={sugerencias}
                         value={query} 
                         onChange={(e) => {
-                            handleFilterChange(e, query)
+                            handleOnFilters(e, query)
                             setQuery(e.target.value)
                         }}
                         className="search-input-sup"
@@ -61,7 +61,7 @@ export default function FiltroSuperior({ filtersLocal, handleFilterChange, setFi
                         placeholder="Ciudad"
                         name="ciudad"
                         options={ciudadesColombia}
-                        onChange={handleFilterChange}
+                        onChange={handleOnFilters}
                         value={filtersLocal.ciudad || ""}
                         className="search-input-sup"
                     />
@@ -69,7 +69,7 @@ export default function FiltroSuperior({ filtersLocal, handleFilterChange, setFi
 
                 <button
                     className="btn btn-primary search-button"
-                    onClick={() => setFilters(filtersLocal)}
+                    onClick={searchFilters}
                 >
                     Buscar
                 </button>

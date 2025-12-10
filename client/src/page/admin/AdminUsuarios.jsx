@@ -1,33 +1,41 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Layout from "../../layouts/Layout";
 import '../../style/invitado/empleos.css';
 import { manejarRespuesta } from '../../services/ManejarRespuesta';
 import { API_CLIENT_URL } from "../../services/Api";
 import Pagination from '../../components/Paginacion';
+import { RoleContext } from "../../services/RoleContext";
+import useFiltro from "../../hooks/useFiltro"
 
 export default function AdminUsuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
-  const [fade] = useState(true);
   const [totalElements, setTotalElements] = useState(0);
   const [AdminId, setAdminId] = useState('');
-
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchInput, setSearchInput] = useState('');
-  const [searchInputCorreo, setSearchInputCorreo] = useState('');
-  const [searchCorreo, setSearchCorreo] = useState('');
-  const [searchTipoInput, setSearchTipoInput] = useState('');
-  const [tipoUsuario, setTipoUsuario] = useState('');
-  const [verBaneados, setVerBaneados] = useState(false);
-  const [userRol, setUserRol] = useState(null);
-
+  const { rol:userRol } = useContext(RoleContext)
+  
+  const initialFiltros = {
+    nombre: "",
+    correo: "",
+    rol: "",
+    estado: true // true:activos; false:baneados
+  }
+  
+  const [filtrosLocal, filtrosAplicados, handleOnFilters, clearFilters, searchFilters, handleOnFilterAplicados] = useFiltro(initialFiltros, setCurrentPage, "FiltrosAdminUsuarios");
 
   const fetchUsuarios = async () => {
     try {
-      const url = `${API_CLIENT_URL}/api/admin/listar/filtrados?correo=${searchCorreo}&nombre=${searchTerm}&rolPrinciapl=${tipoUsuario}&estado=${!verBaneados}&page=${currentPage - 1}&size=${pageSize}`;
-      const res = await fetch(url, { credentials: 'include' });
+      const url = `${API_CLIENT_URL}/api/admin/listar/filtrados?page=${currentPage - 1}&size=${pageSize}`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(filtrosAplicados),
+      });
       const data = await manejarRespuesta(res);
       if (!data) { return }
       setTotalElements(data.totalElements);
@@ -38,24 +46,9 @@ export default function AdminUsuarios() {
     }
   };
 
-
-  useEffect(() => {
-    fetch(`${API_CLIENT_URL}/api/usuarios/rol`, {
-      credentials: 'include',
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setUserRol(data.rolPrincipal);
-      })
-      .catch((err) => {
-        console.error("Error al obtener el rol:", err);
-        setUserRol("ROLE_INVITADO"); // fallback en caso de error
-      });
-  }, []);
-
   useEffect(() => {
     fetchUsuarios();
-  }, [currentPage, pageSize, searchTerm, tipoUsuario, verBaneados, AdminId, searchCorreo]);
+  }, [currentPage, pageSize, AdminId, filtrosAplicados]);
 
 
   const crearAdmin = async (idUsuario, estado) => {
@@ -117,29 +110,15 @@ export default function AdminUsuarios() {
       .catch((err) => console.error('Error al cambiar el estado del usuario:', err));
   };
 
-
-  const aplicarFiltros = () => {
-    setSearchTerm(searchInput);
-    setTipoUsuario(searchTipoInput);
-    setSearchCorreo(searchInputCorreo)
-    setCurrentPage(1);
-  };
-
-  const EliminarFiltros = () => {
-    setSearchInput("")
-    setSearchInputCorreo("")
-    setSearchTipoInput("")
-    setSearchTerm("");
-    setTipoUsuario("");
-    setSearchCorreo("")
-    setCurrentPage(1);
-  };
+  const handleOnEstado = (e) => {
+    e.target = { name: "estado", value: !filtrosAplicados.estado }
+    handleOnFilterAplicados(e)
+  }
 
   return (
     <Layout >
 
       <br />
-
       <div className="container px-4 py-6 mx-auto">
         <div className="flex flex-col gap-6 md:flex-row">
 
@@ -152,22 +131,25 @@ export default function AdminUsuarios() {
                   <input
                     type="text"
                     placeholder="Buscar por Nombre ..."
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
+                    name="nombre"
+                    value={filtrosLocal.nombre}
+                    onChange={handleOnFilters}
                     className="py-2 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
 
                   <input
                     type="text"
                     placeholder="Buscar por correo ..."
-                    value={searchInputCorreo}
-                    onChange={(e) => setSearchInputCorreo(e.target.value)}
+                    name="correo"
+                    value={filtrosLocal.correo}
+                    onChange={handleOnFilters}
                     className="py-2 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
 
                   <select
-                    value={searchTipoInput}
-                    onChange={(e) => setSearchTipoInput(e.target.value)}
+                    name="rol"
+                    value={filtrosLocal.rol}
+                    onChange={handleOnFilters}
                     className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="">Todos los tipos</option>
@@ -180,34 +162,34 @@ export default function AdminUsuarios() {
                     <option value="EMPRESA">Empresas</option>
                   </select>
 
-                  <button onClick={aplicarFiltros} className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                  <button onClick={searchFilters} className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700">
                     Buscar
                   </button>
-                  <button onClick={() => setVerBaneados(!verBaneados)} className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
-                    {verBaneados ? 'Ver Activos' : 'Ver Baneados'}
+                  <button onClick={handleOnEstado} className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
+                    {!filtrosAplicados.estado ? 'Ver Activos' : 'Ver Baneados'}
                   </button>
-                  <button onClick={EliminarFiltros} className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                  <button onClick={clearFilters} className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700">
                     Eliminar Filtros
                   </button>
                 </div>
               </div>
               <p className="px-4 py-3 font-medium text-blue-600 ">
-                {totalElements} Usuarios {verBaneados ? 'Baneados' : 'Activos'}
+                {totalElements} Usuarios {!filtrosAplicados.estado ? 'Baneados' : 'Activos'}
               </p>
               <div className="overflow-hidden bg-white border border-gray-100 rounded-lg shadow-sm">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className={`px-6 py-3 text-xs font-medium text-left uppercase ${verBaneados ? 'text-red-800' : 'text-blue-500'}`}>Nombre</th>
-                      <th className={`px-6 py-3 text-xs font-medium text-left uppercase ${verBaneados ? 'text-red-800' : 'text-blue-500'}`}>Email</th>
-                      <th className={`px-6 py-3 text-xs font-medium text-left uppercase ${verBaneados ? 'text-red-800' : 'text-blue-500'}`}>Tipo</th>
-                      {verBaneados ? (
+                      <th className={`px-6 py-3 text-xs font-medium text-left uppercase ${!filtrosAplicados.estado ? 'text-red-800' : 'text-blue-500'}`}>Nombre</th>
+                      <th className={`px-6 py-3 text-xs font-medium text-left uppercase ${!filtrosAplicados.estado ? 'text-red-800' : 'text-blue-500'}`}>Email</th>
+                      <th className={`px-6 py-3 text-xs font-medium text-left uppercase ${!filtrosAplicados.estado ? 'text-red-800' : 'text-blue-500'}`}>Tipo</th>
+                      {!filtrosAplicados.estado ? (
                         <th className="px-6 py-3 text-xs font-medium text-left uppercase text-red-800">Comentario Admin</th>
                       ) : (
                         <th className="px-6 py-3 text-xs font-medium text-left uppercase text-blue-500">Fecha Registro</th>
                       )}
-                      <th className={`px-6 py-3 text-xs font-medium text-left uppercase ${verBaneados ? 'text-red-800' : 'text-blue-500'}`}>Último Acceso</th>
-                      <th className={`px-6 py-3 text-xs font-medium text-right uppercase ${verBaneados ? 'text-red-800' : 'text-blue-500'}`}>Acciones</th>
+                      <th className={`px-6 py-3 text-xs font-medium text-left uppercase ${!filtrosAplicados.estado ? 'text-red-800' : 'text-blue-500'}`}>Último Acceso</th>
+                      <th className={`px-6 py-3 text-xs font-medium text-right uppercase ${!filtrosAplicados.estado ? 'text-red-800' : 'text-blue-500'}`}>Acciones</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -220,7 +202,7 @@ export default function AdminUsuarios() {
                             {user.rolPrinciapl}
                           </span>
                         </td>
-                        {verBaneados ? (
+                        {!filtrosAplicados.estado ? (
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.comentarioAdmin || '-'}</td>
                         ) : (
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.fechaRegistro || '-'}</td>
@@ -248,7 +230,7 @@ export default function AdminUsuarios() {
                             (userRol === "SUPER_ADMIN") ||
                             (userRol === "ADMIN" && !["ADMIN", "SUPER_ADMIN"].includes(user.rolPrinciapl))
                           ) && (
-                              verBaneados ? (
+                              !filtrosAplicados.estado ? (
                                 <button
                                   onClick={() => cambiarEstado(user.idUsuario, true)}
                                   className="text-green-600 hover:text-green-800"
@@ -264,9 +246,6 @@ export default function AdminUsuarios() {
                                 </button>
                               )
                             )}
-
-
-
                         </td>
                       </tr>
                     ))}
