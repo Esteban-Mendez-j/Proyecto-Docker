@@ -14,6 +14,8 @@ public interface HistorialLaboralRepository extends JpaRepository<HistorialLabor
 
     List<HistorialLaboral> findByIdUsuario(Candidato candidato);
 
+    List<HistorialLaboral> findByIdUsuarioAndVisible(Candidato candidato, Boolean visible);
+
     void deleteByIdUsuario_IdUsuario(Long idUsuario);
 
 }

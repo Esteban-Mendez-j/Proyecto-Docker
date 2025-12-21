@@ -115,8 +115,8 @@ public class CandidatoResource {
                 response.put("error", "Candidato no encontrado");
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
-            response.put("estudios", estudioService.getEstudiosByIdUsuario(idUsuario));
-            response.put("historialLaboral", historialLaboralService.getHistorialByIdUsuario(idUsuario));
+            response.put("estudios", estudioService.getEstudiosByIdUsuarioAndVisible(idUsuario, true));
+            response.put("historialLaboral", historialLaboralService.getHistorialByIdUsuarioAndVisible(idUsuario, true));
             response.put("candidato", candidatoDTO);
             return ResponseEntity.ok(response);
 

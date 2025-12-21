@@ -15,6 +15,7 @@ export default function InputForm({
   minL = 0,
   maxL = undefined,
   rules = null,
+  isDisabled= false,
   submitted
 }) {
   const backendError = error?.[name];
@@ -46,6 +47,7 @@ export default function InputForm({
         onChange={handleOnChange}
         placeholder={placeholder}
         autoComplete={autoComplete}
+        disabled={isDisabled}
         className={`${className} ${(fieldError && submitted) ? "error-input" : ""}`}
         {...(type ? { type } : {})}
         {...(as === "input" && type === "number" ? { min: minL } : {})}

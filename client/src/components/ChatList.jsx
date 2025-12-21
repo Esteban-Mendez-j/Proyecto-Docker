@@ -1,66 +1,15 @@
-import { useEffect, useState } from "react";
-import { API_CLIENT_URL } from '../services/Api';
-import manejarRespuesta from "../services/ManejarRespuesta";
+import { useEffect } from "react";
 import Loading from "../components/Loading"
 
-const ChatList = ({ searchText, Estado , onSelectChat }) => {
-  const [userRole, setUserRole] = useState(null);
-  const [userId, setUserId] = useState(null);
-  const [chats, setChats] = useState([]);
-  const [loading, setLoading] = useState(false);
+const ChatList = ({ onSelectChat, chats, loading, userRole }) => {
 
-  // Obtener rol e id del usuario
   useEffect(() => {
-    async function fetchUserRole() {
-      try {
-        const res = await fetch(`${API_CLIENT_URL}/api/usuarios/rol`, {
-          credentials: "include",
-        });
-        const  data = await manejarRespuesta(res);
-        if(!data){return}
-        setUserId(data.id);
-        setUserRole(data.rolPrincipal);
-      } catch (error) {
-        console.error("Error fetching user role:", error);
-      }
-    }
-    fetchUserRole();
-  }, []);
+    console.log("modificado")
+    console.log(chats)
+    
+  }, [chats])
 
-  // Traer chats desde backend con filtros
-  useEffect(() => {
-    async function fetchChats() {
-      if (!userRole || !userId) return;
-
-      setLoading(true);
-      try {
-        const tipoUsuario = userRole.toLowerCase(); // empresa o candidato
-        const params = new URLSearchParams({
-          estado: Estado, // "todos", "activos", "inactivos"
-          search: searchText || "",
-          page: 0,
-          size: 10,
-        });  
-        let url =`${API_CLIENT_URL}/api/chats/${tipoUsuario}/${userId}?${params.toString()}`;
-
-        const res = await fetch(url, {
-          method: 'PATCH',
-          credentials: 'include'
-        });
-
-        const  data = await manejarRespuesta(res);
-        if(!data){return}
-        setChats(data.chats || []);
-      } catch (error) {
-        console.error("Error fetching chats:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchChats();
-  }, [userRole, userId, searchText, Estado]);
-
-  if (loading) return <Loading/>;
+  if (loading) return <Loading />;
   if (chats.length === 0)
     return (
       <div className="flex flex-col items-center justify-center text-center py-16 text-gray-500">
@@ -82,22 +31,23 @@ const ChatList = ({ searchText, Estado , onSelectChat }) => {
               className="w-full text-left px-4 py-3 hover:bg-blue-50 transition duration-200 group"
             >
               <div className="flex justify-between items-center mb-1">
-                  {chat.tipoChat === 'Privado' ? (
-                    <h3 className="font-semibold text-blue-800 text-sm group-hover:text-blue-900">
-                      {userRole === 'EMPRESA'
-                        ? `Candidato: ${chat.nombreCandidato}`
-                        : `Empresa: ${chat.nombreEmpresa}`}
-                    </h3>
-                  ) : (
-                    <h3 className="font-semibold text-green-800 text-sm group-hover:text-green-900">
-                      {chat.tituloVacante}
-                    </h3>
-                  )}
+                {chat.tipoChat === 'Privado' ? (
+                  <h3 className="font-semibold text-blue-800 text-sm group-hover:text-blue-900">
+                    {userRole === 'EMPRESA'
+                      ? `Candidato: ${chat.nombreCandidato}`
+                      : `Empresa: ${chat.nombreEmpresa}`}
+                  </h3>
+                ) : (
+                  <h3 className="font-semibold text-green-800 text-sm group-hover:text-green-900">
+                    {chat.tituloVacante}
+                  </h3>
+                )}
 
                 <span className="text-xs text-blue-400">
-                  {new Date(chat.horaUltimoMensaje+'Z').toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
+                  {new Date(chat.horaUltimoMensaje).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
                   })}
                 </span>
               </div>

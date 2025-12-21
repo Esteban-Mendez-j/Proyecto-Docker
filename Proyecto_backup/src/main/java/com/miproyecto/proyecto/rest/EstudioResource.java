@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.model.EstudioDTO;
 import com.miproyecto.proyecto.service.EstudioService;
+import com.miproyecto.proyecto.util.JwtUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,9 +32,11 @@ import jakarta.validation.Valid;
 public class EstudioResource {
 
     private final EstudioService estudioService;
+    private final JwtUtils jwtUtils;
 
-    public EstudioResource(final EstudioService estudioService) {
+    public EstudioResource(final EstudioService estudioService, final JwtUtils jwtUtils) {
         this.estudioService = estudioService;
+        this.jwtUtils = jwtUtils;
     }
 
     @Operation(
@@ -56,7 +61,11 @@ public class EstudioResource {
     )
     @PostMapping("/add")
     public ResponseEntity<Long> createEstudio(
-            @RequestBody @Valid final EstudioDTO estudioDTO) {
+            @RequestBody @Valid final EstudioDTO estudioDTO,
+            @CookieValue(name="jwtToken") String jwtToken) {
+        DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+        Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+        estudioDTO.setIdUsuario(idUsuario);
         final Long createdIdEstudio = estudioService.create(estudioDTO);
         return new ResponseEntity<>(createdIdEstudio, HttpStatus.CREATED);
     }
@@ -125,5 +134,14 @@ public class EstudioResource {
             @PathVariable final Long idEstudio) {
         estudioService.delete(idEstudio);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/cambiar/visibilidad/{estado}/{idEstudio}")
+    public ResponseEntity<Long> cambiarVisibilidad(
+        @PathVariable final Boolean estado,
+        @PathVariable final Long idEstudio
+    ) {
+        estudioService.cambiarVisibilidad(estado, idEstudio); 
+        return ResponseEntity.ok(idEstudio);
     }
 }

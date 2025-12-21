@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { API_CLIENT_URL, URL_IMAGEN } from "../services/Api";
-import { listAptitudes } from "../services/data";
+import { listAptitudes, listValueEstudio, listValueHistorial } from "../services/data";
 import "../style/invitado/candidato.css";
+import TimeLineList from "./TimeLineList";
 
 export default function PerfilCandidato({candidato, historialLaboral, estudios, isPublic}) {
 
@@ -145,26 +146,7 @@ export default function PerfilCandidato({candidato, historialLaboral, estudios, 
                             <span className="absolute left-0 top-1 h-4/5 w-1 bg-[var(--gradient-primary)] rounded"></span>
                             Estudios
                         </h2>
-                        <div className="space-y-6 mt-4">
-                            {estudios.length === 0 ? (
-                                <p className="italic text-gray-500">No hay estudios registrados.</p>
-                            ) : (
-                                estudios.map((estudio, index) => (
-                                    <div
-                                        key={index}
-                                        className="relative pl-6 border-l-2 border-[var(--border)] pb-4"
-                                    >
-                                        <div className="absolute -left-[0.4rem] top-0 w-3 h-3 bg-[var(--primary)] rounded-full border-2 border-white" />
-                                        <h3 className="text-base font-semibold text-[var(--text)]">
-                                            {estudio.titulo}
-                                        </h3>
-                                        <p className="text-sm text-[var(--primary)]">
-                                            {estudio.academia}
-                                        </p>
-                                    </div>
-                                ))
-                            )}
-                        </div>
+                        <TimeLineList objeto={estudios} listValue={listValueEstudio}/>
                     </section>
 
                     {/* Historial */}
@@ -173,27 +155,8 @@ export default function PerfilCandidato({candidato, historialLaboral, estudios, 
                             <span className="absolute left-0 top-1 h-4/5 w-1 bg-[var(--gradient-primary)] rounded"></span>
                             Historial Laboral
                         </h2>
-                        <div className="space-y-6 mt-4">
-                            {historialLaboral.length === 0 ? (
-                                <p className="italic text-gray-500">No hay experiencia laboral registrada.</p>
-                            ) : (
-                                historialLaboral.map((exp, index) => (
-                                    <div
-                                        key={index}
-                                        className="relative pl-6 border-l-2 border-[var(--border)] pb-4"
-                                    >
-                                        <div className="absolute -left-[0.4rem] top-0 w-3 h-3 bg-[var(--primary)] rounded-full border-2 border-white" />
-                                        <h3 className="text-base font-semibold text-[var(--text)]">
-                                            {exp.titulo}
-                                        </h3>
-                                        <p className="text-sm text-[var(--primary)]">
-                                            {exp.empresa}
-                                        </p>
-                                    </div>
-                                ))
-                            )}
 
-                        </div>
+                        <TimeLineList objeto={historialLaboral} listValue={listValueHistorial}/>
                     </section>
                 </div>
             </div>

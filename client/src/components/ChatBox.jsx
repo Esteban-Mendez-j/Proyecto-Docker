@@ -5,7 +5,7 @@ import { manejarRespuesta } from '../services/ManejarRespuesta';
 import { modal, modalTime } from "../services/Modal";
 import { ListSvg } from "../components/Icons"
 
-const ChatBox = ({ chatId }) => {
+const ChatBox = ({ chatId, setChats }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,9 +27,9 @@ const ChatBox = ({ chatId }) => {
         console.error('Error fetching user role:', error);
       }
     };
-
     fetchUserRole();
   }, []);
+
 
   useEffect(() => {
     const fetchChatInfo = async () => {
@@ -143,6 +143,14 @@ const ChatBox = ({ chatId }) => {
       });
       setInput("");
     }
+
+    
+    setChats(prev =>  prev.map(chat =>
+      chat.id === chatInfo.chatInfo.id
+        ? { ...chat, contentUltimoMensaje: input, horaUltimoMensaje: new Date().toISOString() }
+        : chat
+    ));
+
   };
 
   const cambiarEstadoChat = async (chatId, estado) => {
@@ -233,7 +241,7 @@ const ChatBox = ({ chatId }) => {
               >
                 <p className="mb-4">{msg.content}</p>
                 <span className="absolute bottom-1 right-3 text-xs text-black-300">
-                  {new Date(msg.time + 'Z').toLocaleTimeString([], {
+                  {new Date(msg.time).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
                     hour12: true,
@@ -266,7 +274,7 @@ const ChatBox = ({ chatId }) => {
             <button
               type="button"
               disabled={!input.trim()}
-              onClick={() => sendMessage()}
+              onClick={sendMessage}
               className={`px-5 py-2 rounded-lg font-semibold ${
                 input.trim()
                   ? "bg-blue-600 text-white hover:bg-blue-700"

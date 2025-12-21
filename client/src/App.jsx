@@ -28,6 +28,8 @@ import PoliticaPrivacidad from "./page/invitado/PoliticaPrivacidad.jsx";
 import TerminosCondiciones from "./page/invitado/TerminosCondiciones.jsx";
 import Notificaciones from "./page/candidato/Notificaciones.jsx";
 import ShortsPage from './page/candidato/ShortsPage.jsx';
+import FormEducation from "./page/candidato/FormEducation.jsx";
+import FormHistorial from "./page/candidato/FormHistorial.jsx";
 
 
 function App() {
@@ -39,6 +41,8 @@ function App() {
           <Route path="/perfil/candidato" element={<PerfilCandidatoPrivate/>} />
           <Route path="/postulaciones" element= {<PostuladosPage/>} />
           <Route path= "/notificaciones" element= {<Notificaciones/>} />
+          <Route path= "/perfil/candidato/editar/estudios/:id?" element={<FormEducation/>}/>
+          <Route path= "/perfil/candidato/editar/historial/:id?" element={<FormHistorial/>}/>
         </Route>
         <Route element={<RouteProtection accessRole={"EMPRESA"} />}> 
           <Route path="/empresa/vacantes" element={<Vacantes/>} />

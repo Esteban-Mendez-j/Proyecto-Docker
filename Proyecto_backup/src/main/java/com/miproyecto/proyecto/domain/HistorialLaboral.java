@@ -1,5 +1,7 @@
 package com.miproyecto.proyecto.domain;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -27,6 +29,61 @@ public class HistorialLaboral {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario_id")
     private Candidato idUsuario;
+
+    @Column
+    private Boolean trabajoActual;
+
+    @Column
+    private LocalDate fechaInicio;
+
+    @Column
+    private LocalDate fechaFin;
+
+    @Column
+    private String descripcion;
+
+    @Column
+    private Boolean visible;
+
+    public Boolean getVisible() {
+        return visible;
+    }
+
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Boolean getTrabajoActual() {
+        return trabajoActual;
+    }
+
+    public void setTrabajoActual(Boolean trabajoActual) {
+        this.trabajoActual = trabajoActual;
+    }
+
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public LocalDate getFechaFin() {
+        return fechaFin;
+    }
+
+    public void setFechaFin(LocalDate fechaFin) {
+        this.fechaFin = fechaFin;
+    }
 
     public Long getIDHistorial() {
         return iDHistorial;

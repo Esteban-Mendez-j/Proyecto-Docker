@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +24,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Tag(name = "Historial Laboral", description = "Operaciones para gestionar el historial laboral de los candidatos")
@@ -63,8 +63,8 @@ public class HistorialLaboralResource {
     @PostMapping("/add")
     public ResponseEntity<Long> createHistorialLaboral(
             @RequestBody @Valid final HistorialLaboralDTO historialLaboralDTO,
-            HttpSession session) {
-        String jwtToken = (String) session.getAttribute("jwtToken");
+            @CookieValue(name="jwtToken") String jwtToken) {
+        
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
         historialLaboralDTO.setIdUsuario(idUsuario);
@@ -136,5 +136,14 @@ public class HistorialLaboralResource {
             @PathVariable final Long iDHistorial) {
         historialLaboralService.delete(iDHistorial);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/cambiar/visibilidad/{estado}/{idHistorial}")
+    public ResponseEntity<Long> cambiarVisibilidad(
+        @PathVariable final Boolean estado,
+        @PathVariable final Long idHistorial
+    ) {
+        historialLaboralService.cambiarVisibilidad(estado, idHistorial); 
+        return ResponseEntity.ok(idHistorial);
     }
 }

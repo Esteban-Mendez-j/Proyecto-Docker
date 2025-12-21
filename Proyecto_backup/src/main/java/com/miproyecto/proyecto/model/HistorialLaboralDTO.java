@@ -1,5 +1,7 @@
 package com.miproyecto.proyecto.model;
 
+import java.time.LocalDate;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotNull;
@@ -20,6 +22,52 @@ public class HistorialLaboralDTO {
     private String empresa;
 
     private Long idUsuario;
+
+    private Boolean trabajoActual;
+    private LocalDate fechaInicio;
+    private LocalDate fechaFin;
+    private String descripcion;
+    private Boolean visible=true;
+
+    public Boolean getVisible() {
+        return visible;
+    }
+
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Boolean getTrabajoActual() {
+        return trabajoActual;
+    }
+
+    public void setTrabajoActual(Boolean trabajoActual) {
+        this.trabajoActual = trabajoActual;
+    }
+
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public LocalDate getFechaFin() {
+        return fechaFin;
+    }
+
+    public void setFechaFin(LocalDate fechaFin) {
+        this.fechaFin = fechaFin;
+    }
 
     public Long getiDHistorial() {
         return iDHistorial;

@@ -113,6 +113,29 @@ export const sectores = [
     "Otros"
 ];
 
+export const listValueHistorial = {
+    id: "iDHistorial",
+    titulo: "titulo",
+    subtitulo: "empresa",
+    parrafo: "descripcion",
+    fechaInicio: "fechaInicio",
+    fechaFin: "fechaFin",
+    fechaActual: "trabajoActual",
+    texto: []
+}
+
+export const listValueEstudio = {
+    id: "idEstudio",
+    titulo: "titulo",
+    subtitulo: "academia",
+    parrafo: "descripcion",
+    fechaInicio: "fechaInicio",
+    fechaFin: "fechaFin",
+    fechaActual: "estado",
+    estado: "estado",
+    texto: ["nivelEducativo"]
+}
+
 
 export const mensajesNotificaciones = (tituloVacante, estadoPostulacion) => {
     const mensaje = {

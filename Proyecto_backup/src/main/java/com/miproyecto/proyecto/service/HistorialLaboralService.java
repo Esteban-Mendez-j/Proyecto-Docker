@@ -31,10 +31,10 @@ public class HistorialLaboralService {
                 .toList();
     }
 
-    public List<HistorialLaboralDTO> getHistorialByIdUsuario(final Long idUsuario) {
+    public List<HistorialLaboralDTO> getHistorialByIdUsuarioAndVisible(final Long idUsuario, final Boolean visible ) {
         final Candidato candidato = candidatoRepository.findById(idUsuario)
                 .orElseThrow(NotFoundException::new);
-        final List<HistorialLaboral> idUsuarioHistorialLaboral =  historialLaboralRepository.findByIdUsuario(candidato);
+        final List<HistorialLaboral> idUsuarioHistorialLaboral =  historialLaboralRepository.findByIdUsuarioAndVisible(candidato, visible);
         if (idUsuarioHistorialLaboral != null) {
             return idUsuarioHistorialLaboral.stream()
             .map(historialLaboral -> mapToDTO(historialLaboral, new HistorialLaboralDTO()))
@@ -43,6 +43,12 @@ public class HistorialLaboralService {
         return null;
     }
 
+    public void cambiarVisibilidad(boolean estado, Long idHistorial) {
+        HistorialLaboral historial = historialLaboralRepository.findById(idHistorial)
+                .orElseThrow(NotFoundException::new);
+        historial.setVisible(estado);
+        historialLaboralRepository.save(historial);
+    }
 
     public HistorialLaboralDTO get(final Long iDHistorial) {
         return historialLaboralRepository.findById(iDHistorial)
@@ -84,6 +90,11 @@ public class HistorialLaboralService {
         historialLaboralDTO.setiDHistorial(historialLaboral.getIDHistorial());
         historialLaboralDTO.setTitulo(historialLaboral.getTitulo());
         historialLaboralDTO.setEmpresa(historialLaboral.getEmpresa());
+        historialLaboralDTO.setFechaFin(historialLaboral.getFechaFin());
+        historialLaboralDTO.setFechaInicio(historialLaboral.getFechaInicio());
+        historialLaboralDTO.setTrabajoActual(historialLaboral.getTrabajoActual());
+        historialLaboralDTO.setDescripcion(historialLaboral.getDescripcion());
+        historialLaboralDTO.setVisible(historialLaboral.getVisible());
         historialLaboralDTO.setIdUsuario(historialLaboral.getIdUsuario() == null ? null : historialLaboral.getIdUsuario().getIdUsuario());
         return historialLaboralDTO;
     }
@@ -92,6 +103,11 @@ public class HistorialLaboralService {
             final HistorialLaboral historialLaboral) {
         historialLaboral.setTitulo(historialLaboralDTO.getTitulo());
         historialLaboral.setEmpresa(historialLaboralDTO.getEmpresa());
+        historialLaboral.setFechaFin(historialLaboralDTO.getFechaFin());
+        historialLaboral.setFechaInicio(historialLaboralDTO.getFechaInicio());
+        historialLaboral.setTrabajoActual(historialLaboralDTO.getTrabajoActual());
+        historialLaboral.setDescripcion(historialLaboralDTO.getDescripcion());
+        historialLaboral.setVisible(historialLaboralDTO.getVisible());
         final Candidato idUsuario = historialLaboralDTO.getIdUsuario() == null ? null : candidatoRepository.findById(historialLaboralDTO.getIdUsuario())
                 .orElseThrow(() -> new NotFoundException("idUsuario not found"));
         historialLaboral.setIdUsuario(idUsuario);
