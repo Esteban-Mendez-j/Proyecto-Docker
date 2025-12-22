@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import useDataChange from "../../hooks/useDataChange";
 import { modalTime } from "../../services/Modal";
 import InputForm from "../../components/InputForm";
+import { formRulesHistorialLaboral, validateForm } from "../../services/validacionForm";
 
 export default function FormHistorial(){
 
     const initialDataExperiencia  = {
-        cargo:"",
+        titulo:"",
         empresa:"",
         descripcion:"",
         fechaInicio:"",
@@ -18,7 +19,7 @@ export default function FormHistorial(){
     
     const { id } = useParams(); 
     const navigate = useNavigate();
-    const { send , data } = useSendForm();
+    const { send , data, error, setError } = useSendForm();
     const [submitted, setSubmitted] = useState(false);
     const url = id? `/api/historialLaborals/edit/${id}` : "/api/historialLaborals/add";
     const metodo = id? `PUT` : "POST";
@@ -44,15 +45,38 @@ export default function FormHistorial(){
         }
     }, [data])
 
+    const handleOnChangeTrabajoActual = (e) => {
+        e.target = { name: "trabajoActual", value: e.target.checked }
+        handleOnChange(e)
+        e.target = { name: "fechaFin", value: "" }
+        handleOnChange(e)
+    }
+
     const handleSubmit = async (e) =>{
         e.preventDefault();
         setSubmitted(true);
+        const newErrors = validateForm(dataForm, formRulesHistorialLaboral);
+
+        if (Object.keys(newErrors).length > 0) {
+            setError(newErrors);
+
+            const firstErrorField = Object.keys(newErrors)[0];
+            const el = document.getElementById(firstErrorField);
+            if (el) {
+                el.scrollIntoView({ behavior: "smooth", block: "center" });
+                el.focus();
+            }
+            return; // no enviar
+        }
+
+        setError({});
+
         const response = await send(url, metodo, JSON.stringify(dataForm) );
         //TODO: como al crear no hay id entonces no sale el mensaje 
         if(response == dataForm.idEstudio){
             modalTime(id? "Edicion realizada con exito!" : "Se creó el nuevo historial laboral");
         }
-        if(!id){clearDataForm();}
+        if(!id){clearDataForm(); setSubmitted(false)}
     }
 
     return (
@@ -71,6 +95,7 @@ export default function FormHistorial(){
                             placeholder="Ej: Ingeniero en sistemas"
                             handleOnChange={handleOnChange}
                             submitted={submitted}
+                            rules={formRulesHistorialLaboral}
                         />
                     </div>
                     <div className="form-group">
@@ -82,6 +107,7 @@ export default function FormHistorial(){
                             placeholder="Ej: Microsoft, Google"
                             handleOnChange={handleOnChange}
                             submitted={submitted}
+                            rules={formRulesHistorialLaboral}
                         />
                     </div>
                 </div>
@@ -95,6 +121,7 @@ export default function FormHistorial(){
                             value={dataForm.fechaInicio}
                             handleOnChange={handleOnChange}
                             submitted={submitted}
+                            rules={formRulesHistorialLaboral}
                         />
                     </div>
                     <div className="form-group">
@@ -105,6 +132,7 @@ export default function FormHistorial(){
                             value={dataForm.trabajoActual? "" : dataForm.fechaFin}
                             handleOnChange={handleOnChange}
                             submitted={submitted}
+                            error={dataForm.trabajoActual? "" : dataForm.fechaFin? "": {fechaFin:"Campo obligatorio"}}
                             isDisabled={dataForm.trabajoActual}
                         />
                         <div >
@@ -112,10 +140,7 @@ export default function FormHistorial(){
                             <input type="checkbox" name="trabajoActual" 
                                 checked={dataForm.trabajoActual} 
                                 value={dataForm.trabajoActual} 
-                                onChange={(e) => {
-                                    e.target = { name:"trabajoActual" , value:e.target.checked}
-                                    handleOnChange(e)
-                                }}
+                                onChange={handleOnChangeTrabajoActual}
                             />
                         </div>
                     </div>
@@ -128,6 +153,7 @@ export default function FormHistorial(){
                         name="descripcion"
                         handleOnChange={handleOnChange}
                         submitted={submitted}
+                        rules={formRulesHistorialLaboral}
                         as="textarea"
                     />
                 </div>

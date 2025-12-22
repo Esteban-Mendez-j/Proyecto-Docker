@@ -8,6 +8,13 @@ export const rules = {
     message,
   }),
 
+  requiredCondition: (attributeName , comparacion , message = "Campo obligatorio") => ({
+    type: "requiredCondition",
+    message,
+    attributeName,
+    comparacion
+  }),
+
   minNumber: (min, message) => ({
     type: "minNumber",
     min,
@@ -86,6 +93,12 @@ export function validateForm(form, formRules) {
       switch (rule.type) {
         case "required":
           if (v === "" || v === null || v === undefined) {
+            error = rule.message;
+          }
+          break;
+
+        case "requiredCondition":
+          if ((v === "" || v === null || v === undefined) && form[rule.attributeName] !== rule.comparacion) {
             error = rule.message;
           }
           break;
@@ -405,6 +418,73 @@ export const formRulesCandidatoEditar = {
     rules.maxNumber(90)
   ],
 };
+
+export const formRulesEstudio = {
+
+  titulo: [
+    rules.required(),
+    rules.minLength(5),
+    rules.maxLength(80)
+  ],
+
+  academia: [
+    rules.required(),
+    rules.minLength(5),
+    rules.maxLength(80)
+  ],
+
+  descripcion: [
+    rules.minLength(10),
+    rules.maxLength(500),
+    rules.required()
+  ],
+  fechaInicio: [
+    rules.required()
+  ],
+  nivelEducativo: [
+    rules.required()
+  ],
+  estado: [
+    rules.required()
+  ],
+  fechaFin: [
+    rules.requiredCondition("estado", "En curso")
+  ],
+  // urlCertificado: [
+  //   rules.required()
+  // ]
+
+}
+
+export const formRulesHistorialLaboral = {
+
+  titulo: [
+    rules.required(),
+    rules.minLength(5),
+    rules.maxLength(100)
+  ],
+
+  empresa: [
+    rules.required(),
+    rules.minLength(5),
+    rules.maxLength(100)
+  ],
+
+  descripcion: [
+    rules.minLength(10),
+    rules.maxLength(500),
+    rules.required()
+  ],
+  fechaInicio: [
+    rules.required()
+  ],
+  fechaFin: [
+    rules.requiredCondition("trabajoActual", true)
+  ],
+  // trabajoActual: [
+  // ]
+
+}
 
 function isValidNit(nit) {
   const nitStr = nit.replace(/\D/g, '');

@@ -35,7 +35,7 @@ export async function QuestionModal(title, icon = "question") {
   return sweetalertResponse.isConfirmed;
 }
 
-export function modalTime(message) {
+export function modalTime(message, type="success") {
  
   const Toast = Swal.mixin({
     toast: true,
@@ -49,7 +49,7 @@ export function modalTime(message) {
     }
   });
   Toast.fire({
-    icon: "success",
+    icon: type ,
     title: message
   });
   return Toast;

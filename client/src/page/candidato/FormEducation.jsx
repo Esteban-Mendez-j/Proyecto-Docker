@@ -5,6 +5,7 @@ import useDataChange from "../../hooks/useDataChange";
 import { listEducacion } from "../../services/data";
 import InputForm from "../../components/InputForm";
 import { useNavigate, useParams } from "react-router-dom";
+import { formRulesEstudio, validateForm } from "../../services/validacionForm";
 
 export default function FormEducation(){
 
@@ -22,10 +23,12 @@ export default function FormEducation(){
     
     const { id } = useParams(); 
     const navigate = useNavigate();
-    const { send , data } = useSendForm();
+    const { send , data, error, setError } = useSendForm();
     const [submitted, setSubmitted] = useState(false);
     const url = id? `/api/estudios/edit/${id}` : "/api/estudios/add";
     const metodo = id? `PUT` : "POST";
+    // el valor del estado en el que la fecha final es null 
+    const valorEstadoComparacion = "En curso"
     
     const getDataEdit = async () => {
         await send(url, "GET")
@@ -48,15 +51,40 @@ export default function FormEducation(){
         }
     }, [data])
 
+    const handleOnChangeEstado = (e) => {
+        const { value } = e.target;
+        handleOnChange(e)
+        if (value == valorEstadoComparacion) {
+            e.target = { name: "fechaFin", value: "" }
+            handleOnChange(e)
+        }
+    }
+
     const handleSubmit = async (e) =>{
         e.preventDefault();
         setSubmitted(true);
+        const newErrors = validateForm(dataForm, formRulesEstudio);
+
+        if (Object.keys(newErrors).length > 0) {
+            setError(newErrors);
+
+            const firstErrorField = Object.keys(newErrors)[0];
+            const el = document.getElementById(firstErrorField);
+            if (el) {
+                el.scrollIntoView({ behavior: "smooth", block: "center" });
+                el.focus();
+            }
+            return; // no enviar
+        }
+
+        setError({});
+        modalTime(id? "Edicion realizada con exito!" : "Se creó el nuevo estudio");
         const response = await send(url, metodo, JSON.stringify(dataForm) );
         //TODO: como al crear no hay id entonces no sale el mensaje 
         if(response == dataForm.idEstudio){
             modalTime(id? "Edicion realizada con exito!" : "Se creó el nuevo estudio");
         }
-        if(!id){clearDataForm();}
+        if(!id){clearDataForm(); setSubmitted(false)}
     }
 
     return (
@@ -75,6 +103,7 @@ export default function FormEducation(){
                             placeholder="Ej: Ingeniero en sistemas"
                             handleOnChange={handleOnChange}
                             submitted={submitted}
+                            rules={formRulesEstudio}
                         />
                     </div>
                     <div className="form-group">
@@ -86,6 +115,7 @@ export default function FormEducation(){
                             placeholder="Ej: Plazi, Tecnologico comfenalco "
                             handleOnChange={handleOnChange}
                             submitted={submitted}
+                            rules={formRulesEstudio}
                         />
                     </div>
                 </div>
@@ -97,8 +127,9 @@ export default function FormEducation(){
                             as="select"
                             name="estado"
                             value={dataForm.estado}
-                            handleOnChange={handleOnChange}
+                            handleOnChange={handleOnChangeEstado}
                             submitted={submitted}
+                            rules={formRulesEstudio}
                         >
                             <option value="" disabled>Selecciona el estado</option>
                             <option value="En curso"> En curso </option>
@@ -113,6 +144,7 @@ export default function FormEducation(){
                             value={dataForm.nivelEducativo}
                             handleOnChange={handleOnChange}
                             submitted={submitted}
+                            rules={formRulesEstudio}
                         >
                             <option value="" disabled>Selecciona tu nivel educativo</option>
                             {listEducacion.map((nivel, index) => (
@@ -131,6 +163,7 @@ export default function FormEducation(){
                             value={dataForm.fechaInicio}
                             handleOnChange={handleOnChange}
                             submitted={submitted}
+                            rules={formRulesEstudio}
                         />
                     </div>
                     <div className="form-group">
@@ -138,10 +171,12 @@ export default function FormEducation(){
                         <InputForm
                             type="date"
                             name="fechaFin"
-                            value={dataForm.estado === "En curso"? "":dataForm.fechaFin}
+                            value={dataForm.estado === valorEstadoComparacion? "":dataForm.fechaFin}
                             handleOnChange={handleOnChange}
                             submitted={submitted}
-                            isDisabled={dataForm.estado === "En curso"}
+                            rules={formRulesEstudio}
+                            error={dataForm.estado == valorEstadoComparacion? "" : dataForm.fechaFin? "": {fechaFin:"Campo obligatorio"}}
+                            isDisabled={dataForm.estado === valorEstadoComparacion}
                         />
                     </div>
                 </div>
@@ -153,6 +188,7 @@ export default function FormEducation(){
                         name="descripcion"
                         handleOnChange={handleOnChange}
                         submitted={submitted}
+                        rules={formRulesEstudio}
                         as="textarea"
                     />
                 </div>

@@ -27,7 +27,7 @@ export default function TimeLineList({ objeto, listValue, action }) {
     }
 
     return (
-        <div className="space-y-6 mt-4">
+        <div className="space-y-6 mt-4 max-h-[70dvh] overflow-auto p-2">
             {
                 objeto.map((elemento, index) => (
                     <div
