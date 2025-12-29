@@ -9,6 +9,8 @@ import { ListSvg } from "../../components/Icons.jsx";
 import manejarRespuesta from "../../services/ManejarRespuesta.js";
 import Paginacion from '../../components/Paginacion.jsx';
 import useFiltro from "../../hooks/useFiltro.jsx";
+import Table from "../../components/Table.jsx";
+import { modalResponse, QuestionModal } from "../../services/Modal.js";
 
 export default function PostuladosPage() {
   const initialFiltro = {
@@ -17,6 +19,24 @@ export default function PostuladosPage() {
     tituloVacante: "",
     empresa: "",
   };
+
+  const listHeader = {
+    Vacante: {nameAtributo:"vacante.titulo", clase:"text-gray-800"},
+    Empresa: {nameAtributo:"vacante.nameEmpresa", clase:"text-gray-800"},
+    Ciudad: {nameAtributo:"vacante.ciudad", clase:"text-gray-800"},
+    Modalidad: {nameAtributo:"vacante.modalidad", clase:"text-gray-800"},
+    Fecha: {
+      nameAtributo: "fechaPostulacion", clase: "text-gray-800",
+      modificacion: (p) => {
+        return new Date(p.fechaPostulacion).toLocaleDateString("es-CO", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })
+      }
+    },
+    Estado: {nameAtributo:"estado", clase: (p) => {return `text-${ p.estado === "Aceptada" ? "green" : p.estado === "Rechazada" ? "red" : "blue" }-500 font-bold` }},
+  }
 
   const [postulaciones, setPostulaciones] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -51,6 +71,31 @@ export default function PostuladosPage() {
   const irADetalleVacante = (id) => {
     navigate(`/empleos/${id}`);
   };
+
+  const cancelarPostulacion = async (nPostulacion, estado, nVacante) => {
+  
+    const isConfirmed = await QuestionModal('¿Estás seguro de que deseas cancelar esta postulación?', "question")
+
+    if (!isConfirmed) return;   
+
+    try {
+      const res = await fetch(`${API_CLIENT_URL}/api/postulados/cancelar/${nPostulacion}?estado=${estado}&nvacante=${nVacante}`, {
+        method: "PATCH",
+        credentials: "include",
+      });
+
+      if (res.status === 204) {
+        modalResponse("Postulación cancelada exitosamente.",'success')
+        fetchPostulaciones(currentPage);
+      } else {
+        modalResponse("No se pudo cancelar la Postulacion",'error')
+
+      }
+    } catch (error) {
+        modalResponse("Ocurrió un error al cancelar la postulación.",'error')
+    }
+  };
+
 
   return (
     <Layout title="Postulaciones | SearchJobs">
@@ -157,76 +202,12 @@ export default function PostuladosPage() {
             </div>
           ) : (
             <>
-              {/* Tabla */}
-              <table className="min-w-full table-auto border-collapse">
-                <thead>
-                  <tr className="bg-gray-200">
-                    <th className="px-6 py-3 text-left text-gray-600">Vacante</th>
-                    <th className="px-6 py-3 text-left text-gray-600">Empresa</th>
-                    <th className="px-6 py-3 text-left text-gray-600">Ciudad</th>
-                    <th className="px-6 py-3 text-left text-gray-600">Modalidad</th>
-                    <th className="px-6 py-3 text-left text-gray-600">Fecha</th>
-                    <th className="px-6 py-3 text-left text-gray-600">Estado</th>
-                    <th className="px-6 py-3 text-left text-gray-600">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {postulaciones.map((p) => (
-                    <tr key={p.nPostulacion} className="border-t">
-                      <td className="px-6 py-4 text-gray-800 max-w-[200px] truncate" title={p.vacante.titulo}>
-                        {p.vacante.titulo}
-                      </td>
-                      <td className="px-6 py-4 text-gray-800">{p.vacante.nameEmpresa}</td>
-                      <td className="px-6 py-4 text-gray-800">{p.vacante.ciudad}</td>
-                      <td className="px-6 py-4 text-gray-800">{p.vacante.modalidad}</td>
-                      <td className="px-6 py-4 text-gray-800 whitespace-nowrap">
-                        {p.fechaPostulacion
-                          ? new Date(p.fechaPostulacion).toLocaleDateString("es-CO", {
-                            year: "numeric",
-                            month: "2-digit",
-                            day: "2-digit",
-                          })
-                          : "-"}
-                      </td>
-
-
-                      <td className="px-6 py-4">
-                        <span
-                          className={`px-3 py-1 inline-flex text-ms font-semibold rounded-full
-                          ${p.estado === "Aceptada"
-                              ? "bg-green-100 text-green-800"
-                              : p.estado === "Rechazada"
-                                ? "bg-red-100 text-red-800"
-                                : "bg-blue-100 text-blue-800"
-                            }
-                        `}
-                        >
-                          {p.estado || "Espera"}
-                        </span>
-                      </td>
-
-                      <td className="px-6 py-4 flex flex-wrap gap-3">
-                        <button
-                          onClick={() => irADetalleVacante(p.vacante.id)}
-                          className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition-transform duration-200 hover:scale-105 w-32 text-center"
-                        >
-                          Ver vacante
-                        </button>
-
-                        {p.estado !== "Rechazada" && (
-                          <button
-                            onClick={() => cancelarPostulacion(p.nPostulacion, false, p.vacante.id)}
-                            className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition-transform duration-200 hover:scale-105"
-                          >
-                            Cancelar
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
+              <div className="overflow-x-auto">
+                <Table listEncabezados={listHeader} listObjetos={postulaciones} action={[
+                  { text: "Ver vacante", funcion: (p) => irADetalleVacante(p.vacante.id), clase: "bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition-transform duration-200 hover:scale-105 w-32 text-center" },
+                  { text: "Cancelar", funcion: (p) => cancelarPostulacion(p.nPostulacion, false, p.vacante.id), clase: "bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition-transform duration-200 hover:scale-105" },
+                ]} />
+              </div>
               <Paginacion
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}

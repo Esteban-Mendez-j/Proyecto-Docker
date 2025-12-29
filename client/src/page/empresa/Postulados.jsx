@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Layout from "../../layouts/Layout";
 import "../../style/invitado/empleos.css"
 import "../../style/invitado/postulados.css"
@@ -6,10 +6,11 @@ import { useEffect, useState } from "react";
 import Pagination from "../../components/Paginacion";
 import manejarRespuesta from "../../services/ManejarRespuesta";
 import { API_CLIENT_URL } from "../../services/Api";
-import { modal } from "../../services/Modal";
+import { modal, modalResponse, QuestionModal } from "../../services/Modal";
 import {sendMessage} from "../../services/Websocket"
 import { mensajesNotificaciones } from "../../services/data";
 import useFiltro from "../../hooks/useFiltro";
+import Table from "../../components/Table";
 
 export default function Postulados() {
 
@@ -32,7 +33,56 @@ export default function Postulados() {
         fechaMinima: "",
         nombreCandidato: "",
     }
-    const { vacanteId } = useParams()
+
+    const listHeader = {
+        Nombre: { nameAtributo: "candidato.nombre", clase: "text-gray-800",  modificacion: (p)=>{
+            
+            return(<>
+                {p.candidato.nombre}
+                {
+                    !p.active && (
+                        <span className="block text-xs text-yellow-600 font-medium">
+                            Postulación desactivada
+                        </span>
+                    )
+                }
+                {
+                    !p.vacanteIsActive && (
+                        <span className="block text-xs text-red-600 font-medium">
+                            Vacante deshabilitada
+                        </span>
+                    )
+                }
+            </>)
+        } },
+        Afinidad: { nameAtributo: "porcentajePrediccion", clase: "text-gray-800", modificacion: (p)=> `${p.porcentajePrediccion}%`   },
+        Fecha: {
+            nameAtributo: "fechaPostulacion", clase: "text-gray-800",
+            modificacion: (p) => {
+                return new Date(p.fechaPostulacion).toLocaleDateString("es-CO", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                })
+            }
+        },
+        Estado: { nameAtributo: "estado", clase: (p) => {return `text-${ p.estado === "Aceptada" ? "green" : p.estado === "Rechazada" ? "red" : "blue" }-500 font-bold` }},
+        CV: {
+            nameAtributo: "candidato.curriculo", modificacion: (p) => {
+                return (
+                    <a
+                        href={`${API_CLIENT_URL}/pdf/${p.candidato.curriculo}`}
+                        target="_blank"
+                        className="text-blue-500 hover:underline font-medium"
+                    >
+                        Ver CV
+                    </a>
+                )
+            }
+        },
+    }
+    const { vacanteId } = useParams();
+    const navigate = useNavigate();
     const itemsPerPage = 10;
     const [currentPage, setCurrentPage] = useState(1);
     const [ filtrosLocal, filtrosAplicados, handleOnFilters, clearFilters, searchFilters ] = useFiltro(initialFiltro, setCurrentPage, "FiltrosEmpresaPostulado");
@@ -106,7 +156,7 @@ export default function Postulados() {
             window.location.href = `/chat/${chat.id}`;
         } catch (err) {
             console.error('Error al abrir el chat:', err);
-            await Swal.fire({ text: 'No se pudo abrir el chat.', icon: 'info' });
+            await modalResponse('No se pudo abrir el chat.', "info");
         }
     };
 
@@ -127,15 +177,9 @@ export default function Postulados() {
     }
 
     const actualizarEstadoPostulacion = async (nPostulacion, nuevoEstado) => {
-        const { isConfirmed } = await Swal.fire({
-            title: 'Confirmar acción',
-            text: `¿Seguro que deseas marcar esta postulación como "${nuevoEstado}"?`,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Sí, continuar',
-            cancelButtonText: 'Cancelar',
-            reverseButtons: true,
-        });
+        
+
+        const isConfirmed = await QuestionModal(`¿Seguro que deseas marcar esta postulación como "${nuevoEstado}"?`,'question' )
 
         if (!isConfirmed) return;
 
@@ -149,14 +193,14 @@ export default function Postulados() {
                 body: JSON.stringify({ estado: nuevoEstado }),
             });
 
-            if (!res.ok) { await Swal.fire({ text: 'Error al actualizar estado', icon: 'error' }); }
+            if (!res.ok) { await modalResponse('Error al actualizar estado','error' ); }
 
             modal(`Postulación ${nuevoEstado.toLowerCase()} correctamente`, "success");
             fetchPostulados(currentPage);
             sendNotificacion(nuevoEstado.toLowerCase(), nPostulacion)
         } catch (error) {
             console.error('Error al actualizar:', error);
-            await Swal.fire({ text: 'Ocurrió un error al actualizar la postulación', icon: 'error' });
+            await modalResponse('Ocurrió un error al actualizar la postulación', "error");
         }
     };
 
@@ -234,105 +278,13 @@ export default function Postulados() {
                     ) : (
                         <>
                             <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-gray-200 bg-white shadow-md rounded-lg overflow-hidden">
-                                    <thead className="bg-gray-50">
-                                        <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase">Nombre</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase">Afinidad</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase">Fecha</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase">Estado</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase">CV</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase">Perfil</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase">Chat</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase">Acción</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-200">
-                                        {postulados.map((postulado) => (
-                                            <tr key={postulado.candidato.id}>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    {postulado.candidato.nombre}
-                                                    {!postulado.active && (
-                                                        <span className="block text-xs text-yellow-600 font-medium">
-                                                            Postulación desactivada
-                                                        </span>
-                                                    )}
-                                                    {!postulado.vacanteIsActive && (
-                                                        <span className="block text-xs text-red-600 font-medium">
-                                                            Vacante deshabilitada
-                                                        </span>
-                                                    )}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {postulado.porcentajePrediccion || '-'} %
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {postulado.fechaPostulacion || '-'}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {postulado.estado || 'Espera'}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <a
-                                                        href={`${API_CLIENT_URL}/pdf/${postulado.candidato.curriculo}`}
-                                                        target="_blank"
-                                                        className="text-blue-500 hover:underline font-medium"
-                                                    >
-                                                        Ver CV
-                                                    </a>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <a
-                                                        href={`/perfil/candidato/${postulado.candidato.id}?nPostulacion=${postulado.nPostulacion}`}
-                                                        className="text-blue-500 hover:underline font-medium"
-                                                    >
-                                                        Ver perfil
-                                                    </a>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    {(postulado.estado === 'Espera' || postulado.estado === 'Aceptada') &&
-                                                        postulado.active &&
-                                                        postulado.vacanteIsActive &&
-                                                        userRole === "EMPRESA" && (
-                                                            <button
-                                                                onClick={() =>
-                                                                    abrirChat(postulado.candidato.id, postulado.vacante.id)
-                                                                }
-                                                                className="bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold py-1 px-3 rounded-md"
-                                                            >
-                                                                Abrir chat
-                                                            </button>
-                                                        )}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap space-y-2">
-                                                    {postulado.estado === 'Espera' &&
-                                                        postulado.active &&
-                                                        postulado.vacanteIsActive &&
-                                                        userRole === "EMPRESA" && (
-                                                            <>
-                                                                <button
-                                                                    className="block w-full bg-red-100 hover:bg-red-200 text-red-700 font-semibold py-1 px-3 rounded-md"
-                                                                    onClick={() =>
-                                                                        actualizarEstadoPostulacion(postulado.nPostulacion, 'Rechazada')
-                                                                    }
-                                                                >
-                                                                    Rechazar
-                                                                </button>
-                                                                <button
-                                                                    className="block w-full bg-green-100 hover:bg-green-200 text-green-700 font-semibold py-1 px-3 rounded-md"
-                                                                    onClick={() =>
-                                                                        actualizarEstadoPostulacion(postulado.nPostulacion, 'Aceptada')
-                                                                    }
-                                                                >
-                                                                    Aceptar
-                                                                </button>
-                                                            </>
-                                                        )}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                            
+                            <Table listEncabezados={listHeader} listObjetos={postulados} action={[
+                                {text:"Ver perfil", funcion: (p) => navigate(`/perfil/candidato/${p.candidato.id}?nPostulacion=${p.nPostulacion}`), clase:"bg-orange-100 hover:bg-orange-200 text-orange-700 font-semibold py-1 px-3 rounded-md"},
+                                userRole === "EMPRESA" && {text:"abrir Chat", funcion: (p) => abrirChat(p.candidato.id, p.vacante.id) , ocultar: (p)=> (p.estado === 'Espera' || p.estado === 'Aceptada') && p.active && p.vacanteIsActive, clase:"bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold py-1 px-3 rounded-md"},
+                                userRole === "EMPRESA" && {text:"Rechazar", funcion: (p) => actualizarEstadoPostulacion(p.nPostulacion, 'Rechazada'), ocultar: (p) =>  p.estado === 'Espera' && p.active && p.vacanteIsActive , clase:" bg-red-100 hover:bg-red-200 text-red-700 font-semibold py-1 px-3 rounded-md"},
+                                userRole === "EMPRESA" && {text:"Aceptar", funcion: (p) => actualizarEstadoPostulacion(p.nPostulacion, 'Aceptada'), ocultar: (p) => p.estado === 'Espera' && p.active && p.vacanteIsActive  , clase:"bg-green-100 hover:bg-green-200 text-green-700 font-semibold py-1 px-3 rounded-md"} 
+                            ]}/>
                             </div>
 
                             <Pagination

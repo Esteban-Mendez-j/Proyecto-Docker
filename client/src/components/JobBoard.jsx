@@ -116,6 +116,7 @@ const JobBoard = ({ fetchUrl }) => {
                         loading={loading}
                         verPrediccion={verPrediccion}
                         setVerPrediccion={setVerPrediccion}
+                        setFilteredJobs={setFilteredJobs}
                     />
                 </div>
             </div>

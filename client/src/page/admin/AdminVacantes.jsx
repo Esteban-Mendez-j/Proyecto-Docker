@@ -1,5 +1,5 @@
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Layout from "../../layouts/Layout";
 import { API_CLIENT_URL } from "../../services/Api";
 import { useEffect, useState } from "react";
@@ -7,8 +7,11 @@ import '../../style/invitado/empleos.css';
 import Pagination from "../../components/Paginacion";
 import { manejarRespuesta } from '../../services/ManejarRespuesta';
 import useFiltro from "../../hooks/useFiltro";
+import Table from "../../components/Table";
+import { inputModal, modalResponse } from "../../services/Modal";
 
 export default function AdminVacantes() {
+  const navigate = useNavigate();
   const [vacantes, setVacantes] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
@@ -17,8 +20,8 @@ export default function AdminVacantes() {
   const [totalElements, setTotalElements] = useState(0);
 
   const initialFiltro = {
-    titulo: "" ,
-    ciudad:"" ,
+    titulo: "",
+    ciudad: "",
     nameEmpresa: "",
     tipo: "todos",
     isActive: true,
@@ -27,6 +30,31 @@ export default function AdminVacantes() {
 
   const [filtrosLocal, filtrosAplicados, handleOnFilters, clearFilters, searchFilters, handleOnFilterAplicados ] = useFiltro(initialFiltro, setCurrentPage, "FiltrosAdminVacantes");
 
+
+  const listHeaders = {
+    Título: {nameAtributo:"titulo"},
+    Empresa: {nameAtributo:"nameEmpresa"},
+    Ubicación: {nameAtributo:"ciudad"},
+    Tipo: {
+       modificacion: (vacantes) => {
+        return (
+          <span className={`px-2 inline-flex text-xs font-semibold rounded-full uppercase
+              ${vacantes.tipo === 'Vacante' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+            }`}>
+            {vacantes.tipo}
+          </span>
+        )
+      }
+    },
+    ...(
+      filtrosAplicados.isActive ?
+        { Postulaciones: { nameAtributo: "totalpostulaciones" } }
+        :
+        { Motivo: { nameAtributo: "comentarioAdmin" } }
+    ),
+  }
+ 
+ 
   const fetchVacantes = async () => {
     try {
       const res = await fetch(`${API_CLIENT_URL}/api/admin/listar/filtrovacantes?page=${currentPage - 1}&size=${pageSize}`, {
@@ -57,18 +85,11 @@ export default function AdminVacantes() {
   }, [currentPage, pageSize, filtrosAplicados]);
 
   const cambiarEstadoVacante = async (nvacante, estado) => {
-    const { value: motivo } = await Swal.fire({
-      title: `Escribe el motivo ${estado ? 'de activación' : 'de desactivación'} de la vacante`,
-      input: 'text',
-      inputLabel: 'Comentario',
-      inputPlaceholder: 'Escribe aquí...',
-      showCancelButton: true,
-      confirmButtonText: 'Enviar',
-    });
+    const { value: motivo } = await inputModal(`Escribe el motivo ${estado ? 'de activación' : 'de desactivación'} de la vacante`)
 
     // Si canceló o no escribió nada
     if (!motivo) {
-      return Swal.fire('Cancelado', 'No se cambió el estado de la vacante.', 'info');
+      return modalResponse('No se cambió el estado de la vacante.', 'info');
     }
 
     try {
@@ -80,15 +101,15 @@ export default function AdminVacantes() {
         credentials: 'include',
       });
 
-      // if (!res.ok || ) throw new Error('Error al cambiar el estado de la vacante');
+      if (!res.ok ) throw new Error('Error al cambiar el estado de la vacante');
 
-      await Swal.fire('Éxito', 'El estado de la vacante fue actualizado.', 'success');
+      await modalResponse('El estado de la vacante fue actualizado.', 'success');
 
       await fetchVacantes(); // Esto ya actualiza las vacantes
 
     } catch (err) {
       console.error('Error al cambiar el estado de la vacante:', err);
-      await Swal.fire('Error', 'Ocurrió un error al cambiar el estado.', 'error');
+      await modalResponse('Ocurrió un error al cambiar el estado.', 'error');
     }
   };
 
@@ -181,69 +202,29 @@ export default function AdminVacantes() {
               {/* Tabla */}
               <div className={`tab-content transition-opacity duration-300 ${fade ? 'opacity-100' : 'opacity-0'}`}>
                 <div className="overflow-x-auto bg-white border border-gray-100 rounded-lg shadow-sm">
-                  <table className="min-w-full divide-y divide-gray-200 text-sm">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className={`px-4 py-3 text-left text-xs font-semibold ${filtrosAplicados.isActive ? 'text-blue-900 uppercase' : 'text-red-900 uppercase'}`}>Título</th>
-                        <th className={`px-4 py-3 text-left text-xs font-semibold ${filtrosAplicados.isActive ? 'text-blue-900 uppercase' : 'text-red-900 uppercase'}`}>Empresa</th>
-                        <th className={`px-4 py-3 text-left text-xs font-semibold ${filtrosAplicados.isActive ? 'text-blue-900 uppercase' : 'text-red-900 uppercase'}`}>Ubicación</th>
-                        <th className={`px-4 py-3 text-left text-xs font-semibold ${filtrosAplicados.isActive ? 'text-blue-900 uppercase' : 'text-red-900 uppercase'}`}>Tipo</th>
-                        {filtrosAplicados.isActive ? (
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-blue-900 uppercase">Postulaciones</th>
-                        ) : (
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-red-900 uppercase">Motivo</th>
-                        )}
-                        <th className={`px-4 py-3 text-right text-xs font-semibold ${filtrosAplicados.isActive ? 'text-blue-900 uppercase' : 'text-red-900 uppercase'}`}>Acciones</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      {vacantes.map((vacantes) => (
-                        <tr key={vacantes.nvacantes}>
-                          <td className="px-4 py-4">{vacantes.titulo}</td>
-                          <td className="px-4 py-4">{vacantes.nameEmpresa}</td>
-                          <td className="px-4 py-4">{vacantes.ciudad}</td>
-                          <td className="px-4 py-4">
-                            <span className={`px-2 inline-flex text-xs font-semibold rounded-full ${vacantes.tipo === 'Vacante' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
-                              }`}>
-                              {vacantes.tipo}
-                            </span>
-                          </td>
-                          {filtrosAplicados.isActive ? (<td className="px-4 py-4">{vacantes.totalpostulaciones}</td>
-                          ) : (
-                            <td className="px-4 py-4">{vacantes.comentarioAdmin}</td>
-                          )}
 
-                          <td className="px-4 py-4 flex justify-center">
-                            <a href={`/empleos/${vacantes.nvacantes}`} className="mr-3 text-blue-600 hover:text-blue-900">Ver</a>
-                            {filtrosAplicados.isActive ? (
-                              <button
-                                className="mr-3 text-red-600 hover:text-red-500"
-                                onClick={() => cambiarEstadoVacante(vacantes.nvacantes, false)}
-                              >
-                                Desactivar
-                              </button>
-                            ) : (
-                              <button
-                                className="mr-3 text-green-800 hover:text-green-500"
-                                onClick={() => cambiarEstadoVacante(vacantes.nvacantes, true)}
-                              >
-                                Reactivar
-                              </button>
-                            )}
-                            <Link to={`/empresa/postulados/${vacantes.nvacantes}`} className="text-blue-600 hover:text-blue-900">
-                              Postulados
-                            </Link>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  <Table listEncabezados={listHeaders} listObjetos={vacantes} action={[
+                    {text:"Ver", funcion: (vacantes) => navigate(`/empleos/${vacantes.nvacantes}`), clase:"mr-3 text-blue-600 hover:text-blue-900"},
+                    {text:"Postulados", funcion: (vacantes) => navigate(`/empresa/postulados/${vacantes.nvacantes}`), clase:"text-blue-600 hover:text-blue-900"},
+                    filtrosAplicados.isActive ?
+                      {
+                        text: "Desactivar",
+                        funcion: (vacantes) => cambiarEstadoVacante(vacantes.nvacantes, false),
+                        clase: "mr-3 text-red-600 hover:text-red-500",
+                      }
+                      :
+                      {
+                        text: "Reactivar",
+                        funcion: (vacantes) => cambiarEstadoVacante(vacantes.nvacantes, true),
+                        clase: "mr-3 text-green-600 hover:text-green-500"
+                      }
+                  ]} />
 
-                  <Pagination
+                  {( vacantes && vacantes.length != 0) && <Pagination
                     currentPage={currentPage}
                     setCurrentPage={setCurrentPage}
                     totalPages={totalPages}
-                  />
+                  />}
 
                 </div>
               </div>
@@ -251,11 +232,6 @@ export default function AdminVacantes() {
           </div>
         </div>
       </div>
-      <style jsx>{`
-        .tab-button.active {
-          border-bottom-width: 2px;
-        }
-      `}</style>
     </Layout>
   );
 }

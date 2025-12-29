@@ -35,6 +35,22 @@ export async function QuestionModal(title, icon = "question") {
   return sweetalertResponse.isConfirmed;
 }
 
+export async function inputModal(text, inputType="text", inputLabel, inputPlaceholder  ) {
+  const response = await Swal.fire({
+    title: text ,
+    input: inputType,
+    inputLabel: inputLabel,
+    inputPlaceholder: inputPlaceholder,
+    showCancelButton: true,
+    confirmButtonText: "Enviar",
+    inputValidator: (value) => {
+      if (!value) return "El comentario es obligatorio";
+    },
+  });
+
+  return response;
+} 
+
 export function modalTime(message, type="success") {
  
   const Toast = Swal.mixin({
