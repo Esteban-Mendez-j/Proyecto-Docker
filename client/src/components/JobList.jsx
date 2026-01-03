@@ -10,6 +10,7 @@ import Table from "./Table";
 import { Link, useNavigate } from "react-router-dom";
 import { ListSvg } from "./Icons";
 import { toggleFavoritoRequest } from "../services/ToggleFavoritosRequest";
+import SinResultados from "./SinResultados";
 
 const JobList = ({
   jobs,
@@ -166,16 +167,22 @@ const JobList = ({
 
   if (!jobs || jobs.length == 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-96 text-center p-4">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-2">
-          No se encontraron resultados
-        </h2>
-        <p className="text-gray-500">
-          Intenta cambiar los filtros o revisar tu búsqueda.
-        </p>
-      </div>
+      <SinResultados titulo={"No se encontraron Resultados"}
+        subTitulo={"Intenta cambiar los filtros o revisar tu búsqueda"} />
     );
   }
+  // if (!jobs || jobs.length == 0) {
+  //   return (
+  //     <div className="flex flex-col items-center justify-center h-96 text-center p-4">
+  //       <h2 className="text-2xl font-semibold text-gray-700 mb-2">
+  //         No se encontraron resultados
+  //       </h2>
+  //       <p className="text-gray-500">
+  //         Intenta cambiar los filtros o revisar tu búsqueda.
+  //       </p>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div>

@@ -43,6 +43,7 @@ function App() {
           <Route path= "/notificaciones" element= {<Notificaciones/>} />
           <Route path= "/perfil/candidato/editar/estudios/:id?" element={<FormEducation/>}/>
           <Route path= "/perfil/candidato/editar/historial/:id?" element={<FormHistorial/>}/>
+          <Route path="/shorts" element={<ShortsPage />} />
         </Route>
         <Route element={<RouteProtection accessRole={"EMPRESA"} />}> 
           <Route path="/empresa/vacantes" element={<Vacantes/>} />
@@ -66,9 +67,6 @@ function App() {
         </Route>
         <Route element={<RouteProtection accessRole={["EMPRESA","CANDIDATO","ROLE_INVITADO"]} />}> 
           <Route path="/" element={<Index />} />
-        </Route>
-        <Route element={<RouteProtection accessRole={["CANDIDATO","ROLE_INVITADO"]} />}> 
-          <Route path="/shorts" element={<ShortsPage />} />
         </Route>
         <Route element={<RouteProtection accessRole={["EMPRESA","ADMIN","SUPER_ADMIN"]} />}> 
           <Route path="/empresa/postulados/:vacanteId" element={<Postulados/>} />

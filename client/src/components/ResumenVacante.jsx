@@ -121,7 +121,11 @@ export default function ResumenVacante({job, rol, id}) {
               <ListSvg name={"reloj"} height={20} width={20} nameClass="mt-1 mr-3 text-primary"/>
               <div>
                 <p className="text-sm text-text-light">Fecha de publicación</p>
-                <p className="font-medium">{jobResumen.fechaPublicacion}</p>
+                <p className="font-medium">{new Date(jobResumen.fechaPublicacion).toLocaleDateString("es-CO",{
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit"
+                })}</p>
               </div>
             </div>
 

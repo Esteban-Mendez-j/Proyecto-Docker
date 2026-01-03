@@ -11,6 +11,7 @@ import Paginacion from '../../components/Paginacion.jsx';
 import useFiltro from "../../hooks/useFiltro.jsx";
 import Table from "../../components/Table.jsx";
 import { modalResponse, QuestionModal } from "../../services/Modal.js";
+import SinResultados from "../../components/SinResultados.jsx";
 
 export default function PostuladosPage() {
   const initialFiltro = {
@@ -195,11 +196,8 @@ export default function PostuladosPage() {
           {loading ? (
             <Loading />
           ) : postulaciones.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-8 text-center text-gray-600">
-              <ListSvg name={"info"} height={50} width={50} nameClass=' mb-4 text-gray-400 fill-gray-400' />
-              <p className="text-lg font-semibold">No tienes postulaciones aún</p>
-              <p className="text-sm text-gray-500 mt-1">Una vez te postules a vacantes, aparecerán aquí.</p>
-            </div>
+              <SinResultados titulo={"No se encontraron Postulaciones"}
+                subTitulo={"Revisa los filtros o Realiza una postulacion"} />
           ) : (
             <>
               <div className="overflow-x-auto">

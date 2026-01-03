@@ -9,11 +9,13 @@ export async function autenticacion(username, password) {
       credentials: "include"
     });
 
+    const data = await res.json();
+
+
     if (!res.ok) {
-        return{data: null, error: "Credenciales Invalidas"}
+      return{data: null, error: data.mensaje}
     }
 
-    const data = await res.json();
     return { data, error: null };
   } catch (e) {
     return { data: null, error: e};

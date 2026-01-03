@@ -9,6 +9,7 @@ import useFiltro from "../../hooks/useFiltro";
 import Table from "../../components/Table";
 import { useNavigate } from "react-router-dom";
 import { inputModal, QuestionModal } from "../../services/Modal";
+import SinResultados from "../../components/SinResultados"
 
 export default function AdminUsuarios() {
   const listHeaders = {
@@ -186,62 +187,72 @@ export default function AdminUsuarios() {
       <div className="container px-4 py-6 mx-auto">
         <div className="flex flex-col gap-6 md:flex-row">
           <div className="flex-1">
+            <h1 className="text-2xl font-bold">Gestión de Usuarios</h1>
             <div className="flex-1">
-              <h1 className="text-2xl font-bold">Gestión de Usuarios</h1>
               <div className="flex items-center justify-between mb-6">
                 <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Buscar por Nombre ..."
-                    name="nombre"
-                    value={filtrosLocal.nombre}
-                    onChange={handleOnFilters}
-                    className="py-2 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
+                  <div className="flex flex-col">
+                    <label htmlFor="nombre">Nombre</label>
+                    <input
+                      type="text"
+                      placeholder="Buscar por Nombre ..."
+                      name="nombre"
+                      value={filtrosLocal.nombre}
+                      onChange={handleOnFilters}
+                      className="py-2 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
 
-                  <input
-                    type="text"
-                    placeholder="Buscar por correo ..."
-                    name="correo"
-                    value={filtrosLocal.correo}
-                    onChange={handleOnFilters}
-                    className="py-2 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
+                  <div className="flex flex-col">
+                    <label htmlFor="correo">Correo electronico</label>
+                    <input
+                      type="text"
+                      placeholder="Buscar por correo ..."
+                      name="correo"
+                      value={filtrosLocal.correo}
+                      onChange={handleOnFilters}
+                      className="py-2 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label htmlFor="rol">Rol</label>
+                    <select
+                      name="rol"
+                      value={filtrosLocal.rol}
+                      onChange={handleOnFilters}
+                      className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="">Todos los tipos</option>
 
-                  <select
-                    name="rol"
-                    value={filtrosLocal.rol}
-                    onChange={handleOnFilters}
-                    className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="">Todos los tipos</option>
+                      {userRol !== "ADMIN" && (
+                        <option value="ADMIN">Administradores</option>
+                      )}
 
-                    {userRol !== "ADMIN" && (
-                      <option value="ADMIN">Administradores</option>
-                    )}
+                      <option value="CANDIDATO">Candidatos</option>
+                      <option value="EMPRESA">Empresas</option>
+                    </select>
+                  </div>
 
-                    <option value="CANDIDATO">Candidatos</option>
-                    <option value="EMPRESA">Empresas</option>
-                  </select>
-
-                  <button
-                    onClick={searchFilters}
-                    className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                  >
-                    Buscar
-                  </button>
-                  <button
-                    onClick={handleOnEstado}
-                    className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
-                  >
-                    {!filtrosAplicados.estado ? "Ver Activos" : "Ver Baneados"}
-                  </button>
-                  <button
-                    onClick={clearFilters}
-                    className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                  >
-                    Eliminar Filtros
-                  </button>
+                  <div className="flex gap-3 items-center">
+                    <button
+                      onClick={searchFilters}
+                      className="px-4 py-2 h-10 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                    >
+                      Buscar
+                    </button>
+                    <button
+                      onClick={handleOnEstado}
+                      className="px-4 py-2 h-10 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                    >
+                      {!filtrosAplicados.estado ? "Ver Activos" : "Ver Baneados"}
+                    </button>
+                    <button
+                      onClick={clearFilters}
+                      className="px-4 py-2 h-10 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                    >
+                      Eliminar Filtros
+                    </button>
+                  </div>
                 </div>
               </div>
               <p className="px-4 py-3 font-medium text-blue-600 ">
@@ -249,54 +260,61 @@ export default function AdminUsuarios() {
                 {!filtrosAplicados.estado ? "Baneados" : "Activos"}
               </p>
               <div className="overflow-hidden bg-white border border-gray-100 rounded-lg shadow-sm">
-                <Table
-                  listObjetos={usuarios}
-                  listEncabezados={listHeaders}
-                  action={[
-                    (userRol !== "ADMIN" && filtrosAplicados.estado) && {
-                      text: "+Admin",
-                      funcion: (user) => crearAdmin(user.idUsuario, true),
-                      ocultar: (user) => !user.roles.includes("ADMIN") ,
-                      clase:
-                        "hover:underline font-semibold text-purple-600 hover:text-purple-800 mr-3",
-                    },
-                    userRol !== "ADMIN" && {
-                      text: "-Admin",
-                      funcion: (user) => crearAdmin(user.idUsuario, false),
-                      ocultar: (user) => user.roles.includes("ADMIN") ,
-                      clase:
-                        "hover:underline font-semibold text-purple-600 hover:text-purple-800 mr-3",
-                    },
-                    {
-                      text: "Ver Perfil",
-                      funcion: (user) =>
-                        navigate(`/perfil/${user.rolPrinciapl.toLowerCase()}/${user.idUsuario}`),
-                      ocultar: (user) => user.rolPrinciapl !== "ADMIN",
-                      clase: "mr-3 text-blue-600 hover:text-blue-900",
-                    },
-                    (userRol === "SUPER_ADMIN" || (userRol === "ADMIN" && !["ADMIN", "SUPER_ADMIN"].includes(user.rolPrinciapl))) &&
-                      !filtrosAplicados.estado
-                      ? {
-                          text: "Reactivar",
-                          funcion: (user) => cambiarEstado(user.idUsuario, true),
-                          clase: "text-green-600 hover:text-green-800",
-                        }
-                      : {
-                          text: "Banear",
-                          funcion: (user) => cambiarEstado(user.idUsuario, false),
-                          clase: "text-red-600 hover:text-red-800",
+                {usuarios.length === 0 ? 
+                  (<SinResultados titulo={"No se encontraron resultados"}
+                    subTitulo={"Revisa los Filtros o espera a que se registre un usuario"} />
+                  )
+                  : 
+                  (
+                    <Table
+                      listObjetos={usuarios}
+                      listEncabezados={listHeaders}
+                      action={[
+                        (userRol !== "ADMIN" && filtrosAplicados.estado) && {
+                          text: "+Admin",
+                          funcion: (user) => crearAdmin(user.idUsuario, true),
+                          ocultar: (user) => !user.roles.includes("ADMIN"),
+                          clase:
+                            "hover:underline font-semibold text-purple-600 hover:text-purple-800 mr-3",
                         },
-                  ]}
-                />
-
+                        userRol !== "ADMIN" && {
+                          text: "-Admin",
+                          funcion: (user) => crearAdmin(user.idUsuario, false),
+                          ocultar: (user) => user.roles.includes("ADMIN"),
+                          clase:
+                            "hover:underline font-semibold text-purple-600 hover:text-purple-800 mr-3",
+                        },
+                        {
+                          text: "Ver Perfil",
+                          funcion: (user) =>
+                            navigate(`/perfil/${user.rolPrinciapl.toLowerCase()}/${user.idUsuario}`),
+                          ocultar: (user) => user.rolPrinciapl !== "ADMIN",
+                          clase: "mr-3 text-blue-600 hover:text-blue-900",
+                        },
+                          !filtrosAplicados.estado
+                          ? {
+                            text: "Reactivar",
+                            funcion: (user) => cambiarEstado(user.idUsuario, true),
+                            ocultar: (user) => userRol == "SUPER_ADMIN" || (userRol == "ADMIN" && !["ADMIN", "SUPER_ADMIN"].includes(user.rolPrinciapl)),
+                            clase: "text-green-600 hover:text-green-800",
+                          }
+                          : {
+                            text: "Banear",
+                            funcion: (user) => cambiarEstado(user.idUsuario, false),
+                            ocultar: (user) => userRol == "SUPER_ADMIN" || (userRol == "ADMIN" && !["ADMIN", "SUPER_ADMIN"].includes(user.rolPrinciapl)),
+                            clase: "text-red-600 hover:text-red-800",
+                          },
+                      ]}
+                    />)
+                }
               </div>
 
               <div className="p-4">
-                <Pagination
+                { usuarios && usuarios.length > 0 && <Pagination
                   currentPage={currentPage}
                   setCurrentPage={setCurrentPage}
                   totalPages={totalPages}
-                />
+                />}
               </div>
             </div>
           </div>

@@ -11,6 +11,7 @@ import {sendMessage} from "../../services/Websocket"
 import { mensajesNotificaciones } from "../../services/data";
 import useFiltro from "../../hooks/useFiltro";
 import Table from "../../components/Table";
+import SinResultados from "../../components/SinResultados"
 
 export default function Postulados() {
 
@@ -271,10 +272,7 @@ export default function Postulados() {
                     {loading ? (
                         <p className="text-center text-gray-500 text-lg">Cargando postulados...</p>
                     ) : postulados.length === 0 ? (
-                        <div className="text-center p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
-                            <p className="text-yellow-700 font-medium text-lg">No hay postulaciones registradas.</p>
-                            <p className="text-yellow-600 text-sm">Prueba ajustando los filtros o intenta más tarde.</p>
-                        </div>
+                        <SinResultados titulo={"No se encontraron postulaciones."} subTitulo={"Prueba ajustando los filtros o intenta más tarde."}/>
                     ) : (
                         <>
                             <div className="overflow-x-auto">

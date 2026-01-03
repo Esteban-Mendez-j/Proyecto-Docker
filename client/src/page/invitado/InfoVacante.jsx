@@ -165,7 +165,11 @@ export default function InfoVacante() {
                                         </span>
                                         <span className="inline-flex items-center text-sm text-text-light">
                                             <ListSvg name={"reloj"} height={16} width={16} nameClass="mr-1"/>
-                                            Publicado: {job.fechaPublicacion}
+                                            Publicado: {new Date(job.fechaPublicacion).toLocaleString("es-CO", {
+                                                year: "numeric",
+                                                month: "2-digit",
+                                                day: "2-digit"
+                                            })}
                                         </span>
                                     </div>
                                     <div className="flex flex-wrap gap-2 items-center relative">
