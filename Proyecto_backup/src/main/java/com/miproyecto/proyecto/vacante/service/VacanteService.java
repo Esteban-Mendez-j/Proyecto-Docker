@@ -28,9 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.miproyecto.proyecto.aptitudes.service.AptitudesService;
-import com.miproyecto.proyecto.candidato.service.PrediccionService;
 import com.miproyecto.proyecto.empresa.model.Empresa;
 import com.miproyecto.proyecto.empresa.repository.EmpresaRepository;
+import com.miproyecto.proyecto.ml.service.PrediccionService;
 import com.miproyecto.proyecto.postulacion.model.Postulado;
 import com.miproyecto.proyecto.postulacion.repository.PostuladoRepository;
 import com.miproyecto.proyecto.util.NotFoundException;

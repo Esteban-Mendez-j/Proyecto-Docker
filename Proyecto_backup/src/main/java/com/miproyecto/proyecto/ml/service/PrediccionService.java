@@ -1,4 +1,4 @@
-package com.miproyecto.proyecto.candidato.service;
+package com.miproyecto.proyecto.ml.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;

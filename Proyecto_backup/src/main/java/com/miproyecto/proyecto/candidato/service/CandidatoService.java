@@ -15,6 +15,7 @@ import com.miproyecto.proyecto.candidato.dto.CandidatoDTO;
 import com.miproyecto.proyecto.candidato.dto.CandidatoResumenDTO;
 import com.miproyecto.proyecto.candidato.model.Candidato;
 import com.miproyecto.proyecto.candidato.repository.CandidatoRepository;
+import com.miproyecto.proyecto.ml.service.PrediccionService;
 import com.miproyecto.proyecto.usuario.model.Roles;
 import com.miproyecto.proyecto.usuario.repository.RolesRepository;
 import com.miproyecto.proyecto.util.NotFoundException;

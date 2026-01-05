@@ -1,4 +1,4 @@
-package com.miproyecto.proyecto.candidato.controller;
+package com.miproyecto.proyecto.ml.controller;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.miproyecto.proyecto.candidato.service.PrediccionService;
+import com.miproyecto.proyecto.ml.service.PrediccionService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
 @RestController
