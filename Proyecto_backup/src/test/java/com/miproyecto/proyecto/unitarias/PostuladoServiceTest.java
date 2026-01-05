@@ -22,21 +22,21 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Sort;
 
-import com.miproyecto.proyecto.domain.Candidato;
-import com.miproyecto.proyecto.domain.Postulado;
-import com.miproyecto.proyecto.domain.Vacante;
-import com.miproyecto.proyecto.model.CandidatoResumenDTO;
-import com.miproyecto.proyecto.model.PostuladoDTO;
-import com.miproyecto.proyecto.model.VacanteResumenDTO;
-import com.miproyecto.proyecto.repos.CandidatoRepository;
-import com.miproyecto.proyecto.repos.PostuladoRepository;
-import com.miproyecto.proyecto.repos.VacanteRepository;
-import com.miproyecto.proyecto.service.CandidatoService;
-import com.miproyecto.proyecto.service.ChatService;
-import com.miproyecto.proyecto.service.PostuladoService;
-import com.miproyecto.proyecto.service.PrediccionService;
-import com.miproyecto.proyecto.service.VacanteService;
+import com.miproyecto.proyecto.candidato.dto.CandidatoResumenDTO;
+import com.miproyecto.proyecto.candidato.model.Candidato;
+import com.miproyecto.proyecto.candidato.repository.CandidatoRepository;
+import com.miproyecto.proyecto.candidato.service.CandidatoService;
+import com.miproyecto.proyecto.candidato.service.PrediccionService;
+import com.miproyecto.proyecto.chat.service.ChatService;
+import com.miproyecto.proyecto.postulacion.dto.PostuladoDTO;
+import com.miproyecto.proyecto.postulacion.model.Postulado;
+import com.miproyecto.proyecto.postulacion.repository.PostuladoRepository;
+import com.miproyecto.proyecto.postulacion.service.PostuladoService;
 import com.miproyecto.proyecto.util.NotFoundException;
+import com.miproyecto.proyecto.vacante.dto.VacanteResumenDTO;
+import com.miproyecto.proyecto.vacante.model.Vacante;
+import com.miproyecto.proyecto.vacante.repository.VacanteRepository;
+import com.miproyecto.proyecto.vacante.service.VacanteService;
 
 @ExtendWith(MockitoExtension.class)
 class PostuladoServiceTest {

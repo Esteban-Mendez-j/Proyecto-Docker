@@ -3,8 +3,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.miproyecto.proyecto.domain.Roles;
-import com.miproyecto.proyecto.repos.RolesRepository;
+import com.miproyecto.proyecto.usuario.model.Roles;
+import com.miproyecto.proyecto.usuario.repository.RolesRepository;
 
 import java.util.List;
 

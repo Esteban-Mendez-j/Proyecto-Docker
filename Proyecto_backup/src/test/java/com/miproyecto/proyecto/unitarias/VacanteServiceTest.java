@@ -25,15 +25,15 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import com.miproyecto.proyecto.domain.Empresa;
-import com.miproyecto.proyecto.domain.Vacante;
-import com.miproyecto.proyecto.model.VacanteDTO;
-import com.miproyecto.proyecto.repos.EmpresaRepository;
-import com.miproyecto.proyecto.repos.PostuladoRepository;
-import com.miproyecto.proyecto.repos.VacanteRepository;
-import com.miproyecto.proyecto.service.AptitudesService;
-import com.miproyecto.proyecto.service.VacanteService;
+import com.miproyecto.proyecto.aptitudes.service.AptitudesService;
+import com.miproyecto.proyecto.empresa.model.Empresa;
+import com.miproyecto.proyecto.empresa.repository.EmpresaRepository;
+import com.miproyecto.proyecto.postulacion.repository.PostuladoRepository;
 import com.miproyecto.proyecto.util.NotFoundException;
+import com.miproyecto.proyecto.vacante.dto.VacanteDTO;
+import com.miproyecto.proyecto.vacante.model.Vacante;
+import com.miproyecto.proyecto.vacante.repository.VacanteRepository;
+import com.miproyecto.proyecto.vacante.service.VacanteService;
 
 /**
  * Pruebas unitarias para la clase VacanteService.

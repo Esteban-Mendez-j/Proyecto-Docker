@@ -18,8 +18,8 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.miproyecto.proyecto.config.filter.JwtTokenValidator;
-import com.miproyecto.proyecto.service.CustomUserDetailsService;
-import com.miproyecto.proyecto.service.UsuarioService;
+import com.miproyecto.proyecto.usuario.service.CustomUserDetailsService;
+import com.miproyecto.proyecto.usuario.service.UsuarioService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
 @Configuration

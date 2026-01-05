@@ -10,8 +10,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.miproyecto.proyecto.model.UsuarioDTO;
-import com.miproyecto.proyecto.service.UsuarioService;
+import com.miproyecto.proyecto.usuario.dto.UsuarioDTO;
+import com.miproyecto.proyecto.usuario.service.UsuarioService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

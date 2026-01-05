@@ -5,8 +5,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.miproyecto.proyecto.domain.Aptitudes;
-import com.miproyecto.proyecto.repos.AptitudesRepository;
+import com.miproyecto.proyecto.aptitudes.model.Aptitudes;
+import com.miproyecto.proyecto.aptitudes.repository.AptitudesRepository;
 
 @Component
 public class InyeccionAptitudes implements CommandLineRunner {

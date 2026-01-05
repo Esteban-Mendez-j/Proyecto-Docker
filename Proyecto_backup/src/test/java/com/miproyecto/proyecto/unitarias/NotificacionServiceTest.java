@@ -22,13 +22,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import com.miproyecto.proyecto.dataType.EstadoEnvio;
-import com.miproyecto.proyecto.domain.Notificacion;
-import com.miproyecto.proyecto.domain.Usuario;
-import com.miproyecto.proyecto.model.NotificacionDTO;
-import com.miproyecto.proyecto.repos.NotificacionRepository;
-import com.miproyecto.proyecto.repos.UsuarioRepository;
-import com.miproyecto.proyecto.service.NotificacionService;
+import com.miproyecto.proyecto.enums.EstadoEnvio;
+import com.miproyecto.proyecto.notificacion.dto.NotificacionDTO;
+import com.miproyecto.proyecto.notificacion.model.Notificacion;
+import com.miproyecto.proyecto.notificacion.repository.NotificacionRepository;
+import com.miproyecto.proyecto.notificacion.service.NotificacionService;
+import com.miproyecto.proyecto.usuario.model.Usuario;
+import com.miproyecto.proyecto.usuario.repository.UsuarioRepository;
 
 
 /**

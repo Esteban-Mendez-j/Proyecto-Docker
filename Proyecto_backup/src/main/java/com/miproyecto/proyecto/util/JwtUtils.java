@@ -5,8 +5,8 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.miproyecto.proyecto.model.UsuarioDTO;
-import com.miproyecto.proyecto.service.UsuarioService;
+import com.miproyecto.proyecto.usuario.dto.UsuarioDTO;
+import com.miproyecto.proyecto.usuario.service.UsuarioService;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
