@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
-import { useSendForm } from "../../hooks/useFetch";
+import { useSendFormV2 } from "../../hooks/useFetch";
 import { Link, useNavigate } from "react-router-dom";
-import { URL_VIDEO } from "../../services/Api";
+import { URL_IMAGEN, URL_VIDEO } from "../../services/Api";
 import { RoleContext } from "../../services/RoleContext";
 import "../../style/invitado/short.css";
 import Loading from "../../components/Loading";
 import { toggleFavoritoRequest } from "../../services/ToggleFavoritosRequest";
-import { modal } from "../../services/Modal";
+import { modal, modalTime } from "../../services/Modal";
 import { ListSvg } from "../../components/Icons"
+import exceptionControl from "../../services/exceptionControl";
 
 const ShortsPage = () => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
@@ -16,11 +17,11 @@ const ShortsPage = () => {
   const [totalPage, setTotalPage] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
   const [currentShort, setCurrentShort] = useState(null);
-  const { send: sendCandidato, data: dataCandidato } = useSendForm();
+  const { send: sendCandidato, data: dataCandidato } = useSendFormV2();
   const videoRef = useRef(null);
   const navigate = useNavigate();
-  const { data, send, loading } = useSendForm();
-  const { rol } = useContext(RoleContext);
+  const { data, meta, send, loading } = useSendFormV2();
+  const { rol, logout } = useContext(RoleContext);
   const itemsPerPage = 20;
 
   const filtrosIniciales = {
@@ -42,7 +43,14 @@ const ShortsPage = () => {
 
   // hace la peticion cuando currentPage (pagina actual) cambia
   useEffect(() => {
-    send(`/api/vacantes/listar/filtradas?page=${currentPage}&size=${itemsPerPage}`, "POST", JSON.stringify(filtrosIniciales));
+    const getVacantes = async () => {
+      try {
+        await send(`/api/vacantes/listar/filtradas?page=${currentPage}&size=${itemsPerPage}`, "POST", JSON.stringify(filtrosIniciales));
+      } catch (error) {
+        exceptionControl(error, logout, navigate, "Error al cargar las vacantes")
+      }
+    }
+    getVacantes()
   }, [currentPage]);
 
   //cambia de pagina cuando el index del video es igual el numero de elementos
@@ -55,11 +63,11 @@ const ShortsPage = () => {
 
   // cuando data cambia guarda los datos en el estado 
   useEffect(() => {
-    if (data && data.vacantes) {
-      setShortsData(data.vacantes)
-      setTotalPage(data.totalPage)
+    if (data && meta) {
+      setShortsData(data)
+      setTotalPage(meta.pagination.totalPage)
     };
-  }, [data]);
+  }, [data, meta]);
 
 
 // ► Ir al siguiente video
@@ -83,9 +91,16 @@ const ShortsPage = () => {
   };
 
   useEffect(() => {
-    if (rol === "CANDIDATO") {
-      sendCandidato("/api/candidatos/perfil", "GET");
+    if (rol !== "CANDIDATO") return
+
+    const getCandidato = async () => {
+      try {
+        await sendCandidato("/api/candidatos/perfil", "GET");
+      } catch (error) {
+        exceptionControl(error, logout, navigate, "Error al cargar las vacantes")
+      }
     }
+    getCandidato()
   }, [rol]);
 
   // obtinen los datos de una vacante en especifico dependiendo el index
@@ -93,15 +108,18 @@ const ShortsPage = () => {
     setCurrentShort(shortsData[currentVideoIndex]);
   }, [shortsData, currentVideoIndex]);
 
+  // función de la postulación
   async function handleOnClick(i) {
-    const id = currentShort.nvacantes;
-    const result = await send(`/api/postulados/add/${id}`, "POST");
-    modal(result.message, result.status);
-    if (result.status === "success") {
-      setShortsData(prev => prev.map( data => 
-        data.nvacantes === id ? {...data, estadoPostulacion: "Espera", candidatoPostulado: true} 
-        : data
+    try {
+      const id = currentShort.nvacantes;
+      await send(`/api/postulados/add/${id}`, "POST");
+      modalTime("Postulacion realizada con exito");
+      setShortsData(prev => prev.map(data =>
+        data.nvacantes === id ? { ...data, estadoPostulacion: "Espera", candidatoPostulado: true }
+          : data
       ));
+    } catch (error) {
+      exceptionControl(error, logout, navigate, "Error realizar la postulacion")
     }
   }
 
@@ -113,13 +131,15 @@ const ShortsPage = () => {
       await toggleFavoritoRequest(id);
 
       // Cambiar estado local
-      setCurrentShort(prev => ({
-        ...prev,
-        vacanteGuardada: !prev.vacanteGuardada
-      }));
+      setShortsData( prev => 
+        prev.map( v =>
+          v.nvacantes === id ? {...v, vacanteGuardada:!v.vacanteGuardada} : v
+        ) 
+      )
 
     } catch (error) {
-      console.error("Error al guardar favorito:", error);
+      modal("Error al guardar favoritos", "error");
+      console.error("Error al guardar favorito", error);
     }
   };
 

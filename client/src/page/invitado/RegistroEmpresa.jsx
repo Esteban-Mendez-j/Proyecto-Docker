@@ -1,16 +1,18 @@
-import { useSendForm } from "../../hooks/useFetch";
+import { useSendFormV2 } from "../../hooks/useFetch";
 import useValidation from "../../hooks/useValidation";
 import Layout from "../../layouts/Layout";
 import InputForm from "../../components/InputForm";
 import "../../style/invitado/registroEmpresa.css"
 import Loading from "../../components/Loading";
 import useVisible from "../../hooks/useVisible";
-import { modalResponse } from "../../services/Modal";
+import { modalRedirect, modalResponse } from "../../services/Modal";
 import { Link, useNavigate } from "react-router-dom";
 import { sectores } from "../../services/data";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { formRulesEmpresa, validateForm } from "../../services/validacionForm";
 import { ListSvg } from "../../components/Icons";
+import exceptionControl from "../../services/exceptionControl";
+import { RoleContext } from "../../services/RoleContext";
 export default function RegistroEmpresa (){
     
     const initialData = {
@@ -23,7 +25,8 @@ export default function RegistroEmpresa (){
         contraseñaVerificada: ""
     }
     
-    const {send , data, error, setError, loading} = useSendForm();
+    const {send , data, error, setError, loading} = useSendFormV2();
+    const { logout } = useContext(RoleContext);
     const [submitted, setSubmitted] = useState(false);
     const { validarPassword, dataFrom, setDataFrom } = useValidation(initialData);
     const [handleOnClick, visible] = useVisible();
@@ -39,36 +42,34 @@ export default function RegistroEmpresa (){
     };
 
     async function handleSubmit(e) {
-        e.preventDefault();
-        setSubmitted(true)
-        const newErrors = validateForm(dataFrom, formRulesEmpresa);
-        const combinedErrors = { ...newErrors };
+        try {
+            e.preventDefault();
+            setSubmitted(true)
+            const newErrors = validateForm(dataFrom, formRulesEmpresa);
+            const combinedErrors = { ...newErrors };
 
-        if (!validarPassword) {
-            combinedErrors.contrasena = "Contraseña inválida";
-        }
-
-        if (Object.keys(combinedErrors).length > 0) {
-            setError(combinedErrors);
-
-            // Foco en el primer campo con error
-            const firstErrorField = Object.keys(combinedErrors)[0];
-            const el = document.getElementById(firstErrorField);
-            if (el) {
-                el.scrollIntoView({ behavior: "smooth", block: "center" });
-                el.focus();
+            if (!validarPassword) {
+                combinedErrors.contrasena = "Contraseña inválida";
             }
 
-            return; // detener envío o acción
-        }
-        setError(null);
+            if (Object.keys(combinedErrors).length > 0) {
+                setError((prev) => ({ ...prev, fieldErrorsFrontend: combinedErrors }))
 
-        const result = await send("/api/empresas/add", "POST", JSON.stringify(dataFrom));
-        if(result.status === 201){
-            const isOk = await modalResponse(result.mensaje, "success");
-            if(isOk){
-                navigate("/login");
+                // Foco en el primer campo con error
+                const firstErrorField = Object.keys(combinedErrors)[0];
+                const el = document.getElementById(firstErrorField);
+                if (el) {
+                    el.scrollIntoView({ behavior: "smooth", block: "center" });
+                    el.focus();
+                }
+                return; // detener envío o acción
             }
+            setError(null);
+
+            await send("/api/empresas/add", "POST", JSON.stringify(dataFrom));
+            modalRedirect("Empresa creada con exito", "success", "/login", navigate)
+        } catch (error) {
+            exceptionControl(error, logout, navigate, "Error al registrar la empresa")
         }
     }
 
@@ -90,6 +91,7 @@ export default function RegistroEmpresa (){
                                     value={dataFrom.nombre}
                                     handleOnChange={handleOnChange}
                                     error={error}
+                                    rules={formRulesEmpresa}
                                     submitted={submitted}
                                 />
                             </div>
@@ -105,6 +107,7 @@ export default function RegistroEmpresa (){
                                         handleOnChange={handleOnChange}
                                         error={error}
                                         submitted={submitted}
+                                        rules={formRulesEmpresa}
                                         minL={9}
                                         maxL={9}
                                     />
@@ -141,6 +144,7 @@ export default function RegistroEmpresa (){
                                     handleOnChange={handleOnChange}
                                     error={error}
                                     submitted={submitted}
+                                    rules={formRulesEmpresa}
                                     autoComplete={"email"}
                                 />
                                 <p className="form-hint">Usarás este correo para iniciar sesión</p>
@@ -156,6 +160,7 @@ export default function RegistroEmpresa (){
                                     handleOnChange={handleOnChange}
                                     error={error}
                                     submitted={submitted}
+                                    rules={formRulesEmpresa}
                                     maxL={10}
                                 />
                             </div>
@@ -172,6 +177,7 @@ export default function RegistroEmpresa (){
                                             handleOnChange={handleOnChange}
                                             error={error}
                                             submitted={submitted}
+                                            rules={formRulesEmpresa}
                                             autoComplete={"new-password"}
                                         >
                                             <button
@@ -202,6 +208,7 @@ export default function RegistroEmpresa (){
                                             handleOnChange={handleOnChange}
                                             error={error}
                                             submitted={submitted}
+                                            rules={formRulesEmpresa}
                                             autoComplete={"new-password"}
                                         >
                                             <button

@@ -1,7 +1,6 @@
 package com.miproyecto.proyecto.postulacion.service;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +21,9 @@ import com.miproyecto.proyecto.postulacion.dto.PostuladoDTO;
 import com.miproyecto.proyecto.postulacion.model.Postulado;
 import com.miproyecto.proyecto.postulacion.repository.PostuladoRepository;
 import com.miproyecto.proyecto.util.NotFoundException;
+import com.miproyecto.proyecto.util.response.ApiResponseBody;
+import com.miproyecto.proyecto.util.response.Meta;
+import com.miproyecto.proyecto.util.response.Pagination;
 import com.miproyecto.proyecto.vacante.dto.VacanteResumenDTO;
 import com.miproyecto.proyecto.vacante.model.Vacante;
 import com.miproyecto.proyecto.vacante.repository.VacanteRepository;
@@ -59,17 +61,17 @@ public class PostuladoService {
                 .toList();
     }
 
-    public Map<String, Object> findByNvacantes(Long nvacantes, String estado, LocalDate fechaMinima, String nombreCandidato, Pageable pageable) {
+    public ApiResponseBody<List<PostuladoDTO>> findByNvacantes(Long nvacantes, String estado, LocalDate fechaMinima, String nombreCandidato, Pageable pageable) {
         final Vacante vacante = vacanteRepository.findById(nvacantes)
                 .orElseThrow(() -> new NotFoundException("Vacante no encontrada"));
 
         Page<PostuladoDTO> postulados = postuladoRepository.buscarPorFiltros(vacante, estado, fechaMinima, nombreCandidato, pageable)
                 .map(postulado -> mapToDTO(postulado, new PostuladoDTO()));
 
-        return mapResponse(postulados, "postulados");
+        return mapResponse(postulados);
     }
 
-    public Map<String, Object> findByIdUsuario(Long idUsuario, String estado, String titulo, String empresa, LocalDate fechaMinima, Pageable pageable) {
+    public ApiResponseBody<List<PostuladoDTO>> findByIdUsuario(Long idUsuario, String estado, String titulo, String empresa, LocalDate fechaMinima, Pageable pageable) {
         Candidato candidato = candidatoRepository.findById(idUsuario)
                 .orElseThrow(NotFoundException::new);
 
@@ -77,7 +79,7 @@ public class PostuladoService {
                 .buscarPostulacionesFiltradas(candidato.getIdUsuario(), estado, titulo, empresa, fechaMinima, pageable)
                 .map(postulado -> mapToDTO(postulado, new PostuladoDTO()));
 
-        return mapResponse(postulados, "postulados");
+        return mapResponse(postulados);
     }
 
 
@@ -122,7 +124,7 @@ public class PostuladoService {
         return postuladoRepository.save(postulado).getNPostulacion();
     }
     
-    public void cambiarEstado (PostuladoDTO postuladoDTO, Boolean estado){
+    public Long  cambiarEstado (PostuladoDTO postuladoDTO, Boolean estado){
         Vacante vacante = vacanteRepository.findById(postuladoDTO.getVacante().getId())
                 .orElseThrow(NotFoundException::new);
         vacante.setTotalpostulaciones(vacante.getTotalpostulaciones()+1);
@@ -133,7 +135,7 @@ public class PostuladoService {
         postuladoDTO.setEstado("Espera");
         Postulado postulado = mapToEntity(postuladoDTO, new Postulado());
         postulado.setNPostulacion(postuladoDTO.getnPostulacion());
-        postuladoRepository.save(postulado);
+        return postuladoRepository.save(postulado).getNPostulacion();
     }
 
     public void update(Long nPostulacion, PostuladoDTO PostuladoDTO) {
@@ -183,17 +185,19 @@ public class PostuladoService {
     }
 
    
-    public Map<String,Object> mapResponse(Page<PostuladoDTO> pageableResponse, String nameList){
-        Map<String,Object> response = new HashMap<>();
-
-        response.put(nameList, pageableResponse.getContent());
-        response.put("totalElements", pageableResponse.getTotalElements());
-        response.put("pageActual", pageableResponse.getPageable());
-        response.put("totalPage", pageableResponse.getTotalPages());
-
+    public ApiResponseBody<List<PostuladoDTO>> mapResponse(Page<PostuladoDTO> pageableResponse){
+        ApiResponseBody<List<PostuladoDTO>> response = new ApiResponseBody<>();
+        Pagination pagination = new Pagination(
+            pageableResponse.getTotalElements(),
+            pageableResponse.getPageable(), 
+            pageableResponse.getTotalPages()
+        );
+        Meta meta = new Meta(pagination);
+        response.setData(pageableResponse.getContent());
+        response.setMeta(meta);
         return response;
     }
-    
+
     private PostuladoDTO mapToDTO(final Postulado postulado, final PostuladoDTO postuladoDTO) {
         postuladoDTO.setnPostulacion(postulado.getNPostulacion());
         postuladoDTO.setFechaPostulacion(postulado.getFechaPostulacion());

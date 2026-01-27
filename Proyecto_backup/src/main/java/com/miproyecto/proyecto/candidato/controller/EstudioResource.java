@@ -19,6 +19,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.candidato.dto.EstudioDTO;
 import com.miproyecto.proyecto.candidato.service.EstudioService;
 import com.miproyecto.proyecto.util.JwtUtils;
+import com.miproyecto.proyecto.util.response.ApiResponseBody;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -47,27 +48,29 @@ public class EstudioResource {
         }
     )
     @GetMapping
-    public ResponseEntity<List<EstudioDTO>> getAllEstudios() {
-        return ResponseEntity.ok(estudioService.findAll());
+    public ResponseEntity<ApiResponseBody<List<EstudioDTO>>> getAllEstudios() {
+        ApiResponseBody<List<EstudioDTO>> response = new ApiResponseBody<>(estudioService.findAll(), null, null);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(
         summary = "Crear un nuevo estudio",
         description = "Registra un nuevo estudio en el sistema.",
         responses = {
-            @ApiResponse(responseCode = "201", description = "Estudio creado correctamente"),
+            @ApiResponse(responseCode = "201", description = "Estudio creado correctamente, devuelve el id del estudio creado"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos")
         }
     )
     @PostMapping("/add")
-    public ResponseEntity<Long> createEstudio(
+    public ResponseEntity<ApiResponseBody<Long>> createEstudio(
             @RequestBody @Valid final EstudioDTO estudioDTO,
             @CookieValue(name="jwtToken") String jwtToken) {
+
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
         estudioDTO.setIdUsuario(idUsuario);
-        final Long createdIdEstudio = estudioService.create(estudioDTO);
-        return new ResponseEntity<>(createdIdEstudio, HttpStatus.CREATED);
+        ApiResponseBody<Long> response = new ApiResponseBody<>(estudioService.create(estudioDTO), null, null);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @Operation(
@@ -79,45 +82,35 @@ public class EstudioResource {
         }
     )
     @GetMapping("/edit/{idEstudio}")
-    public ResponseEntity<EstudioDTO> getEstudio(
+    public ResponseEntity<ApiResponseBody<EstudioDTO>> getEstudio(
             @Parameter(description = "ID del estudio a consultar")
-            @PathVariable final Long idEstudio) {
-        return ResponseEntity.ok(estudioService.get(idEstudio));
+            @PathVariable final Long idEstudio,
+            @CookieValue(name="jwtToken") String jwtToken) {
+        jwtUtils.validateToken(jwtToken);        
+        ApiResponseBody<EstudioDTO> response = new ApiResponseBody<>(estudioService.get(idEstudio), null, null);
+        return ResponseEntity.ok(response);
     }
-
-    @Operation(
-        summary = "Reemplazar lista de estudios",
-        description = "Elimina todos los estudios actuales de un candidato y los reemplaza por una nueva lista.",
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Lista de estudios reemplazada correctamente"),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos")
-        }
-    )
-    @PutMapping("/replace/{candidatoId}")
-    public ResponseEntity<Void> replaceEstudios(
-            @Parameter(description = "ID del candidato cuyos estudios se reemplazarán")
-            @PathVariable Long candidatoId,
-            @RequestBody List<EstudioDTO> estudios) {
-        estudioService.replaceEstudios(candidatoId, estudios);
-        return ResponseEntity.ok().build();
-    }
+    
 
     @Operation(
         summary = "Actualizar un estudio",
         description = "Modifica los datos de un estudio existente.",
         responses = {
-            @ApiResponse(responseCode = "200", description = "Estudio actualizado correctamente"),
+            @ApiResponse(responseCode = "200", description = "Estudio actualizado correctamente, devuelve el id del estudio"),
             @ApiResponse(responseCode = "404", description = "Estudio no encontrado"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos")
         }
     )
     @PutMapping("/edit/{idEstudio}")
-    public ResponseEntity<Long> updateEstudio(
+    public ResponseEntity<ApiResponseBody<Long>> updateEstudio(
             @Parameter(description = "ID del estudio a actualizar")
             @PathVariable final Long idEstudio,
-            @RequestBody @Valid final EstudioDTO estudioDTO) {
+            @RequestBody @Valid final EstudioDTO estudioDTO,
+            @CookieValue(name="jwtToken") String jwtToken) {
+        jwtUtils.validateToken(jwtToken);          
         estudioService.update(idEstudio, estudioDTO);
-        return ResponseEntity.ok(idEstudio);
+        ApiResponseBody<Long> response = new ApiResponseBody<>(idEstudio, null, null);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(
@@ -137,11 +130,14 @@ public class EstudioResource {
     }
 
     @PutMapping("/cambiar/visibilidad/{estado}/{idEstudio}")
-    public ResponseEntity<Long> cambiarVisibilidad(
+    public ResponseEntity<ApiResponseBody<Long>> cambiarVisibilidad(
         @PathVariable final Boolean estado,
-        @PathVariable final Long idEstudio
+        @PathVariable final Long idEstudio,
+        @CookieValue(name = "jwtToken") String jwtToken
     ) {
+        jwtUtils.validateToken(jwtToken);
         estudioService.cambiarVisibilidad(estado, idEstudio); 
-        return ResponseEntity.ok(idEstudio);
+        ApiResponseBody<Long> response = new ApiResponseBody<>(idEstudio, null, null);
+        return ResponseEntity.ok(response);
     }
 }

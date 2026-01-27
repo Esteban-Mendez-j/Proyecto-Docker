@@ -1,9 +1,7 @@
 package com.miproyecto.proyecto.chat.service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +20,9 @@ import com.miproyecto.proyecto.chat.repository.ChatRepository;
 import com.miproyecto.proyecto.chat.repository.MensajeRepository;
 import com.miproyecto.proyecto.usuario.service.UsuarioService;
 import com.miproyecto.proyecto.util.NotFoundException;
+import com.miproyecto.proyecto.util.response.ApiResponseBody;
+import com.miproyecto.proyecto.util.response.Meta;
+import com.miproyecto.proyecto.util.response.Pagination;
 import com.miproyecto.proyecto.vacante.service.VacanteService;
 
 import org.springframework.data.mongodb.core.query.*;
@@ -139,14 +140,14 @@ public class ChatService {
 
 
     //listar todos los chats 
-    public Map<String, Object> listarChatsPaginados(Pageable pageable) {
+    public ApiResponseBody<List<ChatDTO>> listarChatsPaginados(Pageable pageable) {
         Page<Chat> chatPage = chatRepository.findAll(pageable);
         Page<ChatDTO> chats = chatPage.map(chat -> mapToDTO(chat, new ChatDTO()));
-        return mapResponse(chats, "chats");
+        return mapResponse(chats);
     }
 
     
-    public Map<String, Object> buscarChatsConFiltros(
+    public ApiResponseBody<List<ChatDTO>> buscarChatsConFiltros(
         String userId, String tipoUsuario, Boolean activoFiltro, String search, Pageable pageable) {
 
         Query query = new Query();
@@ -186,7 +187,7 @@ public class ChatService {
         // Crear la página con DTOs
         Page<ChatDTO> pageDto = new PageImpl<>(chatDTOs, pageable, count);
 
-        return mapResponse(pageDto, "chats");
+        return mapResponse(pageDto);
     }
 
     public void cambiarEstadoChat(String chatId, boolean nuevoEstado, String mensajeContent) {
@@ -237,12 +238,15 @@ public class ChatService {
         return chat;
     }
 
-    public Map<String,Object> mapResponse(Page<ChatDTO> pageableResponse, String nameList){
-        Map<String,Object> response = new HashMap<>();
-        response.put(nameList, pageableResponse.getContent());
-        response.put("totalElements", pageableResponse.getTotalElements());
-        response.put("pageActual", pageableResponse.getPageable());
-        response.put("totalPage", pageableResponse.getTotalPages());
+    public ApiResponseBody<List<ChatDTO>> mapResponse(Page<ChatDTO> pageableResponse){
+        Pagination pagination = new Pagination(pageableResponse.getTotalElements(),
+         pageableResponse.getPageable(), pageableResponse.getTotalPages()
+        );
+        Meta meta = new Meta(pagination);
+        ApiResponseBody<List<ChatDTO>> response = new ApiResponseBody<List<ChatDTO>>(
+            pageableResponse.getContent(), 
+            meta, null
+        );
         return response;
     }
 

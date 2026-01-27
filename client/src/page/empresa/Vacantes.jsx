@@ -1,20 +1,25 @@
-import { useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../../layouts/Layout';
 import { API_CLIENT_URL, URL_VIDEO } from '../../services/Api';
-import { modal, modalResponse } from '../../services/Modal';
+import { modal, modalRedirect, modalResponse } from '../../services/Modal';
 import '../../style/invitado/vacantes.css';
 import { ciudadesColombia, departamentoColombia, listAptitudes } from '../../services/data';
 import InputForm from '../../components/InputForm';
 import { formRulesVacante, validateForm } from '../../services/validacionForm';
+import { useSendFormV2 } from '../../hooks/useFetch';
+import { RoleContext } from '../../services/RoleContext';
+import exceptionControl from '../../services/exceptionControl';
 
 export default function CrearVacante() {
 
+  const { logout } = useContext(RoleContext);
   const [selected, setSelected] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
   const videoRef = useRef(null)
   const maxMB = 7;
+  const {data, send} = useSendFormV2();
   const [eliminarVideo, setEliminarVideo] = useState(false)
   const [previewVideo, setPreviewVideo] = useState(null)
   const [errors, setErrors] = useState({});
@@ -48,7 +53,10 @@ export default function CrearVacante() {
     if (file.type !== "video/mp4") {
       setErrors(prev => ({
         ...prev,
-        video: "Solo se permiten videos en formato MP4."
+        fieldErrorsFrontend: {
+          ...prev.fieldErrorsFrontend,
+          video: "Solo se permiten videos en formato MP4."
+        }
       }));
       e.target.value = "";
       return;
@@ -57,7 +65,10 @@ export default function CrearVacante() {
     if (file.size > maxSize) {
       setErrors(prev => ({
         ...prev,
-        video: `El video no puede exceder los ${maxMB} MB.`
+        fieldErrorsFrontend: {
+          ...prev.fieldErrorsFrontend,
+          video: `El video no puede exceder los ${maxMB} MB.`
+        }
       }));
       e.target.value = "";
       return;
@@ -65,7 +76,10 @@ export default function CrearVacante() {
 
     setErrors(prev => ({
       ...prev,
-      video: undefined
+      fieldErrorsFrontend: {
+        ...prev.fieldErrorsFrontend,
+        video: undefined
+      }
     }));
 
     setEliminarVideo(false);
@@ -114,53 +128,40 @@ export default function CrearVacante() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSubmitted(true); 
-    const newErrors = validateForm(formData, formRulesVacante);
-   
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-
-      const firstErrorField = Object.keys(newErrors)[0];
-      const el = document.getElementById(firstErrorField);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-        el.focus();
-      }
-      return; // no enviar
-    }
-
-    if(selected.length > 5 || selected.length < 2){
-      modal("Selecciona maximo 5 y minimo 2 aptitudes", "warning");
-      return
-    }
-
-    setErrors({});
-    const fd = new FormData();
-    fd.append("vacante", new Blob([JSON.stringify(formData)], { type: "application/json" }));
-
-    if (videoRef.current?.files[0]) {
-      fd.append("video", videoRef.current.files[0]);
-    }
-
     try {
-      const res = await fetch(`${API_CLIENT_URL}/api/vacantes/add`, {
-        method: 'POST',
-        body: fd,
-        credentials: 'include'
-      });
+      e.preventDefault();
+      setSubmitted(true);
+      const newErrors = validateForm(formData, formRulesVacante);
 
-      if (res.ok) {
-        const redirect =  await modalResponse('Vacante creada con éxito', "success");
-        if(redirect){
-          navigate("/empresa/listado/vacantes");
+      if (Object.keys(newErrors).length > 0) {
+        setErrors((prev) => ({ ...prev, fieldErrorsFrontend: newErrors }));
+
+        const firstErrorField = Object.keys(newErrors)[0];
+        const el = document.getElementById(firstErrorField);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          el.focus();
         }
-      } else {
-        modal('Error al crear la vacante', "error");
+        return; // no enviar
       }
+
+      if (selected.length > 5 || selected.length < 2) {
+        modal("Selecciona maximo 5 y minimo 2 aptitudes", "warning");
+        return
+      }
+
+      setErrors({});
+      const fd = new FormData();
+      fd.append("vacante", new Blob([JSON.stringify(formData)], { type: "application/json" }));
+
+      if (videoRef.current?.files[0]) {
+        fd.append("video", videoRef.current.files[0]);
+      }
+
+      await send(`/api/vacantes/add`, "POST", fd, null);
+      modalRedirect("Vacante creada con éxito", "success", "/empresa/listado/vacantes", navigate);
     } catch (error) {
-      console.error(error);
-      modal('Error de conexión con el servidor', "error");
+      exceptionControl(error, logout, navigate, "Error al crear la vacante");
     }
   };
 
@@ -225,7 +226,7 @@ export default function CrearVacante() {
               />
             </div>
 
-            <input type="text" name="departamento" hidden value={formData.departamento} />
+            <input type="text" name="departamento" hidden defaultValue={formData.departamento} />
           </div>
 
           {/* ------------------- Tipo / Modalidad ------------------- */}
@@ -429,7 +430,7 @@ export default function CrearVacante() {
                 Formato permitido: <strong>MP4</strong> — Máximo <strong>{maxMB}MB</strong>.
               </p>
 
-              {errors.video &&<p className="error-text">{errors.video}</p>}
+              {errors?.fieldErrorsFrontend?.video &&<p className="error-text">{errors.fieldErrorsFrontend.video}</p>}
             </div>
           </div>
 

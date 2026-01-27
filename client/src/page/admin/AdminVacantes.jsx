@@ -8,7 +8,7 @@ import Pagination from "../../components/Paginacion";
 import { manejarRespuesta } from '../../services/ManejarRespuesta';
 import useFiltro from "../../hooks/useFiltro";
 import Table from "../../components/Table";
-import { inputModal, modalResponse } from "../../services/Modal";
+import { inputModal, modalResponse, modal, modalTime } from "../../services/Modal";
 import SinResultados from "../../components/SinResultados"
 
 export default function AdminVacantes() {
@@ -68,9 +68,9 @@ export default function AdminVacantes() {
       });
 
       const data = await manejarRespuesta(res);
-      setTotalElements(data.totalElements);
-      setVacantes(data.vacantes || []);
-      setTotalPages(data.totalPage);
+      setTotalElements(data.meta.pagination.totalElements);
+      setVacantes(data.data || []);
+      setTotalPages(data.meta.pagination.totalPage);
     } catch (err) {
       console.error('Error:', err);
     }
@@ -90,11 +90,11 @@ export default function AdminVacantes() {
 
     // Si canceló o no escribió nada
     if (!motivo) {
-      return modalResponse('No se cambió el estado de la vacante.', 'info');
+      return modal('No se cambió el estado de la vacante.', 'info');
     }
 
     try {
-      const res = await fetch(`${API_CLIENT_URL}/api/admin/cambiar-estado/vacantes?nvacante=${nvacante}&estado=${estado}&comentario=${encodeURIComponent(motivo)}`, {
+      const res = await fetch(`${API_CLIENT_URL}/api/admin/estado/vacante?nvacante=${nvacante}&estado=${estado}&comentario=${encodeURIComponent(motivo)}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -102,15 +102,15 @@ export default function AdminVacantes() {
         credentials: 'include',
       });
 
-      if (!res.ok ) throw new Error('Error al cambiar el estado de la vacante');
+      const json = await res.json()
+      if (!res.ok ) throw new Error(json.error.message);
 
-      await modalResponse('El estado de la vacante fue actualizado.', 'success');
-
-      await fetchVacantes(); // Esto ya actualiza las vacantes
+      modalTime('El estado de la vacante fue actualizado');
+      fetchVacantes(); 
 
     } catch (err) {
       console.error('Error al cambiar el estado de la vacante:', err);
-      await modalResponse('Ocurrió un error al cambiar el estado.', 'error');
+      await modalResponse(err ||'Ocurrió un error al cambiar el estado.', 'error');
     }
   };
 

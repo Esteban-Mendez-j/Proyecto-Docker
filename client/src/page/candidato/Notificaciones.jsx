@@ -1,26 +1,27 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useFetch } from "../../hooks/useFetch";
-import { useSendForm } from "../../hooks/useFetch";
+import { useFetchV2, useSendFormV2 } from "../../hooks/useFetch";
 import Pagination from "../../components/Paginacion";
 import "../../style/invitado/notificacionesCenter.css";
 import Loading from "../../components/Loading";
 import { ListSvg } from "../../components/Icons";
 import { modalTime, QuestionModal } from "../../services/Modal";
 import Layout from "../../layouts/Layout";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { RoleContext } from "../../services/RoleContext";
 import { connect, sendMessage, subscribe } from "../../services/Websocket";
+import exceptionControl from "../../services/exceptionControl"
 
 const Notificaciones = () => {
-  const { rol } = useContext(RoleContext);
+  const { rol, logout } = useContext(RoleContext);
   const [currentPage, setCurrentPage] = useState(1);
-  const { send } = useSendForm();
-  const { data, loading, error } = useFetch(`/api/notificaciones/recibidas?page=${currentPage - 1}`, "GET");
+  const { send } = useSendFormV2();
+  const { data, loading, error } = useFetchV2(`/api/notificaciones/recibidas?page=${currentPage - 1}`, "GET");
   const [notificaciones, setNotificaciones] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (data && data.Notificaciones) {
-      setNotificaciones(data.Notificaciones);
+    if (data) {
+      setNotificaciones(data);
     }
   }, [data]);
 
@@ -63,20 +64,22 @@ const Notificaciones = () => {
     const confirmar = await QuestionModal("¿Deseas eliminar esta notificación?");
     if (!confirmar) return;
 
-    const response = await send(`/api/notificaciones/edit/visibilidad/${id}?visibilidad=${false}`, "PUT")
-    if (response.status == 200) {
-      modalTime("Notificacion Eliminada")
+    try {
+      await send(`/api/notificaciones/edit/visibilidad/${id}?visibilidad=${false}`, "PUT");
+      modalTime("Notificacion Eliminada");
       setNotificaciones((prev) =>
         prev.filter((notificacion) => notificacion.id !== id)
       );
-      sendNotificacionEvent("eliminar", id)
+      sendNotificacionEvent("eliminar", id);
+    } catch (error) {
+      exceptionControl(error, logout, navigate, "Error al eliminar la notificación" );
     }
 
   }
  
   const marcarComoLeida = async (id) => {
-    const response = await send(`/api/notificaciones/edit/estadoEnvio/${id}`, "PUT");
-    if (response.status == 200) {
+    try {
+      await send(`/api/notificaciones/edit/estadoEnvio/${id}`, "PUT");
       modalTime("Marcada como leida")
       setNotificaciones((prev) =>
         prev.map((n) =>
@@ -84,6 +87,8 @@ const Notificaciones = () => {
         )
       );
       sendNotificacionEvent("leida", id);
+    } catch (error) {
+      exceptionControl(error, logout, navigate, "Error al marcar como leida la notificación");
     }
   };
 
@@ -95,7 +100,7 @@ const Notificaciones = () => {
         <h2 className="notifications-title">Centro de Notificaciones</h2>
 
         {loading && <Loading />}
-        {error && <p className="notifications-error">Error: {error}</p>}
+        {error && <p className="notifications-error">Error: {error.message}</p>}
 
         {!loading && !error && notificaciones.length === 0 && (
           <p className="notifications-empty">No tienes notificaciones nuevas</p>

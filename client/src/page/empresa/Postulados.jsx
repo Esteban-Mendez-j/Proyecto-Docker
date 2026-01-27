@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Layout from "../../layouts/Layout";
 import "../../style/invitado/empleos.css"
 import "../../style/invitado/postulados.css"
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Pagination from "../../components/Paginacion";
 import manejarRespuesta from "../../services/ManejarRespuesta";
 import { API_CLIENT_URL } from "../../services/Api";
@@ -12,6 +12,9 @@ import { mensajesNotificaciones } from "../../services/data";
 import useFiltro from "../../hooks/useFiltro";
 import Table from "../../components/Table";
 import SinResultados from "../../components/SinResultados"
+import { RoleContext } from "../../services/RoleContext";
+import { useSendFormV2 } from "../../hooks/useFetch";
+import exceptionControl from "../../services/exceptionControl";
 
 export default function Postulados() {
 
@@ -84,80 +87,51 @@ export default function Postulados() {
     }
     const { vacanteId } = useParams();
     const navigate = useNavigate();
+    const { logout, userDataSession, rol } = useContext(RoleContext);
     const itemsPerPage = 10;
+    const { data, meta, loading, send } = useSendFormV2();
+    const { send:getData } = useSendFormV2();
     const [currentPage, setCurrentPage] = useState(1);
     const [ filtrosLocal, filtrosAplicados, handleOnFilters, clearFilters, searchFilters ] = useFiltro(initialFiltro, setCurrentPage, "FiltrosEmpresaPostulado");
-    const [remitenteId, setRemitenteId] = useState(null)
     const [postulados, setPostulados] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
-    const [loading, setLoading] = useState(false);
-    const [userRole, setUserRole] = useState("ROLE_INVITADO");
-
-    const fetchUserRole = async () => {
-        try {
-            const res = await fetch(`${API_CLIENT_URL}/api/usuarios/rol`, {
-                credentials: 'include',
-            });
-            const data = await manejarRespuesta(res);
-            if (!data) { return; }
-            setUserRole(data.rolPrincipal);
-            setRemitenteId(data.id)
-        } catch (error) {
-            console.error('Error fetching user role:', error);
-        }
-    };
 
     const fetchPostulados = async (page = 1) => {
-        setLoading(true);
-        const { estado, fechaMinima, nombreCandidato } = filtrosAplicados;
-
-        const params = new URLSearchParams({
-            nvacantes: vacanteId,
-            estado: estado || '',
-            fechaMinima: fechaMinima || '',
-            nombreCandidato: nombreCandidato || '',
-            page: page - 1,
-            size: itemsPerPage,
-        });
-
         try {
-            const res = await fetch(`${API_CLIENT_URL}/api/postulados/lista?${params}`, {
-                credentials: 'include',
+            const { estado, fechaMinima, nombreCandidato } = filtrosAplicados;
+
+            const params = new URLSearchParams({
+                nvacantes: vacanteId,
+                estado: estado || '',
+                fechaMinima: fechaMinima || '',
+                nombreCandidato: nombreCandidato || '',
+                page: page - 1,
+                size: itemsPerPage,
             });
 
-            const data = await manejarRespuesta(res);
-            if (!data) { return; }
-            setPostulados(data.postulados);
-            setTotalPages(data.totalPage);
+            await send(`/api/postulados/lista?${params}`, "GET");
         } catch (error) {
-            console.error('❌ Error al cargar postulados:', error);
-        } finally {
-            setLoading(false);
-        }
-        fetchUserRole()
+            exceptionControl(error, logout, navigate, "Error al cargar las postulaciones");
+        } 
     };
 
     useEffect(() => {
         fetchPostulados(currentPage);
     }, [vacanteId, currentPage, filtrosAplicados]);
 
+    useEffect(() =>{
+        if(!data || !meta) return
+        setPostulados(data);
+        setTotalPages(meta.pagination.totalPage);
+    }, [data, meta])
+
     const abrirChat = async (candidatoId, vacanteId) => {
         try {
-            const response = await fetch(`${API_CLIENT_URL}/api/chats/crear`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ candidatoId, vacanteId }),
-                credentials: 'include'
-            });
-
-            const chat = await manejarRespuesta(response);
-            if (!chat) { return }
-            window.location.href = `/chat/${chat.id}`;
+            const res = await getData(`/api/chats/crear`, "POST", JSON.stringify({ candidatoId, vacanteId }));
+            if (!res?.data) return 
+            navigate(`/chat/${res.data.id}`);
         } catch (err) {
-            console.error('Error al abrir el chat:', err);
-            await modalResponse('No se pudo abrir el chat.', "info");
+            exceptionControl(err, logout, navigate, "Error al abrir el chat");
         }
     };
 
@@ -170,10 +144,10 @@ export default function Postulados() {
             asunto: asunto,
             cuerpo: cuerpo,
             destinatario: destinatario,
-            idRemitente: remitenteId,
+            idRemitente: userDataSession.id,
             idVacante: postulacion.vacante.id
         }
-
+        console.log(notificacion)
         sendMessage("/app/enviar/notificacion", notificacion);
     }
 
@@ -185,23 +159,12 @@ export default function Postulados() {
         if (!isConfirmed) return;
 
         try {
-            const res = await fetch(`${API_CLIENT_URL}/api/postulados/edit/${nPostulacion}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({ estado: nuevoEstado }),
-            });
-
-            if (!res.ok) { await modalResponse('Error al actualizar estado','error' ); }
-
+            await send(`/api/postulados/edit/${nPostulacion}`, "PUT", JSON.stringify({ estado: nuevoEstado }));
             modal(`Postulación ${nuevoEstado.toLowerCase()} correctamente`, "success");
             fetchPostulados(currentPage);
             sendNotificacion(nuevoEstado.toLowerCase(), nPostulacion)
         } catch (error) {
-            console.error('Error al actualizar:', error);
-            await modalResponse('Ocurrió un error al actualizar la postulación', "error");
+            exceptionControl(error, logout, navigate, "Ocurrió un error al actualizar la postulación");
         }
     };
 
@@ -279,9 +242,9 @@ export default function Postulados() {
                             
                             <Table listEncabezados={listHeader} listObjetos={postulados} action={[
                                 {text:"Ver perfil", funcion: (p) => navigate(`/perfil/candidato/${p.candidato.id}?nPostulacion=${p.nPostulacion}`), clase:"bg-orange-100 hover:bg-orange-200 text-orange-700 font-semibold py-1 px-3 rounded-md"},
-                                userRole === "EMPRESA" && {text:"abrir Chat", funcion: (p) => abrirChat(p.candidato.id, p.vacante.id) , ocultar: (p)=> (p.estado === 'Espera' || p.estado === 'Aceptada') && p.active && p.vacanteIsActive, clase:"bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold py-1 px-3 rounded-md"},
-                                userRole === "EMPRESA" && {text:"Rechazar", funcion: (p) => actualizarEstadoPostulacion(p.nPostulacion, 'Rechazada'), ocultar: (p) =>  p.estado === 'Espera' && p.active && p.vacanteIsActive , clase:" bg-red-100 hover:bg-red-200 text-red-700 font-semibold py-1 px-3 rounded-md"},
-                                userRole === "EMPRESA" && {text:"Aceptar", funcion: (p) => actualizarEstadoPostulacion(p.nPostulacion, 'Aceptada'), ocultar: (p) => p.estado === 'Espera' && p.active && p.vacanteIsActive  , clase:"bg-green-100 hover:bg-green-200 text-green-700 font-semibold py-1 px-3 rounded-md"} 
+                                rol === "EMPRESA" && {text:"abrir Chat", funcion: (p) => abrirChat(p.candidato.id, p.vacante.id) , ocultar: (p)=> (p.estado === 'Espera' || p.estado === 'Aceptada') && p.active && p.vacanteIsActive, clase:"bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold py-1 px-3 rounded-md"},
+                                rol === "EMPRESA" && {text:"Rechazar", funcion: (p) => actualizarEstadoPostulacion(p.nPostulacion, 'Rechazada'), ocultar: (p) =>  p.estado === 'Espera' && p.active && p.vacanteIsActive , clase:" bg-red-100 hover:bg-red-200 text-red-700 font-semibold py-1 px-3 rounded-md"},
+                                rol === "EMPRESA" && {text:"Aceptar", funcion: (p) => actualizarEstadoPostulacion(p.nPostulacion, 'Aceptada'), ocultar: (p) => p.estado === 'Espera' && p.active && p.vacanteIsActive  , clase:"bg-green-100 hover:bg-green-200 text-green-700 font-semibold py-1 px-3 rounded-md"} 
                             ]}/>
                             </div>
 

@@ -1,15 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import InputForm from "../../components/InputForm.jsx";
 import Loading from "../../components/Loading.jsx";
-import { useFetch, useSendForm } from "../../hooks/useFetch";
+import { useFetchV2, useSendFormV2 } from "../../hooks/useFetch";
 import Layout from "../../layouts/Layout.jsx";
 import { API_CLIENT_URL, URL_IMAGEN } from "../../services/Api";
-import { modal, modalResponse, modalTime } from "../../services/Modal";
+import { modal, modalRedirect, modalTime } from "../../services/Modal";
 import "../../style/invitado/candidato.css";
 import { listEducacion, listAptitudes, listValueHistorial, listValueEstudio } from "../../services/data.js"
 import { formRulesCandidatoEditar, validateForm } from "../../services/validacionForm.js";
 import TimeLineList from "../../components/TimeLineList.jsx";
+import exceptionControl from "../../services/exceptionControl.js";
+import { RoleContext } from "../../services/RoleContext.jsx";
 
 const PerfilCandidatoEditar = () => {
 
@@ -38,10 +40,11 @@ const PerfilCandidatoEditar = () => {
 
 
   const navigate = useNavigate()
+  const { logout } = useContext(RoleContext);
   const maxImgSize = 500;  // 500kb
   const maxPdfSize = 1; //1mb
-  const { data, loading } = useFetch("/api/candidatos/perfil", "GET");
-  const { error, send,  setError } = useSendForm();
+  const { data, loading } = useFetchV2("/api/candidatos/perfil", "GET");
+  const { error, send,  setError } = useSendFormV2();
   const [selected, setSelected] = useState([]);
   const [candidato, setCandidato] = useState(initialData);
   const [estudios, setEstudios] = useState([]);
@@ -152,10 +155,14 @@ const PerfilCandidatoEditar = () => {
   const EditarEstudio = (id) =>{navigate(`/perfil/candidato/editar/estudios/${id}`)}
 
   const eliminarEstudio = async (id) =>{
-    const response = await send(`/api/estudios/cambiar/visibilidad/${false}/${id}`, "PUT")
-    if(response == id){
-      setEstudios( estudios.filter( est => est.idEstudio !== id));
-      modalTime("Eliminacion Completada")
+    try {
+      const response = await send(`/api/estudios/cambiar/visibilidad/${false}/${id}`, "PUT")
+      if (response.data == id) {
+        setEstudios(estudios.filter(est => est.idEstudio !== id));
+        modalTime("Eliminacion Completada")
+      }
+    } catch (error) {
+      exceptionControl(error, logout, navigate, "Error al eliminar el estudio")
     }
   }
   /* ---- CRUD Historial laboral ------------------- */
@@ -164,10 +171,14 @@ const PerfilCandidatoEditar = () => {
   const editarHistorial = (id) =>{navigate(`/perfil/candidato/editar/historial/${id}`)}
 
   const eliminarHistorial = async (id) => {
-    const response = await send(`/api/historialLaborals/cambiar/visibilidad/${false}/${id}`, "PUT")
-    if(response == id){
-      setHistorial( historialLaboral.filter(h => h.iDHistorial !== id));
-      modalTime("Eliminacion Completada")
+    try {
+      const response = await send(`/api/historialLaborals/cambiar/visibilidad/${false}/${id}`, "PUT")
+      if (response.data == id) {
+        setHistorial(historialLaboral.filter(h => h.iDHistorial !== id));
+        modalTime("Eliminacion Completada")
+      }
+    } catch (error) {
+      exceptionControl(error, logout, navigate, "Error al eliminar el Historial Laboral")
     }
   }
 
@@ -184,7 +195,7 @@ const PerfilCandidatoEditar = () => {
       const newErrors = validateForm(candidato, formRulesCandidatoEditar);
       
       if (Object.keys(newErrors).length > 0) {
-        setError(newErrors);
+        setError((prev) => ({ ...prev, fieldErrorsFrontend: newErrors }));
 
         // Foco en el primer campo con error
         const firstErrorField = Object.keys(newErrors)[0];
@@ -193,7 +204,6 @@ const PerfilCandidatoEditar = () => {
           el.scrollIntoView({ behavior: "smooth", block: "center" });
           el.focus();
         }
-
         return; // detener envío o acción
       }
       setError(null);
@@ -212,21 +222,13 @@ const PerfilCandidatoEditar = () => {
         formData.append("img", fotoRef.current.files[0]);
       }
 
-      const result = await send(`/api/candidatos/edit/${candidato.idUsuario}`, "PUT", formData, null)
+      await send(`/api/candidatos/edit/${candidato.idUsuario}`, "PUT", formData, null)
 
-      if (result.status === 201 || result.status == 200) {
-        const isOk = await modalResponse(result.mensaje, "success");
-        if (isOk) {
-          navigate("/perfil/candidato");
-          return
-        }
-      }
+      await modalRedirect("Candidato Actualizado con exito!", "success", "/perfil/candidato", navigate);
 
-      modal("Error al actualizar tu perfil", "error")
       /* ----------- 5. Éxito global ------------ */
     } catch (err) {
-      console.error(err);
-      modal(err.message || "Ocurrió un error actualizando tu perfil", "error")
+      exceptionControl(err, logout, navigate,"Ocurrió un error actualizando tu perfil" )
     }
   };
 

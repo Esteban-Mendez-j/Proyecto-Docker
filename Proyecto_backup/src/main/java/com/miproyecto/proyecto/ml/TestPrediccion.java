@@ -1,18 +1,15 @@
 package com.miproyecto.proyecto.ml;
-// package com.miproyecto.proyecto.ml;
 
-// import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.boot.CommandLineRunner;
 // import org.springframework.stereotype.Component;
 
-// import com.miproyecto.proyecto.service.PrediccionService;
+// import com.miproyecto.proyecto.ml.service.PrediccionService;
 
 // @Component
 // public class TestPrediccion implements CommandLineRunner {
 
 //     private final PrediccionService prediccionService;
 
-//     @Autowired
 //     public TestPrediccion(PrediccionService prediccionService) {
 //         this.prediccionService = prediccionService;
 //     }
@@ -20,7 +17,7 @@ package com.miproyecto.proyecto.ml;
 //     @Override
 //     public void run(String... args) throws Exception {
 //         // Datos predefinidos para probar
-//         String NivelEducativo = "Técnico";
+//         String NivelEducativo = "Postgrado";
 //         int AñosExperiencia = 0 ;
 //         String PensamientoCritico = "1";
 //         String Creatividad = "1";

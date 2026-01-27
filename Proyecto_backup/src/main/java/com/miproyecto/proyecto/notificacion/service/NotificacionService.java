@@ -1,9 +1,7 @@
 package com.miproyecto.proyecto.notificacion.service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +14,9 @@ import com.miproyecto.proyecto.notificacion.repository.NotificacionRepository;
 import com.miproyecto.proyecto.usuario.model.Usuario;
 import com.miproyecto.proyecto.usuario.repository.UsuarioRepository;
 import com.miproyecto.proyecto.util.NotFoundException;
+import com.miproyecto.proyecto.util.response.ApiResponseBody;
+import com.miproyecto.proyecto.util.response.Meta;
+import com.miproyecto.proyecto.util.response.Pagination;
 
 @Service
 public class NotificacionService {
@@ -28,21 +29,21 @@ public class NotificacionService {
         this.notificacionRepository = notificacionRepository;
     }
 
-    public  Map<String, Object> findByDestinatarioAndVisible (Long idUsuario, Pageable pageable, Boolean isVisible){
+    public  ApiResponseBody<List<NotificacionDTO>> findByDestinatarioAndVisible (Long idUsuario, Pageable pageable, Boolean isVisible){
         String Destinatario = usuarioRepository.findById(idUsuario).orElseThrow(NotFoundException::new).getCorreo();
         Page<NotificacionDTO> notificaciones =  notificacionRepository.findAllByDestinatarioAndIsVisibleOrderByFechaEnvioDesc(Destinatario, isVisible, pageable)
             .map(notificacion -> mapToDTO(notificacion, new NotificacionDTO()));
 
-        return mapResponse(notificaciones, "Notificaciones");
+        return mapResponse(notificaciones);
     }
 
-    public  Map<String, Object> findByRemitenteAndVisible (Long idUsuario, Pageable pageable, Boolean isVisible){
+    public  ApiResponseBody<List<NotificacionDTO>> findByRemitenteAndVisible (Long idUsuario, Pageable pageable, Boolean isVisible){
         String remitente = usuarioRepository.findById(idUsuario).orElseThrow(NotFoundException::new).getCorreo();
         
         Page<NotificacionDTO> notificaciones =  notificacionRepository.findAllByRemitenteAndIsVisibleOrderByFechaEnvioDesc(remitente, isVisible, pageable)
             .map(notificacion -> mapToDTO(notificacion, new NotificacionDTO()));
 
-        return mapResponse(notificaciones, "Notificaciones");
+        return mapResponse(notificaciones);
     }
 
     public  List<NotificacionDTO> findByRemitenteRecientes (Long idUsuario, Boolean isVisible){
@@ -83,28 +84,31 @@ public class NotificacionService {
         return notificacionDTO;
     }
 
-    public void  cambiarVisible ( Boolean isVisible,  String idNotificacion){
+    public String  cambiarVisible ( Boolean isVisible,  String idNotificacion){
         Notificacion notificacion = notificacionRepository.findById(idNotificacion)
             .orElseThrow(NotFoundException::new);
         notificacion.setIsVisible(isVisible);
 
-        notificacionRepository.save(notificacion);
+        return notificacionRepository.save(notificacion).getId();
     }
 
-    public void  cambiarEstadoEnvio ( EstadoEnvio estado,  String idNotificacion){
+    public String  cambiarEstadoEnvio ( EstadoEnvio estado,  String idNotificacion){
         Notificacion notificacion = notificacionRepository.findById(idNotificacion).orElseThrow(NotFoundException::new);
         notificacion.setEstadoEnvio(estado);
 
-        notificacionRepository.save(notificacion);
+        return notificacionRepository.save(notificacion).getId();
     }
 
-    public Map<String,Object> mapResponse(Page<NotificacionDTO> pageableResponse, String nameList){
-        Map<String,Object> response = new HashMap<>();
-
-        response.put(nameList, pageableResponse.getContent());
-        response.put("totalElements", pageableResponse.getTotalElements());
-        response.put("pageActual", pageableResponse.getPageable());
-        response.put("totalPage", pageableResponse.getTotalPages());
+    public ApiResponseBody<List<NotificacionDTO>> mapResponse(Page<NotificacionDTO> pageableResponse){
+        ApiResponseBody<List<NotificacionDTO>> response = new ApiResponseBody<>();
+        Pagination pagination = new Pagination(
+            pageableResponse.getTotalElements(),
+            pageableResponse.getPageable(), 
+            pageableResponse.getTotalPages()
+        );
+        Meta meta = new Meta(pagination);
+        response.setData(pageableResponse.getContent());
+        response.setMeta(meta);
         return response;
     }
     

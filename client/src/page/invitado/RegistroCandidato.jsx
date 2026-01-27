@@ -1,15 +1,17 @@
 import Layout from "../../layouts/Layout";
 import "../../style/invitado/registroCandidato.css"
-import { useSendForm } from "../../hooks/useFetch"
+import { useSendFormV2 } from "../../hooks/useFetch"
 import InputFrom from "../../components/InputForm";
-import { useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { modalResponse } from "../../services/Modal";
+import { modal, modalRedirect } from "../../services/Modal";
 import Loading from "../../components/Loading";
 import useValidation from "../../hooks/useValidation";
 import useVisible from "../../hooks/useVisible";
 import { formRulesCandidato, validateForm } from "../../services/validacionForm";
 import { ListSvg } from "../../components/Icons";
+import exceptionControl from "../../services/exceptionControl";
+import { RoleContext } from "../../services/RoleContext";
 
 export default function RegistroCandidato() {
 
@@ -30,7 +32,8 @@ export default function RegistroCandidato() {
         contraseñaVerificada: ""
     }
 
-    const { send , data, error, setError, loading } = useSendForm();
+    const { send , data, error, setError, loading } = useSendFormV2();
+    const { logout } = useContext(RoleContext);
     const { validarPassword, dataFrom, setDataFrom } = useValidation(initialData);
     const [handleOnClick, visible] = useVisible();
     const [submitted, setSubmitted] = useState(false);
@@ -47,36 +50,35 @@ export default function RegistroCandidato() {
     };
 
     async function handleSubmit(e) {
-        e.preventDefault();
-        setSubmitted(true)
-        const newErrors = validateForm(dataFrom, formRulesCandidato);
-        const combinedErrors = { ...newErrors };
+        try {
+            e.preventDefault();
+            setSubmitted(true)
+            const newErrors = validateForm(dataFrom, formRulesCandidato);
+            const combinedErrors = { ...newErrors };
 
-        if (!validarPassword) {
-            combinedErrors.contrasena = "Contraseña inválida";
-        }
-
-        if (Object.keys(combinedErrors).length > 0) {
-            setError(combinedErrors);
-
-            // Foco en el primer campo con error
-            const firstErrorField = Object.keys(combinedErrors)[0];
-            const el = document.getElementById(firstErrorField);
-            if (el) {
-                el.scrollIntoView({ behavior: "smooth", block: "center" });
-                el.focus();
+            if (!validarPassword) {
+                combinedErrors.contrasena = "Contraseña inválida";
             }
 
-            return; // detener envío o acción
-        }
-        setError(null);
+            if (Object.keys(combinedErrors).length > 0) {
+                setError((prev)=>({...prev, fieldErrorsFrontend:combinedErrors}))
 
-        const result = await send("/api/candidatos/add", "POST", JSON.stringify(dataFrom));
-        if(result.status === 201){
-            const isOk = await modalResponse(result.mensaje, "success");
-            if(isOk){
-                navigate("/login");
+                // Foco en el primer campo con error
+                const firstErrorField = Object.keys(combinedErrors)[0];
+                const el = document.getElementById(firstErrorField);
+                if (el) {
+                    el.scrollIntoView({ behavior: "smooth", block: "center" });
+                    el.focus();
+                }
+
+                return; // detener envío o acción
             }
+            setError(null);
+            await send("/api/candidatos/add", "POST", JSON.stringify(dataFrom));
+           
+            await modalRedirect("Candidato resgitardo cons exito!", "success", "/login", navigate);
+        } catch (error) {
+            exceptionControl((error, logout, navigate, "Error al Registrar un candidato"))
         }
     }
 
@@ -113,6 +115,7 @@ export default function RegistroCandidato() {
                                         handleOnChange={handleOnChange}
                                         error={error}
                                         submitted={submitted}
+                                        rules={formRulesCandidato}
                                     />
                                 </div>
 
@@ -128,6 +131,7 @@ export default function RegistroCandidato() {
                                         handleOnChange={handleOnChange}
                                         error={error}
                                         submitted={submitted}
+                                        rules={formRulesCandidato}
                                     />
                                 </div>
                             </div>
@@ -144,6 +148,7 @@ export default function RegistroCandidato() {
                                     handleOnChange={handleOnChange}
                                     error={error}
                                     submitted={submitted}
+                                    rules={formRulesCandidato}
                                     autoComplete={"email"}
                                 />
                                 <p className="form-hint">
@@ -162,6 +167,7 @@ export default function RegistroCandidato() {
                                         handleOnChange={handleOnChange}
                                         error={error}
                                         submitted={submitted}
+                                        rules={formRulesCandidato}
                                     />
                                 </div>
 
@@ -177,6 +183,7 @@ export default function RegistroCandidato() {
                                         handleOnChange={handleOnChange}
                                         error={error}
                                         submitted={submitted}
+                                        rules={formRulesCandidato}
                                     />
                                 </div>
                             </div>
@@ -195,6 +202,7 @@ export default function RegistroCandidato() {
                                             handleOnChange={handleOnChange}
                                             error={error}
                                             submitted={submitted}
+                                            rules={formRulesCandidato}
                                             autoComplete={"new-password"}
                                         >
                                             <button
@@ -227,6 +235,7 @@ export default function RegistroCandidato() {
                                             handleOnChange={handleOnChange}
                                             error={error}
                                             submitted={submitted}
+                                            rules={formRulesCandidato}
                                             autoComplete={"new-password"}
                                         >
                                             <button

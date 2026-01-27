@@ -22,6 +22,18 @@ export async function modalResponse(message, type) {
   return sweetalertResponse.isConfirmed;
 }
 
+export async function modalRedirect(message, type, redirect, navigate) {
+  const sweetalertResponse = await Swal.fire({
+    text: message,
+    icon: type,
+    confirmButtonText: "OK",
+  })
+
+  if(sweetalertResponse.isConfirmed){
+    navigate? navigate(redirect) : window.location.href = redirect;
+  }
+}
+
 // para mostrar un modal con pregunta 
 export async function QuestionModal(title, icon = "question") {
   const sweetalertResponse = await Swal.fire({

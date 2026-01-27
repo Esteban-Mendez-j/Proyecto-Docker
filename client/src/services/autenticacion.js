@@ -9,14 +9,13 @@ export async function autenticacion(username, password) {
       credentials: "include"
     });
 
-    const data = await res.json();
-
+    const response = await res.json();
 
     if (!res.ok) {
-      return{data: null, error: data.mensaje}
+      return{data: null, error: response.error.message}
     }
 
-    return { data, error: null };
+    return { data:response.data , error: null };
   } catch (e) {
     return { data: null, error: e};
   }

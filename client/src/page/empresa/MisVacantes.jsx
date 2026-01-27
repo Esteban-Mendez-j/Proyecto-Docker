@@ -14,7 +14,7 @@ export default function ListadoVacantes() {
           </p>
         </div>
 
-        <JobBoard fetchUrl={`${API_CLIENT_URL}/api/vacantes/listar`} />
+        <JobBoard fetchUrl={`/api/vacantes/listar`} />
       </div>
     </Layout>
   );

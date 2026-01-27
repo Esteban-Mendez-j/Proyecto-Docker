@@ -49,7 +49,7 @@ export default function Login (){
         }
 
         setLoading(true); 
-        const { data, error } = await autenticacion(username, password);
+        const { data , error } = await autenticacion(username, password);
 
         if (error) {
             setError(error);

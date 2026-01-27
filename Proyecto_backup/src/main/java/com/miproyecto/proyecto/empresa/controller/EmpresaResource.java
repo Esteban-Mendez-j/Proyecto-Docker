@@ -1,8 +1,6 @@
 package com.miproyecto.proyecto.empresa.controller;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,8 +23,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.empresa.dto.EmpresaDTO;
 import com.miproyecto.proyecto.empresa.service.EmpresaService;
+import com.miproyecto.proyecto.enums.ResponseCode;
 import com.miproyecto.proyecto.usuario.service.UsuarioService;
 import com.miproyecto.proyecto.util.JwtUtils;
+import com.miproyecto.proyecto.util.response.ApiError;
+import com.miproyecto.proyecto.util.response.ApiResponseBody;
 import com.miproyecto.proyecto.validations.ValidationGroups;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,10 +63,9 @@ public class EmpresaResource {
         }
     )
     @GetMapping("/perfil")
-    public ResponseEntity<Map<String, Object>> mostrarPerfil( Model model,HttpSession session,
+    public ResponseEntity<ApiResponseBody<EmpresaDTO>> mostrarPerfil( Model model,HttpSession session,
             @RequestParam(required = false) Long idUsuario) {        
-        
-        Map<String, Object> response = new HashMap<>();     
+        ApiResponseBody<EmpresaDTO> response = new ApiResponseBody<>();
         if (idUsuario == null) {
             // Sacamos el ID del usuario que inicia sesion
             String jwtToken = (String) session.getAttribute("jwtToken");
@@ -73,8 +73,12 @@ public class EmpresaResource {
             idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
         } 
         EmpresaDTO empresaDTO = empresaService.get(idUsuario);        
-        if (empresaDTO == null) {return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);} 
-        response.put("empresa", empresaDTO);
+        if (empresaDTO == null) {
+            ApiError error = new ApiError(ResponseCode.NOT_FOUND, "No se encontraron los datos de la empresa");
+            response.setError(error);
+            return new ResponseEntity<>(response , HttpStatus.NOT_FOUND);
+        } 
+        response.setData(empresaDTO);
         return ResponseEntity.ok(response); 
     }
 
@@ -87,12 +91,10 @@ public class EmpresaResource {
         }
     )
     @PostMapping("/add")
-    public ResponseEntity<Map<String, Object>> createEmpresa(@RequestBody @Valid final EmpresaDTO empresaDTO) {
-        Map<String, Object> response = new HashMap<>();
-        empresaService.create(empresaDTO);
-        response.put("status", HttpStatus.CREATED.value());
-        response.put("mensaje", "Empresa creada con exito!");
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ApiResponseBody<Long>> createEmpresa(@RequestBody @Valid final EmpresaDTO empresaDTO) {
+        Long id =  empresaService.create(empresaDTO);
+        ApiResponseBody<Long> response = new ApiResponseBody<>(id, null, null);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @Operation(
@@ -104,9 +106,10 @@ public class EmpresaResource {
         }
     )
     @GetMapping("/edit/{idEmpresa}")
-    public ResponseEntity<EmpresaDTO> getEmpresa(
+    public ResponseEntity<ApiResponseBody<EmpresaDTO>> getEmpresa(
             @PathVariable final Long idEmpresa) {
-        return ResponseEntity.ok(empresaService.get(idEmpresa));
+        ApiResponseBody<EmpresaDTO> response = new ApiResponseBody<>(empresaService.get(idEmpresa),null,null);
+        return ResponseEntity.ok(response);
     }
 
 
@@ -120,19 +123,18 @@ public class EmpresaResource {
         }
     )
     @PutMapping(value = "/edit/{idUsuario}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Map<String, Object>> editCandidato(
+    public ResponseEntity<ApiResponseBody<Long>> editCandidato(
             @RequestPart("empresa") @Validated({ValidationGroups.OnUpdate.class, Default.class}) EmpresaDTO empresaDTO,
             @RequestPart(name = "img", required = false) MultipartFile imagen,
             @CookieValue(required = false) String jwtToken) {
 
-        Map<String, Object> response = new HashMap<>();
+        ApiResponseBody<Long> response = new ApiResponseBody<>();
+        ApiError error = new ApiError();
         
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
- 
 
         try {
-            
             if (imagen != null && !imagen.isEmpty()) {
                 if (empresaDTO.getImagen() != null && !empresaDTO.getImagen().isEmpty()) {
 
@@ -143,19 +145,19 @@ public class EmpresaResource {
             }
 
             // Actualizar los datos
-            empresaService.update(idUsuario, empresaDTO);
-            response.put("status", HttpStatus.OK.value());
-            response.put("mensaje", "Candidato actualizado correctamente.");
+            response.setData(empresaService.update(idUsuario, empresaDTO));
             return ResponseEntity.ok(response);
 
         } catch (IOException e) {
-            response.put("status", HttpStatus.BAD_REQUEST.value());
-            response.put("mensaje", "Error al guardar la imagen.");
+            error.setCode(ResponseCode.ERROR);
+            error.setMessage("Error al guardar la imagen.");
+            response.setError(error);
             return ResponseEntity.badRequest().body(response);
         } catch (Exception e) {
-            response.put("status", HttpStatus.BAD_REQUEST.value());
-            response.put("mensaje", "Error al actualizar el candidato.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            error.setCode(ResponseCode.ERROR);
+            error.setMessage(e.getMessage());
+            response.setError(error);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 

@@ -1,20 +1,26 @@
 
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 // import '../../style/invitado/editarVacantes.css';
 import { API_CLIENT_URL, URL_VIDEO } from "../../services/Api";
 import manejarRespuesta from "../../services/ManejarRespuesta";
-import { modal, modalResponse } from "../../services/Modal";
+import { modal, modalRedirect, modalResponse } from "../../services/Modal";
 import { ciudadesColombia, departamentoColombia, listAptitudes } from "../../services/data";
 import Loading from "../../components/Loading"
 import Layout from "../../layouts/Layout";
 import InputForm from "../../components/InputForm";
 import { formRulesVacante, validateForm } from "../../services/validacionForm";
+import { RoleContext } from "../../services/RoleContext";
+import { useSendFormV2 } from "../../hooks/useFetch";
+import exceptionControl from "../../services/exceptionControl";
 
 
 const EditarVacantes= () => {
   const { nvacantes } = useParams();
   const navigate = useNavigate();
+  const { logout } = useContext(RoleContext);
+  const { data, send, loading } = useSendFormV2();
+  const { send:sendEdit } = useSendFormV2();
   const [submitted, setSubmitted] = useState(false);
   const videoRef = useRef(null)
   const maxMB = 7;
@@ -36,7 +42,6 @@ const EditarVacantes= () => {
     videoLink: '', 
     aptitudes: []
   });
-  const [loading, setLoading] = useState(true);
 
   const handleVideoChange = (e) => {
   const file = e.target.files[0];
@@ -53,7 +58,10 @@ const EditarVacantes= () => {
   if (file.type !== "video/mp4") {
     setErrors(prev => ({
       ...prev,
-      video: "Solo se permiten videos en formato MP4."
+      fieldErrorsFrontend: {
+        ...prev.fieldErrorsFrontend,
+        video: "Solo se permiten videos en formato MP4."
+      }
     }));
     e.target.value = "";
     return;
@@ -62,7 +70,10 @@ const EditarVacantes= () => {
   if (file.size > maxSize) {
     setErrors(prev => ({
       ...prev,
-      video: `El video no puede exceder los ${maxMB} MB.`
+      fieldErrorsFrontend: {
+        ...prev.fieldErrorsFrontend,
+        video: `El video no puede exceder los ${maxMB} MB.`
+      }
     }));
     e.target.value = "";
     return;
@@ -70,7 +81,10 @@ const EditarVacantes= () => {
 
   setErrors(prev => ({
     ...prev,
-    video: undefined
+    fieldErrorsFrontend: {
+      ...prev.fieldErrorsFrontend,
+      video: undefined
+    }
   }));
 
   setEliminarVideo(false);
@@ -111,19 +125,20 @@ const EditarVacantes= () => {
   useEffect(() => {
     const fetchVacante = async () => {
       try {
-        const res = await fetch(`${API_CLIENT_URL}/api/vacantes/seleccion/${nvacantes}`);
-        const data = await manejarRespuesta(res);
-        setVacante(data.vacanteSeleccionada);
-        setSelected(data.vacanteSeleccionada.aptitudes || [])
+        await send(`/api/vacantes/seleccion/${nvacantes}`);
       } catch (error) {
-        console.error("Error cargando la vacante:", error);
-      } finally {
-        setLoading(false);
-      }
+        exceptionControl(error, logout, navigate, "Error al cargar los datos de la vacante")
+      } 
     };
 
     fetchVacante();
   }, [nvacantes]);
+
+  useEffect(() => {
+    if(!data) return
+    setVacante(data);
+    setSelected(data.aptitudes)
+  }, [data]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -138,51 +153,42 @@ const EditarVacantes= () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSubmitted(true)
-    // 1. Validar con tus reglas
-    const newErrors = validateForm(vacante, formRulesVacante);
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      console.log(newErrors)
-      const firstErrorField = Object.keys(newErrors)[0];
-      const el = document.getElementById(firstErrorField);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-        el.focus();
-      }
-      return; // no enviar
-    }
-
-    if(selected.length > 5 || selected.length < 2){
-      modal("Selecciona maximo 5 y minimo 2 aptitudes", "warning");
-      return
-    }
-
-    // 3. Limpiar errores si todo está bien
-    setErrors({});
-    const fd = new FormData();
-    fd.append("vacante", new Blob([JSON.stringify(vacante)], { type: "application/json" }));
-    fd.append("eliminarVideo", new Blob([JSON.stringify(eliminarVideo)], { type: "application/json" }));
-    if (videoRef.current?.files[0]) {
-      fd.append("video", videoRef.current.files[0]);
-    }
     try {
-      const res = await fetch(`${API_CLIENT_URL}/api/vacantes/edit/${vacante.nvacantes}`, {
-        method: "PUT",
-        body: fd,
-      });
+      e.preventDefault();
+      setSubmitted(true)
+      // 1. Validar con tus reglas
+      const newErrors = validateForm(vacante, formRulesVacante);
 
-      if (!res.ok) throw new Error("Error al guardar los cambios");
+      if (Object.keys(newErrors).length > 0) {
+        setErrors((prev) => ({ ...prev, fieldErrorsFrontend: newErrors }));
 
-      const ok = modalResponse("Vacante actualizada correctamente", "success");
-      if (ok) {
-        navigate("/empresa/listado/vacantes");
+        const firstErrorField = Object.keys(newErrors)[0];
+        const el = document.getElementById(firstErrorField);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          el.focus();
+        }
+        return; // no enviar
       }
+
+      if (selected.length > 5 || selected.length < 2) {
+        modal("Selecciona maximo 5 y minimo 2 aptitudes", "warning");
+        return
+      }
+
+      // 3. Limpiar errores si todo está bien
+      setErrors({});
+      const fd = new FormData();
+      fd.append("vacante", new Blob([JSON.stringify(vacante)], { type: "application/json" }));
+      fd.append("eliminarVideo", new Blob([JSON.stringify(eliminarVideo)], { type: "application/json" }));
+      if (videoRef.current?.files[0]) {
+        fd.append("video", videoRef.current.files[0]);
+      }
+      
+      await sendEdit(`/api/vacantes/edit/${vacante.nvacantes}`, "PUT", fd, null);
+      modalRedirect("Vacante actualizada correctamente", "success", "/empresa/listado/vacantes", navigate);
     } catch (error) {
-      console.error("Error al actualizar:", error);
-      modal("No se pudo guardar la vacante", "error");
+      exceptionControl(error, logout, navigate, "Error al guardar los datos de la vacante")
     }
   };
 
@@ -248,7 +254,7 @@ const EditarVacantes= () => {
               />
             </div>
 
-            <input type="text" name="departamento" value={vacante.departamento} hidden />
+            <input type="text" name="departamento" defaultValue={vacante.departamento} hidden />
           </div>
 
           {/* Tercera fila */}
@@ -416,7 +422,7 @@ const EditarVacantes= () => {
                 Formato permitido: <strong>MP4</strong> — Máximo <strong>{maxMB}MB</strong>.
               </p>
 
-              {errors.video &&<p className="error-text">{errors.video}</p>}
+              {errors?.fieldErrorsFrontend?.video &&<p className="error-text">{errors.fieldErrorsFrontend.video}</p>}
             </div>
           </div>
 

@@ -3,15 +3,14 @@ import Layout from "../../layouts/Layout.jsx";
 import "../../style/invitado/empleos.css";
 import "../../style/invitado/postulados.css";
 import { useNavigate } from "react-router-dom";
-import { API_CLIENT_URL } from "../../services/Api.js";
 import Loading from "../../components/Loading.jsx";
-import { ListSvg } from "../../components/Icons.jsx";
-import manejarRespuesta from "../../services/ManejarRespuesta.js";
 import Paginacion from '../../components/Paginacion.jsx';
 import useFiltro from "../../hooks/useFiltro.jsx";
 import Table from "../../components/Table.jsx";
-import { modalResponse, QuestionModal } from "../../services/Modal.js";
+import { modalTime, QuestionModal } from "../../services/Modal.js";
 import SinResultados from "../../components/SinResultados.jsx";
+import { useSendFormV2 } from "../../hooks/useFetch.jsx";
+import exceptionControl from "../../services/exceptionControl.js";
 
 export default function PostuladosPage() {
   const initialFiltro = {
@@ -38,33 +37,31 @@ export default function PostuladosPage() {
     },
     Estado: {nameAtributo:"estado", clase: (p) => {return `text-${ p.estado === "Aceptada" ? "green" : p.estado === "Rechazada" ? "red" : "blue" }-500 font-bold` }},
   }
-
+  const {data, send, meta,  loading} = useSendFormV2();
   const [postulaciones, setPostulaciones] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
   const [ filtrosLocal, filtrosAplicados, handleOnFilters, clearFilters, searchFilters ] = useFiltro(initialFiltro, setCurrentPage, "FiltrosCandidatoPostulado");
   const itemsPerPage = 10;
   const navigate = useNavigate();
 
   const fetchPostulaciones = async (page = 1) => {
-    setLoading(true);
     try {
-      const res = await fetch(
-        `${API_CLIENT_URL}/api/postulados/lista/candidato?page=${page - 1}&size=${itemsPerPage}&estado=${filtrosAplicados.estado}&fechaMinima=${filtrosAplicados.fechaMinima}&tituloVacante=${filtrosAplicados.tituloVacante}&empresa=${filtrosAplicados.empresa}`,
-        { credentials: "include" }
+      await send(
+        `/api/postulados/lista/candidato?page=${page - 1}&size=${itemsPerPage}&estado=${filtrosAplicados.estado}&fechaMinima=${filtrosAplicados.fechaMinima}&tituloVacante=${filtrosAplicados.tituloVacante}&empresa=${filtrosAplicados.empresa}`, 
+        "GET"
       );
-
-      const data = await manejarRespuesta(res);
-      setPostulaciones(data.postulados);
-      setTotalPages(data.totalPage);
     } catch (error) {
-      console.error("❌ Error al cargar postulaciones:", error);
-    } finally {
-      setLoading(false);
-    }
+      exceptionControl(error, logout, navigate, "Error al cargar las postulaciones");
+    } 
   };
 
+  useEffect(() => {
+    if(!meta || !data) return
+    setPostulaciones(data);
+    setTotalPages(meta.pagination.totalPage);
+  }, [data, meta]);
+  
   useEffect(() => {
     fetchPostulaciones(currentPage);
   }, [currentPage, filtrosAplicados]);
@@ -80,20 +77,11 @@ export default function PostuladosPage() {
     if (!isConfirmed) return;   
 
     try {
-      const res = await fetch(`${API_CLIENT_URL}/api/postulados/cancelar/${nPostulacion}?estado=${estado}&nvacante=${nVacante}`, {
-        method: "PATCH",
-        credentials: "include",
-      });
-
-      if (res.status === 204) {
-        modalResponse("Postulación cancelada exitosamente.",'success')
-        fetchPostulaciones(currentPage);
-      } else {
-        modalResponse("No se pudo cancelar la Postulacion",'error')
-
-      }
+      await send(`/api/postulados/cancelar/${nPostulacion}?estado=${estado}&nvacante=${nVacante}`,"PATCH")
+      modalTime("Postulación cancelada exitosamente.");
+      fetchPostulaciones(currentPage);
     } catch (error) {
-        modalResponse("Ocurrió un error al cancelar la postulación.",'error')
+      exceptionControl(error, logout, navigate, "Ocurrió un error al cancelar la postulación.");
     }
   };
 
@@ -195,7 +183,7 @@ export default function PostuladosPage() {
 
           {loading ? (
             <Loading />
-          ) : postulaciones.length === 0 ? (
+          ) : (postulaciones.length === 0 || !postulaciones) ? (
               <SinResultados titulo={"No se encontraron Postulaciones"}
                 subTitulo={"Revisa los filtros o Realiza una postulacion"} />
           ) : (

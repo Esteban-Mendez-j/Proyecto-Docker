@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.miproyecto.proyecto.usuario.model.Usuario;
 import com.miproyecto.proyecto.usuario.repository.UsuarioRepository;
 import com.miproyecto.proyecto.util.NotFoundException;
+import com.miproyecto.proyecto.util.response.ApiResponseBody;
 import com.miproyecto.proyecto.vacante.dto.VacanteDTO;
 import com.miproyecto.proyecto.vacante.dto.VacanteFavoritaDTO;
 import com.miproyecto.proyecto.vacante.model.Vacante;
@@ -48,8 +49,8 @@ public class VacanteFavoritoService {
         .orElse(null);
     }
 
-    public Map<String, Object> CreateOrRemove(Long idVacante, Long idUsuario){
-        Map<String,Object> response = new HashMap<>();
+    public  ApiResponseBody<Long> CreateOrRemove(Long idVacante, Long idUsuario){
+        ApiResponseBody<Long> response = new ApiResponseBody<>();
         Vacante vacante = new Vacante();
         Usuario usuario = new Usuario();
         VacanteFavorita vacanteFavorita = new VacanteFavorita();
@@ -61,17 +62,15 @@ public class VacanteFavoritoService {
         vacanteBuscada = findByIdVacanteAndIdUsuario(vacante, usuario);
         if (vacanteBuscada != null) {
             delete(vacanteBuscada.getId());
-            response.put("status", 204);
-            response.put("mensaje", "vacante removida correctamente");
+            response.setData(vacante.getNvacantes());
             return response;
         }
 
         vacanteFavorita.setVacanteFavorita(vacante);
         vacanteFavorita.setUsuarioFavorita(usuario);
         vacanteFavorita.setFechaAgregada(LocalDate.now());
-        vacanteFavoritaRepository.save(vacanteFavorita);
-        response.put("status", 201);
-        response.put("mensaje", "vacante guardada correctamente");
+        Long id =  vacanteFavoritaRepository.save(vacanteFavorita).getId();
+        response.setData(id);
         return response;
     }
 

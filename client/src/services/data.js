@@ -70,7 +70,7 @@ export const departamentoColombia = {
 export const listEducacion = [
     "Técnico",
     "Doctorado",
-    "PostGrado",
+    "Postgrado",
     "Bachiller",
 ]
 

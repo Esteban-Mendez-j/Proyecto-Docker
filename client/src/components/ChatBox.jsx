@@ -1,35 +1,23 @@
 import { Client } from "@stomp/stompjs";
-import { useEffect, useRef, useState } from "react";
-import { API_CLIENT_URL, WS_CLIENT_URL } from '../services/Api';
-import { manejarRespuesta } from '../services/ManejarRespuesta';
-import { modal, modalTime } from "../services/Modal";
+import { useContext, useEffect, useRef, useState } from "react";
+import { WS_CLIENT_URL } from '../services/Api';
+import { modalTime } from "../services/Modal";
 import { ListSvg } from "../components/Icons"
+import { RoleContext } from "../services/RoleContext";
+import { useNavigate } from "react-router-dom";
+import { useSendFormV2 } from "../hooks/useFetch";
+import exceptionControl from "../services/exceptionControl";
 
 const ChatBox = ({ chatId, setChats }) => {
+  const navigate = useNavigate()
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+  const {logout, rol, userDataSession } = useContext(RoleContext);
+  const { send } = useSendFormV2();
   const [chatInfo, setChatInfo] = useState(null);
   const [chatChange, setChatChange] = useState(null);
-  const [userRole, setUserRole] = useState(null);
   const stompClient = useRef(null);
   const messagesEndRef = useRef(null);
-  useEffect(() => {
-    const fetchUserRole = async () => {
-      try {
-        const res = await fetch(`${API_CLIENT_URL}/api/usuarios/rol`, {
-          credentials: 'include',
-        });
-        const data = await manejarRespuesta(res);
-        if (!data) return;
-        setUserRole(data.rolPrincipal);
-      } catch (error) {
-        console.error('Error fetching user role:', error);
-      }
-    };
-    fetchUserRole();
-  }, []);
-
 
   useEffect(() => {
     const fetchChatInfo = async () => {
@@ -37,21 +25,18 @@ const ChatBox = ({ chatId, setChats }) => {
       const mensajeGuardado = localStorage.getItem(`chat-mensaje-${chatId}`);
       setChatChange(mensajeGuardado)
       try {
-        const res = await fetch(`${API_CLIENT_URL}/api/chats/${chatId}/info`, {
-          credentials: "include",
-        });
-        if (!res.ok) throw new Error("Error al obtener la información del chat");
-        const data = await manejarRespuesta(res);
-        if(!data){return}
-        setChatInfo(data);
+
+        const res = await send(`/api/chats/${chatId}/info`, "GET");
+
+        if(!res?.data){return}
+        setChatInfo(res.data.chatInfo);
       } catch (err) {
-        console.error("Error:", err);
+        exceptionControl(err, logout, navigate, "Error al obtener la información del chat");
       }
     };
     const mensajeGuardado = localStorage.getItem(`chat-mensaje-${chatId}`);
     if (mensajeGuardado) {
       setChatChange(mensajeGuardado);
-      console.log(mensajeGuardado)
     }
     fetchChatInfo();
   }, [chatId, chatChange ]);
@@ -59,7 +44,7 @@ const ChatBox = ({ chatId, setChats }) => {
   useEffect(() => {
     if (!chatInfo) return;
 
-    const { userId , tipoChat} = chatInfo;
+    const { tipoChat } = chatInfo;
 
     const client = new Client({
       brokerURL: `${WS_CLIENT_URL}/chats`,
@@ -89,14 +74,17 @@ const ChatBox = ({ chatId, setChats }) => {
         });
 
         // Cargar historial al conectar
-        fetch(`${API_CLIENT_URL}/api/chats/${chatId}/mensajes`, {
-          credentials: "include",
-        })
-          .then((res) => res.json())
-          .then((data) => setMessages(data))
-          .catch((error) =>
-            console.error("❌ Error al obtener los mensajes:", error)
-          );
+        const getMessage = async () => {
+          try {
+            const res = await send(`/api/chats/${chatId}/mensajes`, "GET");
+            if (!res?.data) return
+            setMessages(res.data);
+          } catch (error) {
+            exceptionControl(error, logout, navigate, "Error al obtener los mensajes del chat")
+          }
+        }
+
+        getMessage()
       },
       onStompError: (frame) => {
         console.error("❌ STOMP error:", frame);
@@ -111,7 +99,7 @@ const ChatBox = ({ chatId, setChats }) => {
     };
   }, [chatInfo, chatId]);
 
- useEffect(() => {
+  useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
@@ -119,18 +107,17 @@ const ChatBox = ({ chatId, setChats }) => {
 
 
   const sendMessage = () => {
-    if (!chatInfo || input.trim() === "") return;
+    if (!chatInfo || !userDataSession?.id || input.trim() === "") return;
 
-    const { userId, rolPrincipal: role, chatInfo: chatDetails } = chatInfo;
-    const { empresaId, candidatoId } = chatDetails;
+    const { empresaId, candidatoId } = chatInfo;
 
-    const receptorId = role === "EMPRESA" ? candidatoId : empresaId;
+    const receptorId = rol === "EMPRESA" ? candidatoId : empresaId;
 
     const msg = {
       chatId,
-      senderId: userId,
+      senderId: userDataSession.id,
       receiverId: receptorId,
-      senderRole: role,
+      senderRole: rol,
       content: input,
     };
 
@@ -146,7 +133,7 @@ const ChatBox = ({ chatId, setChats }) => {
 
     
     setChats(prev =>  prev.map(chat =>
-      chat.id === chatInfo.chatInfo.id
+      chat.id === chatInfo.id
         ? { ...chat, contentUltimoMensaje: input, horaUltimoMensaje: new Date().toISOString() }
         : chat
     ));
@@ -156,30 +143,17 @@ const ChatBox = ({ chatId, setChats }) => {
   const cambiarEstadoChat = async (chatId, estado) => {
     let mensaje = estado? "Abrir":"Cerrar";
     try {
-      const response = await fetch(`${API_CLIENT_URL}/api/chats/${chatId}/estado?isActive=${estado}`, {
-        method: 'PATCH',
-        credentials: 'include', 
-      });
-
-      if (response.ok) {
-        modalTime(`Chat ${estado? "Abierto":"Cerrardo"} correctamente`)      
-        setChatInfo(prev => ({
-          ...prev,
-          chatInfo: {
-            ...prev.chatInfo,
-            isActive: estado
-          }
-        }));
-        
-      } else if (response.status === 403) {
-        modal(`No tienes permisos para ${mensaje} este chat`,'error')
-        } else {
-        modal(`Ocurrió un error al ${mensaje} el chat`,'error')
-      }
+      await send(`/api/chats/${chatId}/estado?isActive=${estado}`, "PATCH");
+      setChatInfo(prev => ({
+        ...prev,
+        isActive: estado
+      }));
+      modalTime(`Chat ${estado? "Abierto":"Cerrardo"} correctamente`)      
+      
     } catch (error) {
       console.error(`Error al ${mensaje} el chat:`, error);
-        modal(`Error de red o servidor al ${mensaje} el chat`)
-      }
+      exceptionControl(error, logout, navigate, `Error al ${mensaje} el chat`);
+    }
   };
 
   if (!chatInfo) return (
@@ -200,21 +174,21 @@ const ChatBox = ({ chatId, setChats }) => {
       <div className="p-4 border-b bg-blue-50 shadow-sm flex justify-between items-center">
         <h2 className="text-xl font-semibold text-blue-800">
           Conversación con{" "}
-          {chatInfo.rolPrincipal === "EMPRESA"
-            ? chatInfo.chatInfo.nombreCandidato
-            : chatInfo.chatInfo.nombreEmpresa || "Usuario"}
+          {rol === "EMPRESA"
+            ? chatInfo.nombreCandidato
+            : chatInfo.nombreEmpresa || "Usuario"}
         </h2>
 
-        {chatInfo.rolPrincipal === 'EMPRESA' && (
+        {rol === 'EMPRESA' && (
           <button
-            onClick={() => cambiarEstadoChat(chatInfo.chatInfo.id, !chatInfo.chatInfo.isActive)} 
+            onClick={() => cambiarEstadoChat(chatInfo.id, !chatInfo.isActive)} 
             className={`${
-              chatInfo.chatInfo.isActive 
+              chatInfo.isActive 
                 ? "bg-red-100 text-red-600 hover:bg-red-200" 
                 : "bg-green-100 text-green-600 hover:bg-green-200"
             } font-semibold px-4 py-2 rounded-lg transition duration-200 text-sm shadow-sm`}
           >
-            {chatInfo.chatInfo.isActive ? "Cerrar Chat" : "Reabrir Chat"}
+            {chatInfo.isActive ? "Cerrar Chat" : "Reabrir Chat"}
           </button>
         )}
       </div>
@@ -226,7 +200,7 @@ const ChatBox = ({ chatId, setChats }) => {
         )}
 
         {messages.map((msg, idx) => {
-          const isOwn = msg.senderId === chatInfo.userId;
+          const isOwn = msg.senderId == userDataSession.id;
           return (
             <div
               key={idx}
@@ -255,13 +229,13 @@ const ChatBox = ({ chatId, setChats }) => {
         <div ref={messagesEndRef} />
       </div>
 
-      {!chatInfo.chatInfo.isActive && (
+      {!chatInfo.isActive && (
         <div className="p-4 border-t bg-white text-center text-red-600 font-semibold">
-          {chatInfo.chatInfo.mensajeCierre? chatInfo.chatInfo.mensajeCierre : chatChange}
+          {chatInfo.mensajeCierre? chatInfo.mensajeCierre : chatChange}
         </div>
       )}
 
-      {chatInfo.chatInfo.isActive && (
+      {chatInfo.isActive && (
         <div className="p-4 border-t bg-white">
           <div className="flex items-center gap-3">
             <input

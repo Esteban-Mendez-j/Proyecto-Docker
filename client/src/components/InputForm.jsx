@@ -18,7 +18,7 @@ export default function InputForm({
   isDisabled= false,
   submitted
 }) {
-  const backendError = error?.[name];
+  const backendError = error?.fieldErrors?.find( error => error.field === name)?.message;
   const [localError, setLocalError] = useState(null);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export default function InputForm({
     setLocalError(null);
   }, [value, rules, name]);
 
-  const fieldError = backendError || localError;
+  const fieldError = localError || backendError ;
 
   const Component = as; // aquí decides si es input, textarea o select
 

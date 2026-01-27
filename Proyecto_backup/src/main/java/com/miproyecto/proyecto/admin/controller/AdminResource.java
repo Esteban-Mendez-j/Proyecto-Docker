@@ -1,12 +1,12 @@
 package com.miproyecto.proyecto.admin.controller;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,18 +16,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.admin.service.AdminService;
+import com.miproyecto.proyecto.enums.ResponseCode;
 import com.miproyecto.proyecto.postulacion.service.PostuladoService;
 import com.miproyecto.proyecto.usuario.dto.FiltroUsuarioDTO;
+import com.miproyecto.proyecto.usuario.dto.UsuarioDTO;
 import com.miproyecto.proyecto.usuario.service.UsuarioService;
 import com.miproyecto.proyecto.util.JwtUtils;
+import com.miproyecto.proyecto.util.response.ApiError;
+import com.miproyecto.proyecto.util.response.ApiResponseBody;
 import com.miproyecto.proyecto.vacante.dto.FiltroVacanteDTO;
+import com.miproyecto.proyecto.vacante.dto.VacanteDTO;
 import com.miproyecto.proyecto.vacante.service.VacanteService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
 
 @Tag(name = "Administrador", description = "Operaciones relacionadas con la gestión de roles, vacantes y usuarios")
 @RestController
@@ -55,18 +59,17 @@ public class AdminResource {
     })
     
     @PostMapping("/listar/filtrados")
-    public ResponseEntity<Map<String, Object>> listarUsuariosFiltrados(
-            HttpSession session,
+    public ResponseEntity<ApiResponseBody<List<UsuarioDTO>>> listarUsuariosFiltrados(
+            @CookieValue(name = "jwtToken") String jwtToken,
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             @RequestBody FiltroUsuarioDTO filtro    
         ) {
 
-        String jwtToken = (String) session.getAttribute("jwtToken");
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
         String rolUsuario = decodedJWT.getClaim("rolPrincipal").asString();
 
-        Map<String, Object> response = usuarioService.buscarUsuariosConFiltros(idUsuario, rolUsuario, filtro , pageable);
+        ApiResponseBody<List<UsuarioDTO>> response = usuarioService.buscarUsuariosConFiltros(idUsuario, rolUsuario, filtro , pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -75,11 +78,11 @@ public class AdminResource {
         description = "Obtiene las vacantes disponibles aplicando los filtros enviados en el cuerpo de la petición."
     )
     @PostMapping("/listar/filtrovacantes")
-    public ResponseEntity<Map<String, Object>> listarVacantes(
-        HttpSession session, @PageableDefault(page = 0, size = 10) Pageable pageable,
-        @RequestBody FiltroVacanteDTO filtro) {
+    public ResponseEntity<ApiResponseBody<List<VacanteDTO>>> listarVacantes(
+            @PageableDefault(page = 0, size = 10) Pageable pageable,
+            @RequestBody FiltroVacanteDTO filtro) {
         Long idCadidato= 0L;
-        Map<String, Object> response = vacanteService.buscarVacantesConFiltros(idCadidato, filtro, pageable);
+        ApiResponseBody<List<VacanteDTO>> response = vacanteService.buscarVacantesConFiltros(idCadidato, filtro, pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -88,10 +91,10 @@ public class AdminResource {
         description = "Devuelve un listado paginado de todas las vacantes desactivadas."
     )
     @GetMapping("/listVacantes/desactivadas")
-    public ResponseEntity<Map<String, Object>> getInactiveVacancies(
+    public ResponseEntity<ApiResponseBody<List<VacanteDTO>>> getInactiveVacancies(
             @PageableDefault(page = 0, size = 10) Pageable pageable) {
-        Map<String, Object> response = vacanteService
-                .findAllByEstado(false, pageable, "vacantesDesactivadas");
+        ApiResponseBody<List<VacanteDTO>> response = vacanteService
+                .findAllByEstado(false, pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -99,48 +102,40 @@ public class AdminResource {
         summary = "Agrega rol de administrador",
         description = "Asigna o activa el rol de administrador a un usuario existente."
     )
-    @PostMapping("/agregarRol")
-    public ResponseEntity<Map<String, String>> addAdminRole(@RequestParam Long idUsuario, @RequestParam boolean estado) {
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", 
+        description = "Devuelve el estado actual de los permisos del usuario"),
+    })
+    @PostMapping("/nuevo/rol")
+    public ResponseEntity<ApiResponseBody<Boolean>> addAdminRole(@RequestParam Long idUsuario, @RequestParam boolean estado) {
         adminService.modificarRoles(idUsuario, estado);
-        Map<String, String> response = new HashMap<>();
-        String mensaje = estado? "agregado":"removido";
-        response.put("message", "Rol de admin" + mensaje + "exitosamente");
+        ApiResponseBody<Boolean> response = new ApiResponseBody<>(estado, null, null);
         return ResponseEntity.ok(response);
     }
 
     @Operation(
-        summary = "Remueve rol de administrador",
-        description = "Elimina o desactiva el rol de administrador de un usuario."
-    )
-    @PostMapping("/removerRol")
-    public ResponseEntity<Map<String, String>> removeAdminRole(@RequestParam Long idUsuario) {
-        adminService.modificarRoles(idUsuario, false);
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Rol de admin removido exitosamente");
-        return ResponseEntity.ok(response);
-    }
-
-     @Operation(
         summary = "Cambia el estado de un usuario",
-        description = "Activa o desactiva un usuario y actualiza sus postulaciones asociadas."
+        description = "Activa o desactiva la cuenta de un usuario y actualiza sus postulaciones asociadas."
     )
-    @PostMapping("/cambiar-estado/usuario")
-    public ResponseEntity<Map<String, String>> changeUserStatus(
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", 
+        description = "Devuelve el estado actual de la cuenta del usuario"),
+    })
+    @PostMapping("/estado/cuenta/usuario")
+    public ResponseEntity<ApiResponseBody<Boolean>> changeUserStatus(
             @RequestParam Long idUsuario,
             @RequestParam boolean estado,
             @RequestParam String comentario) {
 
+        ApiResponseBody<Boolean> response  =  new ApiResponseBody<>();
         if (estado == usuarioService.get(idUsuario).getIsActive()) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "El usuario ya se encuentra en ese estado");
-            return ResponseEntity.badRequest().body(errorResponse);
-            
+            ApiError error = new ApiError(ResponseCode.WARNING, "El usuario ya se encuentra en ese estado");
+            response.setError(error);
+            return ResponseEntity.badRequest().body(response);
         }
         postuladoService.cambiarEstadoPorUsuario(idUsuario, estado);
         adminService.cambiarIsActive(idUsuario, estado, comentario);
-
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Estado de usuario actualizado");
+        response.setData(estado);
         return ResponseEntity.ok(response);
     }
 
@@ -148,22 +143,26 @@ public class AdminResource {
         summary = "Cambia el estado de una vacante",
         description = "Habilita o deshabilita una vacante según el estado enviado."
     )
-    @PostMapping("/cambiar-estado/vacantes")
-    public ResponseEntity<Map<String, String>> changeVacancyStatus(
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", 
+        description = "Devuelve el estado actual de la vacante"),
+    })
+    @PostMapping("/estado/vacante")
+    public ResponseEntity<ApiResponseBody<Boolean>> changeVacancyStatus(
             @RequestParam Long nvacante,
             @RequestParam boolean estado,
             @RequestParam String comentario) {
 
+        ApiResponseBody<Boolean> response = new ApiResponseBody<>(); 
         if (estado == vacanteService.get(0L,nvacante).isActive()) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "La vacante ya está " + estado);
-            return ResponseEntity.badRequest().body(errorResponse);
+            ApiError error = new ApiError(ResponseCode.WARNING, "La vacante ya se encuentra en ese estado");
+            response.setError(error);
+            return ResponseEntity.badRequest().body(response);
         }
 
         adminService.cambiarEstadoVacantes(nvacante, estado, comentario);
         postuladoService.cambiarEstadoVacantes(nvacante, estado);
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Estado de vacante actualizado");
+        response.setData(estado);
         return ResponseEntity.ok(response);
     }
 }

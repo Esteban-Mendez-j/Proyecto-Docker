@@ -1,16 +1,18 @@
-import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { useContext, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import FeatureCard from "../../components/FeatureCard";
 import JobCard from "../../components/JobCard";
-import { useFetch } from "../../hooks/useFetch";
+import { useFetchV2 } from "../../hooks/useFetch";
 import Layout from "../../layouts/Layout";
 import { RoleContext } from "../../services/RoleContext";
 import "../../style/invitado/index.css";
+import exceptionControl from "../../services/exceptionControl";
 export default function Index (){
 
-    const { rol } = useContext(RoleContext)
+    const { rol, logout } = useContext(RoleContext);
+    const navigate = useNavigate();
     const url = rol == "EMPRESA"? "/api/vacantes/popular/listar" : "/api/vacantes/Top/listar";
-    const {data, loading, error} = useFetch(url,"GET")
+    const {data, loading, error} = useFetchV2(url,"GET");
     const features = [
         {
             id: "1",
@@ -37,6 +39,10 @@ export default function Index (){
             description: "Crea un perfil atractivo para destacar tus habilidades y experiencia.",
         },
     ];
+
+    useEffect(()=>{
+        exceptionControl(error, logout, navigate, "Error al cargar vacantes")
+    },[error])
 
     return(
         <Layout>
@@ -79,7 +85,7 @@ export default function Index (){
                     {
                         data? (
                             <div className="jobs-grid">
-                                {data.vacantes.map(job =>
+                                {data.map(job =>
                                     <JobCard job={job} key={job.nvacantes} verSeccionEdit={false} presentaion={1}/>
                                 )}
                             </div>

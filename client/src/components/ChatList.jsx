@@ -1,13 +1,6 @@
-import { useEffect } from "react";
 import Loading from "../components/Loading"
 
 const ChatList = ({ onSelectChat, chats, loading, userRole }) => {
-
-  useEffect(() => {
-    console.log("modificado")
-    console.log(chats)
-    
-  }, [chats])
 
   if (loading) return <Loading />;
   if (chats.length === 0)

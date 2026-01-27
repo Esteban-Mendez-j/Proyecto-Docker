@@ -54,7 +54,7 @@ public class EmpresaService {
                 .orElseThrow(NotFoundException::new);
     }
     
-    public void create(final EmpresaDTO empresaDTO) {
+    public Long create(final EmpresaDTO empresaDTO) {
         List<Roles> roles= new ArrayList<>();
         empresaDTO.setIsActive(true);
         empresaDTO.setVerified(false);
@@ -62,14 +62,14 @@ public class EmpresaService {
         roles.add(rolesRepository.findByRol("EMPRESA"));
         Empresa empresa = mapToEntity(empresaDTO, new Empresa(), true);
         empresa.setRoles(roles);
-        empresaRepository.save(empresa);
+        return empresaRepository.save(empresa).getIdUsuario();
     }
 
-    public void update(final Long idUsuario, final EmpresaDTO empresaDTO) {
+    public Long update(final Long idUsuario, final EmpresaDTO empresaDTO) {
         final Empresa empresa = empresaRepository.findById(idUsuario)
                 .orElseThrow(NotFoundException::new);
         mapToEntity(empresaDTO, empresa, false);
-        empresaRepository.save(empresa);
+        return empresaRepository.save(empresa).getIdUsuario();
     }
 
     public void delete(final Long idUsuario) {

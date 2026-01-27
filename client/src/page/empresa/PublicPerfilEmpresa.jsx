@@ -18,8 +18,8 @@ export default function EmpresaPerfil() {
             "Content-Type": "application/json",
           },
         });
-        const data = await manejarRespuesta(res);
-        setEmpresa(data.empresa || {});
+        const response = await manejarRespuesta(res);
+        setEmpresa(response.data || {});
       } catch (error) {
         console.error("Error al cargar el perfil de la empresa:", error);
       }

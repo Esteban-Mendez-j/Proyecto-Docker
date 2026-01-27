@@ -1,6 +1,5 @@
 import JobBoard from "../../components/JobBoard.jsx";
 import Layout from "../../layouts/Layout.jsx";
-import { API_CLIENT_URL } from "../../services/Api.js";
 import "../../style/invitado/empleos.css";
 
 function Empleos() {
@@ -17,7 +16,7 @@ function Empleos() {
         </div>
 
         {/* JobBoard recibe props */}
-        <JobBoard fetchUrl={`${API_CLIENT_URL}/api/vacantes/listar/filtradas`}/>
+        <JobBoard fetchUrl={`/api/vacantes/listar/filtradas`}/>
       </div>
     </Layout>
 

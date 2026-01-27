@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import Loding from "../../components/Loading"
 import ResumenVacante from "../../components/ResumenVacante"
-import { useFetch } from "../../hooks/useFetch"
+import { useFetchV2, useSendFormV2 } from "../../hooks/useFetch"
 import Layout from "../../layouts/Layout"
 import { API_CLIENT_URL, URL_IMAGEN } from "../../services/Api"
 import { modalTime } from "../../services/Modal"
@@ -10,6 +10,7 @@ import { RoleContext } from "../../services/RoleContext"
 import { toggleFavoritoRequest } from "../../services/ToggleFavoritosRequest"
 import { ListSvg } from "../../components/Icons"
 import { listAptitudes } from "../../services/data"
+import exceptionControl from "../../services/exceptionControl"
 
 export default function InfoVacante() {
     const initialJob = {
@@ -41,8 +42,9 @@ export default function InfoVacante() {
     const {id} = useParams()
     const [location, setLocation] = useState("")
     const [job, setJob] = useState(initialJob);
-    const {rol} = useContext(RoleContext);
-    const {data, loading} = useFetch(`/api/vacantes/seleccion/${id}`, "GET");
+    const {rol, logout} = useContext(RoleContext);
+    const {data, loading, error} = useFetchV2(`/api/vacantes/seleccion/${id}`, "GET");
+    const { send } = useSendFormV2();
     const navigate =  useNavigate();
     const subject = encodeURIComponent("¡Mira esta oferta increíble!");
     const [copied, setCopied] = useState(false);
@@ -50,20 +52,15 @@ export default function InfoVacante() {
 
     async function handleCompartir() {
       try {
-        const response = await fetch(`${API_CLIENT_URL}/api/vacantes/edit/numCompartidos/${job.nvacantes}`, {
-          method: "PUT",
-        });
-
-        if (response.ok) {
-          setJob((prev) => ({
+        
+        await send(`/api/vacantes/edit/numCompartidos/${job.nvacantes}`, "PUT")
+        setJob((prev) => ({
             ...prev,
-            numCompartidos: (prev.numCompartidos + 1) ,
-          }));
-        } else {
-          console.error("Error al incrementar el número de compartidos");
-        }
+            numCompartidos: (prev.numCompartidos + 1),
+        }));
+        
       } catch (error) {
-        console.error("Error al compartir la vacante:", error);
+        exceptionControl(error, logout, navigate, "Error al incrementar el numero de compartidos")
       }
     }
 
@@ -93,15 +90,11 @@ export default function InfoVacante() {
     const [isFavorite, setIsFavorite] = useState(false);
     
     useEffect(() => {
-        if (!data) {return} 
-
-        if (!data.vacanteSeleccionada) {
-            navigate("/404"); // si no hay vacante, redirige al 404
-            return;
-        }
-        setJob(data.vacanteSeleccionada);
-        setIsFavorite(data.vacanteSeleccionada.vacanteGuardada);
-    }, [data]);
+        if(error?.code === "NOT_FOUND") navigate("/404");
+        if (!data) return 
+        setJob(data);
+        setIsFavorite(data.vacanteGuardada);
+    }, [data, error]);
 
     //SECCION DE FAVORITOS
     const handleClick = async () => {
@@ -109,7 +102,7 @@ export default function InfoVacante() {
         await toggleFavoritoRequest(job.nvacantes);
     };
 
-    if (loading ) {return <Loding/>}
+    if (loading) {return <Loding/>}
 
     return (
         <Layout>
@@ -321,7 +314,7 @@ export default function InfoVacante() {
                         </div>
                     </div>
 
-                    {data && <ResumenVacante job={data.vacanteSeleccionada} rol={rol} id={id}/>}
+                    {data && <ResumenVacante job={data} rol={rol} id={id}/>}
                 </div>
             </div>
         </Layout>

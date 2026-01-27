@@ -1,15 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 
 import Layout from "../../layouts/Layout";
 import { URL_IMAGEN } from "../../services/Api";
 import "../../style/invitado/empresa.css";
 import { Link, useNavigate } from "react-router-dom";
-import { useFetch, useSendForm } from "../../hooks/useFetch";
+import { useFetch, useFetchV2, useSendForm, useSendFormV2 } from "../../hooks/useFetch";
 import InputForm from "../../components/InputForm";
-import { modalResponse } from "../../services/Modal";
+import { modalRedirect } from "../../services/Modal";
 import {sectores} from "../../services/data";
 import { formRulesEmpresaEditar, validateForm } from "../../services/validacionForm";
 import { ListSvg } from "../../components/Icons";
+import exceptionControl from "../../services/exceptionControl"
+import { RoleContext } from "../../services/RoleContext";
 
 const EditarPerfilEmpresa = () => {
   const initialData = {
@@ -25,18 +27,23 @@ const EditarPerfilEmpresa = () => {
   }
 
   const navigate = useNavigate();
+  const { logout } = useContext(RoleContext);
   const [submitted, setSubmitted] = useState(false);
   const [empresa, setEmpresa] = useState(initialData);
   const [preview, setPreview] = useState(null);
-  const {data} = useFetch("/api/empresas/perfil", "GET");
-  const { send , error, setError} = useSendForm();
+  const { data, error:getError } = useFetchV2("/api/empresas/perfil", "GET");
+  const { send , error, setError} = useSendFormV2();
   const fotoRef = useRef(null);
   const maxImgSize = 500
 
   useEffect(() => {
     if(!data){return}
-    setEmpresa(data.empresa);
+    setEmpresa(data);
   }, [data]);
+
+  useEffect(() => { 
+    exceptionControl(getError, logout, navigate, "Error al cargar los datos")
+  }, [getError])
 
   const handleLogoChange = (e) => {
     
@@ -50,7 +57,10 @@ const EditarPerfilEmpresa = () => {
     if (file.size >( maxImgSize * 1024)) {
       setError(prev => ({
         ...prev,
-        img: `La imagen es demasiado pesada. Debe ser menor a ${maxImgSize}KB`
+        fieldErrorsFrontend: {
+          ...prev?.fieldErrorsFrontend,
+          img: `La imagen es demasiado pesada. Debe ser menor a ${maxImgSize}KB`
+        }
       }));
       e.target.value = "";
       setPreview(null);
@@ -59,7 +69,10 @@ const EditarPerfilEmpresa = () => {
     
     setError(prev => ({
       ...prev,
-      img: null
+      fieldErrorsFrontend: {
+        ...prev?.fieldErrorsFrontend,
+        img: null
+      }
     }));
     const url = URL.createObjectURL(file);
     setPreview(url);
@@ -74,47 +87,41 @@ const EditarPerfilEmpresa = () => {
   };
 
   async function handleSubmit(e) {
-    e.preventDefault();
+    try {
+      e.preventDefault();
 
-    setSubmitted(true)
-    const newErrors = validateForm(empresa, formRulesEmpresaEditar);
+      setSubmitted(true)
+      const newErrors = validateForm(empresa, formRulesEmpresaEditar);
 
-    if (Object.keys(newErrors).length > 0) {
-      console.log(newErrors)
-      setError(newErrors);
+      if (Object.keys(newErrors).length > 0) {
+        setError((prev)=>({...prev, fieldErrorsFrontend:newErrors}))
+        // Foco en el primer campo con error
+        const firstErrorField = Object.keys(newErrors)[0];
+        const el = document.getElementById(firstErrorField);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          el.focus();
+        }
+        return; // detener envío o acción
+      }
+      setError(null);
 
-      // Foco en el primer campo con error
-      const firstErrorField = Object.keys(newErrors)[0];
-      const el = document.getElementById(firstErrorField);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-        el.focus();
+      const formData = new FormData();
+      formData.append(
+        "empresa",
+        new Blob([JSON.stringify(empresa)], { type: "application/json" })
+      );
+
+      if (fotoRef.current?.files[0]) {
+        formData.append("img", fotoRef.current.files[0]);
       }
 
-      return; // detener envío o acción
-    }
-    setError(null);
-
-    const formData = new FormData();
-    formData.append(
-      "empresa",
-      new Blob([JSON.stringify(empresa)], { type: "application/json" })
-    );
-
-    if (fotoRef.current?.files[0]) {
-      formData.append("img", fotoRef.current.files[0]);
-    }
-
-    const result = await send(`/api/empresas/edit/${empresa.idUsuario}`, "PUT", formData, null);
-
-    if (result.status === 200) {
-      const isOk = await modalResponse(result.mensaje, "success");
-      if (isOk) {
-        navigate("/perfil/empresa");
-      }
+      await send(`/api/empresas/edit/${empresa.idUsuario}`, "PUT", formData, null);
+      await modalRedirect("Perfil actualizado correctamente", "success", "/perfil/empresa", navigate);
+    } catch (error) {
+      exceptionControl(error, logout, navigate, "Error al acctualizar el perfil")
     }
   }
-
   return (
     <Layout>
       <div className="min-h-screen bg-sky-50/60 py-12">
@@ -166,20 +173,19 @@ const EditarPerfilEmpresa = () => {
 
               {/* Mensaje fijo */}
               <div className="h-5 mt-2">
-                {!error?.img && (
-                  <p className="text-ms text-gray-600 text-center">
-                    Máx. <strong>{maxImgSize}KB</strong>
-                  </p>
-                )}
-                {error?.img && (
-                  <p
-                    className="text-sm text-red-500 text-center font-medium  decoration-dotted cursor-help"
-                    title={error.img}
-                  >
-                    Imagen muy Pesada
-                  </p>
+                {
+                  error?.fieldErrorsFrontend?.img ?
+                    (<p
+                      className="text-sm text-red-500 text-center font-medium  decoration-dotted cursor-help"
+                    >
+                      Imagen muy Pesada, intenta con otra
+                    </p>) : (
+                      <p className="text-ms text-gray-600 text-center">
+                        Máx. <strong>{maxImgSize}KB</strong>
+                      </p>
+                    )
+                }
 
-                )}
               </div>
 
             </div>

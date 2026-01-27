@@ -19,6 +19,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.candidato.dto.HistorialLaboralDTO;
 import com.miproyecto.proyecto.candidato.service.HistorialLaboralService;
 import com.miproyecto.proyecto.util.JwtUtils;
+import com.miproyecto.proyecto.util.response.ApiResponseBody;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -47,21 +48,22 @@ public class HistorialLaboralResource {
         }
     )
     @GetMapping
-    public ResponseEntity<List<HistorialLaboralDTO>> getAllHistorialLaborals() {
-        return ResponseEntity.ok(historialLaboralService.findAll());
+    public ResponseEntity<ApiResponseBody<List<HistorialLaboralDTO>>> getAllHistorialLaborals() {
+        ApiResponseBody<List<HistorialLaboralDTO>> response = new ApiResponseBody<>(historialLaboralService.findAll(), null, null);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(
         summary = "Crear un nuevo historial laboral",
         description = "Registra un nuevo historial laboral para el usuario autenticado.",
         responses = {
-            @ApiResponse(responseCode = "201", description = "Historial laboral creado correctamente"),
+            @ApiResponse(responseCode = "201", description = "Historial laboral creado correctamente, devuelve el id del Historial"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos o faltantes"),
             @ApiResponse(responseCode = "401", description = "Usuario no autenticado")
         }
     )
     @PostMapping("/add")
-    public ResponseEntity<Long> createHistorialLaboral(
+    public ResponseEntity<ApiResponseBody<Long>> createHistorialLaboral(
             @RequestBody @Valid final HistorialLaboralDTO historialLaboralDTO,
             @CookieValue(name="jwtToken") String jwtToken) {
         
@@ -69,7 +71,8 @@ public class HistorialLaboralResource {
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
         historialLaboralDTO.setIdUsuario(idUsuario);
         final Long createdIDHistorial = historialLaboralService.create(historialLaboralDTO);
-        return new ResponseEntity<>(createdIDHistorial, HttpStatus.CREATED);
+        ApiResponseBody<Long> response = new ApiResponseBody<>(createdIDHistorial, null, null);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @Operation(
@@ -81,27 +84,16 @@ public class HistorialLaboralResource {
         }
     )
     @GetMapping("/edit/{iDHistorial}")
-    public ResponseEntity<HistorialLaboralDTO> getHistorialLaboral(
+    public ResponseEntity<ApiResponseBody<HistorialLaboralDTO>> getHistorialLaboral(
             @Parameter(description = "ID del historial laboral")
-            @PathVariable final Long iDHistorial) {
-        return ResponseEntity.ok(historialLaboralService.get(iDHistorial));
-    }
-
-    @Operation(
-        summary = "Reemplazar historial laboral",
-        description = "Elimina todo el historial laboral actual de un candidato y lo reemplaza por una nueva lista.",
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Historial reemplazado correctamente"),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos")
-        }
-    )
-    @PutMapping("/replace/{candidatoId}")
-    public ResponseEntity<Void> replaceEstudios(
-            @Parameter(description = "ID del candidato cuyos historiales se reemplazarán")
-            @PathVariable Long candidatoId,
-            @RequestBody List<HistorialLaboralDTO> historial) {
-        historialLaboralService.replaceHistorial(candidatoId, historial);
-        return ResponseEntity.ok().build();
+            @PathVariable final Long iDHistorial,
+            @CookieValue(name="jwtToken") String jwtToken) {
+        jwtUtils.validateToken(jwtToken);
+        ApiResponseBody<HistorialLaboralDTO> response = new ApiResponseBody<>(
+            historialLaboralService.get(iDHistorial), 
+            null, null
+        );
+        return ResponseEntity.ok(response);
     }
 
     @Operation(
@@ -114,12 +106,18 @@ public class HistorialLaboralResource {
         }
     )
     @PutMapping("/edit/{iDHistorial}")
-    public ResponseEntity<Long> updateHistorialLaboral(
+    public ResponseEntity<ApiResponseBody<Long>> updateHistorialLaboral(
             @Parameter(description = "ID del historial laboral a actualizar")
             @PathVariable final Long iDHistorial,
-            @RequestBody @Valid final HistorialLaboralDTO historialLaboralDTO) {
+            @RequestBody @Valid final HistorialLaboralDTO historialLaboralDTO,
+            @CookieValue(name="jwtToken") String jwtToken) {
+        jwtUtils.validateToken(jwtToken);
         historialLaboralService.update(iDHistorial, historialLaboralDTO);
-        return ResponseEntity.ok(iDHistorial);
+        ApiResponseBody<Long> response = new ApiResponseBody<>(
+            iDHistorial, 
+            null, null
+        );
+        return ResponseEntity.ok(response);
     }
 
     @Operation(
@@ -139,11 +137,14 @@ public class HistorialLaboralResource {
     }
 
     @PutMapping("/cambiar/visibilidad/{estado}/{idHistorial}")
-    public ResponseEntity<Long> cambiarVisibilidad(
+    public ResponseEntity<ApiResponseBody<Long>> cambiarVisibilidad(
         @PathVariable final Boolean estado,
-        @PathVariable final Long idHistorial
+        @PathVariable final Long idHistorial,
+        @CookieValue(name = "jwtToken") String jwtToken
     ) {
+        jwtUtils.validateToken(jwtToken);
         historialLaboralService.cambiarVisibilidad(estado, idHistorial); 
-        return ResponseEntity.ok(idHistorial);
+        ApiResponseBody<Long> response = new ApiResponseBody<>(idHistorial, null, null);
+        return ResponseEntity.ok(response);
     }
 }

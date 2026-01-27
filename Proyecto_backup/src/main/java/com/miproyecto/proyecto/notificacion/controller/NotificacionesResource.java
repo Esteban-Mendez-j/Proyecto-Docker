@@ -1,7 +1,6 @@
 package com.miproyecto.proyecto.notificacion.controller;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -18,8 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.enums.EstadoEnvio;
+import com.miproyecto.proyecto.enums.ResponseCode;
+import com.miproyecto.proyecto.notificacion.dto.NotificacionDTO;
 import com.miproyecto.proyecto.notificacion.service.NotificacionService;
 import com.miproyecto.proyecto.util.JwtUtils;
+import com.miproyecto.proyecto.util.response.ApiError;
+import com.miproyecto.proyecto.util.response.ApiResponseBody;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @RestController
 @RequestMapping(value = "/api/notificaciones", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -33,16 +39,24 @@ public class NotificacionesResource {
         this.jwtUtils = jwtUtils;
     }
 
+    @Operation(
+        summary = "Todas las notificaciones recibidas",
+        description = "Lista de todas las notificaciones recibidas en la cuenta",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Notificaciones obtenidas correctamente" ), 
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado" )       
+        }
+    )
     @GetMapping("/recibidas")
-    public ResponseEntity<Map<String, Object>> obtenerNotificacionesRecibidas (
+    public ResponseEntity<ApiResponseBody<List<NotificacionDTO>>> obtenerNotificacionesRecibidas (
             @CookieValue(name = "jwtToken") String jwtToken,
             @PageableDefault(page = 0, size = 10) Pageable pageable){
         
-        Map<String, Object> response = new HashMap<>();
+        ApiResponseBody<List<NotificacionDTO>> response = new ApiResponseBody<>(); 
 
         if(jwtToken == null){
-            response.put("status", 401);
-            response.put("mensaje", "Inicia sesión");
+            ApiError error = new ApiError(ResponseCode.UNAUTORIZED,"Debes iniciar sesion para esta acción");
+            response.setError(error);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
@@ -53,35 +67,51 @@ public class NotificacionesResource {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(
+        summary = "las notificaciones recibidas recientemente ",
+        description = "Lista de maximo 5 notificaciones recibidas recientemente",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Notificaciones obtenidas correctamente" ), 
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado" )       
+        }
+    )
     @GetMapping("/recibidas/recientes")
-    public ResponseEntity<Map<String, Object>> obtenerNotificacionesRecibidasRecientes (
+    public ResponseEntity<ApiResponseBody<List<NotificacionDTO>>> obtenerNotificacionesRecibidasRecientes (
             @CookieValue(name = "jwtToken") String jwtToken){
         
-        Map<String, Object> response = new HashMap<>();
+        ApiResponseBody<List<NotificacionDTO>> response = new ApiResponseBody<>(); 
 
         if(jwtToken == null){
-            response.put("status", 401);
-            response.put("mensaje", "Inicia sesión");
+            ApiError error = new ApiError(ResponseCode.UNAUTORIZED,"Debes iniciar sesion para esta acción");
+            response.setError(error);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
 
-        response.put("notificaciones", notificacionService.findByDestinatarioRecientes(idUsuario, true, EstadoEnvio.ENVIADO));
+        response.setData(notificacionService.findByDestinatarioRecientes(idUsuario, true, EstadoEnvio.ENVIADO));
         return ResponseEntity.ok(response);
     }
 
+    @Operation(
+        summary = "Todas las notificaciones enviadas",
+        description = "Lista de todas las notificaciones enviadas por la cuenta",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Notificaciones obtenidas correctamente" ), 
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado" )       
+        }
+    )
     @GetMapping("/enviadas")
-    public ResponseEntity<Map<String, Object>> obtenerNotificacionesEnviadas(
+    public ResponseEntity<ApiResponseBody<List<NotificacionDTO>>> obtenerNotificacionesEnviadas(
             @CookieValue(name = "jwtToken") String jwtToken,
             @PageableDefault(page = 0, size = 10) Pageable pageable){
         
-        Map<String, Object> response = new HashMap<>();
+        ApiResponseBody<List<NotificacionDTO>> response = new ApiResponseBody<>();
 
         if(jwtToken == null){
-            response.put("status", 401);
-            response.put("mensaje", "Inicia sesión");
+            ApiError error = new ApiError(ResponseCode.UNAUTORIZED,"Debes iniciar sesion para esta acción");
+            response.setError(error);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
@@ -92,27 +122,41 @@ public class NotificacionesResource {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(
+        summary = "Cambiar el estado de envio",
+        description = "Se modifica el valor del estado de envio de una notificacion",
+        responses = {
+            @ApiResponse( responseCode = "200", description = "Valor modificado correctamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado" )       
+        }
+    )
     @PutMapping("/edit/estadoEnvio/{id}") 
-    public ResponseEntity<Map<String, Object>> editEstadoEnvio(
+    public ResponseEntity<ApiResponseBody<String>> editEstadoEnvio(
         @PathVariable(name = "id", required = true) String idNotificacion){
             
-        notificacionService.cambiarEstadoEnvio(EstadoEnvio.RECIBIDO, idNotificacion);
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", 200);
+        String id =  notificacionService.cambiarEstadoEnvio(EstadoEnvio.RECIBIDO, idNotificacion);
+        ApiResponseBody<String> response = new ApiResponseBody<>(id ,null ,null);
         return ResponseEntity.ok().body(response);
     }
 
     /*TODO: verificar si es correcto que solo tenag un solo atributo de visibilidad 
       porque donde alguno de los dos oculte la notificacion el otro no la va a poder ver
     */ 
+   @Operation(
+        summary = "Cambiar el estado de visibilidad",
+        description = "Se modifica el valor del estado de visibilidad de una notificacion",
+        responses = {
+            @ApiResponse( responseCode = "200", description = "Valor modificado correctamente"),
+            @ApiResponse(responseCode = "401", description = "Usuario no autenticado" )       
+        }
+    )
     @PutMapping("/edit/visibilidad/{id}") 
-    public ResponseEntity<Map<String, Object>> editVisibilidad(
+    public ResponseEntity<ApiResponseBody<String>> editVisibilidad(
         @PathVariable(name = "id", required = true) String idNotificacion,
         @RequestParam(name = "visibilidad") boolean visibilidad){
 
-        notificacionService.cambiarVisible(visibilidad, idNotificacion);
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", 200);
+        String id = notificacionService.cambiarVisible(visibilidad, idNotificacion);
+        ApiResponseBody<String> response = new ApiResponseBody<>( id , null, null);
         return ResponseEntity.ok().body(response);
     }
 

@@ -8,7 +8,7 @@ import { RoleContext } from "../../services/RoleContext";
 import useFiltro from "../../hooks/useFiltro";
 import Table from "../../components/Table";
 import { useNavigate } from "react-router-dom";
-import { inputModal, QuestionModal } from "../../services/Modal";
+import { inputModal, modal, modalTime, QuestionModal } from "../../services/Modal";
 import SinResultados from "../../components/SinResultados"
 
 export default function AdminUsuarios() {
@@ -108,9 +108,9 @@ export default function AdminUsuarios() {
       if (!data) {
         return;
       }
-      setTotalElements(data.totalElements);
-      setUsuarios(data.usuarios || []);
-      setTotalPages(data.totalPage);
+      setTotalElements(data.meta.pagination.totalElements);
+      setUsuarios(data.data || []);
+      setTotalPages(data.meta.pagination.totalPage);
     } catch (err) {
       console.error("Error:", err);
     }
@@ -128,7 +128,7 @@ export default function AdminUsuarios() {
     if (!confirmacion) return;
 
     fetch(
-      `${API_CLIENT_URL}/api/admin/agregarRol?idUsuario=${idUsuario}&estado=${estado}`,
+      `${API_CLIENT_URL}/api/admin/nuevo/rol?idUsuario=${idUsuario}&estado=${estado}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -141,6 +141,7 @@ export default function AdminUsuarios() {
       })
       .then((data) => {
         setAdminId(data.idUsuario);
+        modalTime(`${estado? "Admin creado" : "Permisos removidos"} correctamente`)
         fetchUsuarios(); // recargar la lista
       })
       .catch((err) =>
@@ -153,27 +154,26 @@ export default function AdminUsuarios() {
     const {isConfirmed, value: motivo} = await inputModal(`Escribe el motivo ${isActive ? "de la activación" : "del baneo"}`, "text", "Comentario",  "Escribe aquí..."  )
 
     if (!isConfirmed) return; // si el usuario cancela, no continúa
+    try {
+      const res = await fetch(
+        `${API_CLIENT_URL}/api/admin/estado/cuenta/usuario?idUsuario=${idUsuario}&estado=${isActive}&comentario=${encodeURIComponent(
+          motivo
+        )}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          credentials: "include",
+        }
+      )
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error.message);
 
-    fetch(
-      `${API_CLIENT_URL}/api/admin/cambiar-estado/usuario?idUsuario=${idUsuario}&estado=${isActive}&comentario=${encodeURIComponent(
-        motivo
-      )}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        credentials: "include",
-      }
-    )
-      .then((res) => {
-        if (!res.ok) throw new Error("Error al cambiar el estado del usuario");
-        return res.json();
-      })
-      .then(() => {
-        fetchUsuarios(); // recargar la lista
-      })
-      .catch((err) =>
-        console.error("Error al cambiar el estado del usuario:", err)
-      );
+      modalTime("Cambio Realizado Correctamente")
+      fetchUsuarios();
+    } catch (error) {
+      console.error("Error al cambiar el estado del usuario:", error);
+      modal(error || "Error al cambiar el estado del usuario", "error");
+    }
   };
 
   const handleOnEstado = (e) => {

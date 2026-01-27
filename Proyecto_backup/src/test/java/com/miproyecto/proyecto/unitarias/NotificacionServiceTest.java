@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -29,6 +28,7 @@ import com.miproyecto.proyecto.notificacion.repository.NotificacionRepository;
 import com.miproyecto.proyecto.notificacion.service.NotificacionService;
 import com.miproyecto.proyecto.usuario.model.Usuario;
 import com.miproyecto.proyecto.usuario.repository.UsuarioRepository;
+import com.miproyecto.proyecto.util.response.ApiResponseBody;
 
 
 /**
@@ -71,10 +71,10 @@ class NotificacionServiceTest {
                 anyString(), anyBoolean(), any(Pageable.class)))
             .thenReturn(page);
 
-        Map<String, Object> response = notificacionService.findByDestinatarioAndVisible(userId, PageRequest.of(0,10), true);
+        ApiResponseBody<List<NotificacionDTO>> response = notificacionService.findByDestinatarioAndVisible(userId, PageRequest.of(0,10), true);
 
-        assertTrue(response.containsKey("Notificaciones"));
-        List<?> notificaciones = (List<?>) response.get("Notificaciones");
+        assertTrue(!response.getData().isEmpty());
+        List<?> notificaciones = (List<?>) response.getData();
         assertEquals(1, notificaciones.size());
     }
 

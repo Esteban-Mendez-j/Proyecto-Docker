@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react"
-import { useSendForm } from "../../hooks/useFetch"
+import { useState, useEffect, useContext } from "react"
+import { useSendFormV2 } from "../../hooks/useFetch"
 import { modalTime } from "../../services/Modal";
 import useDataChange from "../../hooks/useDataChange";
 import { listEducacion } from "../../services/data";
 import InputForm from "../../components/InputForm";
 import { useNavigate, useParams } from "react-router-dom";
 import { formRulesEstudio, validateForm } from "../../services/validacionForm";
+import { RoleContext } from "../../services/RoleContext";
 
 export default function FormEducation(){
 
@@ -23,7 +24,8 @@ export default function FormEducation(){
     
     const { id } = useParams(); 
     const navigate = useNavigate();
-    const { send , data, error, setError } = useSendForm();
+    const { logout } = useContext(RoleContext);
+    const { send , data, error, setError } = useSendFormV2();
     const [submitted, setSubmitted] = useState(false);
     const url = id? `/api/estudios/edit/${id}` : "/api/estudios/add";
     const metodo = id? `PUT` : "POST";
@@ -31,8 +33,11 @@ export default function FormEducation(){
     const valorEstadoComparacion = "En curso"
     
     const getDataEdit = async () => {
-        await send(url, "GET")
-        console.log(url)
+        try {
+            await send(url, "GET")
+        } catch (error) {
+            exceptionControl(error, logout, navigate, "Error al cargar el estudio")
+        }
     }
     useEffect(() => {
         if (id) {
@@ -60,31 +65,31 @@ export default function FormEducation(){
         }
     }
 
-    const handleSubmit = async (e) =>{
-        e.preventDefault();
-        setSubmitted(true);
-        const newErrors = validateForm(dataForm, formRulesEstudio);
+    const handleSubmit = async (e) => {
+        try {
+            e.preventDefault();
+            setSubmitted(true);
+            const newErrors = validateForm(dataForm, formRulesEstudio);
 
-        if (Object.keys(newErrors).length > 0) {
-            setError(newErrors);
+            if (Object.keys(newErrors).length > 0) {
+                setError(newErrors);
 
-            const firstErrorField = Object.keys(newErrors)[0];
-            const el = document.getElementById(firstErrorField);
-            if (el) {
-                el.scrollIntoView({ behavior: "smooth", block: "center" });
-                el.focus();
+                const firstErrorField = Object.keys(newErrors)[0];
+                const el = document.getElementById(firstErrorField);
+                if (el) {
+                    el.scrollIntoView({ behavior: "smooth", block: "center" });
+                    el.focus();
+                }
+                return; // no enviar
             }
-            return; // no enviar
-        }
 
-        setError({});
-        modalTime(id? "Edicion realizada con exito!" : "Se creó el nuevo estudio");
-        const response = await send(url, metodo, JSON.stringify(dataForm) );
-        //TODO: como al crear no hay id entonces no sale el mensaje 
-        if(response == dataForm.idEstudio){
-            modalTime(id? "Edicion realizada con exito!" : "Se creó el nuevo estudio");
+            setError({});
+            await send(url, metodo, JSON.stringify(dataForm));
+            modalTime(id ? "Edicion realizada con exito!" : "Se creó el nuevo estudio");
+            if (!id) { clearDataForm(); setSubmitted(false) }
+        } catch (error) {
+            exceptionControl(error, logout, navigate, `Error al ${id ? "editar" : "crear"} el estudio`)
         }
-        if(!id){clearDataForm(); setSubmitted(false)}
     }
 
     return (
@@ -175,7 +180,9 @@ export default function FormEducation(){
                             handleOnChange={handleOnChange}
                             submitted={submitted}
                             rules={formRulesEstudio}
-                            error={dataForm.estado == valorEstadoComparacion? "" : dataForm.fechaFin? "": {fechaFin:"Campo obligatorio"}}
+                            error={dataForm.estado == valorEstadoComparacion? "" : 
+                                dataForm.fechaFin? "": { fieldErrors: [{ field: "fechaFin", message: "Campo obligatorio" }]}
+                            }
                             isDisabled={dataForm.estado === valorEstadoComparacion}
                         />
                     </div>

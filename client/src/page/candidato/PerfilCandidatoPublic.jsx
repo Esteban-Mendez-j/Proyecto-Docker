@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Loading from "../../components/Loading.jsx";
-import { useFetch } from "../../hooks/useFetch.jsx";
+import { useFetchV2 } from "../../hooks/useFetch.jsx";
 import Layout from "../../layouts/Layout.jsx";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import PerfilCandidato from "../../components/PerfilCandidato.jsx";
+import exceptionControl from "../../services/exceptionControl.js";
+import { RoleContext } from "../../services/RoleContext.jsx";
 
 function PerfilCandidatoPublic() {
   const initialData = {
@@ -16,30 +18,24 @@ function PerfilCandidatoPublic() {
     contraseñaVerificada: ""
   }
   const {id} = useParams();
-  const [candidato, setCandidato] = useState(null);
-  const [estudios, setEstudios] = useState([]);
-  const [historialLaboral, setHistorialLaboral] = useState([]);
-  const { data , error , loading } = useFetch(`/api/candidatos/perfil?idUsuario=${id}`, "GET");
+  const { logout } = useContext(RoleContext);
+  const navigate = useNavigate();
+  const { data , error , loading } = useFetchV2(`/api/candidatos/perfil?idUsuario=${id}`, "GET");
 
-  useEffect(() => {
+  useEffect(()=>{
+    exceptionControl(error, logout ,navigate, "Error  al cargar el perfil");
+  },[ error ])
 
-    if(!data){return}
-    setCandidato(data.candidato);
-    setEstudios(data.estudios || []);
-    setHistorialLaboral(data.historialLaboral || []);
-
-  }, [data, error]);
-
-  if (!data || !candidato || !estudios || !historialLaboral || loading || error) {
+  if (!data || loading) {
     return <Loading/>;
   }
 
   return (
     <Layout>
       <PerfilCandidato
-        candidato={candidato}
-        estudios={estudios}
-        historialLaboral={historialLaboral}
+        candidato={data.candidato}
+        estudios={data.estudios}
+        historialLaboral={data.historialLaboral}
         isPublic={true}
       />
     </Layout>

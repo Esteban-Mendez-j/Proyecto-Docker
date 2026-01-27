@@ -186,7 +186,7 @@ export const formRulesVacante = {
   sueldo: [
     rules.number(),
     rules.positive(),
-    rules.maxNumber(100000000000)
+    rules.maxNumber(100000000000, "el valor es muy alto")
   ],
 
   tipo: [
@@ -264,6 +264,10 @@ export const formRulesEmpresa = {
     rules.required("Confirmar contraseña es obligatorio"),
     // Puedes agregar una regla custom para validar que coincida con 'contrasena'
   ],
+
+  sectorEmpresa: [
+    rules.required()
+  ]
 
 };
 

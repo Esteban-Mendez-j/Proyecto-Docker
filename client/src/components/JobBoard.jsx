@@ -7,16 +7,20 @@ import { ListSvg } from './Icons';
 import { readLocalStore, saveLocalStore } from '../services/localStore';
 import { RoleContext } from '../services/RoleContext';
 import useFiltro from '../hooks/useFiltro';
+import exceptionControl from '../services/exceptionControl';
+import { useNavigate } from 'react-router-dom';
+import { useSendFormV2 } from '../hooks/useFetch';
 
 const JobBoard = ({ fetchUrl }) => {
-    const {rol:rolAuth} = useContext(RoleContext);
+    const {rol:rolAuth, logout} = useContext(RoleContext);
+    const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(readLocalStore("PaginaActual", 1));
     const [presentacion, setPresentacion] = useState(readLocalStore("presentacion", 1)); // 1:CARD, 2:HORIZONTAL, 3:TABLA
     const [totalElement, setTotalElement] = useState(0) 
     const [totalPages, setTotalPages] = useState(1);
     const [verPrediccion, setVerPrediccion] = useState(false);
     const [filteredJobs, setFilteredJobs] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const {data, error, meta, loading, send} = useSendFormV2();
     const itemsPerPage = 20;
     const initialFiltros = {
         titulo: null,
@@ -44,29 +48,27 @@ const JobBoard = ({ fetchUrl }) => {
     },[currentPage])
 
     const fetchAllJobs = async () => {
-        setLoading(true)
         try {
-            const res = await fetch(`${fetchUrl}?page=${currentPage - 1}&size=${itemsPerPage}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify(filtrosAplicados ), 
-            });
-
-            const data = await manejarRespuesta(res);
-            if(!data){return;}
-            setFilteredJobs(data.vacantes || []);
-            setTotalElement(data.totalElements)
-            setTotalPages(data.totalPage)
-            
+            await send(
+                `${fetchUrl}?page=${currentPage - 1}&size=${itemsPerPage}`,"POST",
+                JSON.stringify(filtrosAplicados) 
+            );
         } catch (error) {
             console.error('Error cargando vacantes:', error);
-        } finally{
-            setLoading(false)
-        }
+            exceptionControl(error, logout, navigate, "Error al cargar vacantes" )
+        } 
     };
+
+    useEffect(() => {
+        if (!data ) return;
+        setFilteredJobs(data);
+    }, [data])
+
+    useEffect(() => {
+        if (!meta ) return;
+        setTotalElement(meta.pagination.totalElements)
+        setTotalPages(meta.pagination.totalPage)
+    }, [meta])
 
     useEffect(() => {
         fetchAllJobs();

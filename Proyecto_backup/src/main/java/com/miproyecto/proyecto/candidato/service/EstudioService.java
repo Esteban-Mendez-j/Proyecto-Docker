@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.miproyecto.proyecto.candidato.dto.EstudioDTO;
 import com.miproyecto.proyecto.candidato.model.Candidato;
@@ -32,21 +31,6 @@ public class EstudioService {
         return estudios.stream()
                 .map(estudio -> mapToDTO(estudio, new EstudioDTO()))
                 .toList();
-    }
-
-    @Transactional
-    public void replaceEstudios(Long candidatoId, List<EstudioDTO> nuevosDTO) {
-
-        // 1) Borrar todos los estudios actuales del candidato
-        estudioRepository.deleteByIdUsuario_IdUsuario(candidatoId);
-        
-        List<Estudio> nuevos = nuevosDTO.stream()
-                .map(dto -> mapToEntity(dto, new Estudio()))   // ① dto, ② entidad vacía
-                .toList();
-
-
-        // 3) Guardar la lista nueva
-        estudioRepository.saveAll(nuevos);
     }
 
 

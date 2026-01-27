@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +34,9 @@ import com.miproyecto.proyecto.postulacion.model.Postulado;
 import com.miproyecto.proyecto.postulacion.repository.PostuladoRepository;
 import com.miproyecto.proyecto.util.NotFoundException;
 import com.miproyecto.proyecto.util.ReferencedWarning;
+import com.miproyecto.proyecto.util.response.ApiResponseBody;
+import com.miproyecto.proyecto.util.response.Meta;
+import com.miproyecto.proyecto.util.response.Pagination;
 import com.miproyecto.proyecto.vacante.dto.FiltroVacanteDTO;
 import com.miproyecto.proyecto.vacante.dto.VacanteDTO;
 import com.miproyecto.proyecto.vacante.dto.VacanteResumenDTO;
@@ -123,24 +125,29 @@ public class VacanteService {
     }
 
     // listado de todas las vacantes activas 
-    public Map<String,Object> findAllByEstado(boolean estado, Pageable pageable, String nameList) {
+    public ApiResponseBody<List<VacanteDTO>> findAllByEstado(boolean estado, Pageable pageable) {
         final Page<Vacante> vacantes = vacanteRepository.findByIsActiveOrderByFechaPublicacionDesc(estado, pageable);
         final Page<VacanteDTO> vacantesDTO = vacantes.map(vacante -> mapToDTO(0L, 0L ,vacante, new VacanteDTO()));
-        return mapResponse(vacantesDTO, nameList) ;       
+        return mapResponse(vacantesDTO);       
     }
 
-    public Map<String,Object> mapResponse(Page<VacanteDTO> pageableResponse, String nameList){
-        Map<String,Object> response = new HashMap<>();
-
-        response.put(nameList, pageableResponse.getContent());
-        response.put("totalElements", pageableResponse.getTotalElements());
-        response.put("pageActual", pageableResponse.getPageable());
-        response.put("totalPage", pageableResponse.getTotalPages());
+    public ApiResponseBody<List<VacanteDTO>> mapResponse(Page<VacanteDTO> pageableResponse){
+        Pagination pagination = new Pagination(
+            pageableResponse.getTotalElements(), 
+            pageableResponse.getPageable(), 
+            pageableResponse.getTotalPages()
+        );
+        Meta meta = new Meta(pagination);
+        ApiResponseBody<List<VacanteDTO>> response = new ApiResponseBody<>(
+            pageableResponse.getContent(),
+            meta,
+            null
+        );
         return response;
     }
 
     // listado de las vacantes que esten relacionados con el idUsuario  
-    public Map<String,Object> findByIdUsuario(Long idUsuario, Pageable pageable) {
+    public ApiResponseBody<List<VacanteDTO>> findByIdUsuario(Long idUsuario, Pageable pageable) {
         // Obtener la empresa usando su id
         Empresa empresa = empresaRepository.findById(idUsuario)
                 .orElseThrow(() -> new NotFoundException("Empresa no encontrada"));
@@ -150,7 +157,7 @@ public class VacanteService {
         
         // Convertir cada vacante a VacanteDTO y devolver la lista
         Page<VacanteDTO> vacantesDTO = vacantes.map(vacante -> mapToDTO(0L, idUsuario ,vacante, new VacanteDTO()));
-        return mapResponse(vacantesDTO, "vacantes");
+        return mapResponse(vacantesDTO);
                 
     }
 
@@ -163,7 +170,7 @@ public class VacanteService {
             .orElse(null);
     }
 
-    public Map<String, Object> buscarVacantesConFiltros( Long idPsotulacion, FiltroVacanteDTO filtro, Pageable pageable) {
+    public ApiResponseBody<List<VacanteDTO>> buscarVacantesConFiltros( Long idPsotulacion, FiltroVacanteDTO filtro, Pageable pageable) {
         
         Page<VacanteDTO> page = null;
 
@@ -175,11 +182,11 @@ public class VacanteService {
             Specification<Vacante> specification = VacanteSpecifications.conFiltros(idPsotulacion, filtro);
             page = vacanteRepository.findAll(specification, pageable).map(vacante -> mapToDTO(idPsotulacion,idPsotulacion,vacante, new VacanteDTO()));
         }
-        return mapResponse(page, "vacantes");         
+        return mapResponse(page);         
     }
 
     //Obtiene 200 vacantes, calcula la afinidad con el usuario autenticado y ordena por la prediccion 
-    public Map<String, Object> buscarVacantesConFiltrosAndOrdenByPrediccion(
+    public ApiResponseBody<List<VacanteDTO>> buscarVacantesConFiltrosAndOrdenByPrediccion(
             Long idPsotulacion, FiltroVacanteDTO filtro, Pageable pageableFront) {
 
         // 1. Definir el número de bloque del backend (cada bloque = 200 vacantes)
@@ -227,14 +234,14 @@ public class VacanteService {
 
             if (start >= end) {
                 return mapResponse(
-                        new PageImpl<>(Collections.emptyList(), pageableFront, totalResultados),
-                        "vacantes");
+                    new PageImpl<>(Collections.emptyList(), pageableFront, totalResultados)
+                );
             }
 
             List<VacanteDTO> manualPage = vacantes.subList(start, end);
             Page<VacanteDTO> finalPage = new PageImpl<>(manualPage, pageableFront, totalResultados);
 
-            return mapResponse(finalPage, "vacantes");
+            return mapResponse(finalPage);
         }
 
         // 6. Paginación normal para bloques de 200 (más de 200 resultados totales)
@@ -243,14 +250,12 @@ public class VacanteService {
         int end = Math.min(start + pageableFront.getPageSize(), vacantes.size());
 
         if (start >= end) {
-            return mapResponse(
-                    new PageImpl<>(Collections.emptyList(), pageableFront, totalResultados),
-                    "vacantes");
+            return mapResponse(new PageImpl<>(Collections.emptyList(), pageableFront, totalResultados));
         }
 
         List<VacanteDTO> pageContent = vacantes.subList(start, end);
         Page<VacanteDTO> finalPage = new PageImpl<>(pageContent, pageableFront, totalResultados);
-        return mapResponse(finalPage, "vacantes");
+        return mapResponse(finalPage);
     }
 
 
@@ -291,13 +296,13 @@ public class VacanteService {
                 .orElseThrow(NotFoundException::new);
     }
 
-    public void create(final VacanteDTO vacanteDTO) {
+    public Long create(final VacanteDTO vacanteDTO) {
         final Vacante vacante = new Vacante();
         vacanteDTO.setFechaPublicacion(LocalDate.now());
         vacanteDTO.setActive(true);
         vacanteDTO.setActivaPorEmpresa(true);
         mapToEntity(vacanteDTO, vacante);
-        vacanteRepository.save(vacante);
+        return vacanteRepository.save(vacante).getNvacantes();
     }
 
     public void update(final Long nvacantes, final VacanteDTO vacanteDTO) {

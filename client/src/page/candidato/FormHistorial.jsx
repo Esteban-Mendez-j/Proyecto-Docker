@@ -1,14 +1,17 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useSendForm } from "../../hooks/useFetch";
-import { useEffect, useState } from "react";
+import { useSendFormV2 } from "../../hooks/useFetch";
+import { useContext, useEffect, useState } from "react";
 import useDataChange from "../../hooks/useDataChange";
 import { modalTime } from "../../services/Modal";
 import InputForm from "../../components/InputForm";
 import { formRulesHistorialLaboral, validateForm } from "../../services/validacionForm";
+import exceptionControl from "../../services/exceptionControl";
+import { RoleContext } from "../../services/RoleContext";
 
 export default function FormHistorial(){
 
     const initialDataExperiencia  = {
+        iDHistorial:"",
         titulo:"",
         empresa:"",
         descripcion:"",
@@ -19,13 +22,18 @@ export default function FormHistorial(){
     
     const { id } = useParams(); 
     const navigate = useNavigate();
-    const { send , data, error, setError } = useSendForm();
+    const { logout } = useContext(RoleContext);
+    const { send , data, error, setError } = useSendFormV2();
     const [submitted, setSubmitted] = useState(false);
     const url = id? `/api/historialLaborals/edit/${id}` : "/api/historialLaborals/add";
     const metodo = id? `PUT` : "POST";
     
     const getDataEdit = async () => {
-        await send(url, "GET")
+        try {
+            await send(url, "GET")
+        } catch (error) {
+            exceptionControl(error, logout, navigate, "Error al cargar el Historial")
+        }
     }
 
     useEffect(() => {
@@ -52,31 +60,31 @@ export default function FormHistorial(){
         handleOnChange(e)
     }
 
-    const handleSubmit = async (e) =>{
-        e.preventDefault();
-        setSubmitted(true);
-        const newErrors = validateForm(dataForm, formRulesHistorialLaboral);
+    const handleSubmit = async (e) => {
+        try {
+            e.preventDefault();
+            setSubmitted(true);
+            const newErrors = validateForm(dataForm, formRulesHistorialLaboral);
 
-        if (Object.keys(newErrors).length > 0) {
-            setError(newErrors);
+            if (Object.keys(newErrors).length > 0) {
+                setError(newErrors);
 
-            const firstErrorField = Object.keys(newErrors)[0];
-            const el = document.getElementById(firstErrorField);
-            if (el) {
-                el.scrollIntoView({ behavior: "smooth", block: "center" });
-                el.focus();
+                const firstErrorField = Object.keys(newErrors)[0];
+                const el = document.getElementById(firstErrorField);
+                if (el) {
+                    el.scrollIntoView({ behavior: "smooth", block: "center" });
+                    el.focus();
+                }
+                return; // no enviar
             }
-            return; // no enviar
-        }
 
-        setError({});
-
-        const response = await send(url, metodo, JSON.stringify(dataForm) );
-        //TODO: como al crear no hay id entonces no sale el mensaje 
-        if(response == dataForm.idEstudio){
-            modalTime(id? "Edicion realizada con exito!" : "Se creó el nuevo historial laboral");
+            setError({});
+            await send(url, metodo, JSON.stringify(dataForm));
+            modalTime(id ? "Edicion realizada con exito!" : "Se creó el nuevo historial laboral");
+            if (!id) { clearDataForm(); setSubmitted(false) }
+        } catch (error) {
+            exceptionControl(error, logout, navigate, `Error al ${id ? "editar" : "crear"} el Historial`)
         }
-        if(!id){clearDataForm(); setSubmitted(false)}
     }
 
     return (
@@ -132,7 +140,9 @@ export default function FormHistorial(){
                             value={dataForm.trabajoActual? "" : dataForm.fechaFin}
                             handleOnChange={handleOnChange}
                             submitted={submitted}
-                            error={dataForm.trabajoActual? "" : dataForm.fechaFin? "": {fechaFin:"Campo obligatorio"}}
+                            error={dataForm.trabajoActual ? "" :
+                                dataForm.fechaFin ? "" : { fieldErrors: [{ field: "fechaFin", message: "Campo obligatorio" }] }
+                            }
                             isDisabled={dataForm.trabajoActual}
                         />
                         <div >

@@ -1,74 +1,51 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "../../style/invitado/chat.css";
 import Header from "../../layouts/Header";
 import ChatList from "../../components/ChatList";
 import ChatBox from "../../components/ChatBox";
 import { API_CLIENT_URL } from "../../services/Api";
 import manejarRespuesta from "../../services/ManejarRespuesta";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ListSvg } from "../../components/Icons";
+import { RoleContext } from "../../services/RoleContext";
+import { useSendFormV2 } from "../../hooks/useFetch";
+import exceptionControl from "../../services/exceptionControl";
 
 export default function ChatPage() {
-  const { id } = useParams(); // equivalente a Astro.params
+  const { id } = useParams(); 
+  const navigate = useNavigate();
+  const { logout, rol, userDataSession } = useContext(RoleContext);
+  const { loading, send } = useSendFormV2();
   const [chatId, setChatId] = useState(id);
   const [searchText, setSearchText] = useState("");
   const [searchTextLocal, setSearchTextLocal] = useState("");
   const [Estado, setEstado] = useState(null); // Estado para filtro
   const [chats, setChats] = useState([]);
-  const [userRole, setUserRole] = useState(null);
-  const [userId, setUserId] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  // Obtener rol e id del usuario
-  useEffect(() => {
-    async function fetchUserRole() {
-      try {
-        const res = await fetch(`${API_CLIENT_URL}/api/usuarios/rol`, {
-          credentials: "include",
-        });
-        const data = await manejarRespuesta(res);
-        if (!data) { return }
-        setUserId(data.id);
-        setUserRole(data.rolPrincipal);
-      } catch (error) {
-        console.error("Error fetching user role:", error);
-      }
-    }
-    fetchUserRole();
-  }, []);
 
   // Traer chats desde backend con filtros
   useEffect(() => {
     async function fetchChats() {
-      if (!userRole || !userId) return;
+      if (!rol || !userDataSession.id) return;
 
-      setLoading(true);
       try {
-        const tipoUsuario = userRole.toLowerCase(); // empresa o candidato
+        const tipoUsuario = rol.toLowerCase(); // empresa o candidato
         const params = new URLSearchParams({
           estado: Estado, // "todos", "activos", "inactivos"
           search: searchText || "",
           page: 0,
           size: 10,
         });
-        let url = `${API_CLIENT_URL}/api/chats/${tipoUsuario}/${userId}?${params.toString()}`;
-
-        const res = await fetch(url, {
-          method: 'PATCH',
-          credentials: 'include'
-        });
-
-        const data = await manejarRespuesta(res);
-        if (!data) { return }
-        setChats(data.chats || []);
+        let url = `/api/chats/${tipoUsuario}/${userDataSession.id}?${params.toString()}`;
+        const res = await send(url, "PATCH");
+        
+        if (!res?.data) return 
+        setChats(res.data);
       } catch (error) {
-        console.error("Error fetching chats:", error);
-      } finally {
-        setLoading(false);
+        exceptionControl(error, logout, navigate, "Error al cargar los chats");
       }
     }
     fetchChats();
-  }, [userRole, userId, searchText, Estado]);
+  }, [rol, userDataSession.id, searchText, Estado]);
   
   return (
 
@@ -146,7 +123,7 @@ export default function ChatPage() {
               onSelectChat={setChatId}
               chats={chats}
               loading={loading}
-              userRole={userRole}
+              userRole={rol}
             />
           </div>
         </aside>

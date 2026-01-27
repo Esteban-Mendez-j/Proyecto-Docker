@@ -4,13 +4,14 @@ import "../style/invitado/jobcard.css";
 import Paginacion from "./Paginacion";
 import JobCard from "./JobCard";
 import { useContext, useEffect, useState } from "react";
-import { useSendForm } from "../hooks/useFetch";
+import { useSendFormV2 } from "../hooks/useFetch";
 import { RoleContext } from "../services/RoleContext";
 import Table from "./Table";
 import { Link, useNavigate } from "react-router-dom";
 import { ListSvg } from "./Icons";
 import { toggleFavoritoRequest } from "../services/ToggleFavoritosRequest";
 import SinResultados from "./SinResultados";
+import exceptionControl from "../services/exceptionControl";
 
 const JobList = ({
   jobs,
@@ -24,8 +25,8 @@ const JobList = ({
   setVerPrediccion,
   setFilteredJobs
 }) => {
-  const {rol} = useContext(RoleContext);
-  const { data ,send} = useSendForm();
+  const { rol, logout } = useContext(RoleContext);
+  const { data, send } = useSendFormV2();
   const navigate = useNavigate();
 
   const handleToggleFavorito = async (nvacantes) => {
@@ -116,35 +117,35 @@ const JobList = ({
     const isConfirmed = await QuestionModal(
       `¿Estás seguro de que deseas ${mensaje} esta vacante?`
     );
-    if (!isConfirmed) return; // e
+    if (!isConfirmed) return; 
 
     try {
-      const response = await fetch(
-        `${API_CLIENT_URL}/api/vacantes/estado/${id}?estado=${estado}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        }
-      );
-
-      if (response.ok) {
-        modalTime(`Exito al ${mensaje} la vacante`)
-        fetchAllJobs()
-      } else {
-        modal(`Error al ${mensaje} la vacante`, "error");
-      }
+      // const response = await fetch(
+      //   `${API_CLIENT_URL}/api/vacantes/estado/${id}?estado=${estado}`,
+      //   {
+      //     method: "PUT",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     credentials: "include",
+      //   }
+      // );
+      await send(`/api/vacantes/estado/${id}?estado=${estado}`, "PUT");
+      modalTime(`Exito al ${mensaje} la vacante`)
+      fetchAllJobs()
+      
     } catch (error) {
       console.error("Error en la solicitud:", error);
-      modal("Hubo un problema al intentar modificar la vacante", "error");
+      exceptionControl(error, logout, navigate, "Error al modificar el estado de la vacante")
     }
   }
      
   useEffect(() => {
-    if (rol === "CANDIDATO") {
+    if(rol !== "CANDIDATO") return
+    try {
       send("/api/candidatos/perfil", "GET");
+    } catch (error) {
+      exceptionControl(error, logout, navigate, "Error al cargar los datos de la prediccion")
     }
   }, [rol]);
 
@@ -171,18 +172,6 @@ const JobList = ({
         subTitulo={"Intenta cambiar los filtros o revisar tu búsqueda"} />
     );
   }
-  // if (!jobs || jobs.length == 0) {
-  //   return (
-  //     <div className="flex flex-col items-center justify-center h-96 text-center p-4">
-  //       <h2 className="text-2xl font-semibold text-gray-700 mb-2">
-  //         No se encontraron resultados
-  //       </h2>
-  //       <p className="text-gray-500">
-  //         Intenta cambiar los filtros o revisar tu búsqueda.
-  //       </p>
-  //     </div>
-  //   );
-  // }
 
   return (
     <div>

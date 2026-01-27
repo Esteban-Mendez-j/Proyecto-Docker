@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { useFetch, useSendForm } from "../hooks/useFetch"
+import { Link, useNavigate } from "react-router-dom";
+import { useFetchV2, useSendFormV2 } from "../hooks/useFetch"
 import stompClient, { connect, sendMessage, subscribe } from "../services/Websocket";
 import { RoleContext } from "../services/RoleContext";
 import useVisible from "../hooks/useVisible"
@@ -8,19 +8,21 @@ import Loading from "../components/Loading"
 import { modalTime, QuestionModal } from "../services/Modal";
 import "../style/invitado/notificacionesCenter.css";
 import { ListSvg } from "./Icons";
+import exceptionControl from "../services/exceptionControl";
 
 
 export default function BandejaNotificacion() {
 
-    const { rol } = useContext(RoleContext);
+    const { rol, logout } = useContext(RoleContext);
+    const navigate = useNavigate();
     const [notificaciones, setNotificaciones] = useState(null);
     const [handleOnClick, visible] = useVisible()
-    const { send } = useSendForm();
-    const { data, loading, error } = useFetch("/api/notificaciones/recibidas/recientes", "GET");
+    const { send } = useSendFormV2();
+    const { data, loading, error } = useFetchV2("/api/notificaciones/recibidas/recientes", "GET");
 
     useEffect(() => {
         if (!data) { return }
-        setNotificaciones(data.notificaciones)
+        setNotificaciones(data)
     }, [data])
 
     const sendNotificacionEvent = (evento , idNotificacion) => {
@@ -39,27 +41,28 @@ export default function BandejaNotificacion() {
         const confirmar = await QuestionModal("¿Deseas eliminar esta notificación?");
         if (!confirmar) return;
 
-        const response = await send(`/api/notificaciones/edit/visibilidad/${id}?visibilidad=${false}`, "PUT")
-        if (response.status == 200) {
+        try {
+            await send(`/api/notificaciones/edit/visibilidad/${id}?visibilidad=${false}`, "PUT")
             modalTime("Notificacion Eliminada")
             setNotificaciones((prev) =>
                 prev.filter((notificacion) => notificacion.id !== id)
             );
             sendNotificacionEvent("eliminar", id)
+        } catch (error) {
+            exceptionControl(error, logout, navigate, "Error al eliminar la notificaión")
         }
-
     }
 
     const marcarComoLeida = async (id) => {
-        
-        const response = await send(`/api/notificaciones/edit/estadoEnvio/${id}`, "PUT")
-        if (response.status == 200) {
+        try {
+            await send(`/api/notificaciones/edit/estadoEnvio/${id}`, "PUT")
             setNotificaciones((prev) =>
                 prev.filter((notificacion) => notificacion.id !== id)
             );
             sendNotificacionEvent("leida", id)
+        } catch (error) {
+            exceptionControl(error, logout, navigate, "Error al marcar como leida la notificaión")
         }
-
     }
 
 
@@ -74,7 +77,6 @@ export default function BandejaNotificacion() {
             }else{
                 setNotificaciones((prev) => [...prev, notificacion]);
             }
-            console.log("recibido ")
         });
     }, []);  
 

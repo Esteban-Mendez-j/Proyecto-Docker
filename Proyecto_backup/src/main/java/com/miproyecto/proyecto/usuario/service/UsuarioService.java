@@ -6,9 +6,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -29,6 +27,9 @@ import com.miproyecto.proyecto.usuario.repository.RolesRepository;
 import com.miproyecto.proyecto.usuario.repository.UsuarioRepository;
 import com.miproyecto.proyecto.usuario.repository.UsuarioSpecifications;
 import com.miproyecto.proyecto.util.NotFoundException;
+import com.miproyecto.proyecto.util.response.ApiResponseBody;
+import com.miproyecto.proyecto.util.response.Meta;
+import com.miproyecto.proyecto.util.response.Pagination;
 
 
 
@@ -228,23 +229,28 @@ public class UsuarioService {
         return usuarioRepository.existsByTelefonoIgnoreCase(telefono);
     }
 
-    public Map<String,Object> mapResponse(Page<UsuarioDTO> pageableResponse, String nameList){
-        Map<String,Object> response = new HashMap<>();
-
-        response.put(nameList, pageableResponse.getContent());
-        response.put("totalElements", pageableResponse.getTotalElements());
-        response.put("pageActual", pageableResponse.getPageable());
-        response.put("totalPage", pageableResponse.getTotalPages());
+    public ApiResponseBody<List<UsuarioDTO>> mapResponse(Page<UsuarioDTO> pageableResponse){
+        Pagination pagination = new Pagination(
+            pageableResponse.getTotalElements(), 
+            pageableResponse.getPageable(), 
+            pageableResponse.getTotalPages()
+        );
+        Meta meta = new Meta(pagination);
+        ApiResponseBody<List<UsuarioDTO>> response = new ApiResponseBody<>(
+            pageableResponse.getContent(),
+            meta,
+            null
+        );
         return response;
     }
    
     //FiltrosUsuarios
-    public Map<String, Object> buscarUsuariosConFiltros(Long idUsuario, String rolUsuario, FiltroUsuarioDTO filtro ,Pageable pageable) {
+    public ApiResponseBody<List<UsuarioDTO>> buscarUsuariosConFiltros(Long idUsuario, String rolUsuario, FiltroUsuarioDTO filtro ,Pageable pageable) {
         Specification<Usuario> specification = UsuarioSpecifications.conFiltros(rolUsuario, filtro);
         
         Page<UsuarioDTO> page = usuarioRepository.findAll(specification, pageable)
         .map(usuario -> mapToDTO(usuario, new UsuarioDTO())); 
         
-        return mapResponse(page, "usuarios");  
+        return mapResponse(page);  
     }
 }
