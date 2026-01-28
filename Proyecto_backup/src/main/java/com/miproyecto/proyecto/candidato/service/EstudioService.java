@@ -25,7 +25,7 @@ public class EstudioService {
         this.candidatoRepository = candidatoRepository;
     }
 
-    //TODO: debo indicar que solo se obtengan las que tienen la visibilidad en 1 o true tambein en historial
+    
     public List<EstudioDTO> findAll() {
         final List<Estudio> estudios = estudioRepository.findAll(Sort.by("idEstudio"));
         return estudios.stream()
