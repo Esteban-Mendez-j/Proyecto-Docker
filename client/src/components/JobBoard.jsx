@@ -6,36 +6,38 @@ import JobList from './JobList';
 import { ListSvg } from './Icons';
 import { readLocalStore, saveLocalStore } from '../services/localStore';
 import { RoleContext } from '../services/RoleContext';
+import useFiltro from '../hooks/useFiltro';
+import exceptionControl from '../services/exceptionControl';
+import { useNavigate } from 'react-router-dom';
+import { useSendFormV2 } from '../hooks/useFetch';
 
-
-const JobBoard = ({ fetchUrl, rol }) => {
-    const {rol:rolAuth} = useContext(RoleContext);
+const JobBoard = ({ fetchUrl }) => {
+    const {rol:rolAuth, logout} = useContext(RoleContext);
+    const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(readLocalStore("PaginaActual", 1));
     const [presentacion, setPresentacion] = useState(readLocalStore("presentacion", 1)); // 1:CARD, 2:HORIZONTAL, 3:TABLA
     const [totalElement, setTotalElement] = useState(0) 
     const [totalPages, setTotalPages] = useState(1);
     const [verPrediccion, setVerPrediccion] = useState(false);
     const [filteredJobs, setFilteredJobs] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const {data, error, meta, loading, send} = useSendFormV2();
     const itemsPerPage = 20;
     const initialFiltros = {
         titulo: null,
         tipo: "todos",
         experiencia: null,
         modalidad: null,
-        active: rol === "empresa"? null : true,
-        activaPorEmpresa: rol === "empresa"? null : true,
+        active: rolAuth === "EMPRESA"? null : true,
+        activaPorEmpresa: rolAuth === "EMPRESA"? null : true,
         cargo: null,
         ciudad: null,
         sueldo: null,
         totalpostulaciones: null,
         isFavorita: false,
-        estado: rol === "empresa"? "todos" : undefined,
-        estadoPostulacion: rol === "empresa"? null : "SinPostulacion"
+        estado: rolAuth === "EMPRESA"? "todos" : undefined,
+        estadoPostulacion: rolAuth === "EMPRESA"? null : "SinPostulacion"
     }
-
-    const [filters, setFilters] = useState(readLocalStore("filtro", initialFiltros));
-    const [filtersLocal, setFiltersLocal] = useState(readLocalStore("filtro", initialFiltros));
+    const [filtrosLocal, filtrosAplicados, handleOnFilters, clearFilters, searchFilters, handleOnFilterAplicados] = useFiltro(initialFiltros, setCurrentPage, "filtrosEmpleos")
 
     useEffect(()=>{
         saveLocalStore("presentacion", presentacion) 
@@ -45,106 +47,48 @@ const JobBoard = ({ fetchUrl, rol }) => {
         saveLocalStore("PaginaActual", currentPage) 
     },[currentPage])
 
-    useEffect(()=>{
-        saveLocalStore("filtro", filters) 
-    },[filters])
-
     const fetchAllJobs = async () => {
-        setLoading(true)
         try {
-            const res = await fetch(`${fetchUrl}?page=${currentPage - 1}&size=${itemsPerPage}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify(filters), 
-            });
-
-            const data = await manejarRespuesta(res);
-            if(!data){return;}
-            setFilteredJobs(data.vacantes || []);
-            setTotalElement(data.totalElements)
-            setTotalPages(data.totalPage)
-            
+            await send(
+                `${fetchUrl}?page=${currentPage - 1}&size=${itemsPerPage}`,"POST",
+                JSON.stringify(filtrosAplicados) 
+            );
         } catch (error) {
             console.error('Error cargando vacantes:', error);
-        } finally{
-            setLoading(false)
-        }
+            exceptionControl(error, logout, navigate, "Error al cargar vacantes" )
+        } 
     };
 
     useEffect(() => {
+        if (!data ) return;
+        setFilteredJobs(data);
+    }, [data])
+
+    useEffect(() => {
+        if (!meta ) return;
+        setTotalElement(meta.pagination.totalElements)
+        setTotalPages(meta.pagination.totalPage)
+    }, [meta])
+
+    useEffect(() => {
         fetchAllJobs();
-    }, [filters,currentPage, ]); 
-
-    const handleFilterChange = (event) => {
-        const { name, value } = event.target;
-        setFiltersLocal(prev => ({
-            ...prev,
-            [name]: value,
-            [name]: name === "isFavorita" ? value === "true" : value
-        }));
-        setCurrentPage(1)
-    };
-
-    const handleEstadoChange = (event) => {
-        const estadoSeleccionado = event.target.value;
-        setFiltersLocal(prev => ({
-            ...prev,
-            estado: estadoSeleccionado
-        }));
-
-        const nuevoFiltro = {
-            ...filtersLocal,
-            estado: estadoSeleccionado, 
-            active: undefined,
-            activaPorEmpresa: undefined
-        };
-
-        switch (estadoSeleccionado) {
-            case "activas":
-            nuevoFiltro.active = true;
-            nuevoFiltro.activaPorEmpresa = true;
-            break;
-            case "desactivadasAdmin":
-            nuevoFiltro.active = false;
-            break;
-            case "pausadasEmpresa":
-            nuevoFiltro.activaPorEmpresa = false;
-            break;
-            case "todas":
-            break;
-        }
-
-        setFiltersLocal(nuevoFiltro);
-        setCurrentPage(1);
-    };
-
-
-    const clearAllFilters = () => {
-        setFiltersLocal( initialFiltros);
-        setFilters(initialFiltros)
-    };
+    }, [filtrosAplicados ,currentPage ]); 
 
     return (
         <>  
             { (rolAuth === "CANDIDATO" && !verPrediccion ) && <h1 className='title text-center'>Completa tu perfil para obtener mejores recomendaciones</h1>}
             <div className="page-header">
                 <FiltroSuperior 
-                    filtersLocal={filtersLocal} 
-                    handleFilterChange={handleFilterChange}
-                    setFilters={setFilters}
+                    filtersLocal={filtrosLocal} 
+                    handleOnFilters={handleOnFilters}
+                    searchFilters={searchFilters}
                 />
             </div>
             <div className="content-container">
                 <FilterComponent  
-                    filtersLocal={filtersLocal} 
-                    clearAllFilters={clearAllFilters}
-                    handleFilterChange={handleFilterChange}
-                    setFilters={setFilters} 
-                    rol={rol}
-                    handleEstadoChange={handleEstadoChange}
+                    filtersLocal={filtrosLocal} 
+                    clearAllFilters={clearFilters}
+                    handleOnFilters={handleOnFilters}
                 />    
                 <div className="jobs-container">
                     <div className="jobs-header">
@@ -166,7 +110,6 @@ const JobBoard = ({ fetchUrl, rol }) => {
                     </div>
                     <JobList
                         jobs={filteredJobs}
-                        rol={rol}
                         currentPage={currentPage}
                         setCurrentPage={setCurrentPage}
                         totalPages={totalPages}
@@ -175,6 +118,7 @@ const JobBoard = ({ fetchUrl, rol }) => {
                         loading={loading}
                         verPrediccion={verPrediccion}
                         setVerPrediccion={setVerPrediccion}
+                        setFilteredJobs={setFilteredJobs}
                     />
                 </div>
             </div>

@@ -1,14 +1,17 @@
 import Layout from "../../layouts/Layout";
 import "../../style/invitado/registroCandidato.css"
-import { useSendForm } from "../../hooks/useFetch"
+import { useSendFormV2 } from "../../hooks/useFetch"
 import InputFrom from "../../components/InputForm";
-import { useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { modalResponse } from "../../services/Modal";
+import { modal, modalRedirect } from "../../services/Modal";
 import Loading from "../../components/Loading";
 import useValidation from "../../hooks/useValidation";
 import useVisible from "../../hooks/useVisible";
 import { formRulesCandidato, validateForm } from "../../services/validacionForm";
+import { ListSvg } from "../../components/Icons";
+import exceptionControl from "../../services/exceptionControl";
+import { RoleContext } from "../../services/RoleContext";
 
 export default function RegistroCandidato() {
 
@@ -29,7 +32,8 @@ export default function RegistroCandidato() {
         contraseñaVerificada: ""
     }
 
-    const { send , data, error, setError, loading } = useSendForm();
+    const { send , data, error, setError, loading } = useSendFormV2();
+    const { logout } = useContext(RoleContext);
     const { validarPassword, dataFrom, setDataFrom } = useValidation(initialData);
     const [handleOnClick, visible] = useVisible();
     const [submitted, setSubmitted] = useState(false);
@@ -46,36 +50,35 @@ export default function RegistroCandidato() {
     };
 
     async function handleSubmit(e) {
-        e.preventDefault();
-        setSubmitted(true)
-        const newErrors = validateForm(dataFrom, formRulesCandidato);
-        const combinedErrors = { ...newErrors };
+        try {
+            e.preventDefault();
+            setSubmitted(true)
+            const newErrors = validateForm(dataFrom, formRulesCandidato);
+            const combinedErrors = { ...newErrors };
 
-        if (!validarPassword) {
-            combinedErrors.contrasena = "Contraseña inválida";
-        }
-
-        if (Object.keys(combinedErrors).length > 0) {
-            setError(combinedErrors);
-
-            // Foco en el primer campo con error
-            const firstErrorField = Object.keys(combinedErrors)[0];
-            const el = document.getElementById(firstErrorField);
-            if (el) {
-                el.scrollIntoView({ behavior: "smooth", block: "center" });
-                el.focus();
+            if (!validarPassword) {
+                combinedErrors.contrasena = "Contraseña inválida";
             }
 
-            return; // detener envío o acción
-        }
-        setError(null);
+            if (Object.keys(combinedErrors).length > 0) {
+                setError((prev)=>({...prev, fieldErrorsFrontend:combinedErrors}))
 
-        const result = await send("/api/candidatos/add", "POST", JSON.stringify(dataFrom));
-        if(result.status === 201){
-            const isOk = await modalResponse(result.mensaje, "success");
-            if(isOk){
-                navigate("/login");
+                // Foco en el primer campo con error
+                const firstErrorField = Object.keys(combinedErrors)[0];
+                const el = document.getElementById(firstErrorField);
+                if (el) {
+                    el.scrollIntoView({ behavior: "smooth", block: "center" });
+                    el.focus();
+                }
+
+                return; // detener envío o acción
             }
+            setError(null);
+            await send("/api/candidatos/add", "POST", JSON.stringify(dataFrom));
+           
+            await modalRedirect("Candidato resgitardo cons exito!", "success", "/login", navigate);
+        } catch (error) {
+            exceptionControl((error, logout, navigate, "Error al Registrar un candidato"))
         }
     }
 
@@ -112,6 +115,7 @@ export default function RegistroCandidato() {
                                         handleOnChange={handleOnChange}
                                         error={error}
                                         submitted={submitted}
+                                        rules={formRulesCandidato}
                                     />
                                 </div>
 
@@ -127,6 +131,7 @@ export default function RegistroCandidato() {
                                         handleOnChange={handleOnChange}
                                         error={error}
                                         submitted={submitted}
+                                        rules={formRulesCandidato}
                                     />
                                 </div>
                             </div>
@@ -143,6 +148,7 @@ export default function RegistroCandidato() {
                                     handleOnChange={handleOnChange}
                                     error={error}
                                     submitted={submitted}
+                                    rules={formRulesCandidato}
                                     autoComplete={"email"}
                                 />
                                 <p className="form-hint">
@@ -161,6 +167,7 @@ export default function RegistroCandidato() {
                                         handleOnChange={handleOnChange}
                                         error={error}
                                         submitted={submitted}
+                                        rules={formRulesCandidato}
                                     />
                                 </div>
 
@@ -176,6 +183,7 @@ export default function RegistroCandidato() {
                                         handleOnChange={handleOnChange}
                                         error={error}
                                         submitted={submitted}
+                                        rules={formRulesCandidato}
                                     />
                                 </div>
                             </div>
@@ -194,6 +202,7 @@ export default function RegistroCandidato() {
                                             handleOnChange={handleOnChange}
                                             error={error}
                                             submitted={submitted}
+                                            rules={formRulesCandidato}
                                             autoComplete={"new-password"}
                                         >
                                             <button
@@ -204,35 +213,9 @@ export default function RegistroCandidato() {
                                                 onClick={handleOnClick}
                                             >
                                                 {visible ? (
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="20"
-                                                        height="20"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeWidth="2"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                    >
-                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                                        <circle cx="12" cy="12" r="3"></circle>
-                                                    </svg>
+                                                   <ListSvg name={"ojo"} height={20} width={20} />
                                                 ) : (
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="20"
-                                                        height="20"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeWidth="2"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                    >
-                                                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                                                        <line x1="1" y1="1" x2="23" y2="23"></line>
-                                                    </svg>
+                                                    <ListSvg name={"ojoTapado"} height={20} width={20} />
                                                 )}
                                             </button>
                                         </InputFrom>
@@ -252,6 +235,7 @@ export default function RegistroCandidato() {
                                             handleOnChange={handleOnChange}
                                             error={error}
                                             submitted={submitted}
+                                            rules={formRulesCandidato}
                                             autoComplete={"new-password"}
                                         >
                                             <button
@@ -262,35 +246,9 @@ export default function RegistroCandidato() {
                                                 onClick={handleOnClick2}
                                             >
                                                 {visible2 ? (
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="20"
-                                                        height="20"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeWidth="2"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                    >
-                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                                        <circle cx="12" cy="12" r="3"></circle>
-                                                    </svg>
+                                                    <ListSvg name={"ojo"} height={20} width={20} />
                                                 ) : (
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="20"
-                                                        height="20"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeWidth="2"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                    >
-                                                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                                                        <line x1="1" y1="1" x2="23" y2="23"></line>
-                                                    </svg>
+                                                    <ListSvg name={"ojoTapado"} height={20} width={20} />
                                                 )}
                                             </button>
                                         </InputFrom>
@@ -344,43 +302,29 @@ export default function RegistroCandidato() {
                             </div>
 
                             <div className="form-group">
-                                <div className="terms-container">
-                                    <h3>Términos y condiciones</h3>
-                                    <div className="terms-content">
-                                        <p>
-                                            Al registrarte en SearchJobs, aceptas los siguientes
-                                            términos y condiciones:
-                                        </p>
-                                        <ol>
-                                            <li>
-                                                1. SearchJobs actúa como una plataforma de conexión
-                                                entre candidatos y empresas, pero no es responsable de
-                                                las ofertas laborales publicadas por terceros.
-                                            </li>
-                                            <li>
-                                                2. La información proporcionada en tu perfil debe ser
-                                                veraz y actualizada.
-                                            </li>
-                                            <li>
-                                                3. Eres responsable de mantener la confidencialidad de
-                                                tu contraseña y cuenta.
-                                            </li>
-                                            <li>
-                                                4. SearchJobs puede enviar notificaciones relacionadas
-                                                con ofertas de empleo y actualizaciones de la
-                                                plataforma.
-                                            </li>
-                                            <li>
-                                                5. Tu información personal será tratada de acuerdo con
-                                                nuestra Política de Privacidad.
-                                            </li>
-                                        </ol>
-                                    </div>
-                                </div>
 
                                 <div className="checkbox-group">
                                     <input type="checkbox" id="aceptoTerminos" required />
-                                    <label htmlFor="aceptoTerminos">Acepto los términos y condiciones <span className="required">*</span></label>
+                                    <label htmlFor="aceptoTerminos" className="flex items-center gap-1 text-sm">
+                                        Acepto los{" "}
+                                        <Link
+                                            to="/terminos/condiciones"
+                                            className="text-blue-600 hover:underline"
+                                            target="_blank"
+                                        >
+                                            Términos y Condiciones 
+                                        </Link>
+                                        {" "} y la {" "}
+                                        <Link
+                                            to="/politicas/privacidad"
+                                            className="text-blue-600 hover:underline"
+                                            target="_blank"
+                                        >
+                                            Política de Privacidad
+                                        </Link>
+
+                                        <span className="required">*</span>
+                                    </label>
                                 </div>
                             </div>
 

@@ -1,10 +1,10 @@
 package com.miproyecto.proyecto.integracion;
 
 
-import com.miproyecto.proyecto.domain.Candidato;
-import com.miproyecto.proyecto.domain.Usuario;
-import com.miproyecto.proyecto.model.CandidatoDTO;
-import com.miproyecto.proyecto.repos.UsuarioRepository;
+import com.miproyecto.proyecto.candidato.dto.CandidatoDTO;
+import com.miproyecto.proyecto.candidato.model.Candidato;
+import com.miproyecto.proyecto.usuario.model.Usuario;
+import com.miproyecto.proyecto.usuario.repository.UsuarioRepository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

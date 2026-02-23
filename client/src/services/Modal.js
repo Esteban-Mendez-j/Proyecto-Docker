@@ -22,6 +22,18 @@ export async function modalResponse(message, type) {
   return sweetalertResponse.isConfirmed;
 }
 
+export async function modalRedirect(message, type, redirect, navigate) {
+  const sweetalertResponse = await Swal.fire({
+    text: message,
+    icon: type,
+    confirmButtonText: "OK",
+  })
+
+  if(sweetalertResponse.isConfirmed){
+    navigate? navigate(redirect) : window.location.href = redirect;
+  }
+}
+
 // para mostrar un modal con pregunta 
 export async function QuestionModal(title, icon = "question") {
   const sweetalertResponse = await Swal.fire({
@@ -35,7 +47,23 @@ export async function QuestionModal(title, icon = "question") {
   return sweetalertResponse.isConfirmed;
 }
 
-export function modalTime(message) {
+export async function inputModal(text, inputType="text", inputLabel, inputPlaceholder  ) {
+  const response = await Swal.fire({
+    title: text ,
+    input: inputType,
+    inputLabel: inputLabel,
+    inputPlaceholder: inputPlaceholder,
+    showCancelButton: true,
+    confirmButtonText: "Enviar",
+    inputValidator: (value) => {
+      if (!value) return "El comentario es obligatorio";
+    },
+  });
+
+  return response;
+} 
+
+export function modalTime(message, type="success") {
  
   const Toast = Swal.mixin({
     toast: true,
@@ -49,7 +77,7 @@ export function modalTime(message) {
     }
   });
   Toast.fire({
-    icon: "success",
+    icon: type ,
     title: message
   });
   return Toast;

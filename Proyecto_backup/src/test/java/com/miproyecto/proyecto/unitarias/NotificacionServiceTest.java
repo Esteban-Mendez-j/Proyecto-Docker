@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -22,13 +21,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import com.miproyecto.proyecto.dataType.EstadoEnvio;
-import com.miproyecto.proyecto.domain.Notificacion;
-import com.miproyecto.proyecto.domain.Usuario;
-import com.miproyecto.proyecto.model.NotificacionDTO;
-import com.miproyecto.proyecto.repos.NotificacionRepository;
-import com.miproyecto.proyecto.repos.UsuarioRepository;
-import com.miproyecto.proyecto.service.NotificacionService;
+import com.miproyecto.proyecto.enums.EstadoEnvio;
+import com.miproyecto.proyecto.notificacion.dto.NotificacionDTO;
+import com.miproyecto.proyecto.notificacion.model.Notificacion;
+import com.miproyecto.proyecto.notificacion.repository.NotificacionRepository;
+import com.miproyecto.proyecto.notificacion.service.NotificacionService;
+import com.miproyecto.proyecto.usuario.model.Usuario;
+import com.miproyecto.proyecto.usuario.repository.UsuarioRepository;
+import com.miproyecto.proyecto.util.response.ApiResponseBody;
 
 
 /**
@@ -71,10 +71,10 @@ class NotificacionServiceTest {
                 anyString(), anyBoolean(), any(Pageable.class)))
             .thenReturn(page);
 
-        Map<String, Object> response = notificacionService.findByDestinatarioAndVisible(userId, PageRequest.of(0,10), true);
+        ApiResponseBody<List<NotificacionDTO>> response = notificacionService.findByDestinatarioAndVisible(userId, PageRequest.of(0,10), true);
 
-        assertTrue(response.containsKey("Notificaciones"));
-        List<?> notificaciones = (List<?>) response.get("Notificaciones");
+        assertTrue(!response.getData().isEmpty());
+        List<?> notificaciones = (List<?>) response.getData();
         assertEquals(1, notificaciones.size());
     }
 

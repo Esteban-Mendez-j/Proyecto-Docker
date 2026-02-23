@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -25,15 +24,16 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import com.miproyecto.proyecto.domain.Empresa;
-import com.miproyecto.proyecto.domain.Vacante;
-import com.miproyecto.proyecto.model.VacanteDTO;
-import com.miproyecto.proyecto.repos.EmpresaRepository;
-import com.miproyecto.proyecto.repos.PostuladoRepository;
-import com.miproyecto.proyecto.repos.VacanteRepository;
-import com.miproyecto.proyecto.service.AptitudesService;
-import com.miproyecto.proyecto.service.VacanteService;
+import com.miproyecto.proyecto.aptitudes.service.AptitudesService;
+import com.miproyecto.proyecto.empresa.model.Empresa;
+import com.miproyecto.proyecto.empresa.repository.EmpresaRepository;
+import com.miproyecto.proyecto.postulacion.repository.PostuladoRepository;
 import com.miproyecto.proyecto.util.NotFoundException;
+import com.miproyecto.proyecto.util.response.ApiResponseBody;
+import com.miproyecto.proyecto.vacante.dto.VacanteDTO;
+import com.miproyecto.proyecto.vacante.model.Vacante;
+import com.miproyecto.proyecto.vacante.repository.VacanteRepository;
+import com.miproyecto.proyecto.vacante.service.VacanteService;
 
 /**
  * Pruebas unitarias para la clase VacanteService.
@@ -107,10 +107,10 @@ class VacanteServiceTest {
         when(vacanteRepository.findByIsActiveOrderByFechaPublicacionDesc(eq(true), any(Pageable.class)))
                 .thenReturn(pagina);
 
-        Map<String, Object> resultado = vacanteService.findAllByEstado(true, PageRequest.of(0, 5), "vacantes");
+        ApiResponseBody<List<VacanteDTO>> resultado = vacanteService.findAllByEstado(true, PageRequest.of(0, 5));
 
-        assertTrue(resultado.containsKey("vacantes"));
-        assertEquals(2, ((List<?>) resultado.get("vacantes")).size());
+        assertTrue(!resultado.getData().isEmpty());
+        assertEquals(2, ((List<?>) resultado.getData()).size());
         verify(vacanteRepository).findByIsActiveOrderByFechaPublicacionDesc(eq(true), any(Pageable.class));
     }
 
@@ -134,9 +134,9 @@ class VacanteServiceTest {
         when(empresaRepository.findById(1L)).thenReturn(Optional.of(empresa));
         when(vacanteRepository.findByIdUsuario(eq(empresa), any(Pageable.class))).thenReturn(pagina);
 
-        Map<String, Object> resultado = vacanteService.findByIdUsuario(1L, PageRequest.of(0, 5));
+        ApiResponseBody<List<VacanteDTO>> resultado = vacanteService.findByIdUsuario(1L, PageRequest.of(0, 5));
 
-        assertTrue(resultado.containsKey("vacantes"));
+        assertTrue(!resultado.getData().isEmpty());
         verify(empresaRepository).findById(1L);
         verify(vacanteRepository).findByIdUsuario(eq(empresa), any(Pageable.class));
     }

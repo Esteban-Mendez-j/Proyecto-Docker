@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.miproyecto.proyecto.util.JwtUtils;
+import com.miproyecto.proyecto.util.response.ApiResponseBody;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -59,9 +60,12 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         String rolPrincipal = decodedJWT.getClaim("rolPrincipal").asString();
         
-        Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("roles", roles);
-        responseBody.put("rolPrincipal", rolPrincipal);
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("roles", roles);
+        responseMap.put("rolPrincipal", rolPrincipal);
+        
+        ApiResponseBody<Map<String, Object>> responseBody = new ApiResponseBody<>(responseMap, null, null);
+
         // Configurar tipo de contenido y devolver JSON
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");

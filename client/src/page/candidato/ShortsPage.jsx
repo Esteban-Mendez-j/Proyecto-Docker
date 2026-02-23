@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
-import { useSendForm } from "../../hooks/useFetch";
+import { useSendFormV2 } from "../../hooks/useFetch";
 import { Link, useNavigate } from "react-router-dom";
-import { API_CLIENT_URL, URL_VIDEO } from "../../services/Api";
+import { URL_IMAGEN, URL_VIDEO } from "../../services/Api";
 import { RoleContext } from "../../services/RoleContext";
 import "../../style/invitado/short.css";
 import Loading from "../../components/Loading";
 import { toggleFavoritoRequest } from "../../services/ToggleFavoritosRequest";
-import { modal } from "../../services/Modal";
+import { modal, modalTime } from "../../services/Modal";
+import { ListSvg } from "../../components/Icons"
+import exceptionControl from "../../services/exceptionControl";
 
 const ShortsPage = () => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
@@ -15,11 +17,11 @@ const ShortsPage = () => {
   const [totalPage, setTotalPage] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
   const [currentShort, setCurrentShort] = useState(null);
-  const { send: sendCandidato, data: dataCandidato } = useSendForm();
+  const { send: sendCandidato, data: dataCandidato } = useSendFormV2();
   const videoRef = useRef(null);
   const navigate = useNavigate();
-  const { data, send, loading } = useSendForm();
-  const { rol } = useContext(RoleContext);
+  const { data, meta, send, loading } = useSendFormV2();
+  const { rol, logout } = useContext(RoleContext);
   const itemsPerPage = 20;
 
   const filtrosIniciales = {
@@ -41,7 +43,14 @@ const ShortsPage = () => {
 
   // hace la peticion cuando currentPage (pagina actual) cambia
   useEffect(() => {
-    send(`/api/vacantes/listar/filtradas?page=${currentPage}&size=${itemsPerPage}`, "POST", JSON.stringify(filtrosIniciales));
+    const getVacantes = async () => {
+      try {
+        await send(`/api/vacantes/listar/filtradas?page=${currentPage}&size=${itemsPerPage}`, "POST", JSON.stringify(filtrosIniciales));
+      } catch (error) {
+        exceptionControl(error, logout, navigate, "Error al cargar las vacantes")
+      }
+    }
+    getVacantes()
   }, [currentPage]);
 
   //cambia de pagina cuando el index del video es igual el numero de elementos
@@ -54,11 +63,11 @@ const ShortsPage = () => {
 
   // cuando data cambia guarda los datos en el estado 
   useEffect(() => {
-    if (data && data.vacantes) {
-      setShortsData(data.vacantes)
-      setTotalPage(data.totalPage)
+    if (data && meta) {
+      setShortsData(data)
+      setTotalPage(meta.pagination.totalPage)
     };
-  }, [data]);
+  }, [data, meta]);
 
 
 // ► Ir al siguiente video
@@ -82,9 +91,16 @@ const ShortsPage = () => {
   };
 
   useEffect(() => {
-    if (rol === "CANDIDATO") {
-      sendCandidato("/api/candidatos/perfil", "GET");
+    if (rol !== "CANDIDATO") return
+
+    const getCandidato = async () => {
+      try {
+        await sendCandidato("/api/candidatos/perfil", "GET");
+      } catch (error) {
+        exceptionControl(error, logout, navigate, "Error al cargar las vacantes")
+      }
     }
+    getCandidato()
   }, [rol]);
 
   // obtinen los datos de una vacante en especifico dependiendo el index
@@ -92,16 +108,18 @@ const ShortsPage = () => {
     setCurrentShort(shortsData[currentVideoIndex]);
   }, [shortsData, currentVideoIndex]);
 
+  // función de la postulación
   async function handleOnClick(i) {
-    const id = currentShort.nvacantes;
-    const result = await send(`/api/postulados/add/${id}`, "POST");
-    modal(result.message, result.status);
-    if (result.status === "success") {
-      setCurrentShort(prev => ({
-        ...prev,
-        estadoPostulacion: "Espera",
-        candidatoPostulado: true
-      }));
+    try {
+      const id = currentShort.nvacantes;
+      await send(`/api/postulados/add/${id}`, "POST");
+      modalTime("Postulacion realizada con exito");
+      setShortsData(prev => prev.map(data =>
+        data.nvacantes === id ? { ...data, estadoPostulacion: "Espera", candidatoPostulado: true }
+          : data
+      ));
+    } catch (error) {
+      exceptionControl(error, logout, navigate, "Error realizar la postulacion")
     }
   }
 
@@ -113,13 +131,15 @@ const ShortsPage = () => {
       await toggleFavoritoRequest(id);
 
       // Cambiar estado local
-      setCurrentShort(prev => ({
-        ...prev,
-        vacanteGuardada: !prev.vacanteGuardada
-      }));
+      setShortsData( prev => 
+        prev.map( v =>
+          v.nvacantes === id ? {...v, vacanteGuardada:!v.vacanteGuardada} : v
+        ) 
+      )
 
     } catch (error) {
-      console.error("Error al guardar favorito:", error);
+      modal("Error al guardar favoritos", "error");
+      console.error("Error al guardar favorito", error);
     }
   };
 
@@ -133,7 +153,7 @@ const ShortsPage = () => {
 
   
 
-if (loading) return <Loading />;
+  if (loading) return <Loading />;
 
   if (!currentShort) {
     return (
@@ -155,9 +175,7 @@ if (loading) return <Loading />;
   }
 
 
-
   return (
-    <>
     <div className="shorts-container">
       
       {/* Botón atrás */}
@@ -184,7 +202,7 @@ if (loading) return <Loading />;
 
             <div className="arrows">
               <button disabled={currentVideoIndex === 0 && currentPage === 0  } onClick={prevVideo}>▲</button>
-              <button disabled={currentVideoIndex === shortsData.length || currentPage === totalPage } onClick={nextVideo}>▼</button>
+              <button disabled={currentVideoIndex === shortsData.length-1 || currentPage === totalPage } onClick={nextVideo}>▼</button>
             </div>
           </div>
         </div>
@@ -203,7 +221,6 @@ if (loading) return <Loading />;
                 />
                 <div>
                   <h1>{currentShort.nameEmpresa}</h1>
-                  <h1>{currentShort.nvacantes}</h1>
                 </div>
               </Link>
 
@@ -218,27 +235,13 @@ if (loading) return <Loading />;
             </div>
 
             <div className="actions">
-              <button
+              {rol === "CANDIDATO" &&<button
                 className={`like-btn ${currentShort.vacanteGuardada ? "liked" : ""}`}
                 onClick={handleLike}
                 title="Favorita"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  stroke="currentColor"
-                  fill={currentShort.vacanteGuardada ? "yellow" : "none"}
-                  className={`w-10 h-10 transition-colors duration-200 ${currentShort.vacanteGuardada ? "text-yellow-400" : "text-gray-400"
-                    }`}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M11.48 3.499a.562.562 0 011.04 0l2.125 4.308a.563.563 0 00.424.308l4.756.691a.562.562 0 01.312.959l-3.44 3.352a.563.563 0 00-.162.498l.811 4.733a.562.562 0 01-.815.592L12 17.347l-4.26 2.24a.562.562 0 01-.815-.592l.811-4.733a.563.563 0 00-.162-.498L4.134 9.765a.562.562 0 01.312-.959l4.756-.691a.563.563 0 00.424-.308l2.125-4.308z"
-                  />
-                </svg>
-              </button>
+                <ListSvg name={"estrella"} height={50} width={50} nameClass={`transition-colors duration-200 ${currentShort.vacanteGuardada ? "text-yellow-400 fill-yellow-400" : "text-gray-400 fill-gray-100 "}`} />
+              </button>}
               <div>
                 {/* boton Postulados */}
                 {rol === "CANDIDATO" ? (
@@ -268,7 +271,7 @@ if (loading) return <Loading />;
                               className="w-full bg-gradient-primary text-white py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                               disabled={!dataCandidato?.candidato.curriculo}
                             >
-                              Postularme ahora
+                              Postularme ahora 
                             </button>
                             {!dataCandidato?.candidato.curriculo && (
                               <p className="text-red-600 text-sm mt-2">
@@ -295,7 +298,6 @@ if (loading) return <Loading />;
         </div>
       </div>
     </div>
-    </>
   );
 };
 

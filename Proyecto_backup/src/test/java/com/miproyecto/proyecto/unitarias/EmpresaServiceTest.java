@@ -21,14 +21,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.miproyecto.proyecto.domain.Empresa;
-import com.miproyecto.proyecto.domain.Postulado;
-import com.miproyecto.proyecto.domain.Roles;
-import com.miproyecto.proyecto.domain.Vacante;
-import com.miproyecto.proyecto.model.EmpresaDTO;
-import com.miproyecto.proyecto.repos.EmpresaRepository;
-import com.miproyecto.proyecto.repos.RolesRepository;
-import com.miproyecto.proyecto.service.EmpresaService;
+import com.miproyecto.proyecto.empresa.dto.EmpresaDTO;
+import com.miproyecto.proyecto.empresa.model.Empresa;
+import com.miproyecto.proyecto.empresa.repository.EmpresaRepository;
+import com.miproyecto.proyecto.empresa.service.EmpresaService;
+import com.miproyecto.proyecto.postulacion.model.Postulado;
+import com.miproyecto.proyecto.usuario.model.Roles;
+import com.miproyecto.proyecto.usuario.repository.RolesRepository;
+import com.miproyecto.proyecto.vacante.model.Vacante;
 
 /**
  * Pruebas unitarias para la clase EmpresaService.

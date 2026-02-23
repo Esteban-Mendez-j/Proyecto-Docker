@@ -162,10 +162,6 @@
     cursor: pointer;
   }
 
-  .form-group {
-    margin-bottom: 20px;
-  }
-
   .form-group label {
     display: block;
     text-align: start;

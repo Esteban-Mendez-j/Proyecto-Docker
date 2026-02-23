@@ -16,10 +16,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.miproyecto.proyecto.domain.Usuario;
-import com.miproyecto.proyecto.model.UsuarioDTO;
-import com.miproyecto.proyecto.repos.UsuarioRepository;
-import com.miproyecto.proyecto.service.UsuarioService;
+import com.miproyecto.proyecto.usuario.dto.UsuarioDTO;
+import com.miproyecto.proyecto.usuario.model.Usuario;
+import com.miproyecto.proyecto.usuario.repository.UsuarioRepository;
+import com.miproyecto.proyecto.usuario.service.UsuarioService;
 import com.miproyecto.proyecto.util.NotFoundException;
 
 /**

@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { useSendForm } from "../hooks/useFetch";
 import useVisible from "../hooks/useVisible";
 import { API_CLIENT_URL } from "../services/Api";
 import { RoleContext } from "../services/RoleContext";
@@ -10,29 +9,23 @@ import BandejaNotificacion from "../components/BandejaNotificacion";
 
 export default function Header () {
 
-    const {rol} = useContext(RoleContext);
+    const {rol, userDataSession} = useContext(RoleContext);
     const [urlImagen, setUrlImagen] = useState(null);
     const [handleOnClick, visible] = useVisible()
-    const { data, send }  = useSendForm();
-    useEffect(()=>{
-        if(rol && rol != "ROLE_INVITADO"){
-            send("/api/usuarios/datos", "GET");
-        }
-    }, [rol])
     
     useEffect(() => {
-        if (!rol || !data) return;
+        if (!rol || !userDataSession) return;
 
         const imagenPorDefecto = rol === "CANDIDATO"
             ? "/images/imgCandidato.png"
             : "/images/imgEmpresa.png";
 
         setUrlImagen(
-            data?.imagen
-                ? `${API_CLIENT_URL}/img/${data.imagen}`
+            userDataSession?.imagen
+                ? `${API_CLIENT_URL}/img/${userDataSession.imagen}`
                 : API_CLIENT_URL+ imagenPorDefecto
         );
-    }, [data]);
+    }, [userDataSession]);
 
 
     const linksByRole = {
@@ -134,7 +127,7 @@ export default function Header () {
                                     className="foto-perfil"
                                     alt="foto de perfil"
                                 />
-                                <p className="nombre-perfil">{data?.nombre}</p>
+                                <p className="nombre-perfil">{userDataSession?.nombre}</p>
                             </picture>
                         </Link>
                     }

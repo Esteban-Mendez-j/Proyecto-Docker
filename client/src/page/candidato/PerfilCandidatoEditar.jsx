@@ -1,16 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import InputForm from "../../components/InputForm.jsx";
 import Loading from "../../components/Loading.jsx";
-import { useFetch, useSendForm } from "../../hooks/useFetch";
+import { useFetchV2, useSendFormV2 } from "../../hooks/useFetch";
 import Layout from "../../layouts/Layout.jsx";
 import { API_CLIENT_URL, URL_IMAGEN } from "../../services/Api";
-import { modal, modalResponse } from "../../services/Modal";
+import { modal, modalRedirect, modalTime } from "../../services/Modal";
 import "../../style/invitado/candidato.css";
-import { listEducacion, listAptitudes } from "../../services/data.js"
+import { listEducacion, listAptitudes, listValueHistorial, listValueEstudio } from "../../services/data.js"
 import { formRulesCandidatoEditar, validateForm } from "../../services/validacionForm.js";
-
-const tmpId = () => crypto.randomUUID();
+import TimeLineList from "../../components/TimeLineList.jsx";
+import exceptionControl from "../../services/exceptionControl.js";
+import { RoleContext } from "../../services/RoleContext.jsx";
 
 const PerfilCandidatoEditar = () => {
 
@@ -37,23 +38,13 @@ const PerfilCandidatoEditar = () => {
     videoLink: ""
   }
 
-  const initialDataEstudios = {
-    academia: "",
-    idEstudio: "",
-    idUsuario: "",
-    titulo: ""
-  }
-  const initialDataHistorial = {
-    academia: "",
-    idEstudio: "",
-    idUsuario: "",
-    titulo: ""
-  }
+
   const navigate = useNavigate()
+  const { logout } = useContext(RoleContext);
   const maxImgSize = 500;  // 500kb
   const maxPdfSize = 1; //1mb
-  const { data, loading } = useFetch("/api/candidatos/perfil", "GET");
-  const { error, send,  setError } = useSendForm();
+  const { data, loading } = useFetchV2("/api/candidatos/perfil", "GET");
+  const { error, send,  setError } = useSendFormV2();
   const [selected, setSelected] = useState([]);
   const [candidato, setCandidato] = useState(initialData);
   const [estudios, setEstudios] = useState([]);
@@ -98,8 +89,8 @@ const PerfilCandidatoEditar = () => {
   useEffect(() => {
     if (!data) { return }
     setCandidato(data.candidato);
-    setEstudios((data.estudios).map((e) => ({ ...e, _tmpId: tmpId() })));
-    setHistorial((data.historialLaboral).map((h) => ({ ...h, _tmpId: tmpId() })));
+    setEstudios(data.estudios);
+    setHistorial(data.historialLaboral);
     setSelected(data.candidato.aptitudes)
   }, [data]);
 
@@ -159,46 +150,37 @@ const PerfilCandidatoEditar = () => {
 
 
   /* ---- CRUD Estudios ---------------------------- */
-  const agregarEstudio = () =>
-    setEstudios([
-      ...estudios,
-      { _tmpId: tmpId(), idEstudio: null, titulo: "", academia: "", idUsuario: candidato.idUsuario },
-    ]);
+  const agregarEstudio = () =>{navigate("/perfil/candidato/editar/estudios")}
 
-  const eliminarEstudio = (id) =>
-    setEstudios(estudios.filter((e) => (e.idEstudio ?? e._tmpId) !== id));
+  const EditarEstudio = (id) =>{navigate(`/perfil/candidato/editar/estudios/${id}`)}
 
-  const actualizarEstudio = (id, campo, valor) =>
-    setEstudios(
-      estudios.map((e) =>
-        (e.idEstudio ?? e._tmpId) === id ? { ...e, [campo]: valor } : e
-      )
-    );
-
+  const eliminarEstudio = async (id) =>{
+    try {
+      const response = await send(`/api/estudios/cambiar/visibilidad/${false}/${id}`, "PUT")
+      if (response.data == id) {
+        setEstudios(estudios.filter(est => est.idEstudio !== id));
+        modalTime("Eliminacion Completada")
+      }
+    } catch (error) {
+      exceptionControl(error, logout, navigate, "Error al eliminar el estudio")
+    }
+  }
   /* ---- CRUD Historial laboral ------------------- */
-  const agregarHistorial = () =>
-    setHistorial([
-      ...historialLaboral,
-      {
-        _tmpId: tmpId(),
-        idHistorial: null,
-        titulo: "",
-        empresa: "",
-        idUsuario: candidato.idUsuario
-      },
-    ]);
+  const agregarHistorial = () =>{navigate("/perfil/candidato/editar/historial")}
+  
+  const editarHistorial = (id) =>{navigate(`/perfil/candidato/editar/historial/${id}`)}
 
-  const eliminarHistorial = (id) =>
-    setHistorial(
-      historialLaboral.filter((h) => (h.idHistorial ?? h._tmpId) !== id)
-    );
-
-  const actualizarHistorial = (id, campo, valor) =>
-    setHistorial(
-      historialLaboral.map((h) =>
-        (h.idHistorial ?? h._tmpId) === id ? { ...h, [campo]: valor } : h
-      )
-    );
+  const eliminarHistorial = async (id) => {
+    try {
+      const response = await send(`/api/historialLaborals/cambiar/visibilidad/${false}/${id}`, "PUT")
+      if (response.data == id) {
+        setHistorial(historialLaboral.filter(h => h.iDHistorial !== id));
+        modalTime("Eliminacion Completada")
+      }
+    } catch (error) {
+      exceptionControl(error, logout, navigate, "Error al eliminar el Historial Laboral")
+    }
+  }
 
   /* ------------ SUBMIT --------------------------- */
   const handleSubmit = async (e) => {
@@ -207,44 +189,13 @@ const PerfilCandidatoEditar = () => {
       modal("Selecciona maximo 5 y minimo 2 aptitudes", "warning");
       return
     }
-    /* ----------- 2. Preparar payloads ------------ */
-    const estudiosEnviar = estudios.map(({ _tmpId, ...rest }) => rest);
-    const historialEnviar = historialLaboral.map(({ _tmpId, ...rest }) => rest);
-
-    /* ----------- 3. Enviar estudios e historial en paralelo ------------ */
-    
-    
     
     try {
-      const [respEst, respHist] = await Promise.all([
-        fetch(`${API_CLIENT_URL}/api/estudios/replace/${candidato.idUsuario}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(estudiosEnviar),
-          credentials: "include",
-        }),
-        fetch(`${API_CLIENT_URL}/api/historialLaborals/replace/${candidato.idUsuario}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(historialEnviar),
-          credentials: "include",
-        }),
-        
-      ]);
-
-      /* ----------- 4. Comprobar respuestas ------------ */
-      if (!respEst.ok || !respHist.ok) {
-        // leer mensajes de error si existen
-        const mensajeEst = (!respEst.ok ? (await respEst.json().catch(() => ({}))).mensaje : "") || "";
-        const mensajeHist = (!respHist.ok ? (await respHist.json().catch(() => ({}))).mensaje : "") || "";
-        throw new Error(`${mensajeEst} ${mensajeHist}`.trim() || "Error al actualizar datos");
-      }
-
       setSubmitted(true)
       const newErrors = validateForm(candidato, formRulesCandidatoEditar);
       
       if (Object.keys(newErrors).length > 0) {
-        setError(newErrors);
+        setError((prev) => ({ ...prev, fieldErrorsFrontend: newErrors }));
 
         // Foco en el primer campo con error
         const firstErrorField = Object.keys(newErrors)[0];
@@ -253,7 +204,6 @@ const PerfilCandidatoEditar = () => {
           el.scrollIntoView({ behavior: "smooth", block: "center" });
           el.focus();
         }
-
         return; // detener envío o acción
       }
       setError(null);
@@ -272,30 +222,18 @@ const PerfilCandidatoEditar = () => {
         formData.append("img", fotoRef.current.files[0]);
       }
 
-      const result = await send(`/api/candidatos/edit/${candidato.idUsuario}`, "PUT", formData, null)
+      await send(`/api/candidatos/edit/${candidato.idUsuario}`, "PUT", formData, null)
 
-      if (result.status === 201 || result.status == 200) {
-        const isOk = await modalResponse(result.mensaje, "success");
-        if (isOk) {
-          navigate("/perfil/candidato");
-          return
-        }
-      }
+      await modalRedirect("Candidato Actualizado con exito!", "success", "/perfil/candidato", navigate);
 
-      modal("Error al actualizar tu perfil", "error")
       /* ----------- 5. Éxito global ------------ */
     } catch (err) {
-      console.error(err);
-      modal(err.message || "Ocurrió un error actualizando tu perfil", "error")
+      exceptionControl(err, logout, navigate,"Ocurrió un error actualizando tu perfil" )
     }
   };
 
-
   /* ---- RENDER ----------------------------------- */
   if (loading) return <Loading />;
-
-
-
 
   return (
     <Layout >
@@ -601,68 +539,12 @@ const PerfilCandidatoEditar = () => {
                 + Añadir
               </button>
             </header>
-
-            <div className="space-y-4">
-              {estudios.length === 0 && (
-                <p className="text-sm text-gray-500">
-                  No tienes estudios registrados.
-                </p>
-              )}
-              {estudios.map((est) => {
-                const key = est.idEstudio ?? est._tmpId;
-                return (
-                  <div
-                    key={key}
-                    className="relative pl-8 before:absolute before:left-3 before:top-2 before:h-3 before:w-3 before:-translate-x-1/2 before:rounded-full before:bg-primary-500"
-                  >
-                    <div className="grid gap-4 md:grid-cols-2">
-
-                      {/* --- Título --- */}
-                      <div className="flex flex-col">
-                        <label htmlFor={`titulo-${key}`} className="mb-1 text-sm font-medium">
-                          Título
-                        </label>
-                        <input
-                          id={`titulo-${key}`}
-                          placeholder="Título"
-                          name="titulo"
-                          value={est.titulo}
-                          onChange={(e) => actualizarEstudio(key, 'titulo', e.target.value)}
-                          className="w-full rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"
-                        />
-                        <p id="error-titulo" className="error-text hidden mt-1 text-xs text-red-500" />
-                      </div>
-
-                      {/* --- Institución --- */}
-                      <div className="flex flex-col">
-                        <label htmlFor={`academia-${key}`} className="mb-1 text-sm font-medium">
-                          Institución
-                        </label>
-                        <input
-                          id={`academia-${key}`}
-                          placeholder="Institución"
-                          name="academia"
-                          value={est.academia}
-                          onChange={(e) => actualizarEstudio(key, 'academia', e.target.value)}
-                          className="w-full rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"
-                        />
-                        <p id="error-academia" className="error-text hidden mt-1 text-xs text-red-500" />
-                      </div>
-
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => eliminarEstudio(key)}
-                      className="mt-2 text-sm text-red-600 hover:underline"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-
-                );
-              })}
-            </div>
+            <TimeLineList objeto={estudios} listValue={listValueEstudio} action={
+              {
+                boton1: { funcion: eliminarEstudio, texto: "Eliminar" },
+                boton2: { funcion: EditarEstudio , texto: "Editar" }
+              }
+            } />
           </section>
 
           {/* ---------- HISTORIAL LABORAL ---------- */}
@@ -677,57 +559,12 @@ const PerfilCandidatoEditar = () => {
                 + Añadir
               </button>
             </header>
-
-            <div className="space-y-4">
-              {historialLaboral.length === 0 && (
-                <p className="text-sm text-gray-500">
-                  No tienes experiencia laboral registrada.
-                </p>
-              )}
-              {historialLaboral.map((exp) => {
-                const key = exp.idHistorial ?? exp._tmpId;
-                return (
-                  <div
-                    key={key}
-                    className="relative pl-8 before:absolute before:left-3 before:top-2 before:h-3 before:w-3 before:-translate-x-1/2 before:rounded-full before:bg-primary-500"
-                  >
-                    <div className="grid gap-4 md:grid-cols-2">
-                      {/* --- Cargo --- */}
-                      <div className="flex flex-col">
-                        <label className="mb-1 text-sm font-medium">Cargo</label>
-                        <input
-                          placeholder="Cargo"
-                          value={exp.titulo}
-                          name="titulo"
-                          onChange={(e) => actualizarHistorial(key, 'titulo', e.target.value)}
-                          className="w-full rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"
-                        />
-                      </div>
-
-                      {/* --- Empresa --- */}
-                      <div className="flex flex-col">
-                        <label className="mb-1 text-sm font-medium">Empresa</label>
-                        <input
-                          placeholder="Empresa"
-                          value={exp.empresa}
-                          onChange={(e) => actualizarHistorial(key, 'empresa', e.target.value)}
-                          className="w-full rounded-2xl border border-gray-300 bg-white px-4 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200"
-                        />
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => eliminarHistorial(key)}
-                      className="mt-2 text-sm text-red-600 hover:underline"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-
-                );
-              })}
-            </div>
+            <TimeLineList objeto={historialLaboral} listValue={listValueHistorial} action={
+              {
+                boton1: { funcion: eliminarHistorial, texto: "Eliminar" },
+                boton2: { funcion: editarHistorial , texto: "Editar" }
+              }
+            } />
           </section>
 
           <div className="flex justify-end gap-4">
@@ -740,7 +577,7 @@ const PerfilCandidatoEditar = () => {
 
             <button
               type="reset"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate("/perfil/candidato")}
               className="rounded-full bg-gray-400 px-8 py-3 text-white hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300"
             >
               Cancelar

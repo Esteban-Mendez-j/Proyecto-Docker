@@ -1,15 +1,18 @@
-import { useSendForm } from "../../hooks/useFetch";
+import { useSendFormV2 } from "../../hooks/useFetch";
 import useValidation from "../../hooks/useValidation";
 import Layout from "../../layouts/Layout";
 import InputForm from "../../components/InputForm";
 import "../../style/invitado/registroEmpresa.css"
 import Loading from "../../components/Loading";
 import useVisible from "../../hooks/useVisible";
-import { modalResponse } from "../../services/Modal";
+import { modalRedirect, modalResponse } from "../../services/Modal";
 import { Link, useNavigate } from "react-router-dom";
 import { sectores } from "../../services/data";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { formRulesEmpresa, validateForm } from "../../services/validacionForm";
+import { ListSvg } from "../../components/Icons";
+import exceptionControl from "../../services/exceptionControl";
+import { RoleContext } from "../../services/RoleContext";
 export default function RegistroEmpresa (){
     
     const initialData = {
@@ -22,7 +25,8 @@ export default function RegistroEmpresa (){
         contraseñaVerificada: ""
     }
     
-    const {send , data, error, setError, loading} = useSendForm();
+    const {send , data, error, setError, loading} = useSendFormV2();
+    const { logout } = useContext(RoleContext);
     const [submitted, setSubmitted] = useState(false);
     const { validarPassword, dataFrom, setDataFrom } = useValidation(initialData);
     const [handleOnClick, visible] = useVisible();
@@ -38,36 +42,34 @@ export default function RegistroEmpresa (){
     };
 
     async function handleSubmit(e) {
-        e.preventDefault();
-        setSubmitted(true)
-        const newErrors = validateForm(dataFrom, formRulesEmpresa);
-        const combinedErrors = { ...newErrors };
+        try {
+            e.preventDefault();
+            setSubmitted(true)
+            const newErrors = validateForm(dataFrom, formRulesEmpresa);
+            const combinedErrors = { ...newErrors };
 
-        if (!validarPassword) {
-            combinedErrors.contrasena = "Contraseña inválida";
-        }
-
-        if (Object.keys(combinedErrors).length > 0) {
-            setError(combinedErrors);
-
-            // Foco en el primer campo con error
-            const firstErrorField = Object.keys(combinedErrors)[0];
-            const el = document.getElementById(firstErrorField);
-            if (el) {
-                el.scrollIntoView({ behavior: "smooth", block: "center" });
-                el.focus();
+            if (!validarPassword) {
+                combinedErrors.contrasena = "Contraseña inválida";
             }
 
-            return; // detener envío o acción
-        }
-        setError(null);
+            if (Object.keys(combinedErrors).length > 0) {
+                setError((prev) => ({ ...prev, fieldErrorsFrontend: combinedErrors }))
 
-        const result = await send("/api/empresas/add", "POST", JSON.stringify(dataFrom));
-        if(result.status === 201){
-            const isOk = await modalResponse(result.mensaje, "success");
-            if(isOk){
-                navigate("/login");
+                // Foco en el primer campo con error
+                const firstErrorField = Object.keys(combinedErrors)[0];
+                const el = document.getElementById(firstErrorField);
+                if (el) {
+                    el.scrollIntoView({ behavior: "smooth", block: "center" });
+                    el.focus();
+                }
+                return; // detener envío o acción
             }
+            setError(null);
+
+            await send("/api/empresas/add", "POST", JSON.stringify(dataFrom));
+            modalRedirect("Empresa creada con exito", "success", "/login", navigate)
+        } catch (error) {
+            exceptionControl(error, logout, navigate, "Error al registrar la empresa")
         }
     }
 
@@ -89,6 +91,7 @@ export default function RegistroEmpresa (){
                                     value={dataFrom.nombre}
                                     handleOnChange={handleOnChange}
                                     error={error}
+                                    rules={formRulesEmpresa}
                                     submitted={submitted}
                                 />
                             </div>
@@ -104,6 +107,7 @@ export default function RegistroEmpresa (){
                                         handleOnChange={handleOnChange}
                                         error={error}
                                         submitted={submitted}
+                                        rules={formRulesEmpresa}
                                         minL={9}
                                         maxL={9}
                                     />
@@ -140,6 +144,7 @@ export default function RegistroEmpresa (){
                                     handleOnChange={handleOnChange}
                                     error={error}
                                     submitted={submitted}
+                                    rules={formRulesEmpresa}
                                     autoComplete={"email"}
                                 />
                                 <p className="form-hint">Usarás este correo para iniciar sesión</p>
@@ -155,6 +160,7 @@ export default function RegistroEmpresa (){
                                     handleOnChange={handleOnChange}
                                     error={error}
                                     submitted={submitted}
+                                    rules={formRulesEmpresa}
                                     maxL={10}
                                 />
                             </div>
@@ -171,6 +177,7 @@ export default function RegistroEmpresa (){
                                             handleOnChange={handleOnChange}
                                             error={error}
                                             submitted={submitted}
+                                            rules={formRulesEmpresa}
                                             autoComplete={"new-password"}
                                         >
                                             <button
@@ -181,35 +188,9 @@ export default function RegistroEmpresa (){
                                                 onClick={handleOnClick}
                                             >
                                                 {visible ? (
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="20"
-                                                        height="20"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeWidth="2"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                    >
-                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                                        <circle cx="12" cy="12" r="3"></circle>
-                                                    </svg>
+                                                    <ListSvg name={"ojo"} height={20} width={20} />
                                                 ) : (
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="20"
-                                                        height="20"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeWidth="2"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                    >
-                                                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                                                        <line x1="1" y1="1" x2="23" y2="23"></line>
-                                                    </svg>
+                                                    <ListSvg name={"ojoTapado"} height={20} width={20} />
                                                 )}
                                             </button>
                                         </InputForm>
@@ -227,6 +208,7 @@ export default function RegistroEmpresa (){
                                             handleOnChange={handleOnChange}
                                             error={error}
                                             submitted={submitted}
+                                            rules={formRulesEmpresa}
                                             autoComplete={"new-password"}
                                         >
                                             <button
@@ -237,35 +219,9 @@ export default function RegistroEmpresa (){
                                                 onClick={handleOnClick2}
                                             >
                                                 {visible2 ? (
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="20"
-                                                        height="20"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeWidth="2"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                    >
-                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                                        <circle cx="12" cy="12" r="3"></circle>
-                                                    </svg>
+                                                    <ListSvg name={"ojo"} height={20} width={20} />
                                                 ) : (
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="20"
-                                                        height="20"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeWidth="2"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                    >
-                                                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                                                        <line x1="1" y1="1" x2="23" y2="23"></line>
-                                                    </svg>
+                                                    <ListSvg name={"ojoTapado"} height={20} width={20} />
                                                 )}
                                             </button>
                                         </InputForm>
@@ -318,25 +274,28 @@ export default function RegistroEmpresa (){
                                 </ul>
                             </div>
 
-                            <div className="terms-container">
-                                <h3>Términos y condiciones</h3>
-                                <div className="terms-content">
-                                    <p>Al registrarte como empresa en SearchJobs, aceptas:</p>
-                                    <ol>
-                                        <li>1. Publicar exclusivamente ofertas laborales verificables, vigentes y auténticas.</li>
-                                        <li>2. Mantener información precisa, completa y actualizada en tu perfil empresarial y publicaciones.</li>
-                                        <li>3. Cumplir con las leyes laborales, de privacidad y contratación de tu país o región.</li>
-                                        <li>4. Evitar cualquier contenido ofensivo, fraudulento o discriminatorio.</li>
-                                        <li>5. Usar los datos personales de los candidatos únicamente con fines legítimos de selección.</li>
-                                        <li>6. Abstenerse de realizar actividades fraudulentas como suplantación o phishing.</li>
-                                        <li>7. Aceptar que SearchJobs puede revisar, suspender o eliminar publicaciones que incumplan estas</li>
-                                    </ol>
-                                </div>
-                            </div>
-
                             <div className="checkbox-group">
                                 <input type="checkbox" id="aceptoTerminos" required />
-                                <label htmlFor="aceptoTerminos">Acepto los términos y condiciones <span className="required">*</span></label>
+                               <label htmlFor="aceptoTerminos" className="flex items-center gap-1 text-sm">
+                                        Acepto los{" "}
+                                        <Link
+                                            to="/terminos/condiciones"
+                                            className="text-blue-600 hover:underline"
+                                            target="_blank"
+                                        >
+                                            Términos y Condiciones 
+                                        </Link>
+                                        {" "} y la {" "}
+                                        <Link
+                                            to="/politicas/privacidad"
+                                            className="text-blue-600 hover:underline"
+                                            target="_blank"
+                                        >
+                                            Política de Privacidad
+                                        </Link>
+
+                                        <span className="required">*</span>
+                                    </label>
                             </div>
 
                             <div className="step-buttons">

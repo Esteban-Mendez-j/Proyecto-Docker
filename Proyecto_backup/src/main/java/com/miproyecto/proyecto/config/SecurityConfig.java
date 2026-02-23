@@ -18,8 +18,8 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.miproyecto.proyecto.config.filter.JwtTokenValidator;
-import com.miproyecto.proyecto.service.CustomUserDetailsService;
-import com.miproyecto.proyecto.service.UsuarioService;
+import com.miproyecto.proyecto.usuario.service.CustomUserDetailsService;
+import com.miproyecto.proyecto.usuario.service.UsuarioService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
 @Configuration
@@ -96,7 +96,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/usuarios/**", "/css/**", 
                     "/images/**","/documentacion.html","/swagger-ui.html","/swagger-ui/**","/v3/api-docs/**", "/js/**", "/api/empresas/add", "/api/candidatos/add","/api/usuarios/rol",
-                    "/api/vacantes/listar", "/api/vacantes/seleccion/{nvacantes}",
+                    "/api/vacantes/listar", "/api/vacantes/seleccion/{nvacantes}","/api/usuarios/datos",
                     "/api/vacantes/eliminar/filtro", "/api/apelaciones/**","/api/vacantes/Top/listar","/api/vacantes/listar/filtradas" ,
                     "/api/vacantes/**", "/api/empresas/perfil/**"
                 ).permitAll()

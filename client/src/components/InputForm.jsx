@@ -15,9 +15,10 @@ export default function InputForm({
   minL = 0,
   maxL = undefined,
   rules = null,
+  isDisabled= false,
   submitted
 }) {
-  const backendError = error?.[name];
+  const backendError = error?.fieldErrors?.find( error => error.field === name)?.message;
   const [localError, setLocalError] = useState(null);
 
   useEffect(() => {
@@ -33,7 +34,7 @@ export default function InputForm({
     setLocalError(null);
   }, [value, rules, name]);
 
-  const fieldError = backendError || localError;
+  const fieldError = localError || backendError ;
 
   const Component = as; // aquí decides si es input, textarea o select
 
@@ -46,6 +47,7 @@ export default function InputForm({
         onChange={handleOnChange}
         placeholder={placeholder}
         autoComplete={autoComplete}
+        disabled={isDisabled}
         className={`${className} ${(fieldError && submitted) ? "error-input" : ""}`}
         {...(type ? { type } : {})}
         {...(as === "input" && type === "number" ? { min: minL } : {})}

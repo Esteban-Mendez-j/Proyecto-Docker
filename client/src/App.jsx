@@ -5,7 +5,7 @@ import AdminIndex from "./page/admin/AdminIndex";
 import AdminUsuarios from "./page/admin/AdminUsuarios";
 import AdminVacantes from "./page/admin/AdminVacantes";
 import ListadoVacantes from "./page/candidato/ListadoVacantes";
-import PerfilCandidato from "./page/candidato/PerfilCandidato";
+import PerfilCandidatoPrivate from "./page/candidato/PerfilCandidatoPrivate";
 import PerfilCandidatoEditar from "./page/candidato/PerfilCandidatoEditar.jsx";
 import PostuladosPage from "./page/candidato/Postulados.jsx";
 import Chat from "./page/chat/chat";
@@ -21,13 +21,15 @@ import Login from "./page/invitado/Login";
 import Registro from "./page/invitado/Registro";
 import RegistroCandidato from "./page/invitado/RegistroCandidato";
 import RegistroEmpresa from './page/invitado/RegistroEmpresa';
-import EditarPerfilEmpresa from "./page/perfil/empresa/EditarPerfilEmpresa.jsx";
-import PerfilEmpresa from "./page/perfil/empresa/PerfilEmpresa.jsx";
+import EditarPerfilEmpresa from "./page/empresa/EditarPerfilEmpresa.jsx";
+import PrivatePerfilEmpresa from "./page/empresa/PrivatePerfilEmpresa.jsx";
 import PerfilCandidatoPublic from "./page/candidato/PerfilCandidatoPublic.jsx"
 import PoliticaPrivacidad from "./page/invitado/PoliticaPrivacidad.jsx";
 import TerminosCondiciones from "./page/invitado/TerminosCondiciones.jsx";
 import Notificaciones from "./page/candidato/Notificaciones.jsx";
 import ShortsPage from './page/candidato/ShortsPage.jsx';
+import FormEducation from "./page/candidato/FormEducation.jsx";
+import FormHistorial from "./page/candidato/FormHistorial.jsx";
 
 
 function App() {
@@ -36,15 +38,18 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<RouteProtection accessRole={"CANDIDATO"} />}> 
-          <Route path="/perfil/candidato" element={<PerfilCandidato/>} />
+          <Route path="/perfil/candidato" element={<PerfilCandidatoPrivate/>} />
           <Route path="/postulaciones" element= {<PostuladosPage/>} />
           <Route path= "/notificaciones" element= {<Notificaciones/>} />
+          <Route path= "/perfil/candidato/editar/estudios/:id?" element={<FormEducation/>}/>
+          <Route path= "/perfil/candidato/editar/historial/:id?" element={<FormHistorial/>}/>
+          <Route path="/shorts" element={<ShortsPage />} />
         </Route>
         <Route element={<RouteProtection accessRole={"EMPRESA"} />}> 
           <Route path="/empresa/vacantes" element={<Vacantes/>} />
           <Route path="/empresa/editar/vacantes/:nvacantes" element={<EditarVacantes/>} />
           <Route path="/empresa/listado/vacantes" element={<MisVacantes />} />
-          <Route path="/perfil/empresa" element={<PerfilEmpresa/>} />
+          <Route path="/perfil/empresa" element={<PrivatePerfilEmpresa/>} />
           <Route path="/perfil/empresa/editar" element={<EditarPerfilEmpresa />} />
         </Route>
          <Route element={<RouteProtection accessRole={["EMPRESA","CANDIDATO"]} />}> 
@@ -62,9 +67,6 @@ function App() {
         </Route>
         <Route element={<RouteProtection accessRole={["EMPRESA","CANDIDATO","ROLE_INVITADO"]} />}> 
           <Route path="/" element={<Index />} />
-        </Route>
-        <Route element={<RouteProtection accessRole={["CANDIDATO","ROLE_INVITADO"]} />}> 
-          <Route path="/shorts" element={<ShortsPage />} />
         </Route>
         <Route element={<RouteProtection accessRole={["EMPRESA","ADMIN","SUPER_ADMIN"]} />}> 
           <Route path="/empresa/postulados/:vacanteId" element={<Postulados/>} />

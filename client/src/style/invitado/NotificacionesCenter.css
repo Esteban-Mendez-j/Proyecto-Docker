@@ -27,7 +27,6 @@
 /* Panel desplegable */
 .notification-panel {
   position: absolute;
-  right: 0;
   top: 40px;
   width: 320px;
   background: #ffffff;
@@ -248,5 +247,11 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .notification-panel {
+    left: 30%;
   }
 }
