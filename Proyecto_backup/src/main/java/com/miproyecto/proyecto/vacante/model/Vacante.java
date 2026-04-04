@@ -9,6 +9,7 @@ import java.util.Set;
 import com.miproyecto.proyecto.aptitudes.model.Aptitudes;
 import com.miproyecto.proyecto.empresa.model.Empresa;
 import com.miproyecto.proyecto.postulacion.model.Postulado;
+import com.miproyecto.proyecto.prueba.pruebaTecnica.model.PruebaTecnica;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -100,17 +101,26 @@ public class Vacante {
     @JoinTable(name = "vacante_aptitudes", joinColumns = @JoinColumn(name = "nvacantes"), inverseJoinColumns = @JoinColumn(name = "Id_aptitud"))
     private List<Aptitudes> aptitudes;
 
-
+    @OneToMany(mappedBy = "vacante")
+    private List<PruebaTecnica> pruebasTecnicas; 
+    
     public Vacante() {
         this.litarpostulados = new HashSet<>();
         this.listaVacnatesFavoritas = new HashSet<>();
         this.aptitudes = new ArrayList<>();
     }
+    
+    public List<PruebaTecnica> getPruebasTecnicas() {
+        return pruebasTecnicas;
+    }
 
+    public void setPruebasTecnicas(List<PruebaTecnica> pruebasTecnicas) {
+        this.pruebasTecnicas = pruebasTecnicas;
+    }
     public Integer getVisitas() {
         return visitas;
     }
-
+    
     public void setVisitas(Integer visitas) {
         this.visitas = visitas;
     }
@@ -299,4 +309,6 @@ public class Vacante {
     public void setComentarioAdmin(String comentarioAdmin) {
         this.comentarioAdmin = comentarioAdmin;
     }
+
+   
 }

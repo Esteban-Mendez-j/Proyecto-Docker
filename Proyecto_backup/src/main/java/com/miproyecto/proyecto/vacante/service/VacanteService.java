@@ -30,10 +30,7 @@ import com.miproyecto.proyecto.aptitudes.service.AptitudesService;
 import com.miproyecto.proyecto.empresa.model.Empresa;
 import com.miproyecto.proyecto.empresa.repository.EmpresaRepository;
 import com.miproyecto.proyecto.ml.service.PrediccionService;
-import com.miproyecto.proyecto.postulacion.model.Postulado;
-import com.miproyecto.proyecto.postulacion.repository.PostuladoRepository;
 import com.miproyecto.proyecto.util.NotFoundException;
-import com.miproyecto.proyecto.util.ReferencedWarning;
 import com.miproyecto.proyecto.util.response.ApiResponseBody;
 import com.miproyecto.proyecto.util.response.Meta;
 import com.miproyecto.proyecto.util.response.Pagination;
@@ -53,19 +50,17 @@ public class VacanteService {
     private final VacanteFavoritaRepository vacanteFavoritaRepository;
     private final VacanteRepository vacanteRepository;
     private final EmpresaRepository empresaRepository;
-    private final PostuladoRepository postuladoRepository;
     private final AptitudesService aptitudesService;
     private final PrediccionService prediccionService;
     @Value("${app.upload-dir.video}")
     private String videoUploadDir;
 
     public VacanteService(VacanteFavoritaRepository vacanteFavoritaRepository, VacanteRepository vacanteRepository,
-            EmpresaRepository empresaRepository, PostuladoRepository postuladoRepository,
+            EmpresaRepository empresaRepository,
             AptitudesService aptitudesService, PrediccionService prediccionService) {
         this.vacanteFavoritaRepository = vacanteFavoritaRepository;
         this.vacanteRepository = vacanteRepository;
         this.empresaRepository = empresaRepository;
-        this.postuladoRepository = postuladoRepository;
         this.aptitudesService = aptitudesService;
         this.prediccionService = prediccionService;
     }
@@ -423,18 +418,4 @@ public class VacanteService {
         return vacante;
     }
 
-    public ReferencedWarning getReferencedWarning(final Long nvacantes) {
-        final ReferencedWarning referencedWarning = new ReferencedWarning();
-        final Vacante vacante = vacanteRepository.findById(nvacantes)
-                .orElseThrow(NotFoundException::new);
-        final Postulado nvacantePostulado = postuladoRepository.findFirstByVacante(vacante);
-        if (nvacantePostulado != null) {
-            referencedWarning.setKey("vacante.postulado.nvacante.referenced");
-            referencedWarning.addParam(nvacantePostulado.getNPostulacion());
-            return referencedWarning;
-        }
-        return null;
-
-        
-    }
 }

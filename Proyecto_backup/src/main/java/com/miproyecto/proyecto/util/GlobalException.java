@@ -14,14 +14,20 @@ import com.miproyecto.proyecto.enums.ResponseCode;
 import com.miproyecto.proyecto.util.response.ApiError;
 import com.miproyecto.proyecto.util.response.ApiFieldError;
 import com.miproyecto.proyecto.util.response.ApiResponseBody;
+import com.miproyecto.proyecto.util.response.BadRequest;
 
 
-@RestControllerAdvice // nota la diferencia con @ControllerAdvice
+@RestControllerAdvice 
 public class GlobalException {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<?> handleNotFoundException(NotFoundException ex) {
         return buildResponse(HttpStatus.NOT_FOUND, "No se encontró ningún valor", ResponseCode.NOT_FOUND);
+    }
+
+    @ExceptionHandler(BadRequest.class)
+    public ResponseEntity<?> handleBadRequest(BadRequest ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage() , ResponseCode.ERROR);
     }
 
     @ExceptionHandler(Forbidden.class)
@@ -43,11 +49,6 @@ public class GlobalException {
     public ResponseEntity<?> handleGeneric(Exception ex) {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor", ResponseCode.ERROR);
     }
-
-    // @ExceptionHandler(TokenExpiredException.class)
-    // public String handleExpiredTokenException() {
-    //     return "redirect:/?expired=1"; 
-    // }
 
     private ResponseEntity<ApiResponseBody<ApiError>> buildResponse(HttpStatus status, String message, ResponseCode code) {
         ApiError error = new ApiError(code, message);
