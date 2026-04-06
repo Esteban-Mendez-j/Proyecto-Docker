@@ -98,7 +98,7 @@ public class SecurityConfig {
                     "/images/**","/documentacion.html","/swagger-ui.html","/swagger-ui/**","/v3/api-docs/**", "/js/**", "/api/empresas/add", "/api/candidatos/add","/api/usuarios/rol",
                     "/api/vacantes/listar", "/api/vacantes/seleccion/{nvacantes}","/api/usuarios/datos",
                     "/api/vacantes/eliminar/filtro", "/api/apelaciones/**","/api/vacantes/Top/listar","/api/vacantes/listar/filtradas" ,
-                    "/api/vacantes/**", "/api/empresas/perfil/**"
+                    "/api/vacantes/**", "/api/empresas/perfil/**", "/api/chatBot/**"
                 ).permitAll()
                 .requestMatchers("/api/admin/agregarRol","/admin/removerRol").hasRole("SUPER_ADMIN")
                 .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
