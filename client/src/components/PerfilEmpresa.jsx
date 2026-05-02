@@ -2,6 +2,9 @@ import { URL_IMAGEN } from "../services/Api";
 import { ListSvg } from "./Icons";
 import { Link } from "react-router-dom";
 import "../style/invitado/empresa.css";
+import KpiCard from "./dasboard/KpiCard";
+import DiagramaCircular from "./dasboard/DiagramaCircular";
+
 
 export default function PerfilEmpresa({ empresa, isPublic }){
 

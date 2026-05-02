@@ -98,13 +98,13 @@ public class SecurityConfig {
                     "/images/**","/documentacion.html","/swagger-ui.html","/swagger-ui/**","/v3/api-docs/**", "/js/**", "/api/empresas/add", "/api/candidatos/add","/api/usuarios/rol",
                     "/api/vacantes/listar", "/api/vacantes/seleccion/{nvacantes}","/api/usuarios/datos",
                     "/api/vacantes/eliminar/filtro", "/api/apelaciones/**","/api/vacantes/Top/listar","/api/vacantes/listar/filtradas" ,
-                    "/api/vacantes/**", "/api/empresas/perfil/**"
+                    "/api/vacantes/**", "/api/empresas/perfil/**", "/api/chatBot/**"
                 ).permitAll()
                 .requestMatchers("/api/admin/agregarRol","/admin/removerRol").hasRole("SUPER_ADMIN")
                 .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
-                .requestMatchers("/api/empresas/**","/api/vacantes/popular/listar").hasRole("EMPRESA")
+                .requestMatchers("/api/empresas/**","/api/vacantes/popular/listar", "/api/prueba/tecnica/**","/api/prueba/resuelta").hasRole("EMPRESA")
                 .requestMatchers("/api/candidatos/perfil/**","/api/postulados/**").hasAnyRole("CANDIDATO","EMPRESA","ADMIN","SUPER_ADMIN")
-                .requestMatchers("/api/candidatos/**", "/api/estudios/**", "/api/historialLaborals/**").hasRole("CANDIDATO")
+                .requestMatchers("/api/candidatos/**", "/api/estudios/**", "/api/historialLaborals/**","/api/prueba/tecnica", "/api/prueba/resuelta/**").hasRole("CANDIDATO")
                 .requestMatchers("/api/chats/**", "/app/chat.sendMessage").hasAnyRole("EMPRESA", "CANDIDATO")
                 .anyRequest().authenticated()
             )

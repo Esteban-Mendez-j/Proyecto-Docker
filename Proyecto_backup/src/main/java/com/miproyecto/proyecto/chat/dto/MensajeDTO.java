@@ -2,6 +2,9 @@ package com.miproyecto.proyecto.chat.dto;
 
 import java.time.LocalDateTime;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class MensajeDTO {
     private String chatId;
     private String senderId;

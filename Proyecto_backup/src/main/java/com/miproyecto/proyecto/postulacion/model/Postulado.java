@@ -8,10 +8,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 
 import java.time.LocalDate;
 
 import com.miproyecto.proyecto.candidato.model.Candidato;
+import com.miproyecto.proyecto.prueba.PruebaResuelta.model.PruebaResuelta;
 import com.miproyecto.proyecto.vacante.model.Vacante;
 
 
@@ -36,6 +38,10 @@ public class Postulado {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario_id")
     private Candidato candidato;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PruebaResuelta_id")
+    private PruebaResuelta pruebaResuelta;
 
     private Double porcentajePrediccion;
 
@@ -105,6 +111,14 @@ public class Postulado {
 
     public void setCandidato(final Candidato candidato) {
         this.candidato = candidato;
+    }
+
+    public PruebaResuelta getPruebaResuelta() {
+        return pruebaResuelta;
+    }
+
+    public void setPruebaResuelta(PruebaResuelta pruebaResuelta) {
+        this.pruebaResuelta = pruebaResuelta;
     }
 
 }

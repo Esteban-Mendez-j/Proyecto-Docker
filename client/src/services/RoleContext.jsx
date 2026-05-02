@@ -2,6 +2,7 @@ import { createContext, useState, useEffect } from "react";
 import { useFetchV2, useSendFormV2 } from "../hooks/useFetch";
 import { modalResponse } from "./Modal";
 import { API_CLIENT_URL } from "./Api";
+import { connect } from "./Websocket";
 
 export const RoleContext = createContext(null);
 
@@ -25,11 +26,15 @@ export function RoleSesion({ children }) {
             setUserDataSession(dataSession.data);
         } catch (error) {
             if( error.code === "EXPIRED_TOKEN" ) logout(error.message); 
+            console.error(error.message);
         }
     }
 
     useEffect(() =>{
         peticion()
+        if(["CANDIDATO", "EMPRESA"].includes(rol)) {
+            connect()
+        }
     },[ rol ])
 
     useEffect(()=>{
@@ -40,6 +45,7 @@ export function RoleSesion({ children }) {
     useEffect(()=>{
         if(!error) return
         if( error.code === "EXPIRED_TOKEN" ){ logout(error.message); }
+        console.error(error.message);
     },[error])
 
     return (
