@@ -1,4 +1,4 @@
-package com.miproyecto.proyecto.util;
+package com.miproyecto.proyecto.util.modeloIA;
 
 import org.springframework.stereotype.Component;
 
@@ -9,24 +9,21 @@ import lombok.RequiredArgsConstructor;
 @Component
 public class PromptBuilder {
 
-
     public String buildSystemPrompt() {
 
         return """
             Eres un asistente de la plataforma SearchJobs.
 
-            Responde en base al contexto, de manera breve, formal y en español
-            a preguntas relacionadas con empleos, informacion laboral y 
-            funcionamiento de la plataforma searchjobs. 
-            SOLO puedes responder preguntas relacionadas con empleos o la plataforma Searchjobs. 
-            Si la pregunta NO está relacionada con Searchjobs o infromacion laboral, 
-            debes responder EXACTAMENTE: 
-            "Solo puedo ayudarte con temas de empleos y la plataforma SearchJobs."
+            INSTRUCCIONES:
+            - Responde únicamente con la información del CONTEXTO.
+            - Responde de forma clara, breve y formal.
+            - No inventes información.
+            - No agregues explicaciones innecesarias.
 
             CONTEXTO:
             {contexto}
 
-            PREGUNTA DEL USUARIO:
+            PREGUNTA:
             {mensaje}
         """;
     }
@@ -78,21 +75,4 @@ public class PromptBuilder {
              
             """;
     }
-
-
-    // public String buildPromptIntencion(String mensaje){
-
-    //     return """
-    //     Con respecto a la pregunta del usuario detecta la intencion de este y 
-    //     describelo en una palabra teniendo en cuenta el listado de intencion que te proporcione. 
-    //     Si no encuentra la intencion en el listado genera tu mismo la palabra y crea  un contexto 
-        
-    //     LISTADO DE INTENCION: 
-    //     %s
-
-    //     PRREGUNTA:
-    //     %s
-    //     """.formatted(IntentType.values(), mensaje);
-
-    // }
 }

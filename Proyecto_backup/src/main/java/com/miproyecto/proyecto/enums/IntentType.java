@@ -2,7 +2,15 @@ package com.miproyecto.proyecto.enums;
 
 public enum IntentType {
     DESCONOCIDO,
+    INVALIDA,
     DESCRIPCION_PLATAFORMA,
-    INVALIDA
+    DESCRIPCION_ASISTENTE,
+    BUSQUEDA_EMPLEO,
+    VACANTES,
+    POSTULACION,
+    REQUISITOS_POSTULACION,
+    ESTADO_POSTULACION,
+    PERFIL_USUARIO,
+    TIPOS_EMPLEO,
 
 }
