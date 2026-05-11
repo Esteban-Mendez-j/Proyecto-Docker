@@ -1,17 +1,14 @@
 package com.miproyecto.proyecto.chats.chatBot.service.implementation;
 
-import com.miproyecto.proyecto.util.modeloIA.ContextBuilder;
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.prompt.ChatOptions;
-import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.miproyecto.proyecto.chat.dto.MensajeDTO;
 import com.miproyecto.proyecto.chat.model.Mensaje;
@@ -23,113 +20,52 @@ import com.miproyecto.proyecto.chats.chatBot.mapper.ChatBotMapper;
 import com.miproyecto.proyecto.chats.chatBot.model.ChatBot;
 import com.miproyecto.proyecto.chats.chatBot.repository.ChatBotRepository;
 import com.miproyecto.proyecto.chats.chatBot.service.interfaces.ChatBotService;
-import com.miproyecto.proyecto.enums.IntentType;
+import com.miproyecto.proyecto.enums.FileType;
+import com.miproyecto.proyecto.enums.Roles;
+import com.miproyecto.proyecto.usuario.service.UsuarioService;
 import com.miproyecto.proyecto.util.NotFoundException;
-import com.miproyecto.proyecto.util.modeloIA.IntentDetector;
+import com.miproyecto.proyecto.util.modeloIA.ContextBuilder;
 import com.miproyecto.proyecto.util.modeloIA.PromptBuilder;
 
 
 @Service
 public class ChatBotServiceImpl implements ChatBotService {
 
-    private final ContextBuilder contextBuilder;
     private ChatClient chatClient;
-    private final PromptBuilder promptBuilder;
-    private final IntentDetector intentDetector;
     private final ChatBotRepository chatBotRepository;
     private final ChatBotMapper chatBotMapper;
     private final ChatService chatService;
     private final MensajeRepository mensajeRepository;
+    private final ContextBuilder contextBuilder;
+    private final UsuarioService usuarioService;
+    
 
     public ChatBotServiceImpl(ChatClient.Builder chatClientBuilder, PromptBuilder promptBuilder,
-            IntentDetector intentDetector,  ChatBotRepository chatBotRepository, 
-            ChatBotMapper chatBotMapper, ChatService chatService, MensajeRepository mensajeRepository, ContextBuilder contextBuilder ) {
-        this.chatClient = chatClientBuilder.build();
-        this.promptBuilder = promptBuilder;
-        this.intentDetector = intentDetector;
+            ChatBotRepository chatBotRepository, ContextBuilder contextBuilder,
+            ChatBotMapper chatBotMapper, ChatService chatService, 
+            MensajeRepository mensajeRepository, UsuarioService usuarioService,
+            ToolCallbackProvider toolCallbackProvider ) {
+
+        this.chatClient = chatClientBuilder
+                .defaultSystem(promptBuilder.buildSystemPrompt())
+                .defaultToolCallbacks(toolCallbackProvider)
+                .build();
         this.chatBotRepository = chatBotRepository;
         this.chatBotMapper = chatBotMapper;
         this.chatService = chatService;
         this.mensajeRepository = mensajeRepository;
         this.contextBuilder = contextBuilder;
+        this.usuarioService = usuarioService;
     }
         
     @Override
-    public String preguntarAlModelo(String message){
+    public String preguntarAlModelo(String message, String role){
 
-        String template = promptBuilder.buildSystemPrompt();
+        String user = contextBuilder.buildUserContext(Roles.valueOf(role), message);
 
-        String intencion = intentDetector.detector(message);
-
-        if(IntentType.DESCONOCIDO.name().equalsIgnoreCase(intencion)){
-            intencion =  generarIntencion(message);
-        } 
-        
-        String contexto = buildContext(intencion, message);
-
-        if(IntentType.INVALIDA.name().equalsIgnoreCase(intencion)) return contexto;
-        
-        PromptTemplate promptTemplate = new PromptTemplate(template);
-
-        Prompt prompt = promptTemplate.create(Map.of("mensaje", message, "contexto", contexto ));
-
-        ChatOptions chatOptions = ChatOptions.builder().temperature(0.4)
-                .maxTokens(300).build();
-
-        return chatClient.prompt(prompt).options(chatOptions).call().content();
+        return chatClient.prompt().user(user).call().content();
     }
     
-    @Override
-    public String generarIntencion(String message){
-        String template = promptBuilder.buildPromptIntencion();
-
-        PromptTemplate promptTemplate = new PromptTemplate(template);
-
-        String intenciones = Arrays.stream(IntentType.values())
-                .filter(intencion -> intencion != IntentType.DESCONOCIDO)
-                .map(Enum::name)
-                .collect(Collectors.joining(", "));
-                
-        Prompt prompt = promptTemplate.create(Map.of("mensaje", message, "intenciones", intenciones));
-        
-        ChatOptions chatOptions = ChatOptions.builder().temperature(0.3)
-                .maxTokens(250).build();
-
-        return chatClient.prompt(prompt).options(chatOptions).call().content();
-    }
-    
-    @Override
-    public String generarContexto(String intentType, String message){
-
-        String template = promptBuilder.builPromptContext();
-
-        PromptTemplate promptTemplate = new PromptTemplate(template);
-
-        Prompt prompt = promptTemplate.create(Map.of("intencion", intentType, "mensaje", message));
-        
-        ChatOptions chatOptions = ChatOptions.builder().temperature(0.4)
-                .maxTokens(250).build();
-
-        return chatClient.prompt(prompt).options(chatOptions).call().content();
-    }
-    
-    @Override
-    public String buildContext(String intencion, String message){
-        String promptContext = "";
-
-        List<String> intenciones = Arrays.stream(IntentType.values())
-                .map(Enum::name)
-                .toList();
-
-        if(intenciones.contains(intencion)){
-            promptContext = contextBuilder.buildContext(IntentType.valueOf(intencion));
-        }else{
-            promptContext =  generarContexto(intencion, message);
-        }
-        
-        return promptContext;
-    }
-
     @Override
     public String create(CreateChatBotDTO createChatBotDTO) {
         ChatBot chatBot = chatBotMapper.CreateChatBotToChatbot(createChatBotDTO);
@@ -204,6 +140,31 @@ public class ChatBotServiceImpl implements ChatBotService {
         );
     }
 
+    @Override
+    public String guardarArchivosChatBot(MultipartFile file,  Long idUsuario, String chatId) throws IOException{
+        if (file == null ) return "No se seleccionó ningun archivo";
 
+        String rutaFile = usuarioService.guardarArchivo(file, idUsuario);
+        
+        ChatBot chatBot =  chatBotRepository.findById(chatId).orElseThrow(NotFoundException::new);
 
+        chatBot.addRuta(rutaFile);
+
+        chatBotRepository.save(chatBot);
+
+        return rutaFile;
+    }
+    
+    @Override
+    public void eliminarArchivosChatBot(String chatId, String nameFile) throws IOException{
+        if (nameFile == null ) return;
+
+        usuarioService.eliminarArchivo(nameFile, FileType.FILE);
+        
+        ChatBot chatBot =  chatBotRepository.findById(chatId).orElseThrow(NotFoundException::new);
+
+        chatBot.deleteRuta(nameFile);
+
+        chatBotRepository.save(chatBot);
+    }
 }

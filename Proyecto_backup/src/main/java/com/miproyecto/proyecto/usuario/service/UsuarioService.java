@@ -12,6 +12,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.miproyecto.proyecto.enums.FileType;
 import com.miproyecto.proyecto.usuario.dto.FiltroUsuarioDTO;
 import com.miproyecto.proyecto.usuario.dto.UsuarioDTO;
 import com.miproyecto.proyecto.usuario.model.Usuario;
@@ -46,6 +49,9 @@ public class UsuarioService {
 
     @Value("${app.upload-dir.pdf}")
     private String pdfUploadDir;
+    
+    @Value("${app.upload-dir.file}")
+    private String fileUploadDir;
 
     public UsuarioService(UsuarioRepository usuarioRepository, RolesRepository rolesRepository) {
         this.usuarioRepository = usuarioRepository;
@@ -148,8 +154,10 @@ public class UsuarioService {
             carpeta = imgUploadDir;
         } else if ("application/pdf".equals(tipo)) {
             carpeta = pdfUploadDir;
+        } else if ("text/plain".equals(tipo) || "text/csv".equals(tipo)) {
+            carpeta = fileUploadDir;
         } else {
-            throw new IllegalArgumentException("Solo se permiten archivos de imagen o PDF.");
+            throw new IllegalArgumentException("Solo se permiten archivos de imagen, txt, csv o PDF.");
         }
 
         // Crear carpeta si no existe
@@ -168,9 +176,18 @@ public class UsuarioService {
         return nombreArchivo;
     }
 
-    public void eliminarArchivo(String fileName, boolean esImagen) throws IOException {
+    public void eliminarArchivo(String fileName, FileType type) throws IOException {
         // Determinar la carpeta dependiendo si es imagen o PDF
-        String carpeta = esImagen ? imgUploadDir : pdfUploadDir;
+        String carpeta = "";
+
+        if(type.equals(FileType.IMAGEN)){
+            carpeta = imgUploadDir;
+        }else if(type.equals(FileType.PDF)){
+            carpeta = pdfUploadDir;
+        }else{
+            carpeta = fileUploadDir;
+        }
+        
         Path ruta = Path.of(carpeta, fileName);
 
         // Eliminar el archivo si existe
@@ -179,6 +196,27 @@ public class UsuarioService {
         } else {
             throw new IOException("El archivo no existe: " + ruta);
         }
+    }
+
+    public Resource descargarArchivo(String fileName) throws IOException {
+
+        List<String> carpetas = List.of(
+                imgUploadDir,
+                pdfUploadDir,
+                fileUploadDir
+        );
+
+        for (String carpeta : carpetas) {
+
+            Path ruta = Path.of(carpeta, fileName);
+
+            if (Files.exists(ruta)) {
+
+                return new UrlResource(ruta.toUri());
+            }
+        }
+
+        throw new IOException("Archivo no encontrado");
     }
 
     private UsuarioDTO mapToDTO(final Usuario usuario, final UsuarioDTO usuarioDTO) {

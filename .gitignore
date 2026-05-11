@@ -48,3 +48,6 @@ build/
 .settings/
 .springBeans
 .sts4-cache/
+
+# recursos locales 
+.uploads/

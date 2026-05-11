@@ -1,45 +1,3 @@
-// export const icons = {
-//   shield: (
-//     <svg xmlns="http://www.w3.org/2000/svg" width="32" height=height
-//       viewBox="0 0 24 24" fill="none" stroke="currentColor"
-//       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-//       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7
-//                c0 6 8 10 8 10z"></path>
-//     </svg>
-//   ),
-//   clock: (
-//     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"
-//       viewBox="0 0 24 24" fill="none" stroke="currentColor"
-//       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-//       <circle cx="12" cy="12" r="10"></circle>
-//       <polyline points="12 6 12 12 16 14"></polyline>
-//     </svg>
-//   ),
-//   globe: (
-//     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"
-//       viewBox="0 0 24 24" fill="none" stroke="currentColor"
-//       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-//       <circle cx="12" cy="12" r="10"></circle>
-//       <line x1="2" y1="12" x2="22" y2="12"></line>
-//       <path d="M12 2a15.3 15.3 0 0 1 4 10
-//                15.3 15.3 0 0 1-4 10
-//                15.3 15.3 0 0 1-4-10
-//                15.3 15.3 0 0 1 4-10z"></path>
-//     </svg>
-//   ),
-//   heart: (
-//     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"
-//       viewBox="0 0 24 24" fill="none" stroke="currentColor"
-//       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-//       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67
-//                l-1.06-1.06a5.5 5.5 0 0 0-7.78 
-//                7.78l1.06 1.06L12 21.23l7.78-7.78
-//                1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-//     </svg>
-//   ),
-// };
-
-
 export function ListSvg({ name, width, height, nameClass="icon" }) {
 
   const listSVG = {
@@ -544,6 +502,16 @@ export function ListSvg({ name, width, height, nameClass="icon" }) {
       <svg xmlns="http://www.w3.org/2000/svg"
         height={height} viewBox="0 -960 960 960" width={width} fill="blue" className={nameClass}>
         <path d="M160-360q-50 0-85-35t-35-85q0-50 35-85t85-35v-80q0-33 23.5-56.5T240-760h120q0-50 35-85t85-35q50 0 85 35t35 85h120q33 0 56.5 23.5T800-680v80q50 0 85 35t35 85q0 50-35 85t-85 35v160q0 33-23.5 56.5T720-120H240q-33 0-56.5-23.5T160-200v-160Zm242.5-97.5Q420-475 420-500t-17.5-42.5Q385-560 360-560t-42.5 17.5Q300-525 300-500t17.5 42.5Q335-440 360-440t42.5-17.5Zm240 0Q660-475 660-500t-17.5-42.5Q625-560 600-560t-42.5 17.5Q540-525 540-500t17.5 42.5Q575-440 600-440t42.5-17.5ZM320-280h320v-80H320v80Zm-80 80h480v-480H240v480Zm240-240Z" />
+      </svg>
+    ),
+    subir_archivo: (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width={width} fill="white" className={nameClass}>
+        <path d="M0 64C0 28.7 28.7 0 64 0L213.5 0c17 0 33.3 6.7 45.3 18.7L365.3 125.3c12 12 18.7 28.3 18.7 45.3L384 448c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zm208-5.5l0 93.5c0 13.3 10.7 24 24 24L325.5 176 208 58.5zM209 263c-9.4-9.4-24.6-9.4-33.9 0l-64 64c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l23-23 0 86.1c0 13.3 10.7 24 24 24s24-10.7 24-24l0-86.1 23 23c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-64-64z" />
+      </svg>
+    ),
+    carpeta: (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width={width} className={nameClass} height={height}>
+        <path d="M64 400l384 0c8.8 0 16-7.2 16-16l0-240c0-8.8-7.2-16-16-16l-149.3 0c-17.3 0-34.2-5.6-48-16L212.3 83.2c-2.8-2.1-6.1-3.2-9.6-3.2L64 80c-8.8 0-16 7.2-16 16l0 288c0 8.8 7.2 16 16 16zm384 48L64 448c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32l138.7 0c13.8 0 27.3 4.5 38.4 12.8l38.4 28.8c5.5 4.2 12.3 6.4 19.2 6.4L448 80c35.3 0 64 28.7 64 64l0 240c0 35.3-28.7 64-64 64z"/>
       </svg>
     )
 

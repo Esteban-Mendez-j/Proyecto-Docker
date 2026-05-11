@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.empresa.dto.EmpresaDTO;
 import com.miproyecto.proyecto.empresa.service.EmpresaService;
+import com.miproyecto.proyecto.enums.FileType;
 import com.miproyecto.proyecto.enums.ResponseCode;
 import com.miproyecto.proyecto.usuario.service.UsuarioService;
 import com.miproyecto.proyecto.util.JwtUtils;
@@ -138,7 +139,7 @@ public class EmpresaResource {
             if (imagen != null && !imagen.isEmpty()) {
                 if (empresaDTO.getImagen() != null && !empresaDTO.getImagen().isEmpty()) {
 
-                    usuarioService.eliminarArchivo(empresaDTO.getImagen(), true);
+                    usuarioService.eliminarArchivo(empresaDTO.getImagen(), FileType.IMAGEN);
                 }
                 String rutaImagen = usuarioService.guardarArchivo(imagen, idUsuario);
                 empresaDTO.setImagen(rutaImagen);

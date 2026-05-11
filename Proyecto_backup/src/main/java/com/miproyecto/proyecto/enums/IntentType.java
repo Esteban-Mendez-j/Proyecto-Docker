@@ -12,5 +12,7 @@ public enum IntentType {
     ESTADO_POSTULACION,
     PERFIL_USUARIO,
     TIPOS_EMPLEO,
+    HERRAMIENTAS,
+    SIN_PREGUNTA
 
 }

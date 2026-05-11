@@ -13,3 +13,4 @@ export const WS_CLIENT_URL  = 'ws://localhost:8080';
 export const URL_VIDEO  =  `${API_CLIENT_URL}/video/`;
 export const URL_IMAGEN  =  `${API_CLIENT_URL}/img/`;
 export const URL_PDF  = `${API_CLIENT_URL}/pdf/`;
+export const URL_FILE  = `${API_CLIENT_URL}/file/`;

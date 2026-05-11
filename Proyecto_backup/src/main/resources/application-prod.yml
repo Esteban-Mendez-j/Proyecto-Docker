@@ -39,12 +39,18 @@ spring:
       chat:
         options:
           model: ${MODEL_LLM}
+    mcp:
+      client:
+        stdio: 
+          servers-configuration: ${CONFIG_MCP}
+    
 
 app:
   upload-dir:
     img: ${UPLOAD_DIR_IMG}
     pdf: ${UPLOAD_DIR_PDF}
     video: ${UPLOAD_DIR_VIDEO}
+    file: ${UPLOAD_DIR_FILE}
   url:
     frontEnd: ${URL_FRONTEND}
     

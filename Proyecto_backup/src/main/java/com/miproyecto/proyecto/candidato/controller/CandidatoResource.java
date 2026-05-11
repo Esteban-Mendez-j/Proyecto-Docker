@@ -28,6 +28,7 @@ import com.miproyecto.proyecto.candidato.dto.HistorialLaboralDTO;
 import com.miproyecto.proyecto.candidato.service.CandidatoService;
 import com.miproyecto.proyecto.candidato.service.EstudioService;
 import com.miproyecto.proyecto.candidato.service.HistorialLaboralService;
+import com.miproyecto.proyecto.enums.FileType;
 import com.miproyecto.proyecto.enums.ResponseCode;
 import com.miproyecto.proyecto.postulacion.dto.PostuladoDTO;
 import com.miproyecto.proyecto.postulacion.service.PostuladoService;
@@ -206,7 +207,7 @@ public class CandidatoResource {
             if (imagen != null && !imagen.isEmpty()) {
                 if (candidatoDTO.getImagen() != null && !candidatoDTO.getImagen().isEmpty()) {
 
-                    usuarioService.eliminarArchivo(candidatoDTO.getImagen(), true);
+                    usuarioService.eliminarArchivo(candidatoDTO.getImagen(), FileType.IMAGEN);
                 }
                 String rutaImagen = usuarioService.guardarArchivo(imagen, idUsuario);
                 candidatoDTO.setImagen(rutaImagen);
@@ -215,7 +216,7 @@ public class CandidatoResource {
             // Verificar si se ha proporcionado un nuevo curriculo
             if (curriculo != null && !curriculo.isEmpty()) {
                 if (candidatoDTO.getCurriculo() != null && !candidatoDTO.getCurriculo().isEmpty() ) {
-                    usuarioService.eliminarArchivo(candidatoDTO.getCurriculo(), false);
+                    usuarioService.eliminarArchivo(candidatoDTO.getCurriculo(), FileType.PDF);
                 }
                 String rutacurriculo = usuarioService.guardarArchivo(curriculo, idUsuario);
                 candidatoDTO.setCurriculo(rutacurriculo);
