@@ -37,11 +37,9 @@ public class ChatBotSocketController {
             mensajeGuardado
         );
         
-        String response = chatBotService.preguntarAlModelo(mensajeDTO.getContent(), usuario.getRolPrinciapl());
+        MensajeDTO response = chatBotService.preguntarAlModelo(mensajeDTO.getContent(), usuario.getRolPrinciapl(), usuario.getIdUsuario().toString());
 
-        MensajeDTO modelResponse = chatBotService.stringToMensajeDTO(response, senderId, mensajeGuardado.getChatId());
-
-        MensajeDTO saveModelResponse = chatBotService.agregarMensajeChat(modelResponse);
+        MensajeDTO saveModelResponse = chatBotService.agregarMensajeChat(response);
         
         messagingTemplate.convertAndSendToUser(
             senderId,

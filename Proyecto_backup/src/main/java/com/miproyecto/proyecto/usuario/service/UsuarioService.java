@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.miproyecto.proyecto.chats.chatBot.service.interfaces.ChatBotService;
 import com.miproyecto.proyecto.enums.FileType;
 import com.miproyecto.proyecto.usuario.dto.FiltroUsuarioDTO;
 import com.miproyecto.proyecto.usuario.dto.UsuarioDTO;
@@ -42,6 +42,7 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final RolesRepository rolesRepository;
+    private final ChatBotService chatBotService;
     // public static final String UPLOAD_DIR = Path.of("uploads", "img").toAbsolutePath().toString();
     
     @Value("${app.upload-dir.img}")
@@ -53,9 +54,11 @@ public class UsuarioService {
     @Value("${app.upload-dir.file}")
     private String fileUploadDir;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, RolesRepository rolesRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, RolesRepository rolesRepository,
+            ChatBotService chatBotService) {
         this.usuarioRepository = usuarioRepository;
         this.rolesRepository = rolesRepository;
+        this.chatBotService = chatBotService;
     }
 
     public List<UsuarioDTO> findAll() {
@@ -147,6 +150,7 @@ public class UsuarioService {
 
     public String guardarArchivo(MultipartFile file, Long idUsuario) throws IOException {
         String tipo = file.getContentType();
+        Boolean esArchivoChat = false;
 
         // Verifica si es imagen o PDF
         String carpeta;
@@ -155,7 +159,9 @@ public class UsuarioService {
         } else if ("application/pdf".equals(tipo)) {
             carpeta = pdfUploadDir;
         } else if ("text/plain".equals(tipo) || "text/csv".equals(tipo)) {
-            carpeta = fileUploadDir;
+            esArchivoChat = true;
+            String chatId = chatBotService.findChatBotByUsuarioId(idUsuario.toString()).getId();
+            carpeta = fileUploadDir+"/chat_"+chatId;
         } else {
             throw new IllegalArgumentException("Solo se permiten archivos de imagen, txt, csv o PDF.");
         }
@@ -165,18 +171,18 @@ public class UsuarioService {
         Files.createDirectories(rutaCarpeta);
 
         // Crear nombre único para el archivo
-        String nombreArchivo = idUsuario + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+        String nombreArchivo = generarNombreArchivo(rutaCarpeta, file.getOriginalFilename(), idUsuario, esArchivoChat);
         Path rutaArchivo = rutaCarpeta.resolve(nombreArchivo);
 
         // Guardar el archivo en el servidor
         try (InputStream is = file.getInputStream()) {
-            Files.copy(is, rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(is, rutaArchivo);
         }
 
         return nombreArchivo;
     }
 
-    public void eliminarArchivo(String fileName, FileType type) throws IOException {
+    public void eliminarArchivo(String fileName, FileType type, Long idUsuario) throws IOException {
         // Determinar la carpeta dependiendo si es imagen o PDF
         String carpeta = "";
 
@@ -185,7 +191,8 @@ public class UsuarioService {
         }else if(type.equals(FileType.PDF)){
             carpeta = pdfUploadDir;
         }else{
-            carpeta = fileUploadDir;
+            String chatId = chatBotService.findChatBotByUsuarioId(idUsuario.toString()).getId();
+            carpeta = fileUploadDir+"/chat_"+chatId;
         }
         
         Path ruta = Path.of(carpeta, fileName);
@@ -198,12 +205,13 @@ public class UsuarioService {
         }
     }
 
-    public Resource descargarArchivo(String fileName) throws IOException {
+    public Resource descargarArchivo(String fileName, Long idUsuario) throws IOException {
+        String chatId = chatBotService.findChatBotByUsuarioId(idUsuario.toString()).getId();
 
         List<String> carpetas = List.of(
                 imgUploadDir,
                 pdfUploadDir,
-                fileUploadDir
+                fileUploadDir+"/chat_"+chatId
         );
 
         for (String carpeta : carpetas) {
@@ -217,6 +225,58 @@ public class UsuarioService {
         }
 
         throw new IOException("Archivo no encontrado");
+    }
+
+    public String generarNombreArchivo(
+            Path rutaCarpeta,
+            String nombreOriginal,
+            Long idUsuario,
+            boolean esArchivoChat) throws IOException {
+
+        // ARCHIVOS CHAT IA
+        if (esArchivoChat) {
+
+            String nombreBase;
+            String extension;
+
+            int punto = nombreOriginal.lastIndexOf(".");
+
+            if (punto != -1) {
+
+                nombreBase = nombreOriginal.substring(0, punto);
+
+                extension = nombreOriginal.substring(punto);
+
+            } else {
+
+                nombreBase = nombreOriginal;
+
+                extension = "";
+            }
+
+            String nuevoNombre = nombreOriginal;
+
+            int contador = 1;
+
+            while (Files.exists(
+                    rutaCarpeta.resolve(nuevoNombre))) {
+
+                nuevoNombre = nombreBase +
+                        "(" + contador + ")" +
+                        extension;
+
+                contador++;
+            }
+
+            return nuevoNombre;
+        }
+
+        // SISTEMA NORMAL
+        return idUsuario +
+                "_" +
+                UUID.randomUUID() +
+                "_" +
+                nombreOriginal;
     }
 
     private UsuarioDTO mapToDTO(final Usuario usuario, final UsuarioDTO usuarioDTO) {

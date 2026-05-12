@@ -23,10 +23,6 @@ export default function ChatBot() {
     const fileRef = useRef(null)
     const maxFileSize = 1;
 
-    const pruebaname= [ "hola", "como", "estas", "hoy", "voy", "a", "jugar"
-    ]
-
-
     // crea un chatBot en MongoDB cuando la consulta a la informacion da 404
     useEffect(()=>{
 
@@ -61,7 +57,16 @@ export default function ChatBot() {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
         }
-    }, [messages]);
+    }, [messages, viewFileWindow]);
+
+    const getNameFiles = async () => {
+        try {
+            const res = await send(`/api/chatBot/files?chatId=${chatBot?.id}`, "GET");
+            setNameFiles(res.data);
+        } catch (error) {
+            exceptionControl(error, logout, navigate, "Error al obtener los mensajes del chat")
+        }
+    }
 
     useEffect(()=>{
         if(!chatBot) return
@@ -74,7 +79,8 @@ export default function ChatBot() {
                 exceptionControl(error, logout, navigate, "Error al obtener los mensajes del chat")
             }
         }
-        setNameFiles(chatBot?.nameFiles)
+        
+        getNameFiles()
         getMessage()
     },[chatBot])
 
@@ -125,6 +131,7 @@ export default function ChatBot() {
         try {
             const {data} = await send("/api/chatBot/file", "PUT", formData, null )
             setNameFiles((prev) => [...prev, data]);
+            fileRef.current.value = "";
             await modalTime("Archivo guardado")
         } catch (error) {
             exceptionControl(error, logout, navigate, "Error al guardar el archivo")
@@ -194,7 +201,7 @@ export default function ChatBot() {
                 {viewFileWindow &&
                     <button className="text-blue-800 flex flex-row items-center gap-2 px-3 py-2 rounded-md hover:bg-blue-200 transition-colors"
                         onClick={() => { setViewFileWindow(false) }}>
-                        <ListSvg name={"burbujaMensaje"} width={20} height={20}  /> chat
+                        <ListSvg name={"burbujaMensaje"} width={20} height={20} /> Chat
                     </button>
                 }
                 {!viewFileWindow &&
@@ -223,26 +230,35 @@ export default function ChatBot() {
                                 </p>
                             </div>
 
-                            <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-white shadow-md hover:bg-blue-700 transition-colors">
-                                <ListSvg
-                                    name={"subir_archivo"}
-                                    width={18}
-                                    height={18}
-                                />
+                            <div className="inline-flex  items-center gap-2 ">
+                                <button className="text-blue-800 flex flex-row items-center gap-2 px-3 py-2 rounded-md hover:bg-blue-200 transition-colors"
+                                    onClick={getNameFiles}>
+                                    <ListSvg name={"recargar"} width={20} height={20} nameClass="fill-blue-500" /> Recargar
+                                </button>
 
-                                <span className="font-medium">
-                                    Subir archivo
-                                </span>
+                                <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-white shadow-md hover:bg-blue-700 transition-colors">
+                                    <ListSvg
+                                        name={"subir_archivo"}
+                                        width={18}
+                                        height={18}
+                                    />
 
-                                <input
-                                    type="file"
-                                    name="file"
-                                    accept=".txt,.csv"
-                                    ref={fileRef}
-                                    onChange={handleFileChange}
-                                    className="hidden"
-                                />
-                            </label>
+                                    <span className="font-medium">
+                                        Subir archivo
+                                    </span>
+
+                                    <input
+                                        type="file"
+                                        name="file"
+                                        accept=".txt,.csv"
+                                        ref={fileRef}
+                                        onChange={handleFileChange}
+                                        className="hidden"
+                                    />
+                                </label>
+                            </div>
+
+                            
                         </div>
 
                         {/* Lista scrolleable */}

@@ -127,7 +127,7 @@ public class EmpresaResource {
     public ResponseEntity<ApiResponseBody<Long>> editCandidato(
             @RequestPart("empresa") @Validated({ValidationGroups.OnUpdate.class, Default.class}) EmpresaDTO empresaDTO,
             @RequestPart(name = "img", required = false) MultipartFile imagen,
-            @CookieValue(required = false) String jwtToken) {
+            @CookieValue(required = true) String jwtToken) {
 
         ApiResponseBody<Long> response = new ApiResponseBody<>();
         ApiError error = new ApiError();
@@ -139,7 +139,7 @@ public class EmpresaResource {
             if (imagen != null && !imagen.isEmpty()) {
                 if (empresaDTO.getImagen() != null && !empresaDTO.getImagen().isEmpty()) {
 
-                    usuarioService.eliminarArchivo(empresaDTO.getImagen(), FileType.IMAGEN);
+                    usuarioService.eliminarArchivo(empresaDTO.getImagen(), FileType.IMAGEN, idUsuario);
                 }
                 String rutaImagen = usuarioService.guardarArchivo(imagen, idUsuario);
                 empresaDTO.setImagen(rutaImagen);

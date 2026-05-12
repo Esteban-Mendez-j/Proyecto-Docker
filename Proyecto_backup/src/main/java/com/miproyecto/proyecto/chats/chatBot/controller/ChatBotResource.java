@@ -9,6 +9,7 @@ import com.miproyecto.proyecto.chat.dto.MensajeDTO;
 import com.miproyecto.proyecto.chats.chatBot.dto.ChatBotDTO;
 import com.miproyecto.proyecto.chats.chatBot.dto.CreateChatBotDTO;
 import com.miproyecto.proyecto.chats.chatBot.service.interfaces.ChatBotService;
+import com.miproyecto.proyecto.enums.FileType;
 import com.miproyecto.proyecto.enums.ResponseCode;
 import com.miproyecto.proyecto.usuario.service.UsuarioService;
 import com.miproyecto.proyecto.util.JwtUtils;
@@ -48,17 +49,18 @@ public class ChatBotResource {
     private final UsuarioService usuarioService;
 
     @GetMapping("/pregunta")
-    public ResponseEntity<ApiResponseBody<String>> getMessage(@RequestParam String message,
-        @CookieValue(required = false) String jwtToken) {
-
+    public ResponseEntity<ApiResponseBody<MensajeDTO>> getMessage(@RequestParam String message,
+        @CookieValue(required = true) String jwtToken) {
+        String idUsuario = "";
         String role = "INVITADO";
         if (jwtToken != null) {
             DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+            idUsuario = jwtUtils.extractUsername(decodedJWT);
             role = jwtUtils.getSpecificClaim(decodedJWT, "rolPrincipal").asString();
         }
         
-        ApiResponseBody<String> response = new ApiResponseBody<String>(
-                chatBotService.preguntarAlModelo(message, role), null, null);
+        ApiResponseBody<MensajeDTO> response = new ApiResponseBody<MensajeDTO>(
+                chatBotService.preguntarAlModelo(message, role, idUsuario), null, null);
 
         return ResponseEntity.ok(response);
     }
@@ -90,13 +92,41 @@ public class ChatBotResource {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/file")
-    public ResponseEntity<Resource> descargarFile(
-            @RequestParam(name = "nameFile") String nameFile) {
+    @GetMapping("/files")
+    public ResponseEntity<ApiResponseBody<List<String>>> obtenerArchivos(
+            @RequestParam(name = "chatId", required = true) String chatId
+        ) {
+
+        ApiResponseBody<List<String>> response = new ApiResponseBody<>();
+        ApiError error = new ApiError();
 
         try {
+            List<String> archivos = chatBotService.obtenerArchivosChat(chatId);
+            response.setData(archivos);
+            return ResponseEntity.ok(response);
 
-            Resource resource = usuarioService.descargarArchivo(nameFile);
+        } catch (Exception e) {
+            error.setCode(ResponseCode.ERROR);
+            error.setMessage(e.getMessage());
+            response.setError(error);
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @GetMapping("/file")
+    public ResponseEntity<Resource> descargarFile(
+            @RequestParam(name = "nameFile") String nameFile,
+            @CookieValue(name = "jwtToken", required = true) String jwtToken) {
+
+        try {
+            Long idUsuario = 0L;
+
+            if (jwtToken != null) {
+                DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+                idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+            }
+
+            Resource resource = usuarioService.descargarArchivo(nameFile, idUsuario);
 
             Path path = resource.getFile().toPath();
 
@@ -122,8 +152,7 @@ public class ChatBotResource {
     @PutMapping(value = "/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponseBody<String>> agregarFile(
             @RequestPart(name = "file", required = true) MultipartFile file,
-            @CookieValue(name = "jwtToken", required = true) String jwtToken,
-            @RequestParam(name = "chatId", required = true) String chatId) {
+            @CookieValue(name = "jwtToken", required = true) String jwtToken) {
 
         ApiResponseBody<String> response = new ApiResponseBody<>();
         ApiError error = new ApiError();
@@ -135,7 +164,7 @@ public class ChatBotResource {
         }
 
         try {
-            String nameFile = chatBotService.guardarArchivosChatBot(file, idUsuario, chatId);
+            String nameFile = usuarioService.guardarArchivo(file, idUsuario);
             response.setData(nameFile);
             return ResponseEntity.ok(response);
 
@@ -155,13 +184,19 @@ public class ChatBotResource {
     @DeleteMapping("/file")
     public ResponseEntity<ApiResponseBody<String>> eliminarFile(
             @RequestParam(name = "nameFile", required = true) String nameFile,
-            @RequestParam(name = "chatId", required = true) String chatId) {
+            @CookieValue(name = "jwtToken", required = true) String jwtToken) {
 
         ApiResponseBody<String> response = new ApiResponseBody<>();
         ApiError error = new ApiError();
+        Long idUsuario = 0L;
+
+        if(jwtToken != null){
+            DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+            idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+        }
     
         try {
-            chatBotService.eliminarArchivosChatBot(chatId, nameFile);
+            usuarioService.eliminarArchivo(nameFile, FileType.FILE , idUsuario);
             response.setData("Archivo eliminado correctamente");
             return ResponseEntity.ok(response);
 

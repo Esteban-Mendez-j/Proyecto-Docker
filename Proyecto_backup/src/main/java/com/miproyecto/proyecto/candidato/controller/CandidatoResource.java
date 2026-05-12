@@ -207,7 +207,7 @@ public class CandidatoResource {
             if (imagen != null && !imagen.isEmpty()) {
                 if (candidatoDTO.getImagen() != null && !candidatoDTO.getImagen().isEmpty()) {
 
-                    usuarioService.eliminarArchivo(candidatoDTO.getImagen(), FileType.IMAGEN);
+                    usuarioService.eliminarArchivo(candidatoDTO.getImagen(), FileType.IMAGEN, idUsuario);
                 }
                 String rutaImagen = usuarioService.guardarArchivo(imagen, idUsuario);
                 candidatoDTO.setImagen(rutaImagen);
@@ -216,7 +216,7 @@ public class CandidatoResource {
             // Verificar si se ha proporcionado un nuevo curriculo
             if (curriculo != null && !curriculo.isEmpty()) {
                 if (candidatoDTO.getCurriculo() != null && !candidatoDTO.getCurriculo().isEmpty() ) {
-                    usuarioService.eliminarArchivo(candidatoDTO.getCurriculo(), FileType.PDF);
+                    usuarioService.eliminarArchivo(candidatoDTO.getCurriculo(), FileType.PDF, idUsuario);
                 }
                 String rutacurriculo = usuarioService.guardarArchivo(curriculo, idUsuario);
                 candidatoDTO.setCurriculo(rutacurriculo);

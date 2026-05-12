@@ -1,28 +1,30 @@
 package com.miproyecto.proyecto.chats.chatBot.service.implementation;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.retry.NonTransientAiException;
 import org.springframework.ai.tool.ToolCallbackProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.miproyecto.proyecto.chat.dto.MensajeDTO;
 import com.miproyecto.proyecto.chat.model.Mensaje;
 import com.miproyecto.proyecto.chat.repository.MensajeRepository;
-import com.miproyecto.proyecto.chat.service.ChatService;
 import com.miproyecto.proyecto.chats.chatBot.dto.ChatBotDTO;
 import com.miproyecto.proyecto.chats.chatBot.dto.CreateChatBotDTO;
 import com.miproyecto.proyecto.chats.chatBot.mapper.ChatBotMapper;
 import com.miproyecto.proyecto.chats.chatBot.model.ChatBot;
 import com.miproyecto.proyecto.chats.chatBot.repository.ChatBotRepository;
 import com.miproyecto.proyecto.chats.chatBot.service.interfaces.ChatBotService;
-import com.miproyecto.proyecto.enums.FileType;
 import com.miproyecto.proyecto.enums.Roles;
-import com.miproyecto.proyecto.usuario.service.UsuarioService;
 import com.miproyecto.proyecto.util.NotFoundException;
 import com.miproyecto.proyecto.util.modeloIA.ContextBuilder;
 import com.miproyecto.proyecto.util.modeloIA.PromptBuilder;
@@ -31,19 +33,20 @@ import com.miproyecto.proyecto.util.modeloIA.PromptBuilder;
 @Service
 public class ChatBotServiceImpl implements ChatBotService {
 
+    private final PromptBuilder promptBuilder;
     private ChatClient chatClient;
     private final ChatBotRepository chatBotRepository;
     private final ChatBotMapper chatBotMapper;
-    private final ChatService chatService;
     private final MensajeRepository mensajeRepository;
     private final ContextBuilder contextBuilder;
-    private final UsuarioService usuarioService;
     
+    @Value("${app.upload-dir.file}")
+    private String fileUploadDir;
 
     public ChatBotServiceImpl(ChatClient.Builder chatClientBuilder, PromptBuilder promptBuilder,
             ChatBotRepository chatBotRepository, ContextBuilder contextBuilder,
-            ChatBotMapper chatBotMapper, ChatService chatService, 
-            MensajeRepository mensajeRepository, UsuarioService usuarioService,
+            ChatBotMapper chatBotMapper,
+            MensajeRepository mensajeRepository,
             ToolCallbackProvider toolCallbackProvider ) {
 
         this.chatClient = chatClientBuilder
@@ -52,18 +55,29 @@ public class ChatBotServiceImpl implements ChatBotService {
                 .build();
         this.chatBotRepository = chatBotRepository;
         this.chatBotMapper = chatBotMapper;
-        this.chatService = chatService;
         this.mensajeRepository = mensajeRepository;
         this.contextBuilder = contextBuilder;
-        this.usuarioService = usuarioService;
+        this.promptBuilder = promptBuilder;
     }
         
     @Override
-    public String preguntarAlModelo(String message, String role){
+    public MensajeDTO preguntarAlModelo(String message, String role, String idUsuario){
+
+        String chatId = findChatBotByUsuarioId(idUsuario).getId();
+        String ruta = fileUploadDir+"/chat_"+chatId;
 
         String user = contextBuilder.buildUserContext(Roles.valueOf(role), message);
+        String response = "";
+        try {
+            response = chatClient.prompt()
+                    .user(promptBuilder.buildFieldPrompt(ruta) + "\n\n" + user).call().content();
+        } catch (NonTransientAiException ex) {
+            response = "Excediste el limite de peticiones, intentalo mas tarde";
+        } catch (Exception e) {
+            response = "No pude responder tu solicitud, intenta nuevamente o realiza otra consulta";
+        }
 
-        return chatClient.prompt().user(user).call().content();
+        return stringToMensajeDTO(response, idUsuario, chatId);
     }
     
     @Override
@@ -96,8 +110,8 @@ public class ChatBotServiceImpl implements ChatBotService {
         mensajeDTO.setReceiverRole("MODELO IA");
         mensajeDTO.setState("Recibido");
         Mensaje mensaje = mensajeRepository.save(
-                chatService.mensajeMapToEntity(mensajeDTO, new Mensaje()));
-        return chatService.mensajeMapToDTO(mensaje, new MensajeDTO());
+                mensajeMapToEntity(mensajeDTO, new Mensaje()));
+        return mensajeMapToDTO(mensaje, new MensajeDTO());
     }
 
     @Override
@@ -122,7 +136,7 @@ public class ChatBotServiceImpl implements ChatBotService {
     public List<MensajeDTO> obtenerMensajesDeChatBot(String chatId) {
         List<Mensaje> mensajes = mensajeRepository.findByChatIdOrderByTimeAsc(chatId);
         return mensajes.stream()
-                .map(mensaje -> chatService.mensajeMapToDTO(mensaje, new MensajeDTO()))
+                .map(mensaje -> mensajeMapToDTO(mensaje, new MensajeDTO()))
                 .collect(Collectors.toList());
     }
 
@@ -140,31 +154,46 @@ public class ChatBotServiceImpl implements ChatBotService {
         );
     }
 
-    @Override
-    public String guardarArchivosChatBot(MultipartFile file,  Long idUsuario, String chatId) throws IOException{
-        if (file == null ) return "No se seleccionó ningun archivo";
+    public List<String> obtenerArchivosChat(String chatId) throws IOException {
 
-        String rutaFile = usuarioService.guardarArchivo(file, idUsuario);
-        
-        ChatBot chatBot =  chatBotRepository.findById(chatId).orElseThrow(NotFoundException::new);
+        Path rutaCarpeta = Path.of(
+                fileUploadDir,
+                "chat_" + chatId).toAbsolutePath();
 
-        chatBot.addRuta(rutaFile);
+        // Si no existe la carpeta
+        if (!Files.exists(rutaCarpeta)) {
+            return new ArrayList<>();
+        }
 
-        chatBotRepository.save(chatBot);
+        try (Stream<Path> paths = Files.list(rutaCarpeta)) {
 
-        return rutaFile;
+            return paths
+                    .filter(Files::isRegularFile)
+                    .map(path -> path.getFileName().toString())
+                    .toList();
+        }
     }
-    
-    @Override
-    public void eliminarArchivosChatBot(String chatId, String nameFile) throws IOException{
-        if (nameFile == null ) return;
 
-        usuarioService.eliminarArchivo(nameFile, FileType.FILE);
-        
-        ChatBot chatBot =  chatBotRepository.findById(chatId).orElseThrow(NotFoundException::new);
+    public Mensaje  mensajeMapToEntity(MensajeDTO mensajeDTO, Mensaje mensaje) { 
+        mensaje.setChatId(mensajeDTO.getChatId());
+        mensaje.setSenderId(mensajeDTO.getSenderId());
+        mensaje.setReceiverId(mensajeDTO.getReceiverId());
+        mensaje.setSenderRole(mensajeDTO.getSenderRole());
+        mensaje.setReceiverRole(mensajeDTO.getReceiverRole());
+        mensaje.setContent(mensajeDTO.getContent());
+        mensaje.setTime(mensajeDTO.getTime());
+        return mensaje;
+    }
 
-        chatBot.deleteRuta(nameFile);
-
-        chatBotRepository.save(chatBot);
+    public MensajeDTO mensajeMapToDTO(Mensaje mensaje, MensajeDTO mensajeDTO) {
+        mensajeDTO.setChatId(mensaje.getChatId());
+        mensajeDTO.setSenderId(mensaje.getSenderId());
+        mensajeDTO.setReceiverId(mensaje.getReceiverId());
+        mensajeDTO.setSenderRole(mensaje.getSenderRole());
+        mensajeDTO.setReceiverRole(mensaje.getReceiverRole());
+        mensajeDTO.setContent(mensaje.getContent());
+        mensajeDTO.setTime(mensaje.getTime());
+        mensajeDTO.setState(mensaje.getState());
+        return mensajeDTO;
     }
 }

@@ -17,6 +17,11 @@ public class WebSocketExceptionHandler {
     @MessageExceptionHandler(Exception.class)
     @SendToUser("/queue/errors")
     public String handleGeneral(Exception ex) {
+        System.out.println("""
+                ========================
+                        ERROR
+                ========================    
+                """ + "\n" +ex.getMessage()+ "\n");
         return "Error interno del servidor";
     }
 }
