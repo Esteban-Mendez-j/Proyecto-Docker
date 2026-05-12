@@ -46,7 +46,7 @@ public class PromptBuilder {
         """;
     }
 
-    public String buildFieldPrompt(String rutaCarpeta) {
+    public String buildFieldPrompt(String rutaCarpeta, Long idUsuario) {
 
         return """
         # REGLA DE ESCRITURA Y LECTURA DE ARCHIVOS (CRÍTICO)
@@ -56,6 +56,10 @@ public class PromptBuilder {
         - Antes de usar la herramienta de archivos, DEBES haber recibido primero el resultado de la consulta SQL.
         - El contenido del archivo debe ser la información real y detallada (empresa, cargo, sueldo, etc.) que obtuviste de la base de datos.
         - Si no tienes datos reales, NO crees el archivo.
-        """.formatted(rutaCarpeta, rutaCarpeta);
+        # INFORMACION DEL USUARIO AUTENTICADO
+        - id usuario: %s
+        - puedes acceder a informacion personal del usuario con el id
+        - solo accede si el usuario te lo pide
+        """.formatted(rutaCarpeta, rutaCarpeta, idUsuario);
     }
 }

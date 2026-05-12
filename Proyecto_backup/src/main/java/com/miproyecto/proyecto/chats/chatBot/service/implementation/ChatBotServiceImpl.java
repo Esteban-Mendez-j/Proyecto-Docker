@@ -70,7 +70,8 @@ public class ChatBotServiceImpl implements ChatBotService {
         String response = "";
         try {
             response = chatClient.prompt()
-                    .user(promptBuilder.buildFieldPrompt(ruta) + "\n\n" + user).call().content();
+                    .user(promptBuilder.buildFieldPrompt(ruta, Long.parseLong(idUsuario)) + "\n\n" + user)
+                    .call().content();
         } catch (NonTransientAiException ex) {
             response = "Excediste el limite de peticiones, intentalo mas tarde";
         } catch (Exception e) {
