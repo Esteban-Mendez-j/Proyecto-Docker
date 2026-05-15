@@ -18,12 +18,10 @@ export default function AdminIndex() {
               </h2>
 
               <div className="relative w-full overflow-hidden rounded-xl shadow-inner aspect-video bg-gray-200 hover:shadow-lg transition-shadow">
-                <iframe
-                  className="absolute inset-0 w-full h-full rounded-xl"
-                  title="DataSet SearchJobs"
-                  src="https://app.powerbi.com/reportEmbed?reportId=d43e01c8-be69-4531-a446-7a93f4d7189e&autoAuth=true&ctid=9d12bf3f-e4f6-47ab-912f-1a2f0fc48aa4"
-                 
-                  allowFullScreen={true}
+                <iframe title="DataSet SearchJobs" 
+                  className="absolute inset-0 w-full h-full rounded-xl" 
+                  src="https://app.powerbi.com/view?r=eyJrIjoiY2M5MDI2MTktODA2NS00NjRiLWIzZjUtYjAxZmUyNTU5YTU2IiwidCI6IjlkMTJiZjNmLWU0ZjYtNDdhYi05MTJmLTFhMmYwZmM0OGFhNCIsImMiOjR9" 
+                  frameborder="0" allowFullScreen="true"
                 ></iframe>
               </div>
             </div>
