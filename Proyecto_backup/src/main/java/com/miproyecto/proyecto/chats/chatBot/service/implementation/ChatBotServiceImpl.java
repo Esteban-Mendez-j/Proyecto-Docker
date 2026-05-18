@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.retry.NonTransientAiException;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +25,7 @@ import com.miproyecto.proyecto.chats.chatBot.mapper.ChatBotMapper;
 import com.miproyecto.proyecto.chats.chatBot.model.ChatBot;
 import com.miproyecto.proyecto.chats.chatBot.repository.ChatBotRepository;
 import com.miproyecto.proyecto.chats.chatBot.service.interfaces.ChatBotService;
+import com.miproyecto.proyecto.chats.chatBot.service.interfaces.DocumentoService;
 import com.miproyecto.proyecto.enums.Roles;
 import com.miproyecto.proyecto.util.NotFoundException;
 import com.miproyecto.proyecto.util.modeloIA.ContextBuilder;
@@ -39,13 +41,14 @@ public class ChatBotServiceImpl implements ChatBotService {
     private final ChatBotMapper chatBotMapper;
     private final MensajeRepository mensajeRepository;
     private final ContextBuilder contextBuilder;
+    private final DocumentoService documentoService;
     
     @Value("${app.upload-dir.file}")
     private String fileUploadDir;
 
     public ChatBotServiceImpl(ChatClient.Builder chatClientBuilder, PromptBuilder promptBuilder,
             ChatBotRepository chatBotRepository, ContextBuilder contextBuilder,
-            ChatBotMapper chatBotMapper,
+            ChatBotMapper chatBotMapper, DocumentoService documentoService,
             MensajeRepository mensajeRepository,
             ToolCallbackProvider toolCallbackProvider ) {
 
@@ -58,6 +61,7 @@ public class ChatBotServiceImpl implements ChatBotService {
         this.mensajeRepository = mensajeRepository;
         this.contextBuilder = contextBuilder;
         this.promptBuilder = promptBuilder;
+        this.documentoService = documentoService;
     }
         
     @Override
@@ -68,8 +72,14 @@ public class ChatBotServiceImpl implements ChatBotService {
 
         String user = contextBuilder.buildUserContext(Roles.valueOf(role), message);
         String response = "";
+
+        List<String> RagContext =  documentoService.findSimilarDocuments(message);
+
+        String template = promptBuilder.buildRagContext(RagContext);
+        Prompt prompt = new Prompt(template);
+
         try {
-            response = chatClient.prompt()
+            response = chatClient.prompt(prompt)
                     .user(promptBuilder.buildFieldPrompt(ruta, Long.parseLong(idUsuario)) + "\n\n" + user)
                     .call().content();
         } catch (NonTransientAiException ex) {

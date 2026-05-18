@@ -1,0 +1,223 @@
+# CONTEXTO GENERAL DE LA APLICACIÓN SEARCHJOBS
+
+SearchJobs es una plataforma digital de búsqueda de empleo que conecta candidatos con empresas mediante herramientas modernas de reclutamiento, comunicación y gestión de vacantes.
+La plataforma está diseñada para facilitar todo el proceso de contratación laboral, desde la publicación de vacantes hasta la comunicación directa entre empresas y candidatos.
+La aplicación cuenta con dos tipos principales de usuarios:
+* Empresas
+* Candidatos
+También existe integración con un chatbot inteligente que puede ser utilizado por ambos tipos de usuarios para resolver dudas, recibir ayuda o consultar información relacionada con la plataforma.
+
+---
+
+## FUNCIONALIDADES GENERALES
+
+SearchJobs permite:
+* Registro e inicio de sesión de usuarios.
+* Gestión de perfiles.
+* Publicación y administración de vacantes.
+* Postulación de candidatos.
+* Sistema de chats entre empresas y candidatos.
+* Sistema de notificaciones.
+* Visualización de videos tipo shorts relacionados con vacantes.
+* Uso de inteligencia artificial mediante chatbot.
+* Filtrado y búsqueda avanzada de vacantes.
+* Subida de archivos e imágenes.
+* Gestión de postulaciones.
+* Comunicación en tiempo real.
+
+---
+
+## MÓDULO DE EMPRESAS
+
+Las empresas pueden registrarse e iniciar sesión dentro de la plataforma.
+Cada empresa posee un perfil empresarial editable donde puede administrar información relacionada con la compañía.
+Las empresas pueden:
+* Editar su perfil empresarial.
+* Cambiar información de la empresa.
+* Subir una foto de perfil o logo empresarial.
+* Publicar nuevas vacantes.
+* Editar vacantes existentes.
+* Desactivar vacantes.
+* Reactivar vacantes.
+* Ver postulaciones recibidas.
+* Revisar candidatos postulados.
+* Aceptar postulaciones.
+* Rechazar postulaciones.
+* Comunicarse con candidatos mediante chat.
+* Abrir chats.
+* Cerrar chats.
+
+El control del estado del chat pertenece exclusivamente a la empresa. Esto significa que únicamente la empresa puede decidir cuándo un chat está abierto o cerrado.
+
+---
+
+## GESTIÓN DE VACANTES
+Las empresas pueden crear vacantes laborales dentro de la plataforma.
+Cada vacante puede contener información como:
+
+* Título del cargo.
+* Descripción de la vacante.
+* Ciudad.
+* Sueldo o rango salarial.
+* Requisitos.
+* Información adicional.
+* Video explicativo de la vacante.
+
+Las vacantes tienen soporte multimedia mediante videos.
+Cada vacante puede tener un video asociado donde la empresa explica visualmente:
+
+* De qué trata la vacante.
+* Qué perfil están buscando.
+* Información adicional del puesto.
+* Cultura empresarial.
+* Requisitos importantes.
+
+---
+
+## SECCIÓN DE SHORTS
+
+SearchJobs cuenta con una sección moderna de shorts de empleo.
+Esta sección funciona de forma similar a una red social de videos cortos.
+
+En esta sección:
+* Los candidatos pueden ver videos de vacantes.
+* Cada video representa una vacante publicada.
+* Los usuarios pueden descubrir oportunidades laborales de forma visual y dinámica.
+* Los videos permiten entender mejor la vacante antes de postularse.
+
+La sección de shorts representa una nueva forma de búsqueda laboral basada en contenido visual.
+
+---
+
+## MÓDULO DE CANDIDATOS
+
+Los candidatos pueden registrarse e iniciar sesión.
+Cada candidato tiene un perfil personal editable.
+Los candidatos pueden:
+
+* Editar su perfil.
+* Cambiar información personal.
+* Subir una foto de perfil.
+* Subir hoja de vida o CV.
+* Buscar vacantes.
+* Filtrar vacantes.
+* Ver detalles completos de vacantes.
+* Postularse a vacantes.
+* Cancelar postulaciones.
+* Ver el estado de sus postulaciones.
+* Acceder a chats con empresas.
+* Comunicarse con empresas mediante chat.
+* Usar el chatbot inteligente.
+* Ver shorts de vacantes.
+
+---
+
+## BÚSQUEDA Y FILTRADO DE VACANTES
+
+Los candidatos pueden acceder a un sistema de búsqueda de vacantes.
+La búsqueda permite:
+* Filtrar vacantes.
+* Buscar por ciudad.
+* Buscar por sueldo.
+* Buscar por cargo.
+* Buscar por diferentes criterios.
+
+Los candidatos también pueden ingresar a la información detallada de cada vacante antes de postularse.
+
+---
+
+## POSTULACIONES
+
+Los candidatos pueden postularse a vacantes publicadas por las empresas.
+La plataforma almacena información sobre:
+
+* Fecha de postulación.
+* Estado de la postulación.
+* Vacante relacionada.
+* Empresa relacionada.
+
+Los candidatos pueden cancelar postulaciones.
+Las empresas pueden:
+
+* Revisar postulaciones.
+* Aceptar candidatos.
+* Rechazar candidatos.
+
+---
+
+## SISTEMA DE CHAT
+
+SearchJobs posee un sistema de chat en tiempo real entre empresas y candidatos.
+
+Características del chat:
+* Comunicación directa.
+* Chats privados.
+* Estado abierto o cerrado.
+* Gestión exclusiva por parte de la empresa.
+* Posibilidad de iniciar conversaciones laborales.
+
+Las empresas controlan completamente el estado del chat.
+
+---
+
+## CHATBOT INTELIGENTE
+
+La plataforma incluye un chatbot basado en inteligencia artificial.
+El chatbot puede ser utilizado tanto por empresas como por candidatos.
+El chatbot puede ayudar con:
+* Dudas sobre la plataforma.
+* Información de vacantes.
+* Procesos de postulación.
+* Ayuda de navegación.
+* Preguntas frecuentes.
+* Soporte general.
+
+---
+
+## PERFILES DE USUARIO
+
+Los perfiles contienen información personalizada dependiendo del tipo de usuario.
+
+Perfil de candidato:
+* Información personal.
+* Foto de perfil.
+* Hoja de vida o CV.
+* Experiencia.
+* Datos de contacto.
+
+Perfil de empresa:
+* Nombre empresarial.
+* Información de la empresa.
+* Logo o imagen de perfil.
+* Información corporativa.
+
+---
+
+## OBJETIVO PRINCIPAL DE SEARCHJOBS
+
+El objetivo principal de SearchJobs es modernizar la forma en que las personas buscan empleo y las empresas encuentran talento.
+
+La plataforma busca combinar:
+* Reclutamiento tradicional.
+* Comunicación en tiempo real.
+* Contenido visual.
+* Inteligencia artificial.
+* Experiencia moderna de usuario.
+
+SearchJobs busca hacer el proceso de búsqueda laboral más dinámico, visual, rápido e interactivo.
+
+## TIPOS DE CONTENIDO MANEJADOS
+
+La plataforma puede manejar:
+* Texto.
+* Imágenes.
+* Videos.
+* Archivos PDF.
+* Hojas de vida.
+* Mensajes en tiempo real.
+
+---
+
+## CONCEPTO GENERAL DE LA PLATAFORMA
+
+SearchJobs es una plataforma de empleo moderna enfocada en mejorar la interacción entre candidatos y empresas mediante herramientas visuales, comunicación en tiempo real y funcionalidades inteligentes impulsadas por inteligencia artificial.

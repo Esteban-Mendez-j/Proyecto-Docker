@@ -1,0 +1,238 @@
+# PREGUNTAS FRECUENTES SEARCHJOBS
+
+## ¿Qué es SearchJobs?
+
+SearchJobs es una plataforma digital de búsqueda de empleo que conecta candidatos y empresas mediante herramientas modernas de reclutamiento, comunicación y gestión de vacantes.
+
+---
+
+## ¿Cómo puedo registrarme?
+
+Puedes registrarte desde la pantalla principal seleccionando el tipo de cuenta que deseas crear: candidato o empresa.
+
+---
+
+## ¿Qué tipos de usuarios existen en la plataforma?
+
+Existen dos tipos principales de usuarios:
+
+* Candidatos
+* Empresas
+
+---
+
+## ¿Cómo iniciar sesión?
+
+Debes ingresar tu correo electrónico y contraseña desde la pantalla de inicio de sesión.
+
+---
+
+## ¿Cómo editar mi perfil?
+
+Selecciona el avatar ubicado en la zona superior derecha y le das clik al boton editar perfil
+
+---
+
+## ¿Cómo subir una foto de perfil?
+
+Desde tu perfil puedes seleccionar una imagen y actualizar tu foto de perfil.
+Entras a Tu perfil, luego en el boton editar perfil y te mostrara el formulario con el boton para subir una Imagen
+
+---
+
+## ¿Cómo subir mi hoja de vida?
+
+Los candidatos pueden subir su CV u hoja de vida en formato digital desde su perfil.
+Entras a Tu perfil, luego en el boton editar perfil y te mostrara el formulario con el boton para subir un CV
+
+---
+
+## ¿Cómo buscar vacantes?
+
+Puedes utilizar el buscador principal y aplicar filtros como ciudad, cargo o sueldo.
+
+---
+
+## ¿Cómo filtrar vacantes?
+
+La plataforma permite filtrar vacantes por:
+
+* Ciudad
+* Cargo
+* Sueldo
+* Titulo
+* Modalidad
+* Diferentes criterios de búsqueda
+
+---
+
+## ¿Cómo ver los detalles de una vacante?
+
+Debes ingresar a la seccion empleos y seleccionar una vacante para visualizar toda la información disponible.
+
+---
+
+## ¿Cómo postularme a una vacante?
+
+Al seleccionar una vacante te mostrara toda su información y un boton para postularte.
+
+---
+
+## ¿Cómo cancelar una postulación?
+
+Puedes cancelar una postulación desde la sección de postulaciones del candidato.
+
+---
+
+## ¿Cómo ver el estado de mis postulaciones?
+
+En la seccion "Postulaciones" tienes la informacion de todas tus postulaciones como candidato.
+
+---
+
+## ¿Qué estados puede tener una postulación?
+
+Una postulación puede ser:
+
+* Espera
+* Aceptada
+* Rechazada
+
+---
+
+## ¿Cómo publicar una vacante?
+
+Las empresas pueden crear nuevas vacantes la seccion "Publicar Vacantes".
+
+---
+
+## ¿Qué información puede tener una vacante?
+
+Una vacante puede incluir:
+
+* Título del cargo
+* Descripción
+* Ciudad
+* Sueldo
+* Requisitos
+* Información adicional
+* Video explicativo
+
+---
+
+## ¿Cómo editar una vacante?
+
+Las empresas pueden modificar vacantes publicadas desde la seccion "Mis Vacantes".
+
+---
+
+## ¿Cómo desactivar una vacante?
+
+Las empresas pueden cambiar el estado de una vacante para desactivarla temporalmente.
+
+---
+
+## ¿Cómo reactivar una vacante?
+
+Desde la seccion "Mis Vacantes" se puede volver a activar una vacante deshabilitada.
+
+---
+
+## ¿Qué son los shorts de empleo?
+
+Los shorts son videos cortos relacionados con vacantes laborales publicados por las empresas.
+
+---
+
+## ¿Cómo funcionan los shorts?
+
+Cada video representa una vacante y permite conocer mejor la oferta laboral de forma visual.
+
+---
+
+## ¿Quién puede usar el chatbot?
+
+El chatbot puede ser utilizado tanto por candidatos como por empresas.
+
+---
+
+## ¿Para qué sirve el chatbot?
+
+El chatbot ayuda a resolver dudas sobre:
+
+* Vacantes
+* Postulaciones
+* Navegación
+* Funciones de la plataforma
+* Soporte general
+
+---
+
+## ¿Cómo abrir un chat?
+
+Los chats pueden iniciarse entre empresas y candidatos.
+Para iniciar uno debes ser una Empresa, ir a la seccion de postulacion de alguna vacante, 
+donde te saldra el boton para iniciar el chat con un candidato especifico
+
+---
+
+## ¿Quién puede cerrar un chat?
+
+Solo las empresas pueden controlar el estado del chat y cerrarlo.
+
+---
+
+## ¿Qué tipos de archivos soporta la plataforma?
+
+La plataforma soporta:
+
+* Imágenes
+* Videos .mp4
+* Archivos PDF
+* Archivos de Texto
+
+---
+
+## ¿Puedo subir videos en una vacante?
+
+Sí. Las vacantes permiten asociar videos explicativos.
+
+---
+
+## ¿Qué puedo hacer como empresa?
+
+Las empresas pueden:
+
+* Crear vacantes
+* Editar vacantes
+* Ver postulaciones
+* Aceptar candidatos
+* Rechazar candidatos
+* Comunicarte con candidatos por chat
+* Editar el perfil
+
+---
+
+## ¿Qué puedo hacer como candidato?
+
+Los candidatos pueden:
+
+* Buscar vacantes
+* Postularse
+* Cancelar postulaciones
+* Comunicarte con empresas por chat
+* Ver shorts 
+* Subir tu Hoja de vida
+* Editar Tu perfil Laboral
+
+---
+
+## ¿La plataforma tiene comunicación en tiempo real?
+
+Sí. SearchJobs incluye funcionalidades de chat y comunicación en tiempo real.
+
+---
+
+## ¿Qué objetivo tiene SearchJobs?
+
+SearchJobs busca disminuir la informalidad labora facilitando la búsqueda de empleo formal mediante inteligencia artificial, contenido visual y herramientas modernas de comunicación.

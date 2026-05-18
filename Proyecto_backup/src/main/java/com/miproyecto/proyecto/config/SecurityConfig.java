@@ -94,7 +94,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfig))       
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/usuarios/**", "/css/**", 
+                .requestMatchers("/", "/usuarios/**", "/css/**", "/api/vector/**", 
                     "/images/**","/documentacion.html","/swagger-ui.html","/swagger-ui/**","/v3/api-docs/**", "/js/**", "/api/empresas/add", "/api/candidatos/add","/api/usuarios/rol",
                     "/api/vacantes/listar", "/api/vacantes/seleccion/{nvacantes}","/api/usuarios/datos",
                     "/api/vacantes/eliminar/filtro", "/api/apelaciones/**","/api/vacantes/Top/listar","/api/vacantes/listar/filtradas" ,

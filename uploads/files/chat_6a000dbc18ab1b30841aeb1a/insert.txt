@@ -1,0 +1,17 @@
+Titulo: Ingeniero Senior
+Cargo: Ingeniero de sistemas
+Ciudad: Barranquilla
+Departamento: Atlantico
+Descripción: Prueba de creacion de vacantes con LLM hora 12:05 
+Experiencia: 7 años
+Fecha de Publicación: 2026-05-14
+is_active: true
+Modalidad: Hibrido
+Requerimientos: Conocimiento en desarrollador, trabajo en equipo y proactividad.
+Sueldo: 3000000
+Tipo: vacante
+Id_usuario_id: 760
+Activa_por_empresa: true
+num_Compartidos: 0
+totalpostulaciones: 0
+visitas: 0

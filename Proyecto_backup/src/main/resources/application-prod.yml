@@ -39,6 +39,11 @@ spring:
       chat:
         options:
           model: ${MODEL_LLM}
+      embedding:
+        api-key: ${API_KEY_EMBEDDING}
+        base-url: ${URL_EMBEDDING}
+        options:
+          model: ${MODEL_EMBEDDING}
     mcp:
       client:
         stdio: 
