@@ -7,27 +7,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-import com.miproyecto.proyecto.candidato.repository.CandidatoRepository;
-import com.miproyecto.proyecto.ml.service.PrediccionService;
 import com.miproyecto.proyecto.optimizacion.dto.OptimizationRequest;
 import com.miproyecto.proyecto.optimizacion.dto.OptimizationResponse;
 import com.miproyecto.proyecto.optimizacion.dto.VacanteOptimizacionDTO;
-import com.miproyecto.proyecto.vacante.repository.VacanteRepository;
 
 @Service
 public class OptimizationService {
     // Aquí puedes implementar la lógica para llamar a tu API de optimización
     // y procesar los resultados según sea necesario.
-@Autowired
-private VacanteRepository vacanteRepository;
 
 @Autowired
 private RestClient restClient;
 
-@Autowired 
-private PrediccionService prediccionService;
-@Autowired
-private CandidatoRepository candidatoRepository;
+
 
 @Value("${optimizer.api.url}")
 private String optimizerApiUrl;
