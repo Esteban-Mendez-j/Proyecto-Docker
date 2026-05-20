@@ -6,6 +6,7 @@ import { RoleContext } from "../services/RoleContext";
 import "../style/invitado/header.css";
 import { clearLocalStore } from "../services/localStore"
 import BandejaNotificacion from "../components/BandejaNotificacion";
+import { ListSvg } from "../components/Icons";
 
 export default function Header () {
 
@@ -120,6 +121,8 @@ export default function Header () {
                     }
                     {["CANDIDATO"].includes(rol) && <BandejaNotificacion/>}
                     {["CANDIDATO", "EMPRESA"].includes(rol) &&
+                        <>
+                        <Link to={"/chat/"+rol.toLowerCase()} state={{ openBot: true }}> <ListSvg name={"robot"} width={30} height={30}/> </Link>
                         <Link to={"/perfil/"+ rol.toLowerCase()} className="perfil-link">
                             <picture className="perfil-header">
                                 <img
@@ -130,6 +133,7 @@ export default function Header () {
                                 <p className="nombre-perfil">{userDataSession?.nombre}</p>
                             </picture>
                         </Link>
+                        </>
                     }
                 </nav>
             </div>

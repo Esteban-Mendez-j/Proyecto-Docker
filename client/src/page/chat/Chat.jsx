@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import "../../style/invitado/chat.css";
 import Header from "../../layouts/Header";
 import ChatList from "../../components/ChatList";
@@ -13,6 +13,7 @@ import exceptionControl from "../../services/exceptionControl";
 import ChatBot from "./ChatBot";
 
 export default function ChatPage() {
+  const location = useLocation();
   const { id } = useParams(); 
   const navigate = useNavigate();
   const { logout, rol, userDataSession } = useContext(RoleContext);
@@ -23,6 +24,13 @@ export default function ChatPage() {
   const [searchTextLocal, setSearchTextLocal] = useState("");
   const [Estado, setEstado] = useState(null); // Estado para filtro
   const [chats, setChats] = useState([]);
+
+  useEffect(() => {
+    if (location.state?.openBot) {
+      setChatType("chatBot");
+      console.log("ok listo pues")
+    }
+  }, [location.state]);
 
   // Traer chats desde backend con filtros
   useEffect(() => {
