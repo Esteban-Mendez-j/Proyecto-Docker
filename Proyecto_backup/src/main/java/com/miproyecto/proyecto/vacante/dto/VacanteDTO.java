@@ -76,11 +76,17 @@ public class VacanteDTO {
     private List <String> aptitudes;
 
     private String videoLink;
-
+    
 
     private Integer visitas = 0;
 
     private Double Prediccion = 0.0;
+
+    private boolean recomendado; 
+
+    public boolean isRecomendado() { return recomendado; }
+    public void setRecomendado(boolean recomendado) { this.recomendado = recomendado; }
+
 
     public Double getPrediccion() {
         return Prediccion;

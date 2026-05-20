@@ -1,17 +1,17 @@
-import { modal, modalTime, QuestionModal } from "../services/Modal";
-import { API_CLIENT_URL } from "../services/Api";
-import "../style/invitado/jobcard.css";
-import Paginacion from "./Paginacion";
-import JobCard from "./JobCard";
-import { useContext, useEffect, useState } from "react";
-import { useSendFormV2 } from "../hooks/useFetch";
-import { RoleContext } from "../services/RoleContext";
-import Table from "./Table";
+import { useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ListSvg } from "./Icons";
-import { toggleFavoritoRequest } from "../services/ToggleFavoritosRequest";
-import SinResultados from "./SinResultados";
+import { useSendFormV2 } from "../hooks/useFetch";
+import { API_CLIENT_URL } from "../services/Api";
 import exceptionControl from "../services/exceptionControl";
+import { modalTime, QuestionModal } from "../services/Modal";
+import { RoleContext } from "../services/RoleContext";
+import { toggleFavoritoRequest } from "../services/ToggleFavoritosRequest";
+import "../style/invitado/jobcard.css";
+import { ListSvg } from "./Icons";
+import JobCard from "./JobCard";
+import Paginacion from "./Paginacion";
+import SinResultados from "./SinResultados";
+import Table from "./Table";
 
 const JobList = ({
   jobs,
@@ -60,17 +60,27 @@ const JobList = ({
       }
     }),
     Titulo: {
-      clase: "font-semibold max-w-[200px] truncate overflow-hidden whitespace-nowrap",
+      /* Aumentamos un poco el max-w para dar espacio al badge si el título es largo */
+      clase: "font-semibold max-w-[240px] truncate overflow-hidden whitespace-nowrap",
       modificacion: (job) => {
         return (
-          <Link
-            title={job.titulo}
-            to={`/empleos/${job.nvacantes}`}
-            className="hover:underline"
-            style={{ color: "var(--primary)" }}
-          >
-            {job.titulo}
-          </Link>
+          <div className="flex items-center gap-2 inline-flex">
+            <Link
+              title={job.titulo}
+              to={`/empleos/${job.nvacantes}`}
+              className="hover:underline truncate"
+              style={{ color: "var(--primary)" }}
+            >
+              {job.titulo}
+            </Link>
+
+            {/* Si la vacante viene como recomendada desde el backend, agregamos el mini badge */}
+            {job.recomendado && (
+              <span className="bg-blue-100 text-blue-700 font-bold text-[15px] px-1.5 py-0.5 rounded uppercase flex-shrink-0 tracking-wider">
+                ✨ 
+              </span>
+            )}
+          </div>
         )
       }
     },
@@ -97,7 +107,7 @@ const JobList = ({
             <button
               className="flex items-center justify-center w-8 h-8 rounded-md bg-gray-100 border border-gray-300 hover:bg-gray-200 transition-colors duration-200 ml-auto z-[100]"
               onClick={(e) => {
-                e.preventDefault(); 
+                e.preventDefault();
                 e.stopPropagation();
                 handleToggleFavorito(job.nvacantes);
               }}
@@ -110,14 +120,14 @@ const JobList = ({
       }
     }),
 
-  } 
+  }
 
   async function cambiarEstado(id, estado) {
     let mensaje = estado ? "activar" : "desactivar";
     const isConfirmed = await QuestionModal(
       `¿Estás seguro de que deseas ${mensaje} esta vacante?`
     );
-    if (!isConfirmed) return; 
+    if (!isConfirmed) return;
 
     try {
       // const response = await fetch(
@@ -133,15 +143,15 @@ const JobList = ({
       await send(`/api/vacantes/estado/${id}?estado=${estado}`, "PUT");
       modalTime(`Exito al ${mensaje} la vacante`)
       fetchAllJobs()
-      
+
     } catch (error) {
       console.error("Error en la solicitud:", error);
       exceptionControl(error, logout, navigate, "Error al modificar el estado de la vacante")
     }
   }
-     
+
   useEffect(() => {
-    if(rol !== "CANDIDATO") return
+    if (rol !== "CANDIDATO") return
     try {
       send("/api/candidatos/perfil", "GET");
     } catch (error) {
@@ -164,7 +174,7 @@ const JobList = ({
       setVerPrediccion(false);
     }
   }, [data])
-  
+
 
   if (!jobs || jobs.length == 0) {
     return (
@@ -178,7 +188,7 @@ const JobList = ({
       <div className={presentacion == 1 ? "jobs-grid" : "jobs-column"}>
         {presentacion == 3 ? (
           <div className="w-full overflow-x-auto">
-            <Table listEncabezados={listHeader} listObjetos={jobs} action={rol === "EMPRESA"?[
+            <Table listEncabezados={listHeader} listObjetos={jobs} action={rol === "EMPRESA" ? [
               {
                 text: "Editar",
                 funcion: (job) => { navigate(`/empresa/editar/vacantes/${job.nvacantes}`) },
@@ -194,7 +204,7 @@ const JobList = ({
                 ocultar: (job) => !job.activaPorEmpresa,
                 clase: "px-3 py-1.5 text-sm font-semibold rounded-md shadow bg-green-500 hover:bg-green-600 text-white"
               }
-            ]: []} />
+            ] : []} />
 
           </div>
         ) : (

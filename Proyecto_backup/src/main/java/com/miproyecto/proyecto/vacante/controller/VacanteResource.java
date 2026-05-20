@@ -176,7 +176,7 @@ public class VacanteResource {
         filtro.setRolUser(rol);
 
         if ("CANDIDATO".equals(rol) && perfilCompleto) {
-            response = vacanteService.buscarVacantesConFiltrosAndOrdenByPrediccion(idUsuario, filtro, pageable);
+            response = vacanteService.buscarVacantesConFiltrosAndOrdenByOptimizacion(idUsuario, filtro, pageable);
         } else {
             response = vacanteService.buscarVacantesConFiltros(idUsuario, filtro, pageable);
         }

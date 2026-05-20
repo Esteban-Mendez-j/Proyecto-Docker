@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { API_CLIENT_URL } from '../services/Api';
-import { QuestionModal } from "../services/Modal";
 import { RoleContext } from "../services/RoleContext";
 import { toggleFavoritoRequest } from '../services/ToggleFavoritosRequest';
 import { ListSvg } from "./Icons";
@@ -27,96 +26,104 @@ export default function JobCard({ job, cambiarEstado, verSeccionEdit, presentaio
     // Muestra los empleos en forma de tarjetas
     if (presentaion == 1) {
         return (
-            <div className="card" onClick={()=> navigate(`/empleos/${job.nvacantes}`)}>
-                {/* <a href={`/empleos/${job.nvacantes}`} > */}
-                    <div className="card-header">
-                        <div className="logo">
-                            <img
-                                src={job.imagenEmpresa ? `${API_CLIENT_URL}` + "/img/" + job.imagenEmpresa : `${API_CLIENT_URL}/images/imgEmpresa.png`}
-                                alt={`${job.nameEmpresa} logo`}
-                                width="60"
-                                height="60"
-                            />
-                        </div>
-                        <div className="info">
-                            {!job.active && (
-                                <span className=" top-4 left-4 bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-md">
-                                    {rol === "EMPRESA" ? "Desactivada por Admin" : "Desactivada"}
-                                </span>
-                            )}
+            <div 
+                className={`card relative overflow-visible flex flex-col pt-6 ${job.recomendado ? "border-2 border-blue-500 shadow-lg bg-blue-50/30" : ""}`} 
+                onClick={()=> navigate(`/empleos/${job.nvacantes}`)}
+            >
+                {/*  El badge de optimización se queda de forma segura en su esquina */}
+                {job.recomendado && (
+                    <div className="absolute top-2 right-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-md z-[50] flex items-center gap-1">
+                        <span></span> RECOMENDADO
+                    </div>
+                )}
 
-                            {!job.activaPorEmpresa && job.active && (
-                                <span className=" top-4 left-4 bg-yellow-500 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-md">
-                                    {rol === "EMPRESA" ? "Desactivada por ti" : "Desactivada"}
-                                </span>
-                            )}
+                <div className="card-header">
+                    <div className="logo">
+                        <img
+                            src={job.imagenEmpresa ? `${API_CLIENT_URL}` + "/img/" + job.imagenEmpresa : `${API_CLIENT_URL}/images/imgEmpresa.png`}
+                            alt={`${job.nameEmpresa} logo`}
+                            width="60"
+                            height="60"
+                        />
+                    </div>
+                    <div className="info">
+                        {!job.active && (
+                            <span className="top-4 left-4 bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-md">
+                                {rol === "EMPRESA" ? "Desactivada por Admin" : "Desactivada"}
+                            </span>
+                        )}
 
-                            {job.candidatoPostulado && job.estadoPostulacion !== 'Cancelada' && (
-                                <span
-                                    className={`top-4 right-4 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-md ${job.estadoPostulacion === 'Aceptada'
+                        {!job.activaPorEmpresa && job.active && (
+                            <span className="top-4 left-4 bg-yellow-500 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-md">
+                                {rol === "EMPRESA" ? "Desactivada por ti" : "Desactivada"}
+                            </span>
+                        )}
+
+                        {/* ⭐ CORRECCIÓN CRÍTICA: Le devolvemos `{job.estadoPostulacion}` a la etiqueta para que no sea un punto vacío */}
+                        {job.candidatoPostulado && job.estadoPostulacion !== 'Cancelada' && (
+                            <span
+                                className={`top-4 right-4 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-md ${
+                                    job.estadoPostulacion === 'Aceptada'
                                         ? 'bg-green-500'
                                         : job.estadoPostulacion === 'Rechazada'
                                             ? 'bg-red-500'
                                             : 'bg-blue-500'
-                                        }`}
-                                >
-                                    {job.estadoPostulacion}
-                                </span>
-                            )}
-
-                            <div className="flex items-center justify-between">
-                                <h3 className="title">{job.titulo}</h3>
-
-                                {"CANDIDATO" == rol && <button
-                                    className="flex items-center justify-center w-8 h-8 rounded-md bg-gray-100 border border-gray-300 hover:bg-gray-200 transition-colors duration-200 ml-auto z-[100]"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        handleToggleFavorito(job.nvacantes);
-
-                                    }}
-                                    title="Agregar a favoritos"
-                                >
-                                    <ListSvg name={"estrella"} height={10} width={10} nameClass={`w-5 h-5 transition-colors duration-200 ${isFavorite ? "text-yellow-400 fill-yellow-400" : "text-gray-400 fill-gray-100 "}`}/>
-                                </button>}
-                            </div>
-                            <p className="company">{job.nameEmpresa}</p>
-                        </div>
-                    </div>
-
-                    <div className="details">
-                        <div className="detail">
-                            <ListSvg name={"ubicacion"} width={16} height={16}/>
-                            <span>{job.ciudad}</span>
-                        </div>
-                        <div className="detail">
-                            <ListSvg name={"reloj"} width={16} height={16}/>
-                            <span>{job.tipo}</span>
-                        </div>
-                        <div className="detail">
-                            <ListSvg name={"maleta"} width={16} height={16}/>
-                            <span>{job.experiencia} años</span>
-                        </div>
-                        <div className="detail">
-                            <ListSvg name={"usuario"} width={18} height={18}/>
-                            <span>{job.totalpostulaciones} postulados</span>
-                        </div>
-                        {(rol === "CANDIDATO" && verPrediccion) && (
-                            <div className="detail">
-                                <ListSvg name={"prediccion"} height={18} width={18} />
-                                <span>{job.prediccion}%</span>
-                            </div>
+                                }`}
+                            >
+                                {job.estadoPostulacion}
+                            </span>
                         )}
-                    </div>
 
-                    <div className="apply">
-                        <span className="apply-text">Ver detalles</span>
+                        <div className="flex items-center justify-between">
+                            <h3 className="title">{job.titulo}</h3>
+
+                            {"CANDIDATO" == rol && <button
+                                className="flex items-center justify-center w-8 h-8 rounded-md bg-gray-100 border border-gray-300 hover:bg-gray-200 transition-colors duration-200 ml-auto z-[100]"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleToggleFavorito(job.nvacantes);
+                                }}
+                                title="Agregar a favoritos"
+                            >
+                                <ListSvg name={"estrella"} height={10} width={10} nameClass={`w-5 h-5 transition-colors duration-200 ${isFavorite ? "text-yellow-400 fill-yellow-400" : "text-gray-400 fill-gray-100 "}`}/>
+                            </button>}
+                        </div>
+                        <p className="company">{job.nameEmpresa}</p>
                     </div>
-                {/* </a> */}
+                </div>
+
+                <div className="details">
+                    <div className="detail">
+                        <ListSvg name={"ubicacion"} width={16} height={16}/>
+                        <span>{job.ciudad}</span>
+                    </div>
+                    <div className="detail">
+                        <ListSvg name={"reloj"} width={16} height={16}/>
+                        <span>{job.tipo}</span>
+                    </div>
+                    <div className="detail">
+                        <ListSvg name={"maleta"} width={16} height={16}/>
+                        <span>{job.experiencia} años</span>
+                    </div>
+                    <div className="detail">
+                        <ListSvg name={"usuario"} width={18} height={18}/>
+                        <span>{job.totalpostulaciones} postulados</span>
+                    </div>
+                    {(rol === "CANDIDATO" && verPrediccion) && (
+                        <div className="detail">
+                            <ListSvg name={"prediccion"} height={18} width={18} />
+                            <span>{job.prediccion}%</span>
+                        </div>
+                    )}
+                </div>
+
+                <div className="apply">
+                    <span className="apply-text">Ver detalles</span>
+                </div>
 
                 {(rol === 'EMPRESA' && verSeccionEdit) && (
                     <div className="apply">
-                        {/* <Link to={`/empresa/editar/vacantes/${job.nvacantes}`} className="btn btn-edit">Editar</Link> */}
                         <button
                             onClick={(e) =>  {
                                 e.stopPropagation();
@@ -140,19 +147,20 @@ export default function JobCard({ job, cambiarEstado, verSeccionEdit, presentaio
                         </button>
                     </div>
                 )}
-
             </div>
         )
     }
-
-
     // Muestra los empleos en filas
     if (presentaion == 2) {
         return (
             <div className="flex flex-col divide-y">
                 <div
                     key={job.nvacantes}
-                    className="flex items-center justify-between gap-4 py-4 px-3 hover:bg-blue-100 transition-colors cursor-pointer border-b border-gray-400"
+                    /*  MODIFICACIÓN 3: Cambiamos dinámicamente el fondo de la fila completa si es recomendada */
+                    className={`flex items-center justify-between gap-4 py-4 px-3 transition-colors cursor-pointer border-b border-gray-400 ${job.recomendado
+                            ? "bg-blue-50/70 hover:bg-blue-100/90 border-l-4 border-l-blue-500"
+                            : "hover:bg-blue-100"
+                        }`}
                     onClick={() => (window.location.href = `/empleos/${job.nvacantes}`)}
                 >
                     <div className="flex items-center gap-4">
@@ -166,65 +174,66 @@ export default function JobCard({ job, cambiarEstado, verSeccionEdit, presentaio
                             className="w-14 h-14 rounded-md object-cover"
                         />
                         <div>
-                            <h3 className="title">{job.titulo}</h3>
+                            {/*  MODIFICACIÓN 4: Añadimos un pequeño indicador de texto al lado del título en la fila */}
+                            <div className="flex flex-row items-center gap-2 mb-1 w-full">
+                                <h3 className="title m-0 inline-block font-semibold text-gray-900">{job.titulo}</h3>
+                                {job.recomendado && (
+                                    <span className="inline-block bg-blue-600 text-white font-bold text-[9px] px-2 py-0.5 rounded shadow-sm uppercase tracking-wider whitespace-nowrap min-w-max h-auto leading-none">
+                                        Recomendada
+                                    </span>
+                                )}
+                            </div>
                             <p className="detail">
                                 <ListSvg name={"empresa"} width={18} height={18} /> {job.nameEmpresa}
                                 <ListSvg name={"ubicacion"} width={16} height={16} /> {job.ciudad}
                                 <ListSvg name={"usuario"} width={16} height={16} /> {job.totalpostulaciones}
-                                <ListSvg name={"maleta"} width={16} height={16} /> {job.tipo}  
+                                <ListSvg name={"maleta"} width={16} height={16} /> {job.tipo}
                                 <ListSvg name={"reloj"} width={16} height={16} /> {job.experiencia} años de experiencia
-                                {(rol === "CANDIDATO"&& verPrediccion) && (
-                                <>
-                                    <ListSvg name={"prediccion"} height={18} width={18} />
-                                    {job.prediccion}%
-                                </>
+                                {(rol === "CANDIDATO" && verPrediccion) && (
+                                    <>
+                                        <ListSvg name={"prediccion"} height={18} width={18} />
+                                        {job.prediccion}%
+                                    </>
                                 )}
-
                             </p>
                         </div>
                     </div>
 
                     <div className="flex flex-col items-end">
                         <span className="text-sm text-gray-500">
-
                             {"CANDIDATO" == rol && <button
                                 className="flex items-center justify-center w-8 h-8 rounded-md bg-gray-100 border border-gray-300 hover:bg-gray-200 transition-colors duration-200 ml-auto z-[100]"
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
                                     handleToggleFavorito(job.nvacantes);
-
                                 }}
                                 title="Agregar a favoritos"
                             >
-                                <ListSvg name={"estrella"} height={10} width={10} nameClass={`w-5 h-5 transition-colors duration-200 ${isFavorite ? "text-yellow-400 fill-yellow-400" : "text-gray-400 fill-gray-100 "}`}/>
+                                <ListSvg name={"estrella"} height={10} width={10} nameClass={`w-5 h-5 transition-colors duration-200 ${isFavorite ? "text-yellow-400 fill-yellow-400" : "text-gray-400 fill-gray-100 "}`} />
                             </button>}
-
                         </span>
-                        {/* Contenedor general para estados y acciones */}
+
                         <div className="flex flex-wrap items-center gap-2 mt-2">
-                            {/* Estado de la postulación */}
                             {job.candidatoPostulado && (
                                 <span
                                     className={`text-xs font-semibold px-2 py-1 rounded-full ${job.estadoPostulacion === "Aceptada"
-                                            ? "bg-green-100 text-green-700"
-                                            : job.estadoPostulacion === "Rechazada"
-                                                ? "bg-red-100 text-red-700"
-                                                : "bg-blue-100 text-blue-700"
+                                        ? "bg-green-100 text-green-700"
+                                        : job.estadoPostulacion === "Rechazada"
+                                            ? "bg-red-100 text-red-700"
+                                            : "bg-blue-100 text-blue-700"
                                         }`}
                                 >
                                     {job.estadoPostulacion}
                                 </span>
                             )}
 
-                            {/* Estados de la vacante */}
                             {!job.active && (
                                 <span className="bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-md">
                                     {rol === "EMPRESA" ? "Desactivada por Admin" : "Desactivada"}
                                 </span>
                             )}
 
-                            {/* Acciones (solo empresa) */}
                             {rol === "EMPRESA" && verSeccionEdit && (
                                 <div className="flex items-center gap-2 ml-auto">
                                     <button
@@ -238,12 +247,12 @@ export default function JobCard({ job, cambiarEstado, verSeccionEdit, presentaio
                                     </button>
                                     <button
                                         onClick={(e) => {
-                                            e.stopPropagation() 
+                                            e.stopPropagation()
                                             cambiarEstado(job.nvacantes, !job.activaPorEmpresa)
                                         }}
                                         className={`px-3 py-1.5 text-sm font-semibold rounded-md shadow ${job.activaPorEmpresa
-                                                ? "bg-red-500 hover:bg-red-600 text-white"
-                                                : "bg-green-500 hover:bg-green-600 text-white"
+                                            ? "bg-red-500 hover:bg-red-600 text-white"
+                                            : "bg-green-500 hover:bg-green-600 text-white"
                                             }`}
                                     >
                                         {job.activaPorEmpresa ? "Desactivar" : "Activar"}
@@ -251,13 +260,10 @@ export default function JobCard({ job, cambiarEstado, verSeccionEdit, presentaio
                                 </div>
                             )}
                         </div>
-
                     </div>
+
                 </div>
             </div>
-
         )
-
     }
-
 }

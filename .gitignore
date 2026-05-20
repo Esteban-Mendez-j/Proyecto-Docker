@@ -48,3 +48,14 @@ build/
 .settings/
 .springBeans
 .sts4-cache/
+
+
+# Backend Python (FastAPI / optimizer-api)
+**/venv/
+**/.venv/
+**/env/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
