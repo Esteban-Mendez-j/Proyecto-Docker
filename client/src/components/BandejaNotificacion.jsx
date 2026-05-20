@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useFetchV2, useSendFormV2 } from "../hooks/useFetch"
-import stompClient, { connect, sendMessage, subscribe } from "../services/Websocket";
+import stompClient, { sendMessage, subscribe } from "../services/Websocket";
 import { RoleContext } from "../services/RoleContext";
 import useVisible from "../hooks/useVisible"
 import Loading from "../components/Loading"
@@ -68,7 +68,6 @@ export default function BandejaNotificacion() {
 
     useEffect(() => {
         if (!["CANDIDATO", "EMPRESA"].includes(rol)) { return }
-        connect()
 
         subscribe("/user/queue/notificacion", (msg) => {
             const notificacion = JSON.parse(msg.body);

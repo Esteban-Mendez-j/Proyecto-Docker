@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import "../../style/invitado/chat.css";
 import Header from "../../layouts/Header";
 import ChatList from "../../components/ChatList";
@@ -6,10 +6,11 @@ import ChatBox from "../../components/ChatBox";
 import { API_CLIENT_URL } from "../../services/Api";
 import manejarRespuesta from "../../services/ManejarRespuesta";
 import { useContext, useEffect, useState } from "react";
-import { ListSvg } from "../../components/Icons";
+import { ListSvg } from "../../components/icons";
 import { RoleContext } from "../../services/RoleContext";
-import { useSendFormV2 } from "../../hooks/useFetch";
+import { useFetchV2, useSendFormV2 } from "../../hooks/useFetch";
 import exceptionControl from "../../services/exceptionControl";
+import ChatBot from "./ChatBot";
 
 export default function ChatPage() {
   const { id } = useParams(); 
@@ -17,6 +18,7 @@ export default function ChatPage() {
   const { logout, rol, userDataSession } = useContext(RoleContext);
   const { loading, send } = useSendFormV2();
   const [chatId, setChatId] = useState(id);
+  const [chatType, setChatType] = useState("chatPersona")
   const [searchText, setSearchText] = useState("");
   const [searchTextLocal, setSearchTextLocal] = useState("");
   const [Estado, setEstado] = useState(null); // Estado para filtro
@@ -25,7 +27,7 @@ export default function ChatPage() {
   // Traer chats desde backend con filtros
   useEffect(() => {
     async function fetchChats() {
-      if (!rol || !userDataSession.id) return;
+      if (!rol || !userDataSession?.id) return;
 
       try {
         const tipoUsuario = rol.toLowerCase(); // empresa o candidato
@@ -45,16 +47,19 @@ export default function ChatPage() {
       }
     }
     fetchChats();
-  }, [rol, userDataSession.id, searchText, Estado]);
-  
+  }, [rol, userDataSession?.id, searchText, Estado]);
+
   return (
 
     <div className="chat-layout">
       <Header />
       <div className="h-screen flex">
         <aside className="w-1/4 flex flex-col border-r border-gray-200 bg-white pt-20">
-          <header className="p-4 border-b">
-            <h2 className="text-lg font-semibold text-blue-700">Mensajes</h2>
+          <header className="p-4 border-b flex flex-row justify-between">
+            <h2 className="text-lg font-semibold text-blue-700">Conversaciones</h2>
+            <button onClick={()=> setChatType("chatBot")}> 
+              <ListSvg name={"robot"} width={30} height={30}/> 
+            </button>
           </header>
 
           <div className="p-3">
@@ -124,12 +129,17 @@ export default function ChatPage() {
               chats={chats}
               loading={loading}
               userRole={rol}
+              setChatType={setChatType}
             />
           </div>
         </aside>
 
         <main className="flex flex-col flex-1">
-          <ChatBox chatId={chatId} setChats={setChats} />
+          {chatType == "chatBot" ?
+            <ChatBot />
+            :
+            <ChatBox chatId={chatId} setChats={setChats} />
+          }
         </main>
       </div>
     </div>

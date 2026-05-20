@@ -61,6 +61,7 @@ public class PostuladoService {
                 .toList();
     }
 
+
     public ApiResponseBody<List<PostuladoDTO>> findByNvacantes(Long nvacantes, String estado, LocalDate fechaMinima, String nombreCandidato, Pageable pageable) {
         final Vacante vacante = vacanteRepository.findById(nvacantes)
                 .orElseThrow(() -> new NotFoundException("Vacante no encontrada"));
@@ -97,6 +98,11 @@ public class PostuladoService {
     public PostuladoDTO get(final Long nPostulacion) {
         return postuladoRepository.findById(nPostulacion)
                 .map(postulado -> mapToDTO(postulado, new PostuladoDTO()))
+                .orElseThrow(NotFoundException::new);
+    }
+
+    public Postulado findEntityById(final Long nPostulacion) {
+        return postuladoRepository.findById(nPostulacion)
                 .orElseThrow(NotFoundException::new);
     }
     

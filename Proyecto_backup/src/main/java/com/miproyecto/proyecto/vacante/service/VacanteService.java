@@ -33,10 +33,8 @@ import com.miproyecto.proyecto.ml.service.PrediccionService;
 import com.miproyecto.proyecto.optimizacion.dto.OptimizationResponse;
 import com.miproyecto.proyecto.optimizacion.dto.VacanteOptimizacionDTO;
 import com.miproyecto.proyecto.optimizacion.service.OptimizationService;
-import com.miproyecto.proyecto.postulacion.model.Postulado;
 import com.miproyecto.proyecto.postulacion.repository.PostuladoRepository;
 import com.miproyecto.proyecto.util.NotFoundException;
-import com.miproyecto.proyecto.util.ReferencedWarning;
 import com.miproyecto.proyecto.util.response.ApiResponseBody;
 import com.miproyecto.proyecto.util.response.Meta;
 import com.miproyecto.proyecto.util.response.Pagination;
@@ -56,7 +54,6 @@ public class VacanteService {
     private final VacanteFavoritaRepository vacanteFavoritaRepository;
     private final VacanteRepository vacanteRepository;
     private final EmpresaRepository empresaRepository;
-    private final PostuladoRepository postuladoRepository;
     private final AptitudesService aptitudesService;
     private final PrediccionService prediccionService;
     private final OptimizationService optimizationService;
@@ -70,7 +67,6 @@ public class VacanteService {
         this.vacanteFavoritaRepository = vacanteFavoritaRepository;
         this.vacanteRepository = vacanteRepository;
         this.empresaRepository = empresaRepository;
-        this.postuladoRepository = postuladoRepository;
         this.aptitudesService = aptitudesService;
         this.prediccionService = prediccionService;
         this.optimizationService = optimizationService;
@@ -555,17 +551,4 @@ public class VacanteService {
         return vacante;
     }
 
-    public ReferencedWarning getReferencedWarning(final Long nvacantes) {
-        final ReferencedWarning referencedWarning = new ReferencedWarning();
-        final Vacante vacante = vacanteRepository.findById(nvacantes)
-                .orElseThrow(NotFoundException::new);
-        final Postulado nvacantePostulado = postuladoRepository.findFirstByVacante(vacante);
-        if (nvacantePostulado != null) {
-            referencedWarning.setKey("vacante.postulado.nvacante.referenced");
-            referencedWarning.addParam(nvacantePostulado.getNPostulacion());
-            return referencedWarning;
-        }
-        return null;
-
-    }
 }

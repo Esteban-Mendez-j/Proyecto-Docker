@@ -1,6 +1,6 @@
 import Loading from "../components/Loading"
 
-const ChatList = ({ onSelectChat, chats, loading, userRole }) => {
+const ChatList = ({ onSelectChat, chats, loading, userRole, setChatType }) => {
 
   if (loading) return <Loading />;
   if (chats.length === 0)
@@ -20,7 +20,7 @@ const ChatList = ({ onSelectChat, chats, loading, userRole }) => {
         {chats.map((chat) => (
           <li key={chat.id}>
             <button
-              onClick={() => onSelectChat(chat.id)}
+              onClick={() => {onSelectChat(chat.id), setChatType("chatPersona")}}
               className="w-full text-left px-4 py-3 hover:bg-blue-50 transition duration-200 group"
             >
               <div className="flex justify-between items-center mb-1">

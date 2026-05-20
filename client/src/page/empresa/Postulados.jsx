@@ -4,9 +4,8 @@ import "../../style/invitado/empleos.css"
 import "../../style/invitado/postulados.css"
 import { useContext, useEffect, useState } from "react";
 import Pagination from "../../components/Paginacion";
-import manejarRespuesta from "../../services/ManejarRespuesta";
 import { API_CLIENT_URL } from "../../services/Api";
-import { modal, modalResponse, QuestionModal } from "../../services/Modal";
+import { QuestionModal } from "../../services/Modal";
 import {sendMessage} from "../../services/Websocket"
 import { mensajesNotificaciones } from "../../services/data";
 import useFiltro from "../../hooks/useFiltro";
@@ -147,7 +146,6 @@ export default function Postulados() {
             idRemitente: userDataSession.id,
             idVacante: postulacion.vacante.id
         }
-        console.log(notificacion)
         sendMessage("/app/enviar/notificacion", notificacion);
     }
 

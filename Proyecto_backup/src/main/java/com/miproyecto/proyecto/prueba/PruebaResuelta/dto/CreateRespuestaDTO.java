@@ -1,0 +1,16 @@
+package com.miproyecto.proyecto.prueba.PruebaResuelta.dto;
+
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class CreateRespuestaDTO {
+    private String respuestaTexto;
+    private Long idPregunta;
+}

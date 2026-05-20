@@ -32,6 +32,13 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 5MB
+  ai:
+    openai:
+      api-key: ${API_KEY}
+      base-url: ${URL_DOCKER_LLM}
+      chat:
+        options:
+          model: ${MODEL_LLM}
 
 app:
   upload-dir:
