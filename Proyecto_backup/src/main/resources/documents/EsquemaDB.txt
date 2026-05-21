@@ -1,0 +1,133 @@
+Base de Datos - Información General
+
+# Tabla: usuario
+Columnas:
+* id
+* nombre
+* apellido
+* correo
+* contraseña
+* rol
+* estado
+* fecha_creacion
+
+Descripción:
+Almacena la información principal de los usuarios registrados en la plataforma.
+
+# Tabla: empresa
+Columnas:
+* id
+* nombre_empresa
+* descripcion
+* direccion
+* telefono
+* correo
+* usuario_id
+
+Descripción:
+Contiene la información de las empresas registradas en el sistema.
+
+# Tabla: candidato
+Columnas:
+* id
+* nombre
+* apellido
+* correo
+* telefono
+* hoja_vida
+* usuario_id
+
+Descripción:
+Almacena información relacionada con los candidatos que aplican a vacantes.
+
+# Tabla: vacante
+Columnas:
+
+* id
+* titulo
+* descripcion
+* requisitos
+* salario
+* modalidad
+* estado
+* empresa_id
+* fecha_publicacion
+
+Descripción:
+Registra las vacantes laborales publicadas por las empresas.
+
+# Tabla: postulacion
+Columnas:
+* id
+* candidato_id
+* vacante_id
+* estado
+* fecha_postulacion
+
+Descripción:
+Relaciona candidatos con vacantes laborales.
+
+# Tabla: aptitudes
+Columnas:
+* id
+* nombre
+* descripcion
+
+Descripción:
+Almacena habilidades o competencias requeridas por las vacantes o asociadas a candidatos.
+
+# Tabla: prueba_tecnica
+Columnas:
+* id
+* titulo
+* descripcion
+* dificultad
+* empresa_id
+
+Descripción:
+Contiene las pruebas técnicas asignadas a procesos de selección.
+
+# Tabla: prueba_resuelta
+Columnas:
+* id
+* candidato_id
+* prueba_id
+* resultado
+* observaciones
+* fecha_resolucion
+
+Descripción:
+Guarda las pruebas técnicas resueltas por los candidatos.
+
+# Tabla: notificacion
+Columnas:
+* id
+* titulo
+* mensaje
+* usuario_id
+* fecha_envio
+* leido
+
+Descripción:
+Almacena las notificaciones enviadas a los usuarios del sistema.
+
+# Tabla: chat
+Columnas:
+* id
+* usuario_id
+* fecha_creacion
+* estado
+
+Descripción:
+Representa las conversaciones generadas dentro del chatbot.
+
+# Tabla: mensaje
+Columnas:
+* id
+* chat_id
+* sender_id
+* contenido
+* fecha_envio
+
+Descripción:
+Almacena los mensajes enviados dentro de cada conversación del chatbot.

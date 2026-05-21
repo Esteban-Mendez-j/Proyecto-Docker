@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.empresa.dto.EmpresaDTO;
 import com.miproyecto.proyecto.empresa.service.EmpresaService;
+import com.miproyecto.proyecto.enums.FileType;
 import com.miproyecto.proyecto.enums.ResponseCode;
 import com.miproyecto.proyecto.usuario.service.UsuarioService;
 import com.miproyecto.proyecto.util.JwtUtils;
@@ -126,7 +127,7 @@ public class EmpresaResource {
     public ResponseEntity<ApiResponseBody<Long>> editCandidato(
             @RequestPart("empresa") @Validated({ValidationGroups.OnUpdate.class, Default.class}) EmpresaDTO empresaDTO,
             @RequestPart(name = "img", required = false) MultipartFile imagen,
-            @CookieValue(required = false) String jwtToken) {
+            @CookieValue(required = true) String jwtToken) {
 
         ApiResponseBody<Long> response = new ApiResponseBody<>();
         ApiError error = new ApiError();
@@ -138,7 +139,7 @@ public class EmpresaResource {
             if (imagen != null && !imagen.isEmpty()) {
                 if (empresaDTO.getImagen() != null && !empresaDTO.getImagen().isEmpty()) {
 
-                    usuarioService.eliminarArchivo(empresaDTO.getImagen(), true);
+                    usuarioService.eliminarArchivo(empresaDTO.getImagen(), FileType.IMAGEN, idUsuario);
                 }
                 String rutaImagen = usuarioService.guardarArchivo(imagen, idUsuario);
                 empresaDTO.setImagen(rutaImagen);

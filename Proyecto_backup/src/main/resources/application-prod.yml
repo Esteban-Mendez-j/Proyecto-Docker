@@ -39,12 +39,23 @@ spring:
       chat:
         options:
           model: ${MODEL_LLM}
+      embedding:
+        api-key: ${API_KEY_EMBEDDING}
+        base-url: ${URL_EMBEDDING}
+        options:
+          model: ${MODEL_EMBEDDING}
+    mcp:
+      client:
+        stdio: 
+          servers-configuration: ${CONFIG_MCP}
+    
 
 app:
   upload-dir:
     img: ${UPLOAD_DIR_IMG}
     pdf: ${UPLOAD_DIR_PDF}
     video: ${UPLOAD_DIR_VIDEO}
+    file: ${UPLOAD_DIR_FILE}
   url:
     frontEnd: ${URL_FRONTEND}
     

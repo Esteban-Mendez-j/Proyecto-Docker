@@ -19,6 +19,9 @@ public class ArchivoConfig implements WebMvcConfigurer {
 
     @Value("${app.upload-dir.video}")
     private String videoUploadDir;
+    
+    @Value("${app.upload-dir.file}")
+    private String fileUploadDir;
 
     @Override
     public void addResourceHandlers( @NonNull ResourceHandlerRegistry registry) {
@@ -32,5 +35,8 @@ public class ArchivoConfig implements WebMvcConfigurer {
         
         registry.addResourceHandler("/video/**")
                 .addResourceLocations("file:" + videoUploadDir + "/");
+        
+        registry.addResourceHandler("/file/**")
+                .addResourceLocations("file:" + fileUploadDir + "/");
     }
 }

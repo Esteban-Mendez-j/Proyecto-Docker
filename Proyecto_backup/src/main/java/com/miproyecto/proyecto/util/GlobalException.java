@@ -3,11 +3,13 @@ package com.miproyecto.proyecto.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.ai.retry.NonTransientAiException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException.Forbidden;
+
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.miproyecto.proyecto.enums.ResponseCode;
@@ -43,6 +45,11 @@ public class GlobalException {
     @ExceptionHandler(TokenExpiredException.class)
     public ResponseEntity<?> handleExpiredJWT(JWTVerificationException ex) {
         return buildResponse(HttpStatus.UNAUTHORIZED, "Sesion expirada, inicia nuevamente", ResponseCode.EXPIRED_TOKEN);
+    }
+
+    @ExceptionHandler(NonTransientAiException.class)
+    public ResponseEntity<?> manyRequest (Exception ex) {
+        return buildResponse(HttpStatus.TOO_MANY_REQUESTS, "Excediste el limite de peticiones, intenta mas tarde", ResponseCode.ERROR);
     }
 
     @ExceptionHandler(Exception.class)

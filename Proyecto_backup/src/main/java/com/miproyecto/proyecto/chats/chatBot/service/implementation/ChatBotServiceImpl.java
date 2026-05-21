@@ -1,135 +1,96 @@
 package com.miproyecto.proyecto.chats.chatBot.service.implementation;
 
-import com.miproyecto.proyecto.util.modeloIA.ContextBuilder;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.retry.NonTransientAiException;
+import org.springframework.ai.tool.ToolCallbackProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.miproyecto.proyecto.chat.dto.MensajeDTO;
 import com.miproyecto.proyecto.chat.model.Mensaje;
 import com.miproyecto.proyecto.chat.repository.MensajeRepository;
-import com.miproyecto.proyecto.chat.service.ChatService;
 import com.miproyecto.proyecto.chats.chatBot.dto.ChatBotDTO;
 import com.miproyecto.proyecto.chats.chatBot.dto.CreateChatBotDTO;
 import com.miproyecto.proyecto.chats.chatBot.mapper.ChatBotMapper;
 import com.miproyecto.proyecto.chats.chatBot.model.ChatBot;
 import com.miproyecto.proyecto.chats.chatBot.repository.ChatBotRepository;
 import com.miproyecto.proyecto.chats.chatBot.service.interfaces.ChatBotService;
-import com.miproyecto.proyecto.enums.IntentType;
+import com.miproyecto.proyecto.chats.chatBot.service.interfaces.DocumentoService;
+import com.miproyecto.proyecto.enums.Roles;
 import com.miproyecto.proyecto.util.NotFoundException;
-import com.miproyecto.proyecto.util.modeloIA.IntentDetector;
+import com.miproyecto.proyecto.util.modeloIA.ContextBuilder;
 import com.miproyecto.proyecto.util.modeloIA.PromptBuilder;
 
 
 @Service
 public class ChatBotServiceImpl implements ChatBotService {
 
-    private final ContextBuilder contextBuilder;
-    private ChatClient chatClient;
     private final PromptBuilder promptBuilder;
-    private final IntentDetector intentDetector;
+    private ChatClient chatClient;
     private final ChatBotRepository chatBotRepository;
     private final ChatBotMapper chatBotMapper;
-    private final ChatService chatService;
     private final MensajeRepository mensajeRepository;
+    private final ContextBuilder contextBuilder;
+    private final DocumentoService documentoService;
+    
+    @Value("${app.upload-dir.file}")
+    private String fileUploadDir;
 
     public ChatBotServiceImpl(ChatClient.Builder chatClientBuilder, PromptBuilder promptBuilder,
-            IntentDetector intentDetector,  ChatBotRepository chatBotRepository, 
-            ChatBotMapper chatBotMapper, ChatService chatService, MensajeRepository mensajeRepository, ContextBuilder contextBuilder ) {
-        this.chatClient = chatClientBuilder.build();
-        this.promptBuilder = promptBuilder;
-        this.intentDetector = intentDetector;
+            ChatBotRepository chatBotRepository, ContextBuilder contextBuilder,
+            ChatBotMapper chatBotMapper, DocumentoService documentoService,
+            MensajeRepository mensajeRepository,
+            ToolCallbackProvider toolCallbackProvider ) {
+
+        this.chatClient = chatClientBuilder
+                .defaultSystem(promptBuilder.buildSystemPrompt())
+                .defaultToolCallbacks(toolCallbackProvider)
+                .build();
         this.chatBotRepository = chatBotRepository;
         this.chatBotMapper = chatBotMapper;
-        this.chatService = chatService;
         this.mensajeRepository = mensajeRepository;
         this.contextBuilder = contextBuilder;
+        this.promptBuilder = promptBuilder;
+        this.documentoService = documentoService;
     }
         
     @Override
-    public String preguntarAlModelo(String message){
+    public MensajeDTO preguntarAlModelo(String message, String role, String idUsuario){
 
-        String template = promptBuilder.buildSystemPrompt();
+        String chatId = findChatBotByUsuarioId(idUsuario).getId();
+        String ruta = fileUploadDir+"/chat_"+chatId;
 
-        String intencion = intentDetector.detector(message);
+        String user = contextBuilder.buildUserContext(Roles.valueOf(role), message);
+        String response = "";
 
-        if(IntentType.DESCONOCIDO.name().equalsIgnoreCase(intencion)){
-            intencion =  generarIntencion(message);
-        } 
-        
-        String contexto = buildContext(intencion, message);
+        List<String> RagContext =  documentoService.findSimilarDocuments(message);
 
-        if(IntentType.INVALIDA.name().equalsIgnoreCase(intencion)) return contexto;
-        
-        PromptTemplate promptTemplate = new PromptTemplate(template);
+        String template = promptBuilder.buildRagContext(RagContext);
+        Prompt prompt = new Prompt(template);
 
-        Prompt prompt = promptTemplate.create(Map.of("mensaje", message, "contexto", contexto ));
-
-        ChatOptions chatOptions = ChatOptions.builder().temperature(0.4)
-                .maxTokens(300).build();
-
-        return chatClient.prompt(prompt).options(chatOptions).call().content();
-    }
-    
-    @Override
-    public String generarIntencion(String message){
-        String template = promptBuilder.buildPromptIntencion();
-
-        PromptTemplate promptTemplate = new PromptTemplate(template);
-
-        String intenciones = Arrays.stream(IntentType.values())
-                .filter(intencion -> intencion != IntentType.DESCONOCIDO)
-                .map(Enum::name)
-                .collect(Collectors.joining(", "));
-                
-        Prompt prompt = promptTemplate.create(Map.of("mensaje", message, "intenciones", intenciones));
-        
-        ChatOptions chatOptions = ChatOptions.builder().temperature(0.3)
-                .maxTokens(250).build();
-
-        return chatClient.prompt(prompt).options(chatOptions).call().content();
-    }
-    
-    @Override
-    public String generarContexto(String intentType, String message){
-
-        String template = promptBuilder.builPromptContext();
-
-        PromptTemplate promptTemplate = new PromptTemplate(template);
-
-        Prompt prompt = promptTemplate.create(Map.of("intencion", intentType, "mensaje", message));
-        
-        ChatOptions chatOptions = ChatOptions.builder().temperature(0.4)
-                .maxTokens(250).build();
-
-        return chatClient.prompt(prompt).options(chatOptions).call().content();
-    }
-    
-    @Override
-    public String buildContext(String intencion, String message){
-        String promptContext = "";
-
-        List<String> intenciones = Arrays.stream(IntentType.values())
-                .map(Enum::name)
-                .toList();
-
-        if(intenciones.contains(intencion)){
-            promptContext = contextBuilder.buildContext(IntentType.valueOf(intencion));
-        }else{
-            promptContext =  generarContexto(intencion, message);
+        try {
+            response = chatClient.prompt(prompt)
+                    .user(promptBuilder.buildFieldPrompt(ruta, Long.parseLong(idUsuario)) + "\n\n" + user)
+                    .call().content();
+        } catch (NonTransientAiException ex) {
+            response = "Excediste el limite de peticiones, intentalo mas tarde";
+        } catch (Exception e) {
+            response = "No pude responder tu solicitud, intenta nuevamente o realiza otra consulta";
         }
-        
-        return promptContext;
-    }
 
+        return stringToMensajeDTO(response, idUsuario, chatId);
+    }
+    
     @Override
     public String create(CreateChatBotDTO createChatBotDTO) {
         ChatBot chatBot = chatBotMapper.CreateChatBotToChatbot(createChatBotDTO);
@@ -160,8 +121,8 @@ public class ChatBotServiceImpl implements ChatBotService {
         mensajeDTO.setReceiverRole("MODELO IA");
         mensajeDTO.setState("Recibido");
         Mensaje mensaje = mensajeRepository.save(
-                chatService.mensajeMapToEntity(mensajeDTO, new Mensaje()));
-        return chatService.mensajeMapToDTO(mensaje, new MensajeDTO());
+                mensajeMapToEntity(mensajeDTO, new Mensaje()));
+        return mensajeMapToDTO(mensaje, new MensajeDTO());
     }
 
     @Override
@@ -186,7 +147,7 @@ public class ChatBotServiceImpl implements ChatBotService {
     public List<MensajeDTO> obtenerMensajesDeChatBot(String chatId) {
         List<Mensaje> mensajes = mensajeRepository.findByChatIdOrderByTimeAsc(chatId);
         return mensajes.stream()
-                .map(mensaje -> chatService.mensajeMapToDTO(mensaje, new MensajeDTO()))
+                .map(mensaje -> mensajeMapToDTO(mensaje, new MensajeDTO()))
                 .collect(Collectors.toList());
     }
 
@@ -204,6 +165,46 @@ public class ChatBotServiceImpl implements ChatBotService {
         );
     }
 
+    public List<String> obtenerArchivosChat(String chatId) throws IOException {
 
+        Path rutaCarpeta = Path.of(
+                fileUploadDir,
+                "chat_" + chatId).toAbsolutePath();
 
+        // Si no existe la carpeta
+        if (!Files.exists(rutaCarpeta)) {
+            return new ArrayList<>();
+        }
+
+        try (Stream<Path> paths = Files.list(rutaCarpeta)) {
+
+            return paths
+                    .filter(Files::isRegularFile)
+                    .map(path -> path.getFileName().toString())
+                    .toList();
+        }
+    }
+
+    public Mensaje  mensajeMapToEntity(MensajeDTO mensajeDTO, Mensaje mensaje) { 
+        mensaje.setChatId(mensajeDTO.getChatId());
+        mensaje.setSenderId(mensajeDTO.getSenderId());
+        mensaje.setReceiverId(mensajeDTO.getReceiverId());
+        mensaje.setSenderRole(mensajeDTO.getSenderRole());
+        mensaje.setReceiverRole(mensajeDTO.getReceiverRole());
+        mensaje.setContent(mensajeDTO.getContent());
+        mensaje.setTime(mensajeDTO.getTime());
+        return mensaje;
+    }
+
+    public MensajeDTO mensajeMapToDTO(Mensaje mensaje, MensajeDTO mensajeDTO) {
+        mensajeDTO.setChatId(mensaje.getChatId());
+        mensajeDTO.setSenderId(mensaje.getSenderId());
+        mensajeDTO.setReceiverId(mensaje.getReceiverId());
+        mensajeDTO.setSenderRole(mensaje.getSenderRole());
+        mensajeDTO.setReceiverRole(mensaje.getReceiverRole());
+        mensajeDTO.setContent(mensaje.getContent());
+        mensajeDTO.setTime(mensaje.getTime());
+        mensajeDTO.setState(mensaje.getState());
+        return mensajeDTO;
+    }
 }

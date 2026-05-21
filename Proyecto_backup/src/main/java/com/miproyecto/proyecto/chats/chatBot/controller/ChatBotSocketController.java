@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 
 import com.miproyecto.proyecto.chat.dto.MensajeDTO;
 import com.miproyecto.proyecto.chats.chatBot.service.interfaces.ChatBotService;
+import com.miproyecto.proyecto.usuario.dto.UsuarioDTO;
 import com.miproyecto.proyecto.usuario.service.UsuarioService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,9 @@ public class ChatBotSocketController {
     
     @MessageMapping("/chat/modelo/enviar/mensaje")
     public void sendPrivateMessage(MensajeDTO mensajeDTO) {
-        String senderId = usuarioService.get(Long.parseLong(mensajeDTO.getSenderId())).getCorreo();
+
+        UsuarioDTO usuario = usuarioService.get(Long.parseLong(mensajeDTO.getSenderId())); 
+        String senderId = usuario.getCorreo() ;
         
         if (senderId == null) {
             throw new SecurityException("El usuario no está autenticado");
@@ -33,12 +36,10 @@ public class ChatBotSocketController {
             "/queue/chatBot/messages",
             mensajeGuardado
         );
+        
+        MensajeDTO response = chatBotService.preguntarAlModelo(mensajeDTO.getContent(), usuario.getRolPrinciapl(), usuario.getIdUsuario().toString());
 
-        String response = chatBotService.preguntarAlModelo(mensajeDTO.getContent());
-
-        MensajeDTO modelResponse = chatBotService.stringToMensajeDTO(response, senderId, mensajeGuardado.getChatId());
-
-        MensajeDTO saveModelResponse = chatBotService.agregarMensajeChat(modelResponse);
+        MensajeDTO saveModelResponse = chatBotService.agregarMensajeChat(response);
         
         messagingTemplate.convertAndSendToUser(
             senderId,

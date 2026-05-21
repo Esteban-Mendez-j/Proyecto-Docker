@@ -1,5 +1,24 @@
 
 services:
+
+  dbhub:
+    image: bytebase/dbhub:latest
+    container_name: dbhub
+    ports:
+      - "9080:9080"
+    environment:
+      - DBHUB_LOG_LEVEL=info
+    command:
+      - --transport
+      - http
+      - --port
+      - "9080"
+      - --dsn
+      - ${DNS_DB}
+    depends_on:
+      - mysql
+
+ 
   mysql:
     image: mysql:8.0
     container_name: mysql
@@ -23,38 +42,43 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
-      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ""
+      SPRING_DATASOURCE_URL_PROD: ${SPRING_DATASOURCE_URL_PROD}
+      SPRING_DATASOURCE_USERNAME_PROD: ${SPRING_DATASOURCE_USERNAME_PROD}
+      SPRING_DATASOURCE_PASSWORD_PROD: ${SPRING_DATASOURCE_PASSWORD_PROD}
       SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
-      MY_SECRET_KEY: ${MY_SECRET_KEY}
-      JWT_EXPIRATION: ${JWT_EXPIRATION}
       MONGODB_URI: ${MONGODB_URI}
+      API_KEY: ${API_KEY}
+      URL_DOCKER_LLM: ${URL_DOCKER_LLM}
+      MODEL_LLM: ${MODEL_LLM}
+      CONFIG_MCP: ${CONFIG_MCP}
       UPLOAD_DIR_IMG: ${UPLOAD_DIR_IMG}
       UPLOAD_DIR_PDF: ${UPLOAD_DIR_PDF}
       UPLOAD_DIR_VIDEO: ${UPLOAD_DIR_VIDEO}
+      UPLOAD_DIR_FILE: ${UPLOAD_DIR_FILE}
       URL_FRONTEND: ${URL_FRONTEND}
+      MY_SECRET_KEY: ${MY_SECRET_KEY}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
     networks:
       - app-network
     volumes:
       - ./Proyecto_backup/uploads:/app/uploads
 
-  # astro:
-  #   build:
-  #     context: ./SearchJobs-front_backup
-  #     dockerfile: Dockerfile
-  #   container_name: astro-app
-  #   depends_on:
-  #     - backend
-  #   ports:
-  #     - "4321:4321"
-  #   environment:
-  #     PUBLIC_API_URL: ${PUBLIC_API_URL}
-  #     PUBLIC_CLIENT_API_URL: ${PUBLIC_CLIENT_API_URL}
-  #     PUBLIC_WS_URL: ${PUBLIC_WS_URL}
-  #     PUBLIC_CLIENT_WS_URL: ${PUBLIC_CLIENT_WS_URL}
-  #   networks:
-  #     - app-network
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: react-app
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+    environment:
+      PUBLIC_API_URL: ${PUBLIC_API_URL}
+      PUBLIC_CLIENT_API_URL: ${PUBLIC_CLIENT_API_URL}
+      PUBLIC_WS_URL: ${PUBLIC_WS_URL}
+      PUBLIC_CLIENT_WS_URL: ${PUBLIC_CLIENT_WS_URL}
+    networks:
+      - app-network
 
 volumes:
   mysql_data:
