@@ -16,6 +16,16 @@ public class VacanteOptimizacionDTO {
 
     private boolean is_optimized;
 
+    private String tipo;
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
     public boolean isIs_optimized() {
         return is_optimized;
     }

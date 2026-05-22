@@ -237,6 +237,7 @@ public class VacanteService {
                 optDto.setId(v.getNvacantes());
                 optDto.setCompatibility(prediccion / 100.0); // Ajuste a escala 0-1
                 optDto.setSalary(v.getSueldo());
+                optDto.setTipo(v.getTipo());
 
                 // Calculamos los días usando la fecha del DTO
                 if (v.getFechaPublicacion() != null) {

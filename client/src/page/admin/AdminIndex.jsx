@@ -17,12 +17,11 @@ export default function AdminIndex() {
                 📊 Análisis de Datos
               </h2>
 
-              <div className="relative w-full overflow-hidden rounded-xl shadow-inner aspect-video bg-gray-200 hover:shadow-lg transition-shadow">
-                <iframe title="DataSet SearchJobs" 
-                  className="absolute inset-0 w-full h-full rounded-xl" 
-                  src="https://app.powerbi.com/view?r=eyJrIjoiY2M5MDI2MTktODA2NS00NjRiLWIzZjUtYjAxZmUyNTU5YTU2IiwidCI6IjlkMTJiZjNmLWU0ZjYtNDdhYi05MTJmLTFhMmYwZmM0OGFhNCIsImMiOjR9" 
-                  frameborder="0" allowFullScreen="true"
-                ></iframe>
+              <div className="relative w-full aspect-video overflow-hidden rounded-xl shadow-inner bg-gray-200 hover:shadow-lg transition-shadow">
+                <iframe title="DataSet SearchJobs" className="absolute inset-0 w-full h-full rounded-xl"
+                src="https://app.powerbi.com/view?r=eyJrIjoiY2M5MDI2MTktODA2NS00NjRiLWIzZjUtYjAxZmUyNTU5YTU2IiwidCI6IjlkMTJiZjNmLWU0ZjYtNDdhYi05MTJmLTFhMmYwZmM0OGFhNCIsImMiOjR9&pageName=5dddc9d19e754385b330" 
+                frameborder="0" allowFullScreen="true">
+                </iframe>
               </div>
             </div>
           </div>
