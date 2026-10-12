@@ -57,6 +57,7 @@ public class VacanteService {
     private final AptitudesService aptitudesService;
     private final PrediccionService prediccionService;
     private final OptimizationService optimizationService;
+    private final CargoService cargoService;
     @Value("${app.upload-dir.video}")
     private String videoUploadDir;
 
@@ -70,6 +71,7 @@ public class VacanteService {
         this.aptitudesService = aptitudesService;
         this.prediccionService = prediccionService;
         this.optimizationService = optimizationService;
+        this.cargoService = null;
     }
 
     public String guardarVideo(MultipartFile file) throws IOException {
@@ -460,7 +462,7 @@ public class VacanteService {
     public VacanteDTO mapToDTO(Long idPostulaciones, Long idUsuarioAut, final Vacante vacante,
             final VacanteDTO vacanteDTO) {
         vacanteDTO.setNvacantes(vacante.getNvacantes());
-        vacanteDTO.setCargo(vacante.getCargo());
+        vacanteDTO.setCargo(vacante.getCargo().getNombre());
         vacanteDTO.setFechaPublicacion(vacante.getFechaPublicacion());
         vacanteDTO.setSueldo(vacante.getSueldo());
         vacanteDTO.setModalidad(vacante.getModalidad());
@@ -524,7 +526,7 @@ public class VacanteService {
     }
 
     public Vacante mapToEntity(final VacanteDTO vacanteDTO, final Vacante vacante) {
-        vacante.setCargo(vacanteDTO.getCargo());
+        vacante.setCargo(cargoService.getCargoByNombre(vacanteDTO.getCargo()));
         vacante.setFechaPublicacion(vacanteDTO.getFechaPublicacion());
         vacante.setSueldo(vacanteDTO.getSueldo());
         vacante.setModalidad(vacanteDTO.getModalidad());

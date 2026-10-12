@@ -44,7 +44,7 @@ public class VacanteFavorita {
     public void setVacanteFavorita(Vacante vacanteFavorita) {
         this.vacanteFavorita = vacanteFavorita;
     }
-//chat gpt recomendo cambairla a miniscula la primera letra, Comentar a esteban y verificar al preguntarle a esteban el porqué esta asi
+    
     public Usuario getUsuarioFavorita() {
         return usuarioFavorita;
     }

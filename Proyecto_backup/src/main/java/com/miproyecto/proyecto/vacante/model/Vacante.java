@@ -32,8 +32,9 @@ public class Vacante {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long nvacantes;
 
-    @Column(nullable = false, length = 50)
-    private String cargo;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "cargo")
+    private Cargo cargo;
 
     @Column(nullable = false)
     private LocalDate fechaPublicacion;
@@ -173,11 +174,11 @@ public class Vacante {
         this.nvacantes = nvacantes;
     }
 
-    public String getCargo() {
+    public Cargo getCargo() {
         return cargo;
     }
 
-    public void setCargo(final String cargo) {
+    public void setCargo(final Cargo cargo) {
         this.cargo = cargo;
     }
 
