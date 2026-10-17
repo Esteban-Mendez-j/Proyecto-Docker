@@ -11,7 +11,6 @@ public class VacanteDTO {
     private Long nvacantes;
 
     @NotNull
-    @Size(max = 50)
     private String cargo;
 
     private LocalDate fechaPublicacion;
@@ -76,13 +75,22 @@ public class VacanteDTO {
     private List <String> aptitudes;
 
     private String videoLink;
-    
 
     private Integer visitas = 0;
 
     private Double Prediccion = 0.0;
 
     private boolean recomendado; 
+
+    private List<String> requisitos;
+
+    public List<String> getRequisitos(){
+        return requisitos;
+    }
+    
+    public void setRequisitos(List<String> newRequisitos){
+        this.requisitos = newRequisitos;
+    }
 
     public boolean isRecomendado() { return recomendado; }
     public void setRecomendado(boolean recomendado) { this.recomendado = recomendado; }

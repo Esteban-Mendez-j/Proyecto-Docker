@@ -58,20 +58,23 @@ public class VacanteService {
     private final PrediccionService prediccionService;
     private final OptimizationService optimizationService;
     private final CargoService cargoService;
+    private final RequisitoService requisitoService;
     @Value("${app.upload-dir.video}")
     private String videoUploadDir;
 
     public VacanteService(VacanteFavoritaRepository vacanteFavoritaRepository, VacanteRepository vacanteRepository,
             EmpresaRepository empresaRepository, PostuladoRepository postuladoRepository,
             AptitudesService aptitudesService, PrediccionService prediccionService,
-            OptimizationService optimizationService) {
+            OptimizationService optimizationService, RequisitoService requisitoService,
+            CargoService cargoService) {
         this.vacanteFavoritaRepository = vacanteFavoritaRepository;
         this.vacanteRepository = vacanteRepository;
         this.empresaRepository = empresaRepository;
         this.aptitudesService = aptitudesService;
         this.prediccionService = prediccionService;
         this.optimizationService = optimizationService;
-        this.cargoService = null;
+        this.requisitoService = requisitoService;
+        this.cargoService = cargoService;
     }
 
     public String guardarVideo(MultipartFile file) throws IOException {
@@ -499,8 +502,7 @@ public class VacanteService {
                 .findFirst()
                 .ifPresent(p -> vacanteDTO.setEstadoPostulacion(p.getEstado())); // o p.getEstado().name()
         vacanteDTO.setNumeroGuardadosFavoritos(vacante.getListaVacnatesFavoritas().size());
-        // TODO lo que hcae es que verifica si esta en la lista de favooritos pero no
-        // verifica si la lista es del usuario autenticado
+        vacanteDTO.setRequisitos(vacante.getRequisitos().stream().map(r -> r.getNombre()).toList());
         vacante.getListaVacnatesFavoritas()
                 .forEach(favoritaVacante -> {
 
@@ -542,10 +544,8 @@ public class VacanteService {
         vacante.setComentarioAdmin(vacanteDTO.getComentarioAdmin());
         vacante.setNumCompartidos(vacanteDTO.getNumCompartidos());
         vacante.setVideoLink(vacanteDTO.getVideoLink());
-
-        // 🔥 NUEVO: Mapear el campo de visitas
+        vacante.setRequisitos(requisitoService.findSetRequisitoByNombre(vacanteDTO.getRequisitos())); 
         vacante.setVisitas(vacanteDTO.getVisitas());
-
         final Empresa idUsuario = vacanteDTO.getIdUsuario() == null ? null
                 : empresaRepository.findById(vacanteDTO.getIdUsuario())
                         .orElseThrow(() -> new NotFoundException("idUsuario not found"));
