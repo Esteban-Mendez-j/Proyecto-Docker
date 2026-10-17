@@ -24,7 +24,7 @@ public class RequisitoService {
     }
     
     public Set<Requisito> findSetRequisitoByNombre(List<String> nombres){
-        return requisitoRepository.findAllByNombre(nombres)
+        return requisitoRepository.findAllByNombreIn(nombres)
             .orElseThrow(NotFoundException::new); 
     }
     

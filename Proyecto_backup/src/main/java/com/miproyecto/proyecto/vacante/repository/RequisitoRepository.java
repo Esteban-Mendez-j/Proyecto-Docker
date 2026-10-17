@@ -12,6 +12,6 @@ import java.util.Set;
 public interface RequisitoRepository extends JpaRepository<Requisito,Long>{
     Optional<Requisito> findByNombre(String nombre);
 
-    Optional<Set<Requisito>> findAllByNombre(List<String> nombres);
+    Optional<Set<Requisito>> findAllByNombreIn(List<String> nombres);
     
 }

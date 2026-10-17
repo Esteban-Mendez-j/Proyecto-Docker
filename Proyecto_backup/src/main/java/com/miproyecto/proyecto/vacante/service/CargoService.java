@@ -1,10 +1,12 @@
 package com.miproyecto.proyecto.vacante.service;
 
 
+import org.springframework.stereotype.Service;
+
 import com.miproyecto.proyecto.util.NotFoundException;
 import com.miproyecto.proyecto.vacante.model.Cargo;
 import com.miproyecto.proyecto.vacante.repository.CargoRepository;
-
+@Service 
 public class CargoService {
 
     final CargoRepository cargoRepository;

@@ -41,6 +41,7 @@ import com.miproyecto.proyecto.util.response.Pagination;
 import com.miproyecto.proyecto.vacante.dto.FiltroVacanteDTO;
 import com.miproyecto.proyecto.vacante.dto.VacanteDTO;
 import com.miproyecto.proyecto.vacante.dto.VacanteResumenDTO;
+import com.miproyecto.proyecto.vacante.service.CargoService;
 import com.miproyecto.proyecto.vacante.model.Vacante;
 import com.miproyecto.proyecto.vacante.model.VacanteFavorita;
 import com.miproyecto.proyecto.vacante.repository.VacanteFavoritaRepository;
