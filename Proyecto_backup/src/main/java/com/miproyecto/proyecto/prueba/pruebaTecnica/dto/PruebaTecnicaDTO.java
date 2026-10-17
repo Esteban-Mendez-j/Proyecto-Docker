@@ -18,7 +18,7 @@ public class PruebaTecnicaDTO {
     private String descripcion;
     private LocalTime tiempoParaResponder;
     private Integer totalPreguntas;
-    private Integer version = 0;
+    private Integer version;
     private Boolean isActive;
     private LocalDate fechaCreacion;
     private Long idVacante;
