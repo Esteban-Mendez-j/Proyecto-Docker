@@ -84,7 +84,6 @@ public class Vacante {
     @Column
     private int numCompartidos;
 
-    // 🔥 NUEVO CAMPO: Contador de visitas
     @Column(nullable = false)
     private Integer visitas = 0;
 
@@ -104,6 +103,14 @@ public class Vacante {
 
     @OneToMany(mappedBy = "vacante")
     private List<PruebaTecnica> pruebasTecnicas; 
+
+    @ManyToMany
+    @JoinTable(
+        name = "vacante_requisito",
+        joinColumns = @JoinColumn(name = "vacante_id"),
+        inverseJoinColumns = @JoinColumn(name = "requisito_id")
+    )
+    private Set<Requisito> requisitos = new HashSet<>();
     
     public Vacante() {
         this.litarpostulados = new HashSet<>();
@@ -311,5 +318,11 @@ public class Vacante {
         this.comentarioAdmin = comentarioAdmin;
     }
 
-   
+    public Set<Requisito> getRequisitos(){
+        return requisitos;
+    }
+
+    public void setRequisitos(Set<Requisito> requisitos){
+        this.requisitos = requisitos;
+    }
 }
