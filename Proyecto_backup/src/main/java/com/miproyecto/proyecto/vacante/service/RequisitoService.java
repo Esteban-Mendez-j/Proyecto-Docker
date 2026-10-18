@@ -1,5 +1,6 @@
 package com.miproyecto.proyecto.vacante.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -26,6 +27,17 @@ public class RequisitoService {
     public Set<Requisito> findSetRequisitoByNombre(List<String> nombres){
         return requisitoRepository.findAllByNombreIn(nombres)
             .orElseThrow(NotFoundException::new); 
+    }
+    
+
+    public List<String> findAllNombreRequisitoByNombre(String nombre){
+        if (nombre == null || nombre.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return requisitoRepository.findTop10ByNombreLikeIgnoreCase(nombre.trim()+"%")
+                .stream()
+                .map(requisito -> requisito.getNombre())
+                .toList();
     }
     
 }

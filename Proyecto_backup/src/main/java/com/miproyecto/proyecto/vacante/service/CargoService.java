@@ -1,6 +1,9 @@
 package com.miproyecto.proyecto.vacante.service;
 
 
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.miproyecto.proyecto.util.NotFoundException;
@@ -16,7 +19,17 @@ public class CargoService {
     }
     
     public Cargo getCargoByNombre(String nombre){
-        return cargoRepository.findCargoByNombre(nombre)
+        return cargoRepository.findByNombre(nombre)
             .orElseThrow(NotFoundException::new);
+    }
+
+    public List<String> findAllNombreCargoByNombre(String nombre){
+        if (nombre == null || nombre.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return cargoRepository.findTop10ByNombreLikeIgnoreCase(nombre.trim()+"%")
+                .stream()
+                .map(cargo -> cargo.getNombre())
+                .toList();
     }
 }

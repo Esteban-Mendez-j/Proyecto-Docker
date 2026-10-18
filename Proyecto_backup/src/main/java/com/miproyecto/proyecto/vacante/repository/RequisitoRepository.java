@@ -14,4 +14,5 @@ public interface RequisitoRepository extends JpaRepository<Requisito,Long>{
 
     Optional<Set<Requisito>> findAllByNombreIn(List<String> nombres);
     
+    List<Requisito> findTop10ByNombreLikeIgnoreCase(String nombreBusqueda);
 }
