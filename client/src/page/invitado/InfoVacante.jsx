@@ -37,7 +37,8 @@ export default function InfoVacante() {
         numeroGuardadosFavoritos: 0,
         vacanteGuardada: false,
         numCompartidos: 0,
-        aptitudes: []
+        aptitudes: [],
+        requisitos: []
     }
     const {id} = useParams()
     const [location, setLocation] = useState("")
@@ -275,6 +276,8 @@ export default function InfoVacante() {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Seccion de actitudes */}
                             <div className="candidato-section">
                                 <h2 className="candidato-section-title">Aptitudes</h2>
 
@@ -285,6 +288,22 @@ export default function InfoVacante() {
                                             className={"px-4 py-2 rounded-2xl border transition-all duration-200 bg-blue-600 text-white border-blue-600 shadow-md scale-105"}
                                         >
                                              {listAptitudes[label] || label}
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Seccion de Requisitos */}
+                            <div className="candidato-section">
+                                <h2 className="candidato-section-title">Requisitos</h2>
+
+                                <div className="flex flex-wrap gap-3">
+                                    {job.requisitos.map((label) => (
+                                        <label
+                                            key={job.requisitos.indexOf(label)}
+                                            className={"px-4 py-2 rounded-2xl border transition-all duration-200 bg-blue-600 text-white border-blue-600 shadow-md scale-105"}
+                                        >
+                                             {label}
                                         </label>
                                     ))}
                                 </div>
