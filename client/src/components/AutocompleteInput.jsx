@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { validateRule } from "../services/validacionForm";
 // value → valor actual del input.
 // onChange → función para actualizar el valor en el estado padre.
 // options → lista de elementos que se mostrarán en el autocomplete.
@@ -14,9 +15,31 @@ const AutocompleteInput = ({
   placeholder = "",
   maxHeight = "200px",
   className = "",
-  listClassName = ""
+  listClassName = "",
+  submitted = false,
+  error = null,
+  rules = null,
+  compara = false
 }) => {
   const [showList, setShowList] = useState(false);
+  const backendError = error?.fieldErrors?.find(error => error.field === name)?.message;
+  const [localError, setLocalError] = useState(null);
+
+  useEffect(() => {
+    if (!rules || !rules[name]) return;
+
+    for (const rule of rules[name]) {
+      const mensaje = validateRule(rule, value);
+      if (mensaje) {
+        setLocalError(mensaje);
+        return;
+      }
+    }
+    if(compara && value != "" && !options.includes(value)) return setLocalError("Selecciona una opcion disponible")
+    setLocalError(null);
+  }, [value, rules, name, options]);
+
+  const fieldError = localError || backendError;
 
   const filteredOptions = options.filter(opt =>
     opt.toLowerCase().includes(value?.toLowerCase() || "")
@@ -44,7 +67,7 @@ const AutocompleteInput = ({
         autoComplete="off"
         className={className}
       />
-
+      {(submitted && fieldError) && <p className="error-text">{fieldError}</p>}
       {showList && filteredOptions.length > 0 && (
         <ul
           className={`absolute z-[100] w-full overflow-y-auto bg-white border rounded shadow-md ${listClassName}`}

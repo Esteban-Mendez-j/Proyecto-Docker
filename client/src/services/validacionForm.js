@@ -69,6 +69,17 @@ export const rules = {
     type: "nitValid",
     message,
   }),
+
+  maxElement: (max, message) => ({
+    type: "maxElement",
+    max,
+    message: message || `Debe tener maximo ${max} elementos`,
+  }),
+  minElement: (min, message) => ({
+    type: "minElement",
+    min,
+    message: message || `Debe tener minimo ${min} elemento`,
+  }),
 };
 
 
@@ -149,6 +160,16 @@ export function validateForm(form, formRules) {
             }
           }
           break;
+        case "maxElement":
+          if (value.length > 5) {
+            error = rule.message;
+          }
+          break;
+        case "minElement":
+          if (value.length < 1) {
+            error = rule.message;
+          }
+          break;
         case "nitValid":
           if (v && !isValidNit(String(v))) error =  rule.message;
           break;
@@ -199,8 +220,6 @@ export const formRulesVacante = {
 
   cargo: [
     rules.required(),
-    rules.minLength(5),
-    rules.maxLength(50),
   ],
 
   experiencia: [
@@ -221,6 +240,10 @@ export const formRulesVacante = {
     rules.minLength(20),
     rules.maxLength(400)
   ],
+
+  requisitos: [
+    rules.required()
+  ]
 
 };
 
@@ -573,7 +596,16 @@ export function validateRule(rule, value) {
     case "nitValid":
       if (v && !isValidNit(String(v))) return rule.message;
       break;
-
+    case "maxElement":
+      if (value.length > 5) {
+        error = rule.message;
+      }
+      break;
+    case "minElement":
+      if (value.length < 1) {
+        error = rule.message;
+      }
+      break;
 
   }
 

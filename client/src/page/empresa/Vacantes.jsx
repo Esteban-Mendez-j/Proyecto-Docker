@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from 'react';
+import { useContext, useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../../layouts/Layout';
 import { API_CLIENT_URL, URL_VIDEO } from '../../services/Api';
@@ -10,6 +10,7 @@ import { formRulesVacante, validateForm } from '../../services/validacionForm';
 import { useSendFormV2 } from '../../hooks/useFetch';
 import { RoleContext } from '../../services/RoleContext';
 import exceptionControl from '../../services/exceptionControl';
+import AutocompleteInput from '../../components/AutocompleteInput';
 
 export default function CrearVacante() {
 
@@ -23,6 +24,10 @@ export default function CrearVacante() {
   const [eliminarVideo, setEliminarVideo] = useState(false)
   const [previewVideo, setPreviewVideo] = useState(null)
   const [errors, setErrors] = useState({});
+  const [cargos, setCargos] = useState([]);
+  const [requisitos, setRequisitos] = useState([]);
+  const [queryCargo, setQueryCargo] = useState("");
+  const [queryRequisito, setQueryRequisito] = useState("");
   const [formData, setFormData] = useState({
     titulo: '',
     ciudad: '',
@@ -35,7 +40,8 @@ export default function CrearVacante() {
     descripcion: '',
     requerimientos: '',
     videoLink: '', 
-    aptitudes: []
+    aptitudes: [],
+    requisitos: []
   });
 
   const handleVideoChange = (e) => {
@@ -127,12 +133,74 @@ export default function CrearVacante() {
     }
   };
 
+  const seleccionaRequisito = (valor) => {
+    if (!requisitos.includes(valor) || valor == "" || formData.requisitos.length >= 5
+      || formData.requisitos.includes(valor)) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      requisitos: [...prev.requisitos, valor]
+    }));
+
+    setQueryRequisito("")
+    setRequisitos([])
+  }
+
+  const eliminaRequisito = (valor) => {
+    if (valor == "" || !formData.requisitos.includes(valor)) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      requisitos: prev.requisitos.filter(
+        (r) => r !== valor
+      )
+    }));
+  }
+
+  useEffect(() => {
+    if (queryCargo.length < 2) {
+      setCargos([]);
+      return;
+    }
+
+    const handler = setTimeout(() => {
+      fetch(`${API_CLIENT_URL}/api/cargo/search?nombre=${queryCargo}`)
+        .then(res => res.json())
+        .then(data => setCargos(data));
+    }, 700); 
+
+    return () => clearTimeout(handler);
+  }, [queryCargo]);
+  
+  useEffect(() => {
+    if (queryRequisito.length < 2) {
+      setCargos([]);
+      return;
+    }
+
+    const handler = setTimeout(() => {
+      fetch(`${API_CLIENT_URL}/api/requisito/search?nombre=${queryRequisito}`)
+        .then(res => res.json())
+        .then(data => setRequisitos(data));
+    }, 700); 
+
+    return () => clearTimeout(handler);
+  }, [queryRequisito]);
+
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
       setSubmitted(true);
-      const newErrors = validateForm(formData, formRulesVacante);
-
+      var newErrors = validateForm(formData, formRulesVacante);
+      // obliga al usuaio a elegir la opcion del cargo
+      if (formData.cargo != "" && !cargos.includes(formData.cargo)) {
+        newErrors = { ...newErrors, cargo: "Selecciona una opcion disponible" }
+      }
+      if (formData.requisitos.length > 5 || formData.requisitos.length < 1  ) {
+        newErrors = { ...newErrors, requisitos: "Selecciona maximo 5 y minimo 1 requisito" }
+      }
+      
+      console.log(newErrors)
       if (Object.keys(newErrors).length > 0) {
         setErrors((prev) => ({ ...prev, fieldErrorsFrontend: newErrors }));
 
@@ -157,6 +225,7 @@ export default function CrearVacante() {
       if (videoRef.current?.files[0]) {
         fd.append("video", videoRef.current.files[0]);
       }
+      console.log("finalizado", formData)
 
       await send(`/api/vacantes/add`, "POST", fd, null);
       modalRedirect("Vacante creada con éxito", "success", "/empresa/listado/vacantes", navigate);
@@ -271,16 +340,21 @@ export default function CrearVacante() {
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="cargo">Cargo</label>
-
-              <InputForm
+              <AutocompleteInput
                 type="text"
-                name="cargo"
                 placeholder="Ej: Diseñador UI/UX"
+                name="cargo"
+                options={cargos}
                 value={formData.cargo}
-                handleOnChange={handleChange}
                 error={errors}
                 rules={formRulesVacante}
-                submitted={submitted} 
+                submitted={submitted}
+                compara={true}
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, cargo: e.target.value }))
+                  setQueryCargo(e.target.value)
+                }}
+                className="search-input-sup"
               />
             </div>
 
@@ -317,6 +391,61 @@ export default function CrearVacante() {
               />
             </div>
 
+            <div className="form-group full-width">
+              <label htmlFor="requerimientos">Requisitos del Puesto</label>
+              <p className="text-gray-600 text-sm mb-3">
+                maximo 5 requistos y minimo 1
+              </p>
+
+              <AutocompleteInput
+                type="text"
+                placeholder="Ej: Java, Python..."
+                name="requisitos"
+                options={requisitos}
+                value={queryRequisito}
+                error={errors}
+                rules={formData.requisitos.length > 0? null :formRulesVacante}
+                submitted={submitted}
+                onChange={(e) => {
+                  setQueryRequisito(e.target.value)
+                  seleccionaRequisito(e.target.value)
+                }}
+                className="search-input-sup"
+              />
+
+              <div className="flex flex-wrap gap-2 mt-4">
+                {formData.requisitos.map((requisito) => (
+                  <div
+                    key={requisito}
+                    className="inline-flex items-center gap-2 px-3 py-2
+                   rounded-full border border-blue-200
+                   bg-blue-50 text-blue-800"
+                  >
+                    <span className="text-sm font-medium">
+                      {requisito}
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={() => eliminaRequisito(requisito)}
+                      aria-label={`Eliminar requisito ${requisito}`}
+                      title="Eliminar requisito"
+                      className="flex items-center justify-center
+                     w-5 h-5 rounded-full
+                     text-blue-700 hover:bg-blue-200
+                     hover:text-red-600 transition-colors"
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <p className="text-gray-500 text-xs mt-2">
+                {formData.requisitos.length} de 5 requisitos seleccionados.
+              </p>
+            </div>
+            
             <div className="form-group full-width">
               <label htmlFor="requerimientos">Requerimientos del Puesto</label>
               <InputForm
