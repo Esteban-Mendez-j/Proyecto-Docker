@@ -35,8 +35,11 @@ const AutocompleteInput = ({
         return;
       }
     }
-    if(compara && value != "" && !options.includes(value)) return setLocalError("Selecciona una opcion disponible")
-    setLocalError(null);
+    
+    if (compara && value != "" && !options.includes(value)
+      && options.length > 0) return setLocalError("Selecciona una opcion disponible")
+    
+      setLocalError(null);
   }, [value, rules, name, options]);
 
   const fieldError = localError || backendError;

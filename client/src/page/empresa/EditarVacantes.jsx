@@ -1,7 +1,6 @@
 
 import { useContext, useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-// import '../../style/invitado/editarVacantes.css';
 import { API_CLIENT_URL, URL_VIDEO } from "../../services/Api";
 import manejarRespuesta from "../../services/ManejarRespuesta";
 import { modal, modalRedirect, modalResponse } from "../../services/Modal";
@@ -13,6 +12,7 @@ import { formRulesVacante, validateForm } from "../../services/validacionForm";
 import { RoleContext } from "../../services/RoleContext";
 import { useSendFormV2 } from "../../hooks/useFetch";
 import exceptionControl from "../../services/exceptionControl";
+import AutocompleteInput from "../../components/AutocompleteInput";
 
 
 const EditarVacantes= () => {
@@ -28,6 +28,10 @@ const EditarVacantes= () => {
   const [previewVideo, setPreviewVideo] = useState(null)
   const [selected, setSelected] = useState([]);
   const [errors, setErrors] = useState({});
+  const [cargos, setCargos] = useState([]);
+  const [requisitos, setRequisitos] = useState([]);
+  const [queryCargo, setQueryCargo] = useState("");
+  const [queryRequisito, setQueryRequisito] = useState("");
   const [vacante, setVacante] = useState({
     titulo: '',
     ciudad: '',
@@ -40,7 +44,8 @@ const EditarVacantes= () => {
     descripcion: '',
     requerimientos: '',
     videoLink: '', 
-    aptitudes: []
+    aptitudes: [],
+    requisitos: []
   });
 
   const handleVideoChange = (e) => {
@@ -152,12 +157,73 @@ const EditarVacantes= () => {
     });
   };
 
+  const seleccionaRequisito = (valor) => {
+    if (!requisitos.includes(valor) || valor == "" || vacante.requisitos.length >= 5
+      || vacante.requisitos.includes(valor)) return;
+
+    setVacante((prev) => ({
+      ...prev,
+      requisitos: [...prev.requisitos, valor]
+    }));
+
+    setQueryRequisito("")
+    setRequisitos([])
+  }
+
+  const eliminaRequisito = (valor) => {
+    if (valor == "" || !vacante.requisitos.includes(valor)) return;
+
+    setVacante((prev) => ({
+      ...prev,
+      requisitos: prev.requisitos.filter(
+        (r) => r !== valor
+      )
+    }));
+  }
+
+  useEffect(() => {
+    if (queryCargo.length < 2) {
+      setCargos([]);
+      return;
+    }
+
+    const handler = setTimeout(() => {
+      fetch(`${API_CLIENT_URL}/api/cargo/search?nombre=${queryCargo}`)
+        .then(res => res.json())
+        .then(data => setCargos(data));
+    }, 700); 
+
+    return () => clearTimeout(handler);
+  }, [queryCargo]);
+  
+  useEffect(() => {
+    if (queryRequisito.length < 2) {
+      setCargos([]);
+      return;
+    }
+
+    const handler = setTimeout(() => {
+      fetch(`${API_CLIENT_URL}/api/requisito/search?nombre=${queryRequisito}`)
+        .then(res => res.json())
+        .then(data => setRequisitos(data));
+    }, 700); 
+
+    return () => clearTimeout(handler);
+  }, [queryRequisito]);
+
+
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
       setSubmitted(true)
       // 1. Validar con tus reglas
-      const newErrors = validateForm(vacante, formRulesVacante);
+      let newErrors = validateForm(vacante, formRulesVacante);
+      if (vacante.cargo != "" && !cargos.includes(vacante.cargo) && cargos.length > 0) {
+        newErrors = { ...newErrors, cargo: "Selecciona una opcion disponible" }
+      }
+      if (vacante.requisitos.length > 5 || vacante.requisitos.length < 1) {
+        newErrors = { ...newErrors, requisitos: "Selecciona maximo 5 y minimo 1 requisito" }
+      }
 
       if (Object.keys(newErrors).length > 0) {
         setErrors((prev) => ({ ...prev, fieldErrorsFrontend: newErrors }));
@@ -261,15 +327,21 @@ const EditarVacantes= () => {
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="cargo">Cargo</label>
-              <InputForm
+              <AutocompleteInput
                 type="text"
+                placeholder="Ej: Diseñador UI/UX"
                 name="cargo"
+                options={cargos}
                 value={vacante.cargo}
-                handleOnChange={handleChange}
                 error={errors}
                 rules={formRulesVacante}
-                submitted={submitted} 
-                maxL={40}
+                submitted={submitted}
+                compara={true}
+                onChange={(e) => {
+                  setVacante((prev) => ({ ...prev, cargo: e.target.value }))
+                  setQueryCargo(e.target.value)
+                }}
+                className="search-input-sup"
               />
             </div>
 
@@ -304,6 +376,62 @@ const EditarVacantes= () => {
             />
           </div>
 
+          {/* Requisitos */}
+          <div className="form-group full-width">
+            <label htmlFor="requerimientos">Requisitos del Puesto</label>
+            <p className="text-gray-600 text-sm mb-3">
+              maximo 5 requistos y minimo 1
+            </p>
+
+            <AutocompleteInput
+              type="text"
+              placeholder="Ej: Java, Python..."
+              name="requisitos"
+              options={requisitos}
+              value={queryRequisito}
+              error={errors}
+              rules={vacante.requisitos.length > 0 ? null : formRulesVacante}
+              submitted={submitted}
+              onChange={(e) => {
+                setQueryRequisito(e.target.value)
+                seleccionaRequisito(e.target.value)
+              }}
+              className="search-input-sup"
+            />
+
+            <div className="flex flex-wrap gap-2 mt-4">
+              {vacante.requisitos.map((requisito) => (
+                <div
+                  key={requisito}
+                  className="inline-flex items-center gap-2 px-3 py-2
+                   rounded-full border border-blue-200
+                   bg-blue-50 text-blue-800"
+                >
+                  <span className="text-sm font-medium">
+                    {requisito}
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() => eliminaRequisito(requisito)}
+                    aria-label={`Eliminar requisito ${requisito}`}
+                    title="Eliminar requisito"
+                    className="flex items-center justify-center
+                     w-5 h-5 rounded-full
+                     text-blue-700 hover:bg-blue-200
+                     hover:text-red-600 transition-colors"
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <p className="text-gray-500 text-xs mt-2">
+              {vacante.requisitos.length} de 5 requisitos seleccionados.
+            </p>
+          </div>
+          
           {/* Requerimientos */}
           <div className="form-group full-width">
             <label htmlFor="requerimientos">Requerimientos del Puesto</label>
