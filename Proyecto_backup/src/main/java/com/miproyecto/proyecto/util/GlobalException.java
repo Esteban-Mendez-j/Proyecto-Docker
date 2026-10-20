@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.ai.retry.NonTransientAiException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException.Forbidden;
@@ -45,6 +46,11 @@ public class GlobalException {
     @ExceptionHandler(TokenExpiredException.class)
     public ResponseEntity<?> handleExpiredJWT(JWTVerificationException ex) {
         return buildResponse(HttpStatus.UNAUTHORIZED, "Sesion expirada, inicia nuevamente", ResponseCode.EXPIRED_TOKEN);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<?> handleBadCredentialsException(BadCredentialsException ex) {
+        return buildResponse(HttpStatus.UNAUTHORIZED, "correo o contraseña invalido", ResponseCode.UNAUTORIZED);
     }
 
     @ExceptionHandler(NonTransientAiException.class)

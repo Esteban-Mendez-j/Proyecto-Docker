@@ -63,7 +63,7 @@ public class EmpresaResource {
             @ApiResponse(responseCode = "404", description = "Empresa no encontrada")
         }
     )
-    @GetMapping("/perfil")
+    @GetMapping("/perfil") //TODO: quitar el httpSession
     public ResponseEntity<ApiResponseBody<EmpresaDTO>> mostrarPerfil( Model model,HttpSession session,
             @RequestParam(required = false) Long idUsuario) {        
         ApiResponseBody<EmpresaDTO> response = new ApiResponseBody<>();

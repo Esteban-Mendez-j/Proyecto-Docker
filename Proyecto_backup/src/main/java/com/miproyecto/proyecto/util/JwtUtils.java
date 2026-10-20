@@ -32,7 +32,8 @@ public class JwtUtils {
     @Value("${security.jwt.expiration}")
     private long jwtExpirationMs;
 
-    
+    private String typeToken = "Bearer";
+
     private final UsuarioService usuarioService;
 
     
@@ -87,4 +88,13 @@ public class JwtUtils {
     public Claim getSpecificClaim(DecodedJWT decodedJWT, String claimName) {
         return decodedJWT.getClaim(claimName);
     }
+
+    public long getJwtExpirationMs() {
+        return jwtExpirationMs;
+    }
+
+    public String getTypeToken() {
+        return typeToken;
+    }
+
 }
