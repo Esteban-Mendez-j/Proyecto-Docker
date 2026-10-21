@@ -61,6 +61,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         String rolPrincipal = decodedJWT.getClaim("rolPrincipal").asString();
         
         Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("expiresIn", jwtUtils.getJwtExpirationMs());
         responseMap.put("roles", roles);
         responseMap.put("rolPrincipal", rolPrincipal);
         

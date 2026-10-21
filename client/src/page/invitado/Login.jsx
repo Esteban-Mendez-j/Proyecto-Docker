@@ -12,7 +12,7 @@ import { ListSvg } from "../../components/Icons.jsx";
 export default function Login (){
     const [error , setError] = useState(null)
     const [data , setData] = useState(null)
-    const {rol , setRol} = useContext(RoleContext)
+    const {rol , setRol, setExpiresIn } = useContext(RoleContext)
     const [loading , setLoading] = useState(false)
     const [handleClick, visible] = useVisible();
     let navigate = useNavigate();
@@ -59,6 +59,7 @@ export default function Login (){
 
         setError(null);
         setLoading(false);
+        setExpiresIn(data.expiresIn)
         e.target.reset();
         setRol(data.rolPrincipal)
         setData(data)

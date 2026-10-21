@@ -8,6 +8,8 @@ export const RoleContext = createContext(null);
 
 export function RoleSesion({ children }) {
     const [rol, setRol] = useState(null);
+    const [expiresIn, setExpiresIn] = useState(null) // tiempo de expiracion del JWT
+    const [expiredOn, setExpiredOn] = useState(null) // tiempo limite en el que expira
     const [userDataSession, setUserDataSession] = useState();
     const { data, loading, error} = useFetchV2("/api/usuarios/rol", "GET");
     const { send } = useSendFormV2();
@@ -36,6 +38,14 @@ export function RoleSesion({ children }) {
             connect()
         }
     },[ rol ])
+    
+    useEffect(() => {
+        if (expiresIn == null) return;
+
+        const expirationDate = new Date(Date.now() + expiresIn);
+
+        setExpiredOn(expirationDate);
+    }, [expiresIn]);
 
     useEffect(()=>{
         if( !data ){ return; }
@@ -49,7 +59,7 @@ export function RoleSesion({ children }) {
     },[error])
 
     return (
-        <RoleContext.Provider value={{ rol, setRol, loading, error, userDataSession, logout}}>
+        <RoleContext.Provider value={{ rol, setRol, loading, error, userDataSession, logout, setExpiresIn, expiredOn}}>
             {children}
         </RoleContext.Provider>
     );
