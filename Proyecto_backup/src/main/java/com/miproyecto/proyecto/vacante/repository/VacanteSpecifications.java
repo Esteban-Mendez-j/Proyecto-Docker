@@ -65,7 +65,7 @@ public class VacanteSpecifications {
                     orPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("requerimientos")),
                             "%" + palabra + "%"));
                     orPredicates
-                            .add(criteriaBuilder.like(criteriaBuilder.lower(root.get("cargo")), "%" + palabra + "%"));
+                            .add(criteriaBuilder.like(criteriaBuilder.lower(root.get("cargo").get("nombre")), "%" + palabra + "%"));
 
                     // OR para una palabra
                     Predicate orGroup = criteriaBuilder.or(orPredicates.toArray(new Predicate[0]));
@@ -79,7 +79,7 @@ public class VacanteSpecifications {
             }
 
             if (filtro.getCargo() != null && !filtro.getCargo().isEmpty()) {
-                predicates.add(criteriaBuilder.like(root.get("cargo"), "%" + filtro.getCargo() + "%"));
+                predicates.add(criteriaBuilder.like(root.get("cargo").get("nombre"), "%" + filtro.getCargo() + "%"));
             }
 
             if (filtro.getCiudad() != null && !filtro.getCiudad().isEmpty()) {
@@ -193,7 +193,7 @@ public class VacanteSpecifications {
             }
 
             if (filtro.getCargo() != null && !filtro.getCargo().isEmpty()) {
-                predicates.add(cb.like(vacanteJoin.get("cargo"), "%" + filtro.getCargo() + "%"));
+                predicates.add(cb.like(vacanteJoin.get("cargo").get("nombre"), "%" + filtro.getCargo() + "%"));
             }
 
             if (filtro.getCiudad() != null && !filtro.getCiudad().isEmpty()) {
