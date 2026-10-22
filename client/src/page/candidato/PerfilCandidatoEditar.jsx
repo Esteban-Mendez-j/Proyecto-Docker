@@ -4,7 +4,7 @@ import InputForm from "../../components/InputForm.jsx";
 import Loading from "../../components/Loading.jsx";
 import { useFetchV2, useSendFormV2 } from "../../hooks/useFetch";
 import Layout from "../../layouts/Layout.jsx";
-import { API_CLIENT_URL, URL_IMAGEN } from "../../services/Api";
+import { URL_IMAGEN, URL_PDF } from "../../services/Api";
 import { modal, modalRedirect, modalTime } from "../../services/Modal";
 import "../../style/invitado/candidato.css";
 import { listEducacion, listAptitudes, listValueHistorial, listValueEstudio } from "../../services/data.js"
@@ -371,7 +371,7 @@ const PerfilCandidatoEditar = () => {
                 {/* Link para ver CV existente */}
                 {(candidato.curriculo || previewPdf) && (
                   <a
-                    href={previewPdf? previewPdf :`${API_CLIENT_URL}/pdf/${candidato.curriculo}`}
+                    href={previewPdf? previewPdf :`${URL_PDF}${candidato.curriculo}`}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex w-max cursor-pointer items-center gap-2 rounded-full bg-blue-500 px-4 py-2 font-medium text-white shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"

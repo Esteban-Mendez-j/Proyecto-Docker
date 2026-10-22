@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { API_CLIENT_URL, URL_IMAGEN } from "../services/Api";
+import { URL_IMAGEN, URL_PDF } from "../services/Api";
 import { listAptitudes, listValueEstudio, listValueHistorial } from "../services/data";
 import "../style/invitado/candidato.css";
 import TimeLineList from "./TimeLineList";
@@ -52,7 +52,7 @@ export default function PerfilCandidato({candidato, historialLaboral, estudios, 
                         <a
                             href={
                                 candidato.curriculo
-                                    ? `${API_CLIENT_URL}/pdf/${candidato.curriculo}`
+                                    ? `${URL_PDF}${candidato.curriculo}`
                                     : "#"
                             }
                             className={

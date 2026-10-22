@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import useVisible from "../hooks/useVisible";
-import { API_CLIENT_URL } from "../services/Api";
+import { API_CLIENT_URL, URL_IMAGEN } from "../services/Api";
 import { RoleContext } from "../services/RoleContext";
 import "../style/invitado/header.css";
 import { clearLocalStore } from "../services/localStore"
@@ -18,13 +18,13 @@ export default function Header () {
         if (!rol || !userDataSession) return;
 
         const imagenPorDefecto = rol === "CANDIDATO"
-            ? "/images/imgCandidato.png"
-            : "/images/imgEmpresa.png";
+            ? "/imgCandidato.png"
+            : "/imgEmpresa.png";
 
         setUrlImagen(
             userDataSession?.imagen
-                ? `${API_CLIENT_URL}/img/${userDataSession.imagen}`
-                : API_CLIENT_URL+ imagenPorDefecto
+                ? `${URL_IMAGEN}${userDataSession.imagen}`
+                : imagenPorDefecto
         );
     }, [userDataSession]);
 

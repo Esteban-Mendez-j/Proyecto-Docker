@@ -2,23 +2,19 @@ package com.miproyecto.proyecto.usuario.service;
 
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.miproyecto.proyecto.chats.chatBot.service.interfaces.ChatBotService;
@@ -43,22 +39,14 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final RolesRepository rolesRepository;
     private final ChatBotService chatBotService;
-    // public static final String UPLOAD_DIR = Path.of("uploads", "img").toAbsolutePath().toString();
+    private final SupabaseStorageService supabaseStorageService;
     
-    @Value("${app.upload-dir.img}")
-    private String imgUploadDir;
-
-    @Value("${app.upload-dir.pdf}")
-    private String pdfUploadDir;
-    
-    @Value("${app.upload-dir.file}")
-    private String fileUploadDir;
-
     public UsuarioService(UsuarioRepository usuarioRepository, RolesRepository rolesRepository,
-            ChatBotService chatBotService) {
+            ChatBotService chatBotService, SupabaseStorageService supabaseStorageService) {
         this.usuarioRepository = usuarioRepository;
         this.rolesRepository = rolesRepository;
         this.chatBotService = chatBotService;
+        this.supabaseStorageService = supabaseStorageService;
     }
 
     public List<UsuarioDTO> findAll() {
@@ -148,135 +136,193 @@ public class UsuarioService {
         usuarioRepository.deleteById(idUsuario);
     }
 
-    public String guardarArchivo(MultipartFile file, Long idUsuario) throws IOException {
+    public String guardarArchivo(MultipartFile file, Long idUsuario)
+            throws IOException {
+
         String tipo = file.getContentType();
-        Boolean esArchivoChat = false;
 
-        // Verifica si es imagen o PDF
-        String carpeta;
-        if (tipo != null && tipo.startsWith("image/")) {
-            carpeta = imgUploadDir;
-        } else if ("application/pdf".equals(tipo)) {
-            carpeta = pdfUploadDir;
-        } else if ("text/plain".equals(tipo) || "text/csv".equals(tipo)) {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "El archivo está vacío");
+        }
+
+        if (tipo == null) {
+            throw new IllegalArgumentException(
+                    "No se pudo determinar el tipo de archivo");
+        }
+
+        String bucket;
+        String ruta;
+        boolean esArchivoChat = false;
+
+        // 1. Determinar el bucket y la carpeta.
+        if (tipo.startsWith("image/")) {
+            bucket = "imagen";
+            ruta = "";
+        } else if (tipo.equalsIgnoreCase("application/pdf")) {
+            bucket = "file";
+            ruta = "cv";
+        } else if (tipo.startsWith("text/plain") || tipo.startsWith("text/csv")) {
+            bucket = "file";
+            ruta = "chat";
             esArchivoChat = true;
-            String chatId = chatBotService.findChatBotByUsuarioId(idUsuario.toString()).getId();
-            carpeta = fileUploadDir+"/chat_"+chatId;
         } else {
-            throw new IllegalArgumentException("Solo se permiten archivos de imagen, txt, csv o PDF.");
+            throw new IllegalArgumentException(
+                    "Solo se permiten imágenes, PDF, TXT o CSV");
         }
 
-        // Crear carpeta si no existe
-        Path rutaCarpeta = Path.of(carpeta).toAbsolutePath();
-        Files.createDirectories(rutaCarpeta);
+        // 2. Generar el nombre del archivo.
+        String nombreArchivo = supabaseStorageService.generarNombreArchivo(
+                file.getOriginalFilename(),
+                idUsuario,
+                esArchivoChat);
 
-        // Crear nombre único para el archivo
-        String nombreArchivo = generarNombreArchivo(rutaCarpeta, file.getOriginalFilename(), idUsuario, esArchivoChat);
-        Path rutaArchivo = rutaCarpeta.resolve(nombreArchivo);
+        // 3. Construir la ruta completa en Supabase.
+        if (esArchivoChat) {
+            String chatId = chatBotService
+                    .findChatBotByUsuarioId(idUsuario.toString())
+                    .getId();
 
-        // Guardar el archivo en el servidor
-        try (InputStream is = file.getInputStream()) {
-            Files.copy(is, rutaArchivo);
+            ruta = ruta + "/" + chatId + "/" + nombreArchivo;
+        } else if (!ruta.isEmpty()) {
+            ruta = ruta + "/" + nombreArchivo;
+        } else {
+            ruta = nombreArchivo;
         }
 
+        // 4. Subir el archivo a Supabase.
+        supabaseStorageService.subirArchivo(
+                bucket,
+                ruta,
+                file.getBytes(),
+                tipo);
+
+        // 5. Devolver solamente el nombre para almacenarlo en MySQL.
         return nombreArchivo;
     }
 
-    public void eliminarArchivo(String fileName, FileType type, Long idUsuario) throws IOException {
-        // Determinar la carpeta dependiendo si es imagen o PDF
-        String carpeta = "";
+    public void eliminarArchivo(
+            String fileName,
+            FileType type,
+            Long idUsuario) throws IOException {
 
-        if(type.equals(FileType.IMAGEN)){
-            carpeta = imgUploadDir;
-        }else if(type.equals(FileType.PDF)){
-            carpeta = pdfUploadDir;
-        }else{
-            String chatId = chatBotService.findChatBotByUsuarioId(idUsuario.toString()).getId();
-            carpeta = fileUploadDir+"/chat_"+chatId;
+        if (fileName == null || fileName.isBlank() || fileName.contains("/")
+            || fileName.contains("\\")
+        ) {
+            throw new IllegalArgumentException(
+                    "Nombre de archivo no válido");
         }
-        
-        Path ruta = Path.of(carpeta, fileName);
 
-        // Eliminar el archivo si existe
-        if (Files.exists(ruta)) {
-            Files.delete(ruta);
+        if (type == null) {
+            throw new IllegalArgumentException(
+                    "El tipo de archivo es obligatorio");
+        }
+
+        String bucket;
+        String ruta;
+
+        // 1. Imágenes.
+        if (type == FileType.IMAGEN) {
+            bucket = "imagen";
+            ruta = fileName;
+            // 2. Hojas de vida PDF.
+        } else if (type == FileType.PDF) {
+            bucket = "file";
+            ruta = "cv/" + fileName;
+            // 3. Documentos adjuntos al chat.
         } else {
-            throw new IOException("El archivo no existe: " + ruta);
+            String chatId = chatBotService
+                    .findChatBotByUsuarioId(idUsuario.toString())
+                    .getId();
+            bucket = "file";
+            ruta = "chat/" + chatId + "/" + fileName;
         }
+
+        // 4. Eliminar el archivo de Supabase.
+        supabaseStorageService.eliminarArchivo(
+                bucket,
+                ruta);
     }
 
-    public Resource descargarArchivo(String fileName, Long idUsuario) throws IOException {
-        String chatId = chatBotService.findChatBotByUsuarioId(idUsuario.toString()).getId();
+    public Resource descargarArchivo(
+            String fileName,
+            Long idUsuario) throws IOException {
 
-        List<String> carpetas = List.of(
-                imgUploadDir,
-                pdfUploadDir,
-                fileUploadDir+"/chat_"+chatId
-        );
+        if (fileName == null
+                || fileName.isBlank()
+                || fileName.contains("/")
+                || fileName.contains("\\")) {
 
-        for (String carpeta : carpetas) {
-
-            Path ruta = Path.of(carpeta, fileName);
-
-            if (Files.exists(ruta)) {
-
-                return new UrlResource(ruta.toUri());
-            }
+            throw new IllegalArgumentException(
+                    "Nombre de archivo no válido");
         }
 
-        throw new IOException("Archivo no encontrado");
+        String chatId = chatBotService
+                .findChatBotByUsuarioId(idUsuario.toString())
+                .getId();
+
+        Resource recurso;
+
+        // 1. Buscar en el bucket de imágenes.
+        recurso = intentarDescarga(
+                "imagen",
+                fileName);
+
+        if (recurso != null) {
+            return recurso;
+        }
+
+        // 2. Buscar en la carpeta cv del bucket file.
+        recurso = intentarDescarga(
+                "file",
+                "cv/" + fileName);
+
+        if (recurso != null) {
+            return recurso;
+        }
+
+        // 3. Buscar en la carpeta del chat correspondiente.
+        recurso = intentarDescarga(
+                "file",
+                "chat/" + chatId + "/" + fileName);
+
+        if (recurso != null) {
+            return recurso;
+        }
+
+        throw new IOException(
+                "Archivo no encontrado en Supabase: " + fileName);
     }
 
-    public String generarNombreArchivo(
-            Path rutaCarpeta,
-            String nombreOriginal,
-            Long idUsuario,
-            boolean esArchivoChat) throws IOException {
+    private Resource intentarDescarga(
+            String bucket,
+            String ruta) throws IOException {
 
-        // ARCHIVOS CHAT IA
-        if (esArchivoChat) {
+        try {
 
-            String nombreBase;
-            String extension;
+            byte[] contenido = supabaseStorageService.descargarArchivoPublico(
+                    bucket,
+                    ruta);
 
-            int punto = nombreOriginal.lastIndexOf(".");
-
-            if (punto != -1) {
-
-                nombreBase = nombreOriginal.substring(0, punto);
-
-                extension = nombreOriginal.substring(punto);
-
-            } else {
-
-                nombreBase = nombreOriginal;
-
-                extension = "";
+            if (contenido == null) {
+                return null;
             }
 
-            String nuevoNombre = nombreOriginal;
+            return new ByteArrayResource(contenido);
 
-            int contador = 1;
+        } catch (HttpClientErrorException ex) {
 
-            while (Files.exists(
-                    rutaCarpeta.resolve(nuevoNombre))) {
+            int estado = ex.getStatusCode().value();
 
-                nuevoNombre = nombreBase +
-                        "(" + contador + ")" +
-                        extension;
-
-                contador++;
+            // Si el archivo no existe, continuar con la búsqueda.
+            if (estado == 400 || estado == 404) {
+                return null;
             }
 
-            return nuevoNombre;
+            throw new IOException(
+                    "Error al descargar el archivo desde Supabase",
+                    ex);
         }
-
-        // SISTEMA NORMAL
-        return idUsuario +
-                "_" +
-                UUID.randomUUID() +
-                "_" +
-                nombreOriginal;
     }
 
     private UsuarioDTO mapToDTO(final Usuario usuario, final UsuarioDTO usuarioDTO) {

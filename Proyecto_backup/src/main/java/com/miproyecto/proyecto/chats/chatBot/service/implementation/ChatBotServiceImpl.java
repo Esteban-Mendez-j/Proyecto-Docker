@@ -1,5 +1,6 @@
 package com.miproyecto.proyecto.chats.chatBot.service.implementation;
 
+import com.miproyecto.proyecto.usuario.service.SupabaseStorageService;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,6 +36,7 @@ import com.miproyecto.proyecto.util.modeloIA.PromptBuilder;
 @Service
 public class ChatBotServiceImpl implements ChatBotService {
 
+    private final SupabaseStorageService supabaseStorageService;
     private final PromptBuilder promptBuilder;
     private ChatClient chatClient;
     private final ChatBotRepository chatBotRepository;
@@ -43,14 +45,12 @@ public class ChatBotServiceImpl implements ChatBotService {
     private final ContextBuilder contextBuilder;
     private final DocumentoService documentoService;
     
-    @Value("${app.upload-dir.file}")
-    private String fileUploadDir;
 
     public ChatBotServiceImpl(ChatClient.Builder chatClientBuilder, PromptBuilder promptBuilder,
             ChatBotRepository chatBotRepository, ContextBuilder contextBuilder,
             ChatBotMapper chatBotMapper, DocumentoService documentoService,
             MensajeRepository mensajeRepository,
-            ToolCallbackProvider toolCallbackProvider ) {
+            ToolCallbackProvider toolCallbackProvider, SupabaseStorageService supabaseStorageService ) {
 
         this.chatClient = chatClientBuilder
                 .defaultSystem(promptBuilder.buildSystemPrompt())
@@ -62,13 +62,14 @@ public class ChatBotServiceImpl implements ChatBotService {
         this.contextBuilder = contextBuilder;
         this.promptBuilder = promptBuilder;
         this.documentoService = documentoService;
+        this.supabaseStorageService = supabaseStorageService;
     }
         
     @Override
     public MensajeDTO preguntarAlModelo(String message, String role, String idUsuario){
 
         String chatId = findChatBotByUsuarioId(idUsuario).getId();
-        String ruta = fileUploadDir+"/chat_"+chatId;
+        String ruta = "chat/" + chatId + "/";
 
         String user = contextBuilder.buildUserContext(Roles.valueOf(role), message);
         String response = "";
@@ -167,22 +168,7 @@ public class ChatBotServiceImpl implements ChatBotService {
 
     public List<String> obtenerArchivosChat(String chatId) throws IOException {
 
-        Path rutaCarpeta = Path.of(
-                fileUploadDir,
-                "chat_" + chatId).toAbsolutePath();
-
-        // Si no existe la carpeta
-        if (!Files.exists(rutaCarpeta)) {
-            return new ArrayList<>();
-        }
-
-        try (Stream<Path> paths = Files.list(rutaCarpeta)) {
-
-            return paths
-                    .filter(Files::isRegularFile)
-                    .map(path -> path.getFileName().toString())
-                    .toList();
-        }
+       return supabaseStorageService.obtenerArchivosChat(chatId);
     }
 
     public Mensaje  mensajeMapToEntity(MensajeDTO mensajeDTO, Mensaje mensaje) { 

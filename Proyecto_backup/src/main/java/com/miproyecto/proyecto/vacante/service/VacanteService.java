@@ -1,10 +1,6 @@
 package com.miproyecto.proyecto.vacante.service;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -16,7 +12,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +29,7 @@ import com.miproyecto.proyecto.optimizacion.dto.OptimizationResponse;
 import com.miproyecto.proyecto.optimizacion.dto.VacanteOptimizacionDTO;
 import com.miproyecto.proyecto.optimizacion.service.OptimizationService;
 import com.miproyecto.proyecto.postulacion.repository.PostuladoRepository;
+import com.miproyecto.proyecto.usuario.service.SupabaseStorageService;
 import com.miproyecto.proyecto.util.NotFoundException;
 import com.miproyecto.proyecto.util.response.ApiResponseBody;
 import com.miproyecto.proyecto.util.response.Meta;
@@ -60,14 +56,13 @@ public class VacanteService {
     private final OptimizationService optimizationService;
     private final CargoService cargoService;
     private final RequisitoService requisitoService;
-    @Value("${app.upload-dir.video}")
-    private String videoUploadDir;
+    private final SupabaseStorageService supabaseStorageService;
 
     public VacanteService(VacanteFavoritaRepository vacanteFavoritaRepository, VacanteRepository vacanteRepository,
             EmpresaRepository empresaRepository, PostuladoRepository postuladoRepository,
             AptitudesService aptitudesService, PrediccionService prediccionService,
             OptimizationService optimizationService, RequisitoService requisitoService,
-            CargoService cargoService) {
+            CargoService cargoService, SupabaseStorageService supabaseStorageService) {
         this.vacanteFavoritaRepository = vacanteFavoritaRepository;
         this.vacanteRepository = vacanteRepository;
         this.empresaRepository = empresaRepository;
@@ -76,46 +71,53 @@ public class VacanteService {
         this.optimizationService = optimizationService;
         this.requisitoService = requisitoService;
         this.cargoService = cargoService;
+        this.supabaseStorageService = supabaseStorageService;
     }
 
     public String guardarVideo(MultipartFile file) throws IOException {
+
         String tipo = file.getContentType();
 
-        // Verifica si es video valido
-        String carpeta;
-        if (tipo != null && tipo.startsWith("video/mp4")) {
-            carpeta = videoUploadDir;
-        } else {
-            throw new IllegalArgumentException("Solo se permiten archivos de video");
+        if (tipo == null || !tipo.equalsIgnoreCase("video/mp4")) {
+            throw new IllegalArgumentException(
+                    "Solo se permiten archivos de video MP4");
         }
 
-        // Crear carpeta si no existe
-        Path rutaCarpeta = Path.of(carpeta).toAbsolutePath();
-        Files.createDirectories(rutaCarpeta);
-
-        // Crear nombre único para el archivo
-        String nombreArchivo = System.currentTimeMillis() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
-        Path rutaArchivo = rutaCarpeta.resolve(nombreArchivo);
-
-        // Guardar el archivo en el servidor
-        try (InputStream is = file.getInputStream()) {
-            Files.copy(is, rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "El archivo de video está vacío");
         }
+
+        String nombreOriginal = supabaseStorageService.obtenerNombreSeguro(
+                file.getOriginalFilename());
+
+        String nombreArchivo = System.currentTimeMillis()
+                + "_"
+                + UUID.randomUUID()
+                + "_"
+                + nombreOriginal;
+
+        supabaseStorageService.subirArchivo(
+                "video",
+                nombreArchivo,
+                file.getBytes(),
+                "video/mp4");
 
         return nombreArchivo;
     }
 
     public void eliminarVideo(String fileName) throws IOException {
-        // Determinar la carpeta dependiendo si es imagen o PDF
-        String carpeta = videoUploadDir;
-        Path ruta = Path.of(carpeta, fileName);
 
-        // Eliminar el archivo si existe
-        if (Files.exists(ruta)) {
-            Files.delete(ruta);
-        } else {
-            throw new IOException("El archivo no existe: " + ruta);
+        if (fileName == null || fileName.isBlank()
+                || fileName.contains("/")
+                || fileName.contains("\\")) {
+            throw new IllegalArgumentException(
+                    "Nombre de archivo no válido");
         }
+
+        supabaseStorageService.eliminarArchivo(
+                "video",
+                fileName);
     }
 
     // Método para incrementar visitas

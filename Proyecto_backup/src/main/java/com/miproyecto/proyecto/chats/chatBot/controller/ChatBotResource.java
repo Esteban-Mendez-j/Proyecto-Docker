@@ -19,9 +19,8 @@ import com.miproyecto.proyecto.util.response.ApiResponseBody;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -116,35 +115,41 @@ public class ChatBotResource {
     @GetMapping("/file")
     public ResponseEntity<Resource> descargarFile(
             @RequestParam(name = "nameFile") String nameFile,
-            @CookieValue(name = "jwtToken", required = true) String jwtToken) {
+            @CookieValue(name = "jwtToken") String jwtToken) {
 
         try {
-            Long idUsuario = 0L;
-
-            if (jwtToken != null) {
-                DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
-                idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+            if (nameFile == null || nameFile.isBlank()) {
+                return ResponseEntity.badRequest().build();
             }
 
-            Resource resource = usuarioService.descargarArchivo(nameFile, idUsuario);
+            String nombre = nameFile.toLowerCase(Locale.ROOT);
 
-            Path path = resource.getFile().toPath();
-
-            String contentType = Files.probeContentType(path);
-
-            if (contentType == null) {
-                contentType = "application/octet-stream";
+            if (!nombre.endsWith(".txt") && !nombre.endsWith(".csv")) {
+                return ResponseEntity.badRequest().build();
             }
+
+            DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+
+            Long idUsuario = Long.parseLong(
+                    jwtUtils.extractUsername(decodedJWT));
+
+            Resource resource = usuarioService.descargarArchivo(
+                    nameFile,
+                    idUsuario);
+
+            String contentType = nombre.endsWith(".csv")
+                    ? "text/csv"
+                    : "text/plain";
 
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(contentType))
                     .header(
                             HttpHeaders.CONTENT_DISPOSITION,
-                            "attachment; filename=\"" +
-                                    resource.getFilename() + "\"")
+                            "attachment; filename=\"" + resource.getFilename() + "\"")
                     .body(resource);
 
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.notFound().build();
         }
     }
