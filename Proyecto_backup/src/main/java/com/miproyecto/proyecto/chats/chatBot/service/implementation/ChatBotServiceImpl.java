@@ -2,19 +2,15 @@ package com.miproyecto.proyecto.chats.chatBot.service.implementation;
 
 import com.miproyecto.proyecto.usuario.service.SupabaseStorageService;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.retry.NonTransientAiException;
-import org.springframework.ai.tool.ToolCallbackProvider;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.miproyecto.proyecto.chat.dto.MensajeDTO;
@@ -31,7 +27,8 @@ import com.miproyecto.proyecto.enums.Roles;
 import com.miproyecto.proyecto.util.NotFoundException;
 import com.miproyecto.proyecto.util.modeloIA.ContextBuilder;
 import com.miproyecto.proyecto.util.modeloIA.PromptBuilder;
-
+import com.miproyecto.proyecto.util.response.BadRequest;
+import com.miproyecto.proyecto.config.SelfMcpToolCallbacks;
 
 @Service
 public class ChatBotServiceImpl implements ChatBotService {
@@ -44,17 +41,17 @@ public class ChatBotServiceImpl implements ChatBotService {
     private final MensajeRepository mensajeRepository;
     private final ContextBuilder contextBuilder;
     private final DocumentoService documentoService;
-    
+    private final SelfMcpToolCallbacks selfMcp; 
 
     public ChatBotServiceImpl(ChatClient.Builder chatClientBuilder, PromptBuilder promptBuilder,
             ChatBotRepository chatBotRepository, ContextBuilder contextBuilder,
             ChatBotMapper chatBotMapper, DocumentoService documentoService,
             MensajeRepository mensajeRepository,
-            ToolCallbackProvider toolCallbackProvider, SupabaseStorageService supabaseStorageService ) {
+            SelfMcpToolCallbacks selfMcp,
+            SupabaseStorageService supabaseStorageService) {
 
         this.chatClient = chatClientBuilder
                 .defaultSystem(promptBuilder.buildSystemPrompt())
-                .defaultToolCallbacks(toolCallbackProvider)
                 .build();
         this.chatBotRepository = chatBotRepository;
         this.chatBotMapper = chatBotMapper;
@@ -63,25 +60,35 @@ public class ChatBotServiceImpl implements ChatBotService {
         this.promptBuilder = promptBuilder;
         this.documentoService = documentoService;
         this.supabaseStorageService = supabaseStorageService;
+        this.selfMcp = selfMcp;
     }
-        
+
     @Override
-    public MensajeDTO preguntarAlModelo(String message, String role, String idUsuario){
+    public MensajeDTO preguntarAlModelo(String message, String role, String idUsuario) {
 
         String chatId = findChatBotByUsuarioId(idUsuario).getId();
-        String ruta = "chat/" + chatId + "/";
 
         String user = contextBuilder.buildUserContext(Roles.valueOf(role), message);
         String response = "";
 
-        List<String> RagContext =  documentoService.findSimilarDocuments(message);
-
+        List<String> RagContext = documentoService.findSimilarDocuments(message);
         String template = promptBuilder.buildRagContext(RagContext);
         Prompt prompt = new Prompt(template);
 
+        Map<String, Object> identidad = new HashMap<>();
+        if (idUsuario != null) {
+            identidad.put("userId", idUsuario);
+        }
+        identidad.put("role", role != null ? role : "INVITADO");
+        if (chatId != null) {
+            identidad.put("chatId", chatId);
+        }
+
         try {
             response = chatClient.prompt(prompt)
-                    .user(promptBuilder.buildFieldPrompt(ruta, Long.parseLong(idUsuario)) + "\n\n" + user)
+                    .user(user)
+                    .toolCallbacks(selfMcp.getToolCallbacks())
+                    .toolContext(identidad)
                     .call().content();
         } catch (NonTransientAiException ex) {
             response = "Excediste el limite de peticiones, intentalo mas tarde";
@@ -104,7 +111,7 @@ public class ChatBotServiceImpl implements ChatBotService {
     public MensajeDTO agregarMensajeChat(MensajeDTO mensajeDTO){
 
         if (mensajeDTO.getContent() == null || mensajeDTO.getContent().trim().isEmpty()) {
-            throw new IllegalArgumentException("El contenido no puede estar vacío");
+            throw new BadRequest("El contenido no puede estar vacío");
         }
 
         String chatId = "";

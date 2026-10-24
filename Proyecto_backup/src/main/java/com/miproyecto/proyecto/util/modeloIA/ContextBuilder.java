@@ -12,7 +12,7 @@ public class ContextBuilder {
             case CANDIDATO -> """
                     # PERFIL: CANDIDATO
                     - Objetivo: Buscar empleo digno o prácticas en Colombia.
-                    - Permisos Técnicos: Tienes autorización del sistema para usar la herramienta SQL (solo lectura) para buscar vacantes y la herramienta de Archivos para exportarle la información si lo pide.
+                    - Herramientas permitidas: búsqueda y detalle de vacantes, consulta de información de la plataforma y archivos del chat (exportar resultados si lo pide).
                     - Restricción: Bloquea cualquier petición para ver datos de otros usuarios, editar o crear vacantes.
                     - Tono: Orientador y motivador.
 
@@ -23,9 +23,9 @@ public class ContextBuilder {
             case EMPRESA -> """
                     # PERFIL: EMPRESA / RECLUTADOR
                     - Objetivo: Gestionar talento para su organización.
-                    - Permisos Técnicos: Autorizado para usar herramientas SQL para consultar, crear, editar y activar/desactivar sus propias vacantes.
+                    - Herramientas permitidas: consultar, crear, editar, activar/desactivar y eliminar SUS PROPIAS vacantes; archivos del chat; información de la plataforma.
                     - Tono: Ejecutivo y eficiente.
-                    
+
                     # CONSULTA ACTUAL:
                     "%s"
                     """.formatted(message);
@@ -33,9 +33,9 @@ public class ContextBuilder {
             case ADMIN -> """
                     # PERFIL: ADMINISTRADOR DEL SISTEMA
                     - Objetivo: Supervisar la salud de SearchJobs.
-                    - Permisos Técnicos: Acceso total a las herramientas SQL para auditar usuarios, vacantes globales y realizar bloqueos si es necesario.
+                    - Herramientas permitidas: auditar vacantes de cualquier empresa, editarlas y bloquearlas/desbloquearlas; archivos del chat; información de la plataforma.
                     - Tono: Técnico, directo e informativo.
-                    
+
                     # CONSULTA ACTUAL:
                     "%s"
                     """.formatted(message);
@@ -43,19 +43,19 @@ public class ContextBuilder {
             case SUPER_ADMIN -> """
                     # PERFIL: SUPER ADMINISTRADOR
                     - Objetivo: Control global de la infraestructura de SearchJobs.
-                    - Permisos Técnicos: Acceso irrestricto a todas las herramientas SQL y de Archivos. Capacidad de gestión de roles de usuario.
+                    - Herramientas permitidas: todas las de administración de vacantes (incluida la eliminación definitiva), archivos del chat e información de la plataforma.
                     - Tono: Estratégico.
-                    
+
                     # CONSULTA ACTUAL:
                     "%s"
                     """.formatted(message);
-                    
+
             default -> """
                     # PERFIL: INVITADO (Sin sesión)
                     - Objetivo: Explorar la plataforma antes de registrarse.
-                    - Permisos Técnicos: Autorizado para usar SQL solo para búsquedas generales de vacantes. 
+                    - Herramientas permitidas: solo búsqueda general de vacantes e información de la plataforma.
                     - Restricción: No puede postularse ni exportar archivos. Si lo intenta, invítalo amablemente a crear una cuenta en SearchJobs.
-                    
+
                     # CONSULTA ACTUAL:
                     "%s"
                     """.formatted(message);

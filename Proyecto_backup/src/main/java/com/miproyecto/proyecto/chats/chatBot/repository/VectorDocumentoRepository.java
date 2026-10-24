@@ -26,12 +26,13 @@ public class VectorDocumentoRepository{
         metadata.put("fileHash", documento.getMetadata().getFileHash());
         Document document = new Document(documento.getContent(), metadata);
         
-        TokenTextSplitter splitter = new TokenTextSplitter(
-                200,
-                50,
-                10,
-                5000,
-                true);
+        TokenTextSplitter splitter = TokenTextSplitter.builder()
+            .withChunkSize(200)
+            .withMinChunkSizeChars(50)
+            .withMinChunkLengthToEmbed(10)
+            .withMaxNumChunks(5000)
+            .withKeepSeparator(true)
+            .build();
 
         List<Document> documents = splitter.apply(List.of(document));
 
