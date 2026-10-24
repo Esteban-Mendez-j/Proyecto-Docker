@@ -10,10 +10,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
 
 import com.miproyecto.proyecto.chats.chatBot.dto.VacanteInfo;
 import com.miproyecto.proyecto.vacante.dto.VacanteDTO;
@@ -112,7 +114,11 @@ public class VacanteMcpMapper {
     // ---------- helpers ----------
 
     private Object leer(BeanWrapper w, String nombre) {
-        return w.isReadableProperty(nombre) ? w.getPropertyValue(nombre) : null;
+        if (w.isReadableProperty(nombre)) {
+            return w.getPropertyValue(nombre);
+        }
+        DirectFieldAccessor campo = new DirectFieldAccessor(w.getWrappedInstance());
+        return campo.isReadableProperty(nombre) ? campo.getPropertyValue(nombre) : null;
     }
 
     private String texto(BeanWrapper w, String nombre) {
@@ -148,7 +154,13 @@ public class VacanteMcpMapper {
 
     private void comprobar(String campo, boolean escritura) {
         PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(VacanteDTO.class, campo);
-        boolean ok = pd != null && (escritura ? pd.getWriteMethod() != null : pd.getReadMethod() != null);
+        boolean ok;
+        if (escritura) {
+            ok = pd != null && pd.getWriteMethod() != null;
+        } else {
+            ok = (pd != null && pd.getReadMethod() != null)
+                    || ReflectionUtils.findField(VacanteDTO.class, campo) != null;
+        }
         if (!ok) {
             log.warn("MCP: la propiedad '{}' no es {} en VacanteDTO. Ajusta VacanteMcpMapper.",
                     campo, escritura ? "escribible" : "legible");
