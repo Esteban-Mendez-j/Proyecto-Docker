@@ -66,7 +66,6 @@ public class VacanteMcpTools {
 
     @McpTool(name = "crear_vacante", description = """
             EMPRESA: publica una nueva vacante o practica a nombre de la empresa autenticada.
-            Antes de llamarla muestra el resumen al usuario y pide confirmacion.
             Obligatorios: titulo, cargo (debe existir en el catalogo de cargos de la plataforma), modalidad, ciudad,
             departamento y tipo. Limites: titulo 100 caracteres, descripcion y requerimientos 400, ciudad/departamento/modalidad 50,
             experiencia 4 caracteres (anios, solo numero). sueldo: solo numero sin simbolos ni separadores (ej. 3500000).""")

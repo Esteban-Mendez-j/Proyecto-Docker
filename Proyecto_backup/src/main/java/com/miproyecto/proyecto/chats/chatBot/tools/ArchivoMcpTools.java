@@ -115,7 +115,7 @@ public class ArchivoMcpTools {
         });
     }
 
-    @McpTool(name = "eliminar_archivo", description = "Elimina un archivo del chat del usuario autenticado. Pide confirmacion antes.")
+    @McpTool(name = "eliminar_archivo", description = "Elimina un archivo del chat del usuario autenticado")
     public ToolResult eliminarArchivo(
             @McpToolParam(description = "Nombre exacto del archivo", required = true) String nombreArchivo,
             McpMeta meta) {
