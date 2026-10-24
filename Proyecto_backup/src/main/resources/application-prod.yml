@@ -1,3 +1,6 @@
+server:
+  port: ${PORT_MCP}
+
 spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL_PROD}
@@ -35,7 +38,7 @@ spring:
   ai:
     openai:
       api-key: ${API_KEY}
-      base-url: ${URL_DOCKER_LLM}
+      base-url: ${URL_LLM}
       chat:
         options:
           model: ${MODEL_LLM}
@@ -45,19 +48,40 @@ spring:
         options:
           model: ${MODEL_EMBEDDING}
     mcp:
+      server:
+        name: searchjobs-mcp
+        version: 1.0.0
+        type: SYNC
+        protocol: STATELESS
       client:
-        stdio: 
-          servers-configuration: ${CONFIG_MCP}
+        enabled: false
+        toolcallback:
+          enabled: false
+          
+    mongodb:
+        collection-name: vector_store
+        initialize-schema: true
+        path-name: embedding
+        indexName: vector_index
     
-
 app:
-  upload-dir:
-    img: ${UPLOAD_DIR_IMG}
-    pdf: ${UPLOAD_DIR_PDF}
-    video: ${UPLOAD_DIR_VIDEO}
-    file: ${UPLOAD_DIR_FILE}
   url:
-    frontEnd: ${URL_FRONTEND}
+    frontEnd: ${URL_FRONTEND}  
+  supabase:
+    key:
+      publica: ${KEY_PUBLICA_SUPABASE}
+      privada: ${KEY_PRIVADA_SUPABASE}
+  mcp:
+    endpoint: ${ENDPOINT_MCP}
+    loopback-only: ${LOOPBACK_ONLY}
+    debug-tools: false
+    client-timeout-seconds: 30
+    files:
+      bucket: ${NOMBRE_BUCKET_FILE}
+      max-bytes: 1048576
+    vacantes:
+      cargo-property: nombre
+      allow-delete: false 
     
 security:
   jwt:
