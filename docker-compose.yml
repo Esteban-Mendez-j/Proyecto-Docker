@@ -1,23 +1,5 @@
 
 services:
-
-  dbhub:
-    image: bytebase/dbhub:latest
-    container_name: dbhub
-    ports:
-      - "9080:9080"
-    environment:
-      - DBHUB_LOG_LEVEL=info
-    command:
-      - --transport
-      - http
-      - --port
-      - "9080"
-      - --dsn
-      - ${DNS_DB}
-    depends_on:
-      - mysql
-
  
   mysql:
     image: mysql:8.0
@@ -48,16 +30,21 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
       MONGODB_URI: ${MONGODB_URI}
       API_KEY: ${API_KEY}
-      URL_DOCKER_LLM: ${URL_DOCKER_LLM}
+      URL_DOCKER_LLM: ${URL_LLM}
       MODEL_LLM: ${MODEL_LLM}
-      CONFIG_MCP: ${CONFIG_MCP}
-      UPLOAD_DIR_IMG: ${UPLOAD_DIR_IMG}
-      UPLOAD_DIR_PDF: ${UPLOAD_DIR_PDF}
-      UPLOAD_DIR_VIDEO: ${UPLOAD_DIR_VIDEO}
-      UPLOAD_DIR_FILE: ${UPLOAD_DIR_FILE}
       URL_FRONTEND: ${URL_FRONTEND}
       MY_SECRET_KEY: ${MY_SECRET_KEY}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
+      PORT_MCP: ${PORT_MCP}
+      api-key: ${API_KEY_EMBEDDING}
+      URL_EMBEDDING: ${URL_EMBEDDING}
+      MODEL_EMBEDDING: ${MODEL_EMBEDDING}
+      KEY_PUBLICA_SUPABASE: ${KEY_PUBLICA_SUPABASE}
+      KEY_PRIVADA_SUPABASE: ${KEY_PRIVADA_SUPABASE}
+      ENDPOINT_MCP: ${ENDPOINT_MCP}
+      LOOPBACK_ONLY: ${LOOPBACK_ONLY}
+      NOMBRE_BUCKET_FILE: ${NOMBRE_BUCKET_FILE}
+      OPTIMIZER_API_URL: ${OPTIMIZER_API_URL}
     networks:
       - app-network
     volumes:

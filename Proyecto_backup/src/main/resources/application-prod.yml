@@ -82,6 +82,10 @@ app:
     vacantes:
       cargo-property: nombre
       allow-delete: false 
+
+optimizer:
+  api:
+    url: ${OPTIMIZER_API_URL}
     
 security:
   jwt:

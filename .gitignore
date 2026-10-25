@@ -1,6 +1,7 @@
 # Archivos de entorno
 **/.env*
 application-local.yml
+application.yml
 
 # Logs
 *.log
@@ -59,5 +60,6 @@ build/
 *.pyo
 *.pyd
 .Python
+
 # recursos locales 
 uploads/
