@@ -2,16 +2,15 @@ import { createContext, useState, useEffect } from "react";
 import { useFetchV2, useSendFormV2 } from "../hooks/useFetch";
 import { modalResponse } from "./Modal";
 import { API_CLIENT_URL } from "./Api";
-import { connect } from "./Websocket";
 
 export const RoleContext = createContext(null);
 
 export function RoleSesion({ children }) {
     const [rol, setRol] = useState(null);
-    const [expiresIn, setExpiresIn] = useState(null) // tiempo de expiracion del JWT
-    const [expiredOn, setExpiredOn] = useState(null) // tiempo limite en el que expira
+    const [expiresIn, setExpiresIn] = useState(null); // tiempo de expiracion del JWT
+    const [expiredOn, setExpiredOn] = useState(null); // tiempo limite en el que expira
     const [userDataSession, setUserDataSession] = useState();
-    const { data, loading, error} = useFetchV2("/api/usuarios/rol", "GET");
+    const { data, loading, error } = useFetchV2("/api/usuarios/rol", "GET");
     const { send } = useSendFormV2();
     
     async function logout (mensaje) {
@@ -32,12 +31,17 @@ export function RoleSesion({ children }) {
         }
     }
 
-    useEffect(() =>{
-        peticion()
-        if(["CANDIDATO", "EMPRESA"].includes(rol)) {
-            connect()
+    useEffect(() => {
+        // Solo solicitar datos del usuario y conectar websocket si el usuario está autenticado
+        if (rol && rol !== "ROLE_INVITADO") {
+            peticion();
+            if (["CANDIDATO", "EMPRESA"].includes(rol)) {
+                import("./Websocket")
+                    .then(({ connect }) => connect())
+                    .catch((err) => console.error("Websocket error:", err));
+            }
         }
-    },[ rol ])
+    }, [rol]);
     
     useEffect(() => {
         if (expiresIn == null) return;
@@ -47,16 +51,16 @@ export function RoleSesion({ children }) {
         setExpiredOn(expirationDate);
     }, [expiresIn]);
 
-    useEffect(()=>{
-        if( !data ){ return; }
+    useEffect(() => {
+        if (!data) { return; }
         setRol(data.rolPrincipal);
-    },[ data ])
+    }, [data]);
     
-    useEffect(()=>{
-        if(!error) return
-        if( error.code === "EXPIRED_TOKEN" ){ logout(error.message); }
+    useEffect(() => {
+        if (!error) return;
+        if (error.code === "EXPIRED_TOKEN") { logout(error.message); }
         console.error(error.message);
-    },[error])
+    }, [error]);
 
     return (
         <RoleContext.Provider value={{ rol, setRol, loading, error, userDataSession, logout, setExpiresIn, expiredOn}}>
