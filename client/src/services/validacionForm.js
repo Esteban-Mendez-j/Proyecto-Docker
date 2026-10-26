@@ -145,12 +145,13 @@ export function validateForm(form, formRules) {
           }
           break;
 
-        case "youtubeUrl":
+        case "youtubeUrl":{
           const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{11}([&?].*)?$/;
           if (value && !youtubeRegex.test(value)) {
             error = rule.message;
           }
           break;
+        }
         case "maxMb":
 
           if (value) {
@@ -572,10 +573,11 @@ export function validateRule(rule, value) {
       }
       break;
 
-    case "youtubeUrl":
+
+    case "youtubeUrl":{
       const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{11}([&?].*)?$/;
       if (v && !youtubeRegex.test(v)) return rule.message;
-      break;
+      break;}
       
     case "minNumber":
       if (v < rule.min) return rule.message;

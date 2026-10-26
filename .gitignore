@@ -26,6 +26,8 @@ Thumbs.db
 **/.next/
 **/.turbo/
 **/.astro/
+/client/dist
+
 
 # Backend Java (Maven)
 target/
@@ -63,3 +65,4 @@ build/
 
 # recursos locales 
 uploads/
+.vercel

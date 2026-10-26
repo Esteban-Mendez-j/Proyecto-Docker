@@ -10,13 +10,13 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,8 +49,7 @@ public class ApelacionResource {
 
     @Operation(summary = "Lista apelaciones del usuario autenticado", description = "Devuelve las apelaciones asociadas al usuario autenticado mediante su token JWT.")
     @GetMapping("/list")
-    public ResponseEntity<List<ApelacionDTO>> list(Model model, HttpSession session) {
-        String jwtToken = (String) session.getAttribute("jwtToken");
+    public ResponseEntity<List<ApelacionDTO>> list(Model model, @CookieValue(name = "jwtToken") String jwtToken) {
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
 

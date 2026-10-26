@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { API_CLIENT_URL } from '../services/Api';
 import { RoleContext } from "../services/RoleContext";
 import { toggleFavoritoRequest } from '../services/ToggleFavoritosRequest';
-import { ListSvg } from "./Icons";
+import { ListSvg } from "./Icons.jsx";
 
 export default function JobCard({ job, cambiarEstado, verSeccionEdit, presentaion, fetchAllJobs, verPrediccion }) {
 

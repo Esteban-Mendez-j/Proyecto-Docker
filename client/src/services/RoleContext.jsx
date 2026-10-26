@@ -1,8 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import { useFetchV2, useSendFormV2 } from "../hooks/useFetch";
 import { modalResponse } from "./Modal";
-import { API_CLIENT_URL } from "./Api";
-
 export const RoleContext = createContext(null);
 
 export function RoleSesion({ children }) {

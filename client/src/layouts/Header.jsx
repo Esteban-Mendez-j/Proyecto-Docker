@@ -114,7 +114,7 @@ export default function Header () {
                         <button className="nav-link"
                             onClick={() => {
                                 clearLocalStore()
-                                window.location.href = `${API_CLIENT_URL}/usuarios/cerrarSesion`;
+                                logout("Sesion cerrada", "success");
                             }}>
                             Cerrar Sesion
                         </button>

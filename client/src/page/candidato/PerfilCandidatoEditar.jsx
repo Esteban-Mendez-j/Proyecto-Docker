@@ -38,7 +38,6 @@ const PerfilCandidatoEditar = () => {
     videoLink: ""
   }
 
-
   const navigate = useNavigate()
   const { logout } = useContext(RoleContext);
   const maxImgSize = 500;  // 500kb

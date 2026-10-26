@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   padding-top: 80px;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.763)), url("/heroIMG.png");
+  background-image: linear-gradient(rgba(0, 0, 0, 0.763)), url("/heroIMG.webp");
   background-size: cover;        
   background-repeat: no-repeat;  
   background-position: center; 
