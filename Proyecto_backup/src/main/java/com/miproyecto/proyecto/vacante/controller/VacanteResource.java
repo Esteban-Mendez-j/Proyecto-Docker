@@ -35,6 +35,7 @@ import com.miproyecto.proyecto.vacante.service.VacanteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Tag(name = "Vacantes", description = "Operaciones relacionadas con la gestión y consulta de vacantes")
@@ -145,6 +146,7 @@ public class VacanteResource {
     )
     @PostMapping("/listar/filtradas")
     public ResponseEntity<ApiResponseBody<List<VacanteDTO>>> listarVacantesFiltradas(
+            HttpSession session,
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             @CookieValue(required = false) String jwtToken,
             @RequestBody FiltroVacanteDTO filtro) {

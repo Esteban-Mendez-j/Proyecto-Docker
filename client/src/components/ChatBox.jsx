@@ -47,18 +47,17 @@ const ChatBox = ({ chatId, setChats }) => {
     const { tipoChat } = chatInfo;
 
     const client = new Client({
-      // brokerURL: `${WS_CLIENT_URL}/chats`,
-      webSocketFactory: () => new SockJS(`${WS_CLIENT_URL}/chats`),
+      brokerURL: `${WS_CLIENT_URL}/chats`,
       reconnectDelay: 5000,
 
       onConnect: () => {
         console.log("✅ Conectado a WebSocket");
         if (tipoChat === "Grupo") {
           // CHAT PÚBLICO
-          // client.subscribe(`/topic/vacantes/${vacanteId}`, (msg) => {
-          //   const message = JSON.parse(msg.body);
-          //   setMessages((prev) => [...prev, message]);
-          // });
+          client.subscribe(`/topic/vacantes/${vacanteId}`, (msg) => {
+            const message = JSON.parse(msg.body);
+            setMessages((prev) => [...prev, message]);
+          });
         } else {
           // CHAT PRIVADO
           client.subscribe(`/user/queue/messages`, (msg) => {

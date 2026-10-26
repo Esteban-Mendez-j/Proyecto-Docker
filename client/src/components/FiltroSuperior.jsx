@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import {ciudadesColombia} from "../services/data"
-import AutocompleteInput from "./AutocompleteInput.jsx";
+import AutocompleteInput from "./AutocompleteInput";
 import { API_CLIENT_URL } from "../services/Api";
 import { ListSvg } from "./Icons";
 export default function FiltroSuperior({ filtersLocal, handleOnFilters, searchFilters }) {

@@ -1,11 +1,7 @@
 package com.miproyecto.proyecto.usuario.controller;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,13 +22,9 @@ import com.miproyecto.proyecto.usuario.service.UsuarioService;
 import com.miproyecto.proyecto.util.JwtUtils;
 import com.miproyecto.proyecto.util.response.ApiResponseBody;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 
@@ -41,8 +33,6 @@ import jakarta.validation.Valid;
 @RequestMapping(value = "/api/usuarios", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UsuarioResource {
 
-    @Value("${app.url.frontEnd}")
-    private String urlFront;
     private final UsuarioService usuarioService;
     private final JwtUtils jwtUtils;
 
@@ -50,32 +40,6 @@ public class UsuarioResource {
         this.usuarioService = usuarioService;
         this.jwtUtils = jwtUtils;
     }
-
-    @PostMapping("/cerrarSesion")
-    public ResponseEntity<Map<String, Object>> logout(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-        // Invalida la sesión HTTP (si existe)
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
-
-        // Borra JWT
-        response.addHeader(
-                "Set-Cookie",
-                "jwtToken=; HttpOnly; Secure; Path=/; Max-Age=0; SameSite=None; Domain=searchjobs.up.railway.app");
-
-        // Borra JSESSIONID
-        response.addHeader(
-                "Set-Cookie",
-                "JSESSIONID=; HttpOnly; Secure; Path=/; Max-Age=0; SameSite=None; Domain=searchjobs.up.railway.app");
-
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("status", HttpStatus.UNAUTHORIZED.value());
-        responseMap.put("mensaje", "Sesión Cerrada");
-        return ResponseEntity.ok(responseMap);
-    }
-
 
     @Operation(
         summary = "Obtener rol de usuario",

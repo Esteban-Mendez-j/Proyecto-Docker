@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { RoleContext } from "../services/RoleContext.jsx";
+import { RoleContext } from "../services/RoleContext";
 import { useContext } from "react";
-import Loading from "./Loading.jsx";
+import Loading from "./Loading";
 
 
 export default function RouteProtection ({redirectionTo = "/", accessRole}){

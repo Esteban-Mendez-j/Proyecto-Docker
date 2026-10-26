@@ -20,6 +20,7 @@ const JobList = ({
   totalPages,
   fetchAllJobs,
   presentacion,
+  loading,
   verPrediccion,
   setVerPrediccion,
   setFilteredJobs

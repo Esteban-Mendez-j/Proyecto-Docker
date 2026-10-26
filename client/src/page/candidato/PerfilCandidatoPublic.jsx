@@ -8,15 +8,15 @@ import exceptionControl from "../../services/exceptionControl.js";
 import { RoleContext } from "../../services/RoleContext.jsx";
 
 function PerfilCandidatoPublic() {
-  // const initialData = {
-  //   nombre: "",
-  //   apellido: "",
-  //   correo: "",
-  //   contrasena: "",
-  //   telefono: "",
-  //   identificacion: "",
-  //   contraseñaVerificada: ""
-  // }
+  const initialData = {
+    nombre: "",
+    apellido: "",
+    correo: "",
+    contrasena: "",
+    telefono: "",
+    identificacion: "",
+    contraseñaVerificada: ""
+  }
   const {id} = useParams();
   const { logout } = useContext(RoleContext);
   const navigate = useNavigate();

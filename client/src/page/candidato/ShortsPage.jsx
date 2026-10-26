@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { URL_IMAGEN, URL_VIDEO } from "../../services/Api";
 import { RoleContext } from "../../services/RoleContext";
 import "../../style/invitado/short.css";
-import Loading from "../../components/Loading.jsx";
+import Loading from "../../components/Loading";
 import { toggleFavoritoRequest } from "../../services/ToggleFavoritosRequest";
 import { modal, modalTime } from "../../services/Modal";
 import { ListSvg } from "../../components/Icons"

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useFetch } from "../hooks/useFetch.jsx";
-import Loading from "./Loading.jsx";
+import Loading from "./Loading";
 
 export default function Prediccion({ id }) {
   const [prediccion, setPrediccion] = useState(null);

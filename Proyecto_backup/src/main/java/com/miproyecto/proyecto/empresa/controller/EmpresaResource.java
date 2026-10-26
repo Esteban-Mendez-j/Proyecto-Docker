@@ -34,6 +34,7 @@ import com.miproyecto.proyecto.validations.ValidationGroups;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.groups.Default;
 
@@ -62,13 +63,13 @@ public class EmpresaResource {
             @ApiResponse(responseCode = "404", description = "Empresa no encontrada")
         }
     )
-    @GetMapping("/perfil")
-    public ResponseEntity<ApiResponseBody<EmpresaDTO>> mostrarPerfil( Model model,
-            @CookieValue(name = "jwtToken", required = true) String jwtToken,
+    @GetMapping("/perfil") //TODO: quitar el httpSession
+    public ResponseEntity<ApiResponseBody<EmpresaDTO>> mostrarPerfil( Model model,HttpSession session,
             @RequestParam(required = false) Long idUsuario) {        
         ApiResponseBody<EmpresaDTO> response = new ApiResponseBody<>();
         if (idUsuario == null) {
             // Sacamos el ID del usuario que inicia sesion
+            String jwtToken = (String) session.getAttribute("jwtToken");
             DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
             idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
         } 
