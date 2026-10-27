@@ -1,5 +1,5 @@
 import {useEffect, useState } from "react";
-import { deleteLocalStore, readLocalStore, saveLocalStore } from "../services/localStore";
+import { deleteLocalStore, readLocalStore, saveLocalStore } from "../services/localStore.js";
 
 export default function useFiltro( initialFiltros, setCurrentPage, nameFiltros ){
     const [filtrosAplicados, setFiltrosAplicados] = useState(readLocalStore(nameFiltros, initialFiltros));

@@ -1,5 +1,5 @@
 import { Client } from "@stomp/stompjs";
-import { WS_CLIENT_URL } from "./Api";
+import { WS_CLIENT_URL } from "./Api.js";
 
 const subscriptions = []; // ← almacena todas las suscripciones pendientes
 

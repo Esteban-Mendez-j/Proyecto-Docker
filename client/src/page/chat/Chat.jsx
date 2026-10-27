@@ -1,16 +1,14 @@
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import "../../style/invitado/chat.css";
-import Header from "../../layouts/Header";
-import ChatList from "../../components/ChatList";
-import ChatBox from "../../components/ChatBox";
-import { API_CLIENT_URL } from "../../services/Api";
-import manejarRespuesta from "../../services/ManejarRespuesta";
+import Header from "../../layouts/Header.jsx";
+import ChatList from "../../components/ChatList.jsx";
+import ChatBox from "../../components/ChatBox.jsx";
 import { useContext, useEffect, useState } from "react";
-import { ListSvg } from "../../components/icons";
-import { RoleContext } from "../../services/RoleContext";
-import { useFetchV2, useSendFormV2 } from "../../hooks/useFetch";
-import exceptionControl from "../../services/exceptionControl";
-import ChatBot from "./ChatBot";
+import { ListSvg } from "../../components/icons.jsx";
+import { RoleContext } from "../../services/RoleContext.jsx";
+import { useSendFormV2 } from "../../hooks/useFetch.jsx";
+import exceptionControl from "../../services/exceptionControl.js";
+import ChatBot from "./ChatBot.jsx";
 
 export default function ChatPage() {
   const location = useLocation();

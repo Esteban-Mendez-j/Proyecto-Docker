@@ -1,18 +1,17 @@
 
 import { useContext, useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { API_CLIENT_URL, URL_VIDEO } from "../../services/Api";
-import manejarRespuesta from "../../services/ManejarRespuesta";
-import { modal, modalRedirect, modalResponse } from "../../services/Modal";
-import { ciudadesColombia, departamentoColombia, listAptitudes } from "../../services/data";
-import Loading from "../../components/Loading"
-import Layout from "../../layouts/Layout";
-import InputForm from "../../components/InputForm";
-import { formRulesVacante, validateForm } from "../../services/validacionForm";
-import { RoleContext } from "../../services/RoleContext";
-import { useSendFormV2 } from "../../hooks/useFetch";
-import exceptionControl from "../../services/exceptionControl";
-import AutocompleteInput from "../../components/AutocompleteInput";
+import { API_CLIENT_URL, URL_VIDEO } from "../../services/Api.js";
+import { modal, modalRedirect } from "../../services/Modal.js";
+import { ciudadesColombia, departamentoColombia, listAptitudes } from "../../services/data.js";
+import Loading from "../../components/Loading.jsx"
+import Layout from "../../layouts/layout.jsx";
+import InputForm from "../../components/InputForm.jsx";
+import { formRulesVacante, validateForm } from "../../services/validacionForm.js";
+import { RoleContext } from "../../services/RoleContext.jsx";
+import { useSendFormV2 } from "../../hooks/useFetch.jsx";
+import exceptionControl from "../../services/exceptionControl.js";
+import AutocompleteInput from "../../components/AutocompleteInput.jsx";
 
 
 const EditarVacantes= () => {

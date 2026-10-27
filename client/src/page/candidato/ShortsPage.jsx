@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
-import { useSendFormV2 } from "../../hooks/useFetch";
+import { useSendFormV2 } from "../../hooks/useFetch.jsx";
 import { Link, useNavigate } from "react-router-dom";
-import { URL_IMAGEN, URL_VIDEO } from "../../services/Api";
-import { RoleContext } from "../../services/RoleContext";
+import { URL_IMAGEN, URL_VIDEO } from "../../services/Api.js";
+import { RoleContext } from "../../services/RoleContext.jsx";
 import "../../style/invitado/short.css";
-import Loading from "../../components/Loading";
-import { toggleFavoritoRequest } from "../../services/ToggleFavoritosRequest";
-import { modal, modalTime } from "../../services/Modal";
-import { ListSvg } from "../../components/Icons"
-import exceptionControl from "../../services/exceptionControl";
+import Loading from "../../components/Loading.jsx";
+import { toggleFavoritoRequest } from "../../services/ToggleFavoritosRequest.js";
+import { modal, modalTime } from "../../services/Modal.js";
+import { ListSvg } from "../../components/icons.jsx"
+import exceptionControl from "../../services/exceptionControl.js";
 
 const ShortsPage = () => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);

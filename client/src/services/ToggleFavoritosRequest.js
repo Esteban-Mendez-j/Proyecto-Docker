@@ -1,4 +1,4 @@
-import { API_CLIENT_URL } from "./Api";
+import { API_CLIENT_URL } from "./Api.js";
 
 export async function toggleFavoritoRequest(nvacantes) {
   try {

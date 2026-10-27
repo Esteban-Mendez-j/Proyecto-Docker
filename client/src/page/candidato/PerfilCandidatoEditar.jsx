@@ -2,10 +2,10 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import InputForm from "../../components/InputForm.jsx";
 import Loading from "../../components/Loading.jsx";
-import { useFetchV2, useSendFormV2 } from "../../hooks/useFetch";
-import Layout from "../../layouts/Layout.jsx";
-import { URL_IMAGEN, URL_PDF } from "../../services/Api";
-import { modal, modalRedirect, modalTime } from "../../services/Modal";
+import { useFetchV2, useSendFormV2 } from "../../hooks/useFetch.jsx";
+import Layout from "../../layouts/layout.jsx";
+import { URL_IMAGEN, URL_PDF } from "../../services/Api.js";
+import { modal, modalRedirect, modalTime } from "../../services/Modal.js";
 import "../../style/invitado/candidato.css";
 import { listEducacion, listAptitudes, listValueHistorial, listValueEstudio } from "../../services/data.js"
 import { formRulesCandidatoEditar, validateForm } from "../../services/validacionForm.js";

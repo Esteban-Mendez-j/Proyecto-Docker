@@ -1,13 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useFetchV2, useSendFormV2 } from "../hooks/useFetch"
-import stompClient, { sendMessage, subscribe } from "../services/Websocket";
+import { sendMessage, subscribe } from "../services/Websocket.js";
 import { RoleContext } from "../services/RoleContext";
 import useVisible from "../hooks/useVisible"
 import Loading from "../components/Loading"
 import { modalTime, QuestionModal } from "../services/Modal";
-import "../style/invitado/notificacionesCenter.css";
-import { ListSvg } from "./Icons";
+import "../style/invitado/NotificacionesCenter.css";
+import { ListSvg } from "./icons.jsx";
 import exceptionControl from "../services/exceptionControl";
 
 

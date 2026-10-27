@@ -7,7 +7,7 @@ import Header from "../../layouts/Header.jsx"
 import "../../style/invitado/login.css";
 import ScrollTop from "../../components/ScrollTop.jsx";
 import { clearLocalStore } from "../../services/localStore.js";
-import { ListSvg } from "../../components/Icons.jsx";
+import { ListSvg } from "../../components/icons.jsx";
 
 export default function Login (){
     const [error , setError] = useState(null)

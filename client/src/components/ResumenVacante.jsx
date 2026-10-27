@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useFetch, useSendForm, useSendFormV2 } from "../hooks/useFetch";
-import { modal, modalTime } from "../services/Modal";
-import { API_CLIENT_URL, URL_VIDEO } from "../services/Api";
-import Prediccion from "./Prediccion";
-import { ListSvg } from "./Icons";
-import { RoleContext } from "../services/RoleContext";
-import exceptionControl from "../services/exceptionControl";
+import { useSendFormV2 } from "../hooks/useFetch.jsx";
+import { modalTime } from "../services/Modal.js";
+import { API_CLIENT_URL, URL_VIDEO } from "../services/Api.js";
+import Prediccion from "./Prediccion.jsx";
+import { ListSvg } from "./icons.jsx";
+import { RoleContext } from "../services/RoleContext.jsx";
+import exceptionControl from "../services/exceptionControl.js";
 
 export default function ResumenVacante({job, rol, id}) {
 

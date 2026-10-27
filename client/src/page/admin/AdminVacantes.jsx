@@ -1,15 +1,15 @@
 
 import { Link, useNavigate } from "react-router-dom";
-import Layout from "../../layouts/Layout";
-import { API_CLIENT_URL } from "../../services/Api";
+import Layout from "../../layouts/layout.jsx";
+import { API_CLIENT_URL } from "../../services/Api.js";
 import { useEffect, useState } from "react";
 import '../../style/invitado/empleos.css';
-import Pagination from "../../components/Paginacion";
-import { manejarRespuesta } from '../../services/ManejarRespuesta';
-import useFiltro from "../../hooks/useFiltro";
-import Table from "../../components/Table";
-import { inputModal, modalResponse, modal, modalTime } from "../../services/Modal";
-import SinResultados from "../../components/SinResultados"
+import Pagination from "../../components/Paginacion.jsx";
+import { manejarRespuesta } from '../../services/ManejarRespuesta.js';
+import useFiltro from "../../hooks/useFiltro.jsx";
+import Table from "../../components/Table.jsx";
+import { inputModal, modalResponse, modal, modalTime } from "../../services/Modal.js";
+import SinResultados from "../../components/SinResultados.jsx"
 
 export default function AdminVacantes() {
   const navigate = useNavigate();

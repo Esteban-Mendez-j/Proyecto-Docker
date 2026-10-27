@@ -1,19 +1,19 @@
 import { useNavigate, useParams } from "react-router-dom";
-import Layout from "../../layouts/Layout";
+import Layout from "../../layouts/layout.jsx";
 import "../../style/invitado/empleos.css"
 import "../../style/invitado/postulados.css"
 import { useContext, useEffect, useState } from "react";
-import Pagination from "../../components/Paginacion";
-import { API_CLIENT_URL } from "../../services/Api";
-import { QuestionModal } from "../../services/Modal";
-import {sendMessage} from "../../services/Websocket"
-import { mensajesNotificaciones } from "../../services/data";
-import useFiltro from "../../hooks/useFiltro";
-import Table from "../../components/Table";
-import SinResultados from "../../components/SinResultados"
-import { RoleContext } from "../../services/RoleContext";
-import { useSendFormV2 } from "../../hooks/useFetch";
-import exceptionControl from "../../services/exceptionControl";
+import Pagination from "../../components/Paginacion.jsx";
+import { API_CLIENT_URL } from "../../services/Api.js";
+import { QuestionModal } from "../../services/Modal.js";
+import {sendMessage} from "../../services/Websocket.js"
+import { mensajesNotificaciones } from "../../services/data.js";
+import useFiltro from "../../hooks/useFiltro.jsx";
+import Table from "../../components/Table.jsx";
+import SinResultados from "../../components/SinResultados.jsx"
+import { RoleContext } from "../../services/RoleContext.jsx";
+import { useSendFormV2 } from "../../hooks/useFetch.jsx";
+import exceptionControl from "../../services/exceptionControl.js";
 
 export default function Postulados() {
 

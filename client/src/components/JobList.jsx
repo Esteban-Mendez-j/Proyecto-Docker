@@ -1,17 +1,17 @@
 import { useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useSendFormV2 } from "../hooks/useFetch";
-import { API_CLIENT_URL } from "../services/Api";
-import exceptionControl from "../services/exceptionControl";
-import { modalTime, QuestionModal } from "../services/Modal";
-import { RoleContext } from "../services/RoleContext";
-import { toggleFavoritoRequest } from "../services/ToggleFavoritosRequest";
+import { useSendFormV2 } from "../hooks/useFetch.jsx";
+import { API_CLIENT_URL } from "../services/Api.js";
+import exceptionControl from "../services/exceptionControl.js";
+import { modalTime, QuestionModal } from "../services/Modal.js";
+import { RoleContext } from "../services/RoleContext.jsx";
+import { toggleFavoritoRequest } from "../services/ToggleFavoritosRequest.js";
 import "../style/invitado/jobcard.css";
-import { ListSvg } from "./Icons";
-import JobCard from "./JobCard";
-import Paginacion from "./Paginacion";
-import SinResultados from "./SinResultados";
-import Table from "./Table";
+import { ListSvg } from "./icons.jsx";
+import JobCard from "./JobCard.jsx";
+import Paginacion from "./Paginacion.jsx";
+import SinResultados from "./SinResultados.jsx";
+import Table from "./Table.jsx";
 
 const JobList = ({
   jobs,

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { validateRule } from "../services/validacionForm";
+import { validateRule } from "../services/validacionForm.js";
 
 export default function InputForm({
   as = "input",   // "input" | "textarea" | "select"

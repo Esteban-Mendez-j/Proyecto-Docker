@@ -1,4 +1,4 @@
-import { modal } from "./Modal";
+import { modal } from "./Modal.js";
 
 export default function exceptionControl( error, logout, navigate, defaulMessage="Error inesperado" ) {
     if (!error) return;

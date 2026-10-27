@@ -1,17 +1,17 @@
 import { useContext, useEffect, useRef, useState } from "react";
 
-import Layout from "../../layouts/Layout";
-import { URL_IMAGEN } from "../../services/Api";
+import Layout from "../../layouts/layout.jsx";
+import { URL_IMAGEN } from "../../services/Api.js";
 import "../../style/invitado/empresa.css";
 import { Link, useNavigate } from "react-router-dom";
-import { useFetch, useFetchV2, useSendForm, useSendFormV2 } from "../../hooks/useFetch";
-import InputForm from "../../components/InputForm";
-import { modalRedirect } from "../../services/Modal";
-import {sectores} from "../../services/data";
-import { formRulesEmpresaEditar, validateForm } from "../../services/validacionForm";
-import { ListSvg } from "../../components/Icons";
-import exceptionControl from "../../services/exceptionControl"
-import { RoleContext } from "../../services/RoleContext";
+import { useFetchV2, useSendFormV2 } from "../../hooks/useFetch.jsx";
+import InputForm from "../../components/InputForm.jsx";
+import { modalRedirect } from "../../services/Modal.js";
+import {sectores} from "../../services/data.js";
+import { formRulesEmpresaEditar, validateForm } from "../../services/validacionForm.js";
+import { ListSvg } from "../../components/icons.jsx";
+import exceptionControl from "../../services/exceptionControl.js"
+import { RoleContext } from "../../services/RoleContext.jsx";
 
 const EditarPerfilEmpresa = () => {
   const initialData = {

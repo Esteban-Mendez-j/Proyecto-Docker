@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { RoleContext } from "../services/RoleContext";
+import { RoleContext } from "../services/RoleContext.jsx";
 
 export default function FilterComponent({ filtersLocal, clearAllFilters, handleOnFilters }) {
   

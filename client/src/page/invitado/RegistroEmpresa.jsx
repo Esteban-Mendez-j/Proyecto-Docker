@@ -1,18 +1,17 @@
-import { useSendFormV2 } from "../../hooks/useFetch";
-import useValidation from "../../hooks/useValidation";
-import Layout from "../../layouts/Layout";
-import InputForm from "../../components/InputForm";
+import { useSendFormV2 } from "../../hooks/useFetch.jsx";
+import useValidation from "../../hooks/useValidation.jsx";
+import Layout from "../../layouts/layout.jsx";
+import InputForm from "../../components/InputForm.jsx";
 import "../../style/invitado/registroEmpresa.css"
-import Loading from "../../components/Loading";
-import useVisible from "../../hooks/useVisible";
-import { modalRedirect, modalResponse } from "../../services/Modal";
+import useVisible from "../../hooks/useVisible.jsx";
+import { modalRedirect, modalResponse } from "../../services/Modal.js";
 import { Link, useNavigate } from "react-router-dom";
-import { sectores } from "../../services/data";
+import { sectores } from "../../services/data.js";
 import { useContext, useState } from "react";
-import { formRulesEmpresa, validateForm } from "../../services/validacionForm";
-import { ListSvg } from "../../components/Icons";
-import exceptionControl from "../../services/exceptionControl";
-import { RoleContext } from "../../services/RoleContext";
+import { formRulesEmpresa, validateForm } from "../../services/validacionForm.js";
+import { ListSvg } from "../../components/icons.jsx";
+import exceptionControl from "../../services/exceptionControl.js";
+import { RoleContext } from "../../services/RoleContext.jsx";
 export default function RegistroEmpresa (){
     
     const initialData = {

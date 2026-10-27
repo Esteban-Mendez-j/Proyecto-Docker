@@ -1,13 +1,12 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { useFetchV2, useSendFormV2 } from "../../hooks/useFetch";
-import { RoleContext } from "../../services/RoleContext";
+import { useFetchV2, useSendFormV2 } from "../../hooks/useFetch.jsx";
+import { RoleContext } from "../../services/RoleContext.jsx";
 import { useNavigate } from "react-router-dom";
-import exceptionControl from "../../services/exceptionControl";
-import { connect, sendMessage, subscribe } from "../../services/Websocket";
-import { ListSvg } from "../../components/icons"
-import Loading from "../../components/Loading";
-import { modal, modalTime } from "../../services/Modal";
-import { API_CLIENT_URL, URL_FILE } from "../../services/Api";
+import exceptionControl from "../../services/exceptionControl.js";
+import { connect, sendMessage, subscribe } from "../../services/Websocket.js";
+import { ListSvg } from "../../components/icons.jsx"
+import { modal, modalTime } from "../../services/Modal.js";
+import { API_CLIENT_URL, URL_FILE } from "../../services/Api.js";
 
 export default function ChatBot() {
     const navigate = useNavigate();

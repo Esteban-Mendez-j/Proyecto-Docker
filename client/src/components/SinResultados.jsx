@@ -1,4 +1,4 @@
-import { ListSvg } from "./Icons";
+import { ListSvg } from "./icons.jsx";
 
 export default function SinResultados({titulo, subTitulo }) {
     return (

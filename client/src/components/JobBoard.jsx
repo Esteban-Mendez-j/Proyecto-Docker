@@ -1,9 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
-import { manejarRespuesta } from "../services/ManejarRespuesta";
 import FilterComponent from './FilterComponent';
 import FiltroSuperior from './FiltroSuperior';
 import JobList from './JobList';
-import { ListSvg } from './Icons';
+import { ListSvg } from './icons.jsx';
 import { readLocalStore, saveLocalStore } from '../services/localStore';
 import { RoleContext } from '../services/RoleContext';
 import useFiltro from '../hooks/useFiltro';
@@ -20,7 +19,7 @@ const JobBoard = ({ fetchUrl }) => {
     const [totalPages, setTotalPages] = useState(1);
     const [verPrediccion, setVerPrediccion] = useState(false);
     const [filteredJobs, setFilteredJobs] = useState([]);
-    const {data, error, meta, loading, send} = useSendFormV2();
+    const {data, meta, loading, send} = useSendFormV2();
     const itemsPerPage = 20;
     const initialFiltros = {
         titulo: null,

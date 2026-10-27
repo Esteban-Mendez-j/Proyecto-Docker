@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Layout from "../../layouts/Layout.jsx";
+import Layout from "../../layouts/layout.jsx";
 import "../../style/invitado/empleos.css";
 import "../../style/invitado/postulados.css";
 import { useNavigate } from "react-router-dom";

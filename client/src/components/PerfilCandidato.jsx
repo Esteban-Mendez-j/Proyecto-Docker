@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { URL_IMAGEN, URL_PDF } from "../services/Api";
-import { listAptitudes, listValueEstudio, listValueHistorial } from "../services/data";
+import { URL_IMAGEN, URL_PDF } from "../services/Api.js";
+import { listAptitudes, listValueEstudio, listValueHistorial } from "../services/data.js";
 import "../style/invitado/candidato.css";
-import TimeLineList from "./TimeLineList";
+import TimeLineList from "./TimeLineList.jsx";
 
 export default function PerfilCandidato({candidato, historialLaboral, estudios, isPublic}) {
 

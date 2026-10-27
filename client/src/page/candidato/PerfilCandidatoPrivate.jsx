@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import Loading from "../../components/Loading.jsx";
 import { useFetchV2 } from "../../hooks/useFetch.jsx";
-import Layout from "../../layouts/Layout.jsx";
+import Layout from "../../layouts/layout.jsx";
 import PerfilCandidato from "../../components/PerfilCandidato.jsx";
 import exceptionControl from "../../services/exceptionControl.js";
 import { useNavigate } from "react-router-dom";

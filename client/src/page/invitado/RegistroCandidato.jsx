@@ -1,17 +1,17 @@
-import Layout from "../../layouts/Layout";
+import Layout from "../../layouts/layout.jsx";
 import "../../style/invitado/registroCandidato.css"
-import { useSendFormV2 } from "../../hooks/useFetch"
-import InputFrom from "../../components/InputForm";
+import { useSendFormV2 } from "../../hooks/useFetch.jsx"
+import InputFrom from "../../components/InputForm.jsx";
 import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { modal, modalRedirect } from "../../services/Modal";
-import Loading from "../../components/Loading";
-import useValidation from "../../hooks/useValidation";
-import useVisible from "../../hooks/useVisible";
-import { formRulesCandidato, validateForm } from "../../services/validacionForm";
-import { ListSvg } from "../../components/Icons";
-import exceptionControl from "../../services/exceptionControl";
-import { RoleContext } from "../../services/RoleContext";
+import { modal, modalRedirect } from "../../services/Modal.js";
+import Loading from "../../components/Loading.jsx";
+import useValidation from "../../hooks/useValidation.jsx";
+import useVisible from "../../hooks/useVisible.jsx";
+import { formRulesCandidato, validateForm } from "../../services/validacionForm.js";
+import { ListSvg } from "../../components/icons.jsx";
+import exceptionControl from "../../services/exceptionControl.js";
+import { RoleContext } from "../../services/RoleContext.jsx";
 
 export default function RegistroCandidato() {
 

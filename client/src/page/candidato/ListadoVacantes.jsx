@@ -1,5 +1,5 @@
 import JobBoard from "../../components/JobBoard.jsx";
-import Layout from "../../layouts/Layout.jsx";
+import Layout from "../../layouts/layout.jsx";
 import "../../style/invitado/empleos.css";
 
 function Empleos() {

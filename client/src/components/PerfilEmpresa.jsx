@@ -1,5 +1,5 @@
-import { URL_IMAGEN } from "../services/Api";
-import { ListSvg } from "./Icons";
+import { URL_IMAGEN } from "../services/Api.js";
+import { ListSvg } from "./icons.jsx";
 import { Link } from "react-router-dom";
 import "../style/invitado/empresa.css";
 import KpiCard from "./dasboard/KpiCard";

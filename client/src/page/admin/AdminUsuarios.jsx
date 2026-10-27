@@ -1,15 +1,15 @@
 import { useContext, useEffect, useState } from "react";
-import Layout from "../../layouts/Layout";
+import Layout from "../../layouts/layout.jsx";
 import "../../style/invitado/empleos.css";
-import { manejarRespuesta } from "../../services/ManejarRespuesta";
-import { API_CLIENT_URL } from "../../services/Api";
-import Pagination from "../../components/Paginacion";
-import { RoleContext } from "../../services/RoleContext";
-import useFiltro from "../../hooks/useFiltro";
-import Table from "../../components/Table";
+import { manejarRespuesta } from "../../services/ManejarRespuesta.js";
+import { API_CLIENT_URL } from "../../services/Api.js";
+import Pagination from "../../components/Paginacion.jsx";
+import { RoleContext } from "../../services/RoleContext.jsx";
+import useFiltro from "../../hooks/useFiltro.jsx";
+import Table from "../../components/Table.jsx";
 import { useNavigate } from "react-router-dom";
-import { inputModal, modal, modalTime, QuestionModal } from "../../services/Modal";
-import SinResultados from "../../components/SinResultados"
+import { inputModal, modal, modalTime, QuestionModal } from "../../services/Modal.js";
+import SinResultados from "../../components/SinResultados.jsx"
 
 export default function AdminUsuarios() {
   const listHeaders = {

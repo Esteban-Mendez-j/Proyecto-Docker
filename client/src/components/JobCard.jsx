@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { API_CLIENT_URL } from '../services/Api';
-import { RoleContext } from "../services/RoleContext";
-import { toggleFavoritoRequest } from '../services/ToggleFavoritosRequest';
-import { ListSvg } from "./Icons";
+import { API_CLIENT_URL } from '../services/Api.js';
+import { RoleContext } from "../services/RoleContext.jsx";
+import { toggleFavoritoRequest } from '../services/ToggleFavoritosRequest.js';
+import { ListSvg } from "./icons.jsx";
 
 export default function JobCard({ job, cambiarEstado, verSeccionEdit, presentaion, fetchAllJobs, verPrediccion }) {
 

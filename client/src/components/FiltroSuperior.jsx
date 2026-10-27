@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import {ciudadesColombia} from "../services/data"
-import AutocompleteInput from "./AutocompleteInput";
-import { API_CLIENT_URL } from "../services/Api";
-import { ListSvg } from "./Icons";
+import {ciudadesColombia} from "../services/data.js"
+import AutocompleteInput from "./AutocompleteInput.jsx";
+import { API_CLIENT_URL } from "../services/Api.js";
+import { ListSvg } from "./icons.jsx";
 export default function FiltroSuperior({ filtersLocal, handleOnFilters, searchFilters }) {
 
     const [query, setQuery] = useState(filtersLocal.titulo || "");

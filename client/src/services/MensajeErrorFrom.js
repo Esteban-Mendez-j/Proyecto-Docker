@@ -1,4 +1,4 @@
-import { modal, modalTime } from './Modal';
+import { modal, modalTime } from './Modal.js';
 
 export async function manejarFormulario({ form, validateForm, buildData, endpointUrl, redirectUrl, metodo, tipo = "application/json" }) {
   limpiarErrores();

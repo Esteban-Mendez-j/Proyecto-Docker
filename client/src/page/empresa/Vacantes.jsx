@@ -1,16 +1,16 @@
 import { useContext, useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Layout from '../../layouts/Layout';
+import Layout from '../../layouts/layout.jsx';
 import { API_CLIENT_URL, URL_VIDEO } from '../../services/Api';
-import { modal, modalRedirect, modalResponse } from '../../services/Modal';
+import { modal, modalRedirect } from '../../services/Modal.js';
 import '../../style/invitado/vacantes.css';
-import { ciudadesColombia, departamentoColombia, listAptitudes } from '../../services/data';
-import InputForm from '../../components/InputForm';
-import { formRulesVacante, validateForm } from '../../services/validacionForm';
-import { useSendFormV2 } from '../../hooks/useFetch';
-import { RoleContext } from '../../services/RoleContext';
-import exceptionControl from '../../services/exceptionControl';
-import AutocompleteInput from '../../components/AutocompleteInput';
+import { ciudadesColombia, departamentoColombia, listAptitudes } from '../../services/data.js';
+import InputForm from '../../components/InputForm.jsx';
+import { formRulesVacante, validateForm } from '../../services/validacionForm.js';
+import { useSendFormV2 } from '../../hooks/useFetch.jsx';
+import { RoleContext } from '../../services/RoleContext.jsx';
+import exceptionControl from '../../services/exceptionControl.js';
+import AutocompleteInput from '../../components/AutocompleteInput.jsx';
 
 export default function CrearVacante() {
 

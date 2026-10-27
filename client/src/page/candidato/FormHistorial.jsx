@@ -1,12 +1,12 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useSendFormV2 } from "../../hooks/useFetch";
+import { useSendFormV2 } from "../../hooks/useFetch.jsx";
 import { useContext, useEffect, useState } from "react";
-import useDataChange from "../../hooks/useDataChange";
-import { modalTime } from "../../services/Modal";
-import InputForm from "../../components/InputForm";
-import { formRulesHistorialLaboral, validateForm } from "../../services/validacionForm";
-import exceptionControl from "../../services/exceptionControl";
-import { RoleContext } from "../../services/RoleContext";
+import useDataChange from "../../hooks/useDataChange.jsx";
+import { modalTime } from "../../services/Modal.js";
+import InputForm from "../../components/InputForm.jsx";
+import { formRulesHistorialLaboral, validateForm } from "../../services/validacionForm.js";
+import exceptionControl from "../../services/exceptionControl.js";
+import { RoleContext } from "../../services/RoleContext.jsx";
 
 export default function FormHistorial(){
 

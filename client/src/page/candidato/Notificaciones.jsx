@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useFetchV2, useSendFormV2 } from "../../hooks/useFetch";
-import Pagination from "../../components/Paginacion";
-import "../../style/invitado/notificacionesCenter.css";
-import Loading from "../../components/Loading";
-import { ListSvg } from "../../components/Icons";
-import { modalTime, QuestionModal } from "../../services/Modal";
-import Layout from "../../layouts/Layout";
+import { useFetchV2, useSendFormV2 } from "../../hooks/useFetch.jsx";
+import Pagination from "../../components/Paginacion.jsx";
+import "../../style/invitado/NotificacionesCenter.css";
+import Loading from "../../components/Loading.jsx";
+import { ListSvg } from "../../components/icons.jsx";
+import { modalTime, QuestionModal } from "../../services/Modal.js";
+import Layout from "../../layouts/layout.jsx";
 import { Link, useNavigate } from "react-router-dom";
-import { RoleContext } from "../../services/RoleContext";
-import { connect, sendMessage, subscribe } from "../../services/Websocket";
-import exceptionControl from "../../services/exceptionControl"
+import { RoleContext } from "../../services/RoleContext.jsx";
+import { connect, sendMessage, subscribe } from "../../services/Websocket.js";
+import exceptionControl from "../../services/exceptionControl.js"
 
 const Notificaciones = () => {
   const { rol, logout } = useContext(RoleContext);

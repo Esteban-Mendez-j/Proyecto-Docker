@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Layout from "../../layouts/Layout.jsx";
+import Layout from "../../layouts/layout.jsx";
 import PerfilEmpresa from "../../components/PerfilEmpresa.jsx";
 import { useFetchV2 } from "../../hooks/useFetch.jsx";
 

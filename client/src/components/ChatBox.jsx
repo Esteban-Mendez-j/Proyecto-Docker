@@ -1,12 +1,12 @@
 import { Client } from "@stomp/stompjs";
 import { useContext, useEffect, useRef, useState } from "react";
-import { WS_CLIENT_URL } from '../services/Api';
-import { modalTime } from "../services/Modal";
-import { ListSvg } from "../components/icons"
-import { RoleContext } from "../services/RoleContext";
+import { WS_CLIENT_URL } from '../services/Api.js';
+import { modalTime } from "../services/Modal.js";
+import { ListSvg } from "../components/icons.jsx"
+import { RoleContext } from "../services/RoleContext.jsx";
 import { useNavigate } from "react-router-dom";
-import { useSendFormV2 } from "../hooks/useFetch";
-import exceptionControl from "../services/exceptionControl";
+import { useSendFormV2 } from "../hooks/useFetch.jsx";
+import exceptionControl from "../services/exceptionControl.js";
 
 const ChatBox = ({ chatId, setChats }) => {
   const navigate = useNavigate()
@@ -39,7 +39,7 @@ const ChatBox = ({ chatId, setChats }) => {
       setChatChange(mensajeGuardado);
     }
     fetchChatInfo();
-  }, [chatId, chatChange ]);
+  }, [chatId, chatChange]);
 
   useEffect(() => {
     if (!chatInfo) return;
@@ -54,10 +54,10 @@ const ChatBox = ({ chatId, setChats }) => {
         console.log("✅ Conectado a WebSocket");
         if (tipoChat === "Grupo") {
           // CHAT PÚBLICO
-          client.subscribe(`/topic/vacantes/${vacanteId}`, (msg) => {
-            const message = JSON.parse(msg.body);
-            setMessages((prev) => [...prev, message]);
-          });
+          // client.subscribe(`/topic/vacantes/${vacanteId}`, (msg) => {
+          //   const message = JSON.parse(msg.body);
+          //   setMessages((prev) => [...prev, message]);
+          // });
         } else {
           // CHAT PRIVADO
           client.subscribe(`/user/queue/messages`, (msg) => {

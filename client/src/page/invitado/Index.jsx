@@ -1,12 +1,12 @@
 import { useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import FeatureCard from "../../components/FeatureCard";
-import JobCard from "../../components/JobCard";
-import { useFetchV2 } from "../../hooks/useFetch";
-import Layout from "../../layouts/Layout";
-import { RoleContext } from "../../services/RoleContext";
+import FeatureCard from "../../components/FeatureCard.jsx";
+import JobCard from "../../components/JobCard.jsx";
+import { useFetchV2 } from "../../hooks/useFetch.jsx";
+import Layout from "../../layouts/layout.jsx";
+import { RoleContext } from "../../services/RoleContext.jsx";
 import "../../style/invitado/index.css";
-import exceptionControl from "../../services/exceptionControl";
+import exceptionControl from "../../services/exceptionControl.js";
 export default function Index (){
 
     const { rol, logout } = useContext(RoleContext);

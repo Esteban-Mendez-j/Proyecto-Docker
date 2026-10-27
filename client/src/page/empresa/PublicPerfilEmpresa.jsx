@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"; 
-import Layout from "../../layouts/Layout";
-import { API_CLIENT_URL} from "../../services/Api";
-import { manejarRespuesta } from "../../services/ManejarRespuesta";
-import PerfilEmpresa from "../../components/PerfilEmpresa";
+import Layout from "../../layouts/layout.jsx";
+import { API_CLIENT_URL} from "../../services/Api.js";
+import { manejarRespuesta } from "../../services/ManejarRespuesta.js";
+import PerfilEmpresa from "../../components/PerfilEmpresa.jsx";
 
 export default function EmpresaPerfil() {
   const { id } = useParams();

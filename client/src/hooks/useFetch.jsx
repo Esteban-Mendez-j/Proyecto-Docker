@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState } from "react"
-import { API_CLIENT_URL } from "../services/Api"
-import { manejarRespuesta } from "../services/ManejarRespuesta";
+import { useEffect, useState } from "react"
+import { API_CLIENT_URL } from "../services/Api.js"
+import { manejarRespuesta } from "../services/ManejarRespuesta.js";
 
 export function useFetchV2(url, method, body, headers= {"Content-Type" : `application/json`}) {
 

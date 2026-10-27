@@ -1,12 +1,13 @@
 import { useState, useEffect, useContext } from "react"
-import { useSendFormV2 } from "../../hooks/useFetch"
-import { modalTime } from "../../services/Modal";
-import useDataChange from "../../hooks/useDataChange";
-import { listEducacion } from "../../services/data";
-import InputForm from "../../components/InputForm";
+import { useSendFormV2 } from "../../hooks/useFetch.jsx"
+import { modalTime } from "../../services/Modal.js";
+import useDataChange from "../../hooks/useDataChange.jsx";
+import { listEducacion } from "../../services/data.js";
+import InputForm from "../../components/InputForm.jsx";
 import { useNavigate, useParams } from "react-router-dom";
-import { formRulesEstudio, validateForm } from "../../services/validacionForm";
-import { RoleContext } from "../../services/RoleContext";
+import { formRulesEstudio, validateForm } from "../../services/validacionForm.js";
+import { RoleContext } from "../../services/RoleContext.jsx";
+import { exceptionControl } from "../../services/exceptionControl.js"
 
 export default function FormEducation(){
 

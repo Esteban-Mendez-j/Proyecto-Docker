@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect } from "react";
-import { useFetchV2, useSendFormV2 } from "../hooks/useFetch";
-import { modalResponse } from "./Modal";
-import { API_CLIENT_URL } from "./Api";
+import { useFetchV2, useSendFormV2 } from "../hooks/useFetch.jsx";
+import { modalResponse } from "./Modal.js";
+import { API_CLIENT_URL } from "./Api.js";
 
 export const RoleContext = createContext(null);
 
