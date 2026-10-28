@@ -1,5 +1,9 @@
 server:
   port: ${PORT_MCP}
+  session:
+    cookie: 
+      same-site: none
+      secure: true
 
 spring:
   datasource:
@@ -94,3 +98,4 @@ security:
     user:
       generator: SEARCHJOBS-BACKEND
     expiration: ${JWT_EXPIRATION}
+  
