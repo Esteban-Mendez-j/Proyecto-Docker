@@ -7,7 +7,7 @@ import InputForm from "../../components/InputForm.jsx";
 import { useNavigate, useParams } from "react-router-dom";
 import { formRulesEstudio, validateForm } from "../../services/validacionForm.js";
 import { RoleContext } from "../../services/RoleContext.jsx";
-import { exceptionControl } from "../../services/exceptionControl.js"
+import exceptionControl from "../../services/exceptionControl.js"
 
 export default function FormEducation(){
 
@@ -26,7 +26,7 @@ export default function FormEducation(){
     const { id } = useParams(); 
     const navigate = useNavigate();
     const { logout } = useContext(RoleContext);
-    const { send , data, error, setError } = useSendFormV2();
+    const { send , data, setError } = useSendFormV2();
     const [submitted, setSubmitted] = useState(false);
     const url = id? `/api/estudios/edit/${id}` : "/api/estudios/add";
     const metodo = id? `PUT` : "POST";
