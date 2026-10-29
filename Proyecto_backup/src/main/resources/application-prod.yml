@@ -1,9 +1,10 @@
 server:
   port: ${PORT_MCP}
-  session:
-    cookie: 
-      same-site: none
-      secure: true
+  servlet:
+    session:
+      cookie: 
+        same-site: none
+        secure: true
 
 spring:
   datasource:
