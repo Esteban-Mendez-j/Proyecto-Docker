@@ -34,6 +34,7 @@ const Notificaciones = lazy(() => import("./page/candidato/Notificaciones.jsx"))
 const ShortsPage = lazy(() => import('./page/candidato/ShortsPage.jsx'));
 const FormEducation = lazy(() => import("./page/candidato/FormEducation.jsx"));
 const FormHistorial = lazy(() => import("./page/candidato/FormHistorial.jsx"));
+const SubscriptionPage = lazy(() => import("./page/invitado/SubscriptionPage.jsx"))
 
 function App() {
 
@@ -83,6 +84,7 @@ function App() {
           <Route path="/perfil/candidato/editar" element={<PerfilCandidatoEditar/>}/>
           <Route path="/politicas/privacidad" element={<PoliticaPrivacidad/>}/>
           <Route path="/terminos/condiciones" element={<TerminosCondiciones/>}/>
+          <Route path="/suscripciones" element={<SubscriptionPage/>}/>
           <Route path="*" element={<NotFound/>} />
         </Routes>
       </Suspense>

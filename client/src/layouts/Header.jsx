@@ -46,9 +46,11 @@ export default function Header () {
             { name: "Chats", path: "/chat/candidato" },
             { name: "Empleos", path: "/empleos" },
             { name: "Postulaciones", path: "/postulaciones" },
+            { name: "Precios", path: "/suscripciones" },
         ],
         EMPRESA: [
             { name: "Inicio", path: "/" },
+            { name: "Precios", path: "/suscripciones" },
             { name: "Mis Vacantes", path: "/empresa/listado/vacantes" },
             { name: "Publicar oferta", path: "/empresa/vacantes" },
             { name: "Chats", path: "/chat/empresa" },
@@ -56,6 +58,7 @@ export default function Header () {
         ROLE_INVITADO: [
             { name: "Inicio", path: "/" },
             { name: "Empleos", path: "/empleos" },
+            { name: "Precios", path: "/suscripciones" },
             { name: "Iniciar Sesión", path: "/login" },
             { name: "Registrarse", path: "/registro", className: "register-btn" },
         ],
