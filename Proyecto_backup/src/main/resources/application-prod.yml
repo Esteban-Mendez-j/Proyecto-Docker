@@ -99,4 +99,27 @@ security:
     user:
       generator: SEARCHJOBS-BACKEND
     expiration: ${JWT_EXPIRATION}
-  
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - metrics
+
+  endpoint:
+    health:
+      show-details: when-authorized
+
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: Searchjobs API
+    description: Backend de la plataforma Searchjobs
+    version: 1.0.0

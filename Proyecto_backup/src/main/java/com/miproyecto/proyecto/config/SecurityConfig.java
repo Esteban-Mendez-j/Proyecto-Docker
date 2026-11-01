@@ -100,7 +100,7 @@ public class SecurityConfig {
                     "/api/vacantes/eliminar/filtro", "/api/apelaciones/**","/api/vacantes/Top/listar","/api/vacantes/listar/filtradas" ,
                     "/api/vacantes/**", "/api/empresas/perfil/**", "/api/chatBot/**", "/api/cargo/**", "/api/requisito/**"
                 ).permitAll()
-                .requestMatchers("/api/admin/agregarRol","/admin/removerRol").hasRole("SUPER_ADMIN")
+                .requestMatchers("/api/admin/agregarRol","/admin/removerRol", "/actuator/**").hasRole("SUPER_ADMIN")
                 .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                 .requestMatchers("/api/empresas/**","/api/vacantes/popular/listar", "/api/prueba/tecnica/**","/api/prueba/resuelta").hasRole("EMPRESA")
                 .requestMatchers("/api/candidatos/perfil/**","/api/postulados/**", "/api/prediccion/demanda-laboral/simulacion").hasAnyRole("CANDIDATO","EMPRESA","ADMIN","SUPER_ADMIN")
