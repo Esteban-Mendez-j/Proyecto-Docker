@@ -56,10 +56,18 @@ services:
       LOOPBACK_ONLY: ${LOOPBACK_ONLY}
       NOMBRE_BUCKET_FILE: ${NOMBRE_BUCKET_FILE}
       OPTIMIZER_API_URL: ${OPTIMIZER_API_URL}
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT}
+      OTEL_EXPORTER_OTLP_PROTOCOL: ${OTEL_EXPORTER_OTLP_PROTOCOL}
+      OTEL_TRACES_EXPORTER: ${OTEL_TRACES_EXPORTER}
+      OTEL_METRICS_EXPORTER: ${OTEL_METRICS_EXPORTER}
+      OTEL_LOGS_EXPORTER: ${OTEL_LOGS_EXPORTER}
+      JAVA_TOOL_OPTIONS: ${JAVA_TOOL_OPTIONS}
     networks:
       - app-network
     volumes:
       - ./Proyecto_backup/uploads:/app/uploads
+      - ${OTEL_AGENT_PATH}:/otel/opentelemetry-javaagent.jar:ro"
 
   client:
     build:
@@ -74,6 +82,17 @@ services:
       VITE_CLIENT_API_UR: ${VITE_CLIENT_API_URL}
       VITE_CLIENT_WS_URL: ${VITE_CLIENT_WS_URL}
       VITE_SUPABASE_URL: ${KEY_PUBLICA_SUPABASE}
+    networks:
+      - app-network
+
+  jaeger:
+    image: cr.jaegertracing.io/jaegertracing/jaeger:2.22.0
+    container_name: searchjobs-jaeger
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+      - "4318:4318"
+    restart: unless-stopped
     networks:
       - app-network
 
