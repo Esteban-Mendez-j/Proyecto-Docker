@@ -55,7 +55,12 @@ public interface PostuladoRepository extends JpaRepository<Postulado, Long>{
     );
 
 
-    Optional<Postulado> findByCandidatoAndVacante(Candidato candidato, Vacante vacante);  // Cambiar Nvacante a Vacante y asegurar que los parámetros sean correctos
+    Optional<Postulado> findByCandidatoAndVacante(Candidato candidato, Vacante vacante);
+
+    Optional<Postulado> findByCandidato_IdUsuarioAndVacante_Nvacantes(Long idCandidato, Long nvacantes);
+
+    @Query("SELECT p FROM Postulado p WHERE p.candidato.idUsuario = :idCandidato AND p.vacante.nvacantes IN :nvacantes")
+    List<Postulado> findByCandidatoIdAndVacanteIds(@Param("idCandidato") Long idCandidato, @Param("nvacantes") List<Long> nvacantes);
 
     Page<Postulado> findByCandidato(Candidato candidato, Pageable pageable);
     

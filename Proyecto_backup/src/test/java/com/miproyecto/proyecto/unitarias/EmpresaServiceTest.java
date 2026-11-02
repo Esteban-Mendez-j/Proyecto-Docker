@@ -3,6 +3,7 @@ package com.miproyecto.proyecto.unitarias;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -113,6 +114,11 @@ class EmpresaServiceTest {
 
         when(rolesRepository.findByRol("EMPRESA")).thenReturn(rolEmpresa);
         when(passwordEncoder.encode("1234")).thenReturn("encoded1234");
+        when(empresaRepository.save(any(Empresa.class))).thenAnswer(invocation -> {
+            Empresa e = invocation.getArgument(0);
+            e.setIdUsuario(1L);
+            return e;
+        });
 
         empresaService.create(dto);
 
@@ -138,6 +144,7 @@ class EmpresaServiceTest {
         dto.setNombre("Modificada");
 
         when(empresaRepository.findById(1L)).thenReturn(Optional.of(empresa));
+        when(empresaRepository.save(any(Empresa.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         empresaService.update(1L, dto);
 

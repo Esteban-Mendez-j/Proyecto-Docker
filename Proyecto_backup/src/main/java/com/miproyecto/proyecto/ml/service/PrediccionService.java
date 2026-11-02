@@ -1,6 +1,7 @@
 package com.miproyecto.proyecto.ml.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.miproyecto.proyecto.aptitudes.model.Aptitudes;
 import com.miproyecto.proyecto.candidato.model.Candidato;
 import com.miproyecto.proyecto.candidato.repository.CandidatoRepository;
-import com.miproyecto.proyecto.ml.WekaWrapper;
 import com.miproyecto.proyecto.ml.dto.demandaLaboral.CargoPrediccion;
 import com.miproyecto.proyecto.ml.dto.demandaLaboral.DemandaHistorica;
 import com.miproyecto.proyecto.ml.dto.demandaLaboral.PrediccionPeriodo;
@@ -23,11 +23,6 @@ import com.miproyecto.proyecto.postulacion.repository.PostuladoRepository;
 import com.miproyecto.proyecto.util.NotFoundException;
 import com.miproyecto.proyecto.vacante.model.Vacante;
 import com.miproyecto.proyecto.vacante.repository.VacanteRepository;
-
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.Instance;
-import weka.core.Instances;
 
 @Service
 @Transactional
@@ -50,20 +45,42 @@ public class PrediccionService {
                 .orElseThrow(NotFoundException::new);
 
         List<Postulado> listPostulados = postuladoRepository.findAllByCandidato(candidato);
+        if (listPostulados == null || listPostulados.isEmpty()) {
+            return;
+        }
+
+        Set<String> nombresCandidato = candidato.getAptitudes() != null
+                ? candidato.getAptitudes().stream()
+                        .map(Aptitudes::getNombreAptitud)
+                        .collect(Collectors.toSet())
+                : Collections.emptySet();
 
         for (Postulado postulacion : listPostulados) {
-
-            Map<String, Object> resultado = predecirDesdeComparacion(
-                    postulacion.getVacante().getNvacantes(), idUsuario);
-
-            Object valor = resultado.get("porcentajeMatch");
-
-            if (valor != null) {
-                postulacion.setPorcentajePrediccion(Double.parseDouble(valor.toString()));
+            Vacante vacante = postulacion.getVacante();
+            if (vacante != null && vacante.getAptitudes() != null && !vacante.getAptitudes().isEmpty()) {
+                List<String> nombresVacante = vacante.getAptitudes().stream()
+                        .map(Aptitudes::getNombreAptitud)
+                        .collect(Collectors.toList());
+                double match = calcularPorcentajeMatch(nombresCandidato, nombresVacante);
+                postulacion.setPorcentajePrediccion(match);
+            } else {
+                postulacion.setPorcentajePrediccion(0.0);
             }
         }
 
         postuladoRepository.saveAll(listPostulados);
+    }
+
+    public double calcularPorcentajeMatch(Set<String> aptitudesCandidato, List<String> aptitudesVacante) {
+        if (aptitudesCandidato == null || aptitudesCandidato.isEmpty()
+                || aptitudesVacante == null || aptitudesVacante.isEmpty()) {
+            return 0.0;
+        }
+        int totalAptitudes = aptitudesVacante.size();
+        long coincidencias = aptitudesVacante.stream()
+                .filter(aptitudesCandidato::contains)
+                .count();
+        return totalAptitudes > 0 ? (coincidencias * 100.0 / totalAptitudes) : 0.0;
     }
 
     public Map<String, Integer> comparacion(Vacante vacante, Candidato candidato) {
@@ -77,13 +94,13 @@ public class PrediccionService {
         List<Aptitudes> aptitudesVacante = vacante.getAptitudes();
 
         // Convertirlas a conjuntos de nombres para comparar fácilmente
-        Set<String> nombresCandidato = aptitudesCandidato.stream()
-                .map(Aptitudes::getNombreAptitud)
-                .collect(Collectors.toSet());
+        Set<String> nombresCandidato = aptitudesCandidato != null
+                ? aptitudesCandidato.stream().map(Aptitudes::getNombreAptitud).collect(Collectors.toSet())
+                : Collections.emptySet();
 
-        Set<String> nombresVacante = aptitudesVacante.stream()
-                .map(Aptitudes::getNombreAptitud)
-                .collect(Collectors.toSet());
+        Set<String> nombresVacante = aptitudesVacante != null
+                ? aptitudesVacante.stream().map(Aptitudes::getNombreAptitud).collect(Collectors.toSet())
+                : Collections.emptySet();
 
         // Resultado con todas las aptitudes en formato { "PensamientoCritico" = 1/0 }
         Map<String, Integer> resultado = new HashMap<>();
@@ -112,121 +129,29 @@ public class PrediccionService {
         Candidato candidato = candidatoRepository.findById(idCandidato).orElse(null);
         Vacante vacante = vacanteRepository.findById(nvacantes).orElse(null);
 
-        Map<String, Integer> comparacion = comparacion(vacante, candidato);
-
-        String nivelEducativo = candidato.getNivelEducativo(); 
-        int añosExperiencia = Integer.parseInt(candidato.getExperiencia()); 
-
-        // --- Calcular porcentaje de coincidencia ---
-        int cantidadMatch = comparacion.get("CantidadAptitudes");
-        int totalAptitudes = vacante.getAptitudes().size();
-        double porcentajeMatch = 0;
-        if(totalAptitudes != 0 ){
-            porcentajeMatch = (cantidadMatch / (double) totalAptitudes) * 100; // hay 5 aptitudes en total
+        if (candidato == null || vacante == null) {
+            throw new IllegalArgumentException("Candidato o vacante no encontrados.");
         }
 
-        // --- Llamar al método que hace la predicción ---
-        String resultadoPrediccion = predecir(
-            nivelEducativo,
-            añosExperiencia,
-            comparacion.get("PensamientoCritico").toString(),
-            comparacion.get("Creatividad").toString(),
-            comparacion.get("AtencionDetalle").toString(),
-            comparacion.get("AprendizajeContinuo").toString(),
-            comparacion.get("EticaProfesional").toString(),
-            comparacion.get("Autonomia").toString(),
-            comparacion.get("Responsabilidad").toString(),
-            comparacion.get("Liderazgo").toString(),
-            comparacion.get("Adaptabilidad").toString(),
-            comparacion.get("ResolucionProblemas").toString(),
-            comparacion.get("ComunicacionAfectiva").toString(),
-            comparacion.get("TrabajoEquipo").toString(),
-            comparacion.get("CantidadAptitudes")
-        );
+        Map<String, Integer> comparacion = comparacion(vacante, candidato);
 
-        // --- Crear respuesta con ambos valores ---
+        // --- Calcular porcentaje de coincidencia ---
+        int cantidadMatch = comparacion.getOrDefault("CantidadAptitudes", 0);
+        int totalAptitudes = vacante.getAptitudes() != null ? vacante.getAptitudes().size() : 0;
+        double porcentajeMatch = 0.0;
+        if (totalAptitudes != 0) {
+            porcentajeMatch = (cantidadMatch / (double) totalAptitudes) * 100.0;
+        }
+
+        // --- Crear respuesta con ambos valores (sin Weka) ---
         Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("resultadoPrediccion", resultadoPrediccion);
+        respuesta.put("resultadoPrediccion", String.format(java.util.Locale.US, "%.2f", porcentajeMatch / 100.0));
         respuesta.put("porcentajeMatch", porcentajeMatch);
         respuesta.put("cantidadCoincidencias", cantidadMatch);
         respuesta.put("totalAptitudes", totalAptitudes);
 
         return respuesta;
     }
-
-
-    public  String predecir(
-            String NivelEducativo,
-            int AñosExperiencia,
-            String PensamientoCritico,
-            String Creatividad,
-            String AtencionDetalle,
-            String AprendizajeContinuo,
-            String EticaProfesional,
-            String Autonomia,
-            String Responsabilidad,
-            String Liderazgo,
-            String Adaptabilidad,
-            String ResolucionProblemas,
-            String ComunicacionAfectiva,
-            String TrabajoEquipo,
-            int CantidadAptitudes) throws Exception {
-
-        // --- 1. Definidos los atributos (en el MISMO orden del dataset original) ---
-        ArrayList<Attribute> atributos = new ArrayList<>();
-
-        atributos.add(new Attribute("NivelEducativo",
-                new ArrayList<>(List.of("Postgrado", "Técnico", "Bachiller", "Doctorado"))));
-        atributos.add(new Attribute("class", new ArrayList<>(List.of("0", "1"))));
-        atributos.add(new Attribute("AñosExperiencia"));
-        atributos.add(new Attribute("PensamientoCritico", new ArrayList<>(List.of("0", "1"))));
-        atributos.add(new Attribute("Creatividad", new ArrayList<>(List.of("0", "1"))));
-        atributos.add(new Attribute("AtencionDetalle", new ArrayList<>(List.of("0", "1"))));
-        atributos.add(new Attribute("AprendizajeContinuo", new ArrayList<>(List.of("0", "1"))));
-        atributos.add(new Attribute("EticaProfesional", new ArrayList<>(List.of("0", "1"))));
-        atributos.add(new Attribute("Autonomia", new ArrayList<>(List.of("0", "1"))));
-        atributos.add(new Attribute("Responsabilidad", new ArrayList<>(List.of("0", "1"))));
-        atributos.add(new Attribute("Liderazgo", new ArrayList<>(List.of("0", "1"))));
-        atributos.add(new Attribute("Adaptabilidad", new ArrayList<>(List.of("0", "1"))));
-        atributos.add(new Attribute("ResolucionProblemas", new ArrayList<>(List.of("0", "1"))));
-        atributos.add(new Attribute("ComunicacionAfectiva", new ArrayList<>(List.of("0", "1"))));
-        atributos.add(new Attribute("TrabajoEquipo", new ArrayList<>(List.of("0", "1"))));
-        atributos.add(new Attribute("CantidadAptitudes"));
-
-        // clase objetivo
-
-        // --- 2. Crear dataset temporal ---
-        Instances dataset = new Instances("TestInstances", atributos, 0);
-        dataset.setClassIndex(1);
-
-        // --- 3. Crear instancia de prueba ---
-        Instance nueva = new DenseInstance(dataset.numAttributes());
-        nueva.setDataset(dataset);
-
-        nueva.setValue(atributos.get(0), NivelEducativo);
-        nueva.setValue(atributos.get(2), AñosExperiencia);
-        nueva.setValue(atributos.get(3), PensamientoCritico);
-        nueva.setValue(atributos.get(4), Creatividad);
-        nueva.setValue(atributos.get(5), AtencionDetalle);
-        nueva.setValue(atributos.get(6), AprendizajeContinuo);
-        nueva.setValue(atributos.get(7), EticaProfesional);
-        nueva.setValue(atributos.get(8), Autonomia);
-        nueva.setValue(atributos.get(9), Responsabilidad);
-        nueva.setValue(atributos.get(10), Liderazgo);
-        nueva.setValue(atributos.get(11), Adaptabilidad);
-        nueva.setValue(atributos.get(12), ResolucionProblemas);
-        nueva.setValue(atributos.get(13), ComunicacionAfectiva);
-        nueva.setValue(atributos.get(14), TrabajoEquipo);
-        nueva.setValue(atributos.get(15), CantidadAptitudes);
-
-        // --- 4. Clasificar ---
-        WekaWrapper modelo = new WekaWrapper();
-        double resultado = modelo.classifyInstance(nueva);
-
-        // --- 5. Retornar resultado ---
-        return String.valueOf(resultado) ; 
-    }
-
 
     /* 
         PREDICCION DEMANDA DE CARGOS MOCK
@@ -236,7 +161,7 @@ public class PrediccionService {
     // DATOS SIMULADOS
     // =====================================================
 
-    public  List<CargoPrediccion> crearDatosSimulados() {
+    public List<CargoPrediccion> crearDatosSimulados() {
         return List.of(
             crearCargo(
                 1, "Desarrollador de software",
