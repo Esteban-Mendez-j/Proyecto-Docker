@@ -26,7 +26,6 @@ export default function ChatPage() {
   useEffect(() => {
     if (location.state?.openBot) {
       setChatType("chatBot");
-      console.log("ok listo pues")
     }
   }, [location.state]);
 

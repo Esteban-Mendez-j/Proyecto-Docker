@@ -6,14 +6,14 @@ import exceptionControl from "../../services/exceptionControl.js";
 import { connect, sendMessage, subscribe } from "../../services/Websocket.js";
 import { ListSvg } from "../../components/icons.jsx"
 import { modal, modalTime } from "../../services/Modal.js";
-import { API_CLIENT_URL, URL_FILE } from "../../services/Api.js";
+import { API_CLIENT_URL } from "../../services/Api.js";
 
 export default function ChatBot() {
     const navigate = useNavigate();
     const [viewFileWindow, setViewFileWindow] = useState(false);
     const [nameFiles, setNameFiles] = useState([]);
     const { userDataSession, rol } = useContext(RoleContext);
-    const { data:chatBot, error } = useFetchV2(`/api/chatBot/info?usuarioId=${userDataSession.id}`, "GET");
+    const { data:chatBot, error, send:fetchInfo } = useSendFormV2();
     const [messages, setMessages] = useState([]);
     const [input, setInput ] = useState("");
     const { logout, send, error:errorSend } = useSendFormV2();
@@ -22,6 +22,27 @@ export default function ChatBot() {
     const fileRef = useRef(null)
     const maxFileSize = 1;
 
+    useEffect(() => {
+        if (!userDataSession?.id) return;
+
+        const obtenerChatBot = async () => {
+            try {
+                await fetchInfo(
+                    `/api/chatBot/info?usuarioId=${userDataSession.id}`,
+                    "GET"
+                );
+            } catch (error) {
+                exceptionControl(
+                    error,
+                    logout,
+                    navigate,
+                    "Error al obtener la informacion del chat"
+                );
+            }
+        };
+        obtenerChatBot();
+    }, [userDataSession?.id]);
+   
     // crea un chatBot en MongoDB cuando la consulta a la informacion da 404
     useEffect(()=>{
 
