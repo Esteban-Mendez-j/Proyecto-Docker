@@ -431,13 +431,7 @@ public class VacanteService {
                             vacante.getNvacantes(),
                             Collections.emptyList()));
         } else {
-            // Compatibilidad con otros métodos que usan el mapeo original.
-            vacanteDTO.setRequisitos(
-                    vacante.getRequisitos() == null
-                            ? Collections.emptyList()
-                            : vacante.getRequisitos().stream()
-                                    .map(Requisito::getNombre)
-                                    .toList());
+            vacanteDTO.setRequisitos(Collections.emptyList());
         }
     }
 
@@ -562,8 +556,10 @@ public class VacanteService {
                 vacante.getNvacantes());
 
         Map<Long, List<String>> aptitudesPorVacante = aptitudesService.obtenerAptitudesPorVacante(idsVacantes);
+        //  Consulta de requisitos
+        Map<Long, List<String>> requisitosPorVacante = requisitoService.obtenerRequisitosPorVacante(idsVacantes);
 
-        mapBasicFields(vacante, vacanteDTO, aptitudesPorVacante, null);
+        mapBasicFields(vacante, vacanteDTO, aptitudesPorVacante, requisitosPorVacante);
 
         // Postulación del candidato:
         if (idPostulaciones != null && idPostulaciones > 0L) {
