@@ -36,9 +36,7 @@ public class EstudioService {
 
     // obtienen todos los estudios registrados con el mismo idUsuario 
     public List<EstudioDTO> getEstudiosByIdUsuarioAndVisible(final Long idUsuario, final Boolean visible) {
-        final Candidato candidato = candidatoRepository.findById(idUsuario)
-                .orElseThrow(NotFoundException::new);
-        final List<Estudio> idUsuarioEstudio = estudioRepository.findByIdUsuarioAndVisible(candidato, visible );
+        final List<Estudio> idUsuarioEstudio = estudioRepository.findByUsuarioIdAndVisible(idUsuario, visible );
         if (idUsuarioEstudio != null) {
             return idUsuarioEstudio.stream()
             .map(estudio -> mapToDTO(estudio, new EstudioDTO()))
