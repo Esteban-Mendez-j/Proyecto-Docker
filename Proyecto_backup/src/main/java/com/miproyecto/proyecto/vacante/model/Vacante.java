@@ -97,7 +97,7 @@ public class Vacante {
     @JoinColumn(name = "id_usuario_id")
     private Empresa idUsuario;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(name = "vacante_aptitudes", joinColumns = @JoinColumn(name = "nvacantes"), inverseJoinColumns = @JoinColumn(name = "Id_aptitud"))
     private List<Aptitudes> aptitudes;
 

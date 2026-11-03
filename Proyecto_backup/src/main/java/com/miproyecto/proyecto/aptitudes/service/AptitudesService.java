@@ -1,7 +1,10 @@
 package com.miproyecto.proyecto.aptitudes.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -40,6 +43,20 @@ public class AptitudesService {
         aptitudes.setIdAptitud(aptitudesDTO.getIdAptitud());
         aptitudes.setNombreAptitud(aptitudesDTO.getNombreAptitud());
         return aptitudes;
+    }
+
+    public Map<Long, List<String>> obtenerAptitudesPorVacante(List<Long> idsVacantes) {
+
+        if (idsVacantes == null || idsVacantes.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        List<Object[]> resultados = aptitudesRepository.findAptitudesByVacantes(idsVacantes);
+
+        return resultados.stream().collect(
+                Collectors.groupingBy(
+                        fila -> (Long) fila[0],
+                        Collectors.mapping(fila -> (String) fila[1], Collectors.toList())));
     }
 
 }

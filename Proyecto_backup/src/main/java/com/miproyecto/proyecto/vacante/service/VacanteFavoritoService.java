@@ -110,10 +110,9 @@ public class VacanteFavoritoService {
         Page<VacanteFavorita> favoritasPage = vacanteFavoritaRepository
                 .findVacantesFavoritasByUsuarioFavorita(usuario, pageable);
 
-        return favoritasPage.map(favorita -> vacanteService.mapToDTO(
-                0L,
-                idUsuario,
-                favorita.getVacanteFavorita(),
-                new VacanteDTO()));
+         return vacanteService.mapPageVacanteFavoritaToDTO(
+            favoritasPage,
+            0L,
+            idUsuario);
     }
 }

@@ -43,6 +43,7 @@ import com.miproyecto.proyecto.util.response.Pagination;
 import com.miproyecto.proyecto.vacante.dto.FiltroVacanteDTO;
 import com.miproyecto.proyecto.vacante.dto.VacanteDTO;
 import com.miproyecto.proyecto.vacante.dto.VacanteResumenDTO;
+import com.miproyecto.proyecto.vacante.model.Requisito;
 import com.miproyecto.proyecto.vacante.model.Vacante;
 import com.miproyecto.proyecto.vacante.model.VacanteFavorita;
 import com.miproyecto.proyecto.vacante.repository.VacanteFavoritaRepository;
@@ -145,8 +146,9 @@ public class VacanteService {
 
     // listado de todas las vacantes activas
     public ApiResponseBody<List<VacanteDTO>> findAllByEstado(boolean estado, Pageable pageable) {
-        final Page<Vacante> vacantes = vacanteRepository.findByIsActiveOrderByFechaPublicacionDesc(estado, pageable);
-        final Page<VacanteDTO> vacantesDTO = vacantes.map(vacante -> mapToDTO(0L, 0L, vacante, new VacanteDTO()));
+        Page<Vacante> vacantes = vacanteRepository.findByIsActiveOrderByFechaPublicacionDesc(
+                estado, pageable);
+        Page<VacanteDTO> vacantesDTO = mapPageVacanteToDTO(vacantes, 0L, 0L);
         return mapResponse(vacantesDTO);
     }
 
@@ -169,7 +171,7 @@ public class VacanteService {
                 .orElseThrow(() -> new NotFoundException("Empresa no encontrada"));
 
         Page<Vacante> vacantes = vacanteRepository.findByIdUsuario(empresa, pageable);
-        Page<VacanteDTO> vacantesDTO = vacantes.map(vacante -> mapToDTO(0L, idUsuario, vacante, new VacanteDTO()));
+        Page<VacanteDTO> vacantesDTO = mapPageVacanteToDTO(vacantes, 0L, idUsuario);
         return mapResponse(vacantesDTO);
     }
 
@@ -382,7 +384,12 @@ public class VacanteService {
      * Mapea campos básicos de una entidad Vacante hacia VacanteDTO sin forzar
      * la carga de colecciones pesadas como litarpostulados o listaVacnatesFavoritas.
      */
-    public void mapBasicFields(final Vacante vacante, final VacanteDTO vacanteDTO) {
+    public void mapBasicFields(
+        final Vacante vacante, 
+        final VacanteDTO vacanteDTO,
+        final Map<Long, List<String>> aptitudesPorVacante,
+        final Map<Long, List<String>> requisitosPorVacante
+    ) {
         vacanteDTO.setNvacantes(vacante.getNvacantes());
         vacanteDTO.setCargo(vacante.getCargo() != null ? vacante.getCargo().getNombre() : "");
         vacanteDTO.setFechaPublicacion(vacante.getFechaPublicacion());
@@ -408,19 +415,29 @@ public class VacanteService {
         vacanteDTO.setVisitas(vacante.getVisitas());
         vacanteDTO.setVideoLink(vacante.getVideoLink());
 
-        if (vacante.getAptitudes() != null) {
+        // Aptitudes: obtenemos los nombres desde el mapa.
+        if (aptitudesPorVacante != null) {
             vacanteDTO.setAptitudes(
-                    vacante.getAptitudes().stream()
-                            .map(Aptitudes::getNombreAptitud)
-                            .collect(Collectors.toList()));
+                    aptitudesPorVacante.getOrDefault(
+                            vacante.getNvacantes(),
+                            Collections.emptyList()));
         } else {
             vacanteDTO.setAptitudes(Collections.emptyList());
         }
-
-        if (vacante.getRequisitos() != null) {
-            vacanteDTO.setRequisitos(vacante.getRequisitos().stream().map(r -> r.getNombre()).toList());
+        // Requisitos: obtenemos los nombres desde el mapa.
+        if (requisitosPorVacante != null) {
+            vacanteDTO.setRequisitos(
+                    requisitosPorVacante.getOrDefault(
+                            vacante.getNvacantes(),
+                            Collections.emptyList()));
         } else {
-            vacanteDTO.setRequisitos(Collections.emptyList());
+            // Compatibilidad con otros métodos que usan el mapeo original.
+            vacanteDTO.setRequisitos(
+                    vacante.getRequisitos() == null
+                            ? Collections.emptyList()
+                            : vacante.getRequisitos().stream()
+                                    .map(Requisito::getNombre)
+                                    .toList());
         }
     }
 
@@ -430,22 +447,33 @@ public class VacanteService {
      */
     public Page<VacanteDTO> mapPageVacanteToDTO(Page<Vacante> vacantesPage, Long idPostulaciones, Long idUsuarioAut) {
         List<Vacante> content = vacantesPage.getContent();
+
         if (content.isEmpty()) {
             return vacantesPage.map(v -> new VacanteDTO());
         }
 
         List<Long> idsVacantes = content.stream().map(Vacante::getNvacantes).toList();
 
+        // 1. Consulta de requisitos
+        Map<Long, List<String>> requisitosPorVacante = requisitoService.obtenerRequisitosPorVacante(idsVacantes);
+
+        // 2. Consulta masiva de aptitudes
+        Map<Long, List<String>> aptitudesPorVacante = aptitudesService.obtenerAptitudesPorVacante(idsVacantes);
+
+        // 3. Consulta y agrupación de postulaciones
         Map<Long, Postulado> postulacionesPorVacante = new HashMap<>();
+
         if (idPostulaciones != null && idPostulaciones > 0L) {
             List<Postulado> postulaciones = postuladoRepository.findByCandidatoIdAndVacanteIds(idPostulaciones, idsVacantes);
             for (Postulado p : postulaciones) {
                 if (p.getVacante() != null) {
-                    postulacionesPorVacante.put(p.getVacante().getNvacantes(), p);
+                    postulacionesPorVacante.put(
+                            p.getVacante().getNvacantes(), p);
                 }
             }
         }
 
+        // 3. Consulta y agrupación de favoritas
         Set<Long> favoritasIds = Collections.emptySet();
         if (idUsuarioAut != null && idUsuarioAut > 0L) {
             List<Long> favs = vacanteFavoritaRepository.findVacanteIdsFavoritasByUsuarioAndVacanteIds(idUsuarioAut, idsVacantes);
@@ -456,7 +484,7 @@ public class VacanteService {
 
         return vacantesPage.map(vacante -> {
             VacanteDTO dto = new VacanteDTO();
-            mapBasicFields(vacante, dto);
+            mapBasicFields(vacante, dto, aptitudesPorVacante, requisitosPorVacante);
 
             Postulado p = postulacionesPorVacante.get(vacante.getNvacantes());
             if (p != null) {
@@ -486,6 +514,11 @@ public class VacanteService {
         List<Long> idsVacantes = content.stream()
                 .map(vf -> vf.getVacanteFavorita().getNvacantes())
                 .toList();
+        // 1. Consulta masiva de requisitos
+        Map<Long, List<String>> requisitosPorVacante = requisitoService.obtenerRequisitosPorVacante(idsVacantes);
+
+        // 2. Consulta masiva de aptitudes
+        Map<Long, List<String>> aptitudesPorVacante = aptitudesService.obtenerAptitudesPorVacante(idsVacantes);
 
         Map<Long, Postulado> postulacionesPorVacante = new HashMap<>();
         if (idPostulaciones != null && idPostulaciones > 0L) {
@@ -500,7 +533,7 @@ public class VacanteService {
         return favPage.map(vf -> {
             Vacante vacante = vf.getVacanteFavorita();
             VacanteDTO dto = new VacanteDTO();
-            mapBasicFields(vacante, dto);
+            mapBasicFields(vacante, dto, aptitudesPorVacante ,requisitosPorVacante);
 
             Postulado p = postulacionesPorVacante.get(vacante.getNvacantes());
             if (p != null) {
@@ -524,7 +557,13 @@ public class VacanteService {
      */
     public VacanteDTO mapToDTO(Long idPostulaciones, Long idUsuarioAut, final Vacante vacante,
             final VacanteDTO vacanteDTO) {
-        mapBasicFields(vacante, vacanteDTO);
+
+        List<Long> idsVacantes = Collections.singletonList(
+                vacante.getNvacantes());
+
+        Map<Long, List<String>> aptitudesPorVacante = aptitudesService.obtenerAptitudesPorVacante(idsVacantes);
+
+        mapBasicFields(vacante, vacanteDTO, aptitudesPorVacante, null);
 
         // Postulación del candidato:
         if (idPostulaciones != null && idPostulaciones > 0L) {
