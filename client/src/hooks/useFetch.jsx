@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react"
 import { API_CLIENT_URL } from "../services/Api.js"
 import { manejarRespuesta } from "../services/ManejarRespuesta.js";
+import { useConnection } from "../context/connectionContext.jsx";
 
 export function useFetchV2(url, method, body, headers= {"Content-Type" : `application/json`}) {
 
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
+    const { setIsOnline } = useConnection();
     const fullUrl = `${API_CLIENT_URL}${url}`
 
     async function peticion() {
@@ -24,6 +26,9 @@ export function useFetchV2(url, method, body, headers= {"Content-Type" : `applic
 
             setData(json.data)
         } catch (error) {
+            if (error instanceof TypeError) {
+                setIsOnline(false);
+            }
             setError(error)
         }finally{
             setLoading(false)
@@ -113,6 +118,7 @@ export function useSendFormV2() {
     const [data, setData] = useState(null)
     const [meta, setMeta] = useState(null)
     const [error, setError] = useState(null)
+    const { setIsOnline } = useConnection();
 
     async function send(url, method, body, headers = { "Content-Type": "application/json" }) {
         const fullUrl = `${API_CLIENT_URL}${url}`;
@@ -141,6 +147,9 @@ export function useSendFormV2() {
             setMeta(json?.meta)
             return json;
         } catch (err) {
+            if (err instanceof TypeError) {
+                setIsOnline(false);
+            }
             setError(err);
             throw err;
         } finally {
