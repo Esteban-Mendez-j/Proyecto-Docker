@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -180,7 +181,7 @@ public class VacanteService {
                 .orElse(null);
 
         return vacanteRepository.findByIdUsuarioAndNvacantes(empresa, nVacante)
-                .map(vacante -> mapToDTO(0L, idUsuario, vacante, new VacanteDTO()))
+                .map(vacante -> mapToDTO(0L, idUsuario, vacante, new VacanteDTO(), true, true,Collections.emptySet()))
                 .orElse(null);
     }
 
@@ -317,26 +318,38 @@ public class VacanteService {
                 .orElse(null);
 
         return vacanteRepository.findTop6ByIdUsuarioOrderByTotalpostulacionesDesc(empresa).stream()
-                .map(v -> mapToDTO(0L, idEmpresa, v, new VacanteDTO()))
+                .map(v -> mapToDTO(0L, idEmpresa, v, new VacanteDTO(), false, false,Collections.emptySet()))
                 .collect(Collectors.toList());
     }
 
     public List<VacanteDTO> TopVacantesPorFechaSueldoExperiencia(Long idLogin) {
-        Set<Vacante> topVacantes = new HashSet<>();
+        List<Vacante> topVacantes = vacanteRepository.findTopVacantesCombinadas(true);
 
-        topVacantes.addAll(vacanteRepository.findTop2ByIsActiveOrderByFechaPublicacionDesc(true));
-        topVacantes.addAll(vacanteRepository.findTop2ByIsActiveOrderByExperienciaAsc(true));
-        topVacantes.addAll(vacanteRepository.findTop2ByIsActiveOrderBySueldoDesc(true));
+        List<Long> idsVacantes = topVacantes.stream()
+                .filter(Objects::nonNull)
+                .map(Vacante::getNvacantes)
+                .toList();
+
+        // 2. Consultar favoritos una sola vez.
+        Set<Long> favoritasIds = Collections.emptySet();
+
+        if (idLogin != null && idLogin > 0L && !idsVacantes.isEmpty()) {
+            favoritasIds = new HashSet<>(
+                    vacanteFavoritaRepository.findVacanteIdsFavoritasByUsuarioAndVacanteIds(idLogin,idsVacantes));
+        }
+
+        // 3. Mapear las vacantes reutilizando el resultado.
+        final Set<Long> favoritasFinal = favoritasIds;
 
         return topVacantes.stream()
                 .filter(vacante -> vacante != null)
-                .map(vacante -> mapToDTO(idLogin, idLogin, vacante, new VacanteDTO()))
+                .map(vacante -> mapToDTO(idLogin, idLogin, vacante, new VacanteDTO(), false, false, favoritasFinal))
                 .collect(Collectors.toList());
     }
 
     public VacanteDTO get(Long idLogin, final Long nvacantes) {
         return vacanteRepository.findById(nvacantes)
-                .map(vacante -> mapToDTO(idLogin, idLogin, vacante, new VacanteDTO()))
+                .map(vacante -> mapToDTO(idLogin, idLogin, vacante, new VacanteDTO(),true, true, null))
                 .orElseThrow(NotFoundException::new);
     }
 
@@ -550,14 +563,21 @@ public class VacanteService {
      * Mantiene compatibilidad total con cualquier método que lo invoque.
      */
     public VacanteDTO mapToDTO(Long idPostulaciones, Long idUsuarioAut, final Vacante vacante,
-            final VacanteDTO vacanteDTO) {
+            final VacanteDTO vacanteDTO, Boolean searchAptitudes, Boolean searchRequisitos, Set<Long> favoritasIds ) {
 
         List<Long> idsVacantes = Collections.singletonList(
                 vacante.getNvacantes());
 
-        Map<Long, List<String>> aptitudesPorVacante = aptitudesService.obtenerAptitudesPorVacante(idsVacantes);
-        //  Consulta de requisitos
-        Map<Long, List<String>> requisitosPorVacante = requisitoService.obtenerRequisitosPorVacante(idsVacantes);
+        Map<Long, List<String>> aptitudesPorVacante = Collections.emptyMap();
+        Map<Long, List<String>> requisitosPorVacante = Collections.emptyMap();
+
+        if (searchAptitudes) {
+            aptitudesPorVacante = aptitudesService.obtenerAptitudesPorVacante(idsVacantes);
+        }
+
+        if (searchRequisitos) {
+            requisitosPorVacante = requisitoService.obtenerRequisitosPorVacante(idsVacantes);
+        }
 
         mapBasicFields(vacante, vacanteDTO, aptitudesPorVacante, requisitosPorVacante);
 
@@ -591,14 +611,24 @@ public class VacanteService {
 
         // Vacante guardada en favoritos:
         if (idUsuarioAut != null && idUsuarioAut > 0L) {
-            if (vacante.getListaVacnatesFavoritas() != null && Hibernate.isInitialized(vacante.getListaVacnatesFavoritas())) {
+
+            if (favoritasIds != null) {
+                // Utiliza el conjunto previamente consultado.
+                vacanteDTO.setVacanteGuardada(favoritasIds.contains(vacante.getNvacantes()));
+
+            } else if (vacante.getListaVacnatesFavoritas() != null && Hibernate.isInitialized(vacante.getListaVacnatesFavoritas())) {
+                // Utiliza la colección si ya está inicializada.
                 boolean guardada = vacante.getListaVacnatesFavoritas().stream()
                         .anyMatch(vf -> vf.getUsuarioFavorita() != null && idUsuarioAut.equals(vf.getUsuarioFavorita().getIdUsuario()));
+
                 vacanteDTO.setVacanteGuardada(guardada);
+
             } else {
+                // Consulta individual cuando no hay conjunto precargado.
                 vacanteDTO.setVacanteGuardada(
-                        vacanteFavoritaRepository.existsByVacanteFavorita_NvacantesAndUsuarioFavorita_IdUsuario(vacante.getNvacantes(), idUsuarioAut)
-                );
+                        vacanteFavoritaRepository.existsByVacanteFavorita_NvacantesAndUsuarioFavorita_IdUsuario(
+                                        vacante.getNvacantes(),
+                                        idUsuarioAut));
             }
         } else {
             vacanteDTO.setVacanteGuardada(false);
