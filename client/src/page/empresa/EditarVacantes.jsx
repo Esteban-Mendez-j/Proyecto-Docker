@@ -12,6 +12,7 @@ import { RoleContext } from "../../services/RoleContext.jsx";
 import { useSendFormV2 } from "../../hooks/useFetch.jsx";
 import exceptionControl from "../../services/exceptionControl.js";
 import AutocompleteInput from "../../components/AutocompleteInput.jsx";
+import "../../style/invitado/registroEmpresa.css"
 
 
 const EditarVacantes= () => {
