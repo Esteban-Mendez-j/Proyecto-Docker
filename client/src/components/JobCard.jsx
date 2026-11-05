@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { API_CLIENT_URL } from '../services/Api.js';
+import { API_CLIENT_URL, URL_IMAGEN } from '../services/Api.js';
 import { RoleContext } from "../services/RoleContext.jsx";
 import { toggleFavoritoRequest } from '../services/ToggleFavoritosRequest.js';
 import { ListSvg } from "./icons.jsx";
 
-export default function JobCard({ job, cambiarEstado, verSeccionEdit, presentaion, fetchAllJobs, verPrediccion }) {
+export default function JobCard({ job, cambiarEstado, verSeccionEdit, presentaion, verPrediccion, onToggleFavorito}) {
 
     const [isFavorite, setIsFavorite] = useState(false);
     const { rol } = useContext(RoleContext)
@@ -16,11 +16,14 @@ export default function JobCard({ job, cambiarEstado, verSeccionEdit, presentaio
     }, [job.vacanteGuardada]);
 
     const handleToggleFavorito = async () => {
-        await toggleFavoritoRequest(job.nvacantes);
-        if (isFavorite) {
-            fetchAllJobs()
+        if (onToggleFavorito) {
+            await onToggleFavorito(job.nvacantes);
+            return;
         }
-        setIsFavorite(!isFavorite)
+        // Comportamiento independiente para otras pantallas,
+        // como Index, donde no existe JobList.
+        await toggleFavoritoRequest(job.nvacantes);
+        setIsFavorite(prev => !prev);
     };
 
     // Muestra los empleos en forma de tarjetas
@@ -33,14 +36,14 @@ export default function JobCard({ job, cambiarEstado, verSeccionEdit, presentaio
                 {/*  El badge de optimización se queda de forma segura en su esquina */}
                 {job.recomendado && (
                     <div className="absolute top-2 right-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-md z-[50] flex items-center gap-1">
-                        <span></span> RECOMENDADO
+                        <span>RECOMENDADO</span> 
                     </div>
                 )}
 
                 <div className="card-header">
                     <div className="logo">
                         <img
-                            src={job.imagenEmpresa ? `${API_CLIENT_URL}` + "/img/" + job.imagenEmpresa : `${API_CLIENT_URL}/images/imgEmpresa.png`}
+                            src={job.imagenEmpresa ? `${URL_IMAGEN}${job.imagenEmpresa}` : `/imgEmpresa.png`}
                             alt={`${job.nameEmpresa} logo`}
                             width="60"
                             height="60"
@@ -166,9 +169,7 @@ export default function JobCard({ job, cambiarEstado, verSeccionEdit, presentaio
                     <div className="flex items-center gap-4">
                         <img
                             src={
-                                job.imagenEmpresa
-                                    ? `${API_CLIENT_URL}/img/${job.imagenEmpresa}`
-                                    : `${API_CLIENT_URL}/images/imgEmpresa.png`
+                                job.imagenEmpresa? `${URL_IMAGEN}${job.imagenEmpresa}` : `/imgEmpresa.png`
                             }
                             alt={job.nameEmpresa}
                             className="w-14 h-14 rounded-md object-cover"
