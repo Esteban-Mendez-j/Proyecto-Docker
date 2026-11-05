@@ -1,9 +1,10 @@
-
 import { useState } from "react";
 import "../../style/usuarios/offlinePage.css";
 import { ListSvg } from "../../components/icons.jsx";
 
-export default function OfflinePage({ onRetry }) {
+export default function OfflinePage({ onRetry, type }) {
+
+    const isInternetError = type === "internet";
     const [checking, setChecking] = useState(false);
 
     async function handleRetry() {
@@ -22,20 +23,28 @@ export default function OfflinePage({ onRetry }) {
             <div className="offline-card">
 
                 <div className="offline-icon">
-                    <ListSvg name={"offline"} width={50} height={50} />
+                    {isInternetError
+                        ? <ListSvg name={"offline"} width={50} height={50} />
+                        : <ListSvg name={"error"} width={50} height={50} />
+                    }
                 </div>
 
                 <span className="offline-label">
-                    CONEXIÓN INTERRUMPIDA
+                    {isInternetError
+                        ? "Sin conexión a Internet"
+                        : "Servidor no disponible"}
                 </span>
 
                 <h1>
-                    ¡Ups! Parece que no tienes conexión.
+                    {isInternetError
+                        ? "¡Ups! Parece que perdiste la conexión."
+                        : "¡Ups! No podemos conectar con SearchJobs."}
                 </h1>
 
                 <p className="offline-description">
-                    No podemos conectarnos con SearchJobs en este momento.
-                    Comprueba tu conexión a Internet e inténtalo nuevamente.
+                    {isInternetError
+                        ? "No detectamos una conexión a Internet. Comprueba tu conexión e inténtalo nuevamente."
+                        : "No podemos comunicarnos con nuestros servidores en este momento. Inténtalo nuevamente más tarde."}
                 </p>
 
                 <button
@@ -43,19 +52,13 @@ export default function OfflinePage({ onRetry }) {
                     onClick={handleRetry}
                     disabled={checking}
                 >
-                    {checking ? (
-                        <>
-                            Comprobando conexión...
-                        </>
-                    ) : (
-                        <>
-                            Reintentar conexión
-                        </>
-                    )}
+                    {checking
+                        ? "Comprobando conexión..."
+                        : "Reintentar conexión"}
                 </button>
 
                 <p className="offline-footer">
-                    SearchJobs · Conectando oportunidades
+                    SeedJobs · Conectando oportunidades
                 </p>
 
             </div>

@@ -8,7 +8,7 @@ export function useFetchV2(url, method, body, headers= {"Content-Type" : `applic
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
-    const { setIsOnline } = useConnection();
+    const { retryConnection } = useConnection();
     const fullUrl = `${API_CLIENT_URL}${url}`
 
     async function peticion() {
@@ -27,7 +27,7 @@ export function useFetchV2(url, method, body, headers= {"Content-Type" : `applic
             setData(json.data)
         } catch (error) {
             if (error instanceof TypeError) {
-                setIsOnline(false);
+                await retryConnection();
             }
             setError(error)
         }finally{
@@ -118,7 +118,7 @@ export function useSendFormV2() {
     const [data, setData] = useState(null)
     const [meta, setMeta] = useState(null)
     const [error, setError] = useState(null)
-    const { setIsOnline } = useConnection();
+    const { retryConnection } = useConnection();
 
     async function send(url, method, body, headers = { "Content-Type": "application/json" }) {
         const fullUrl = `${API_CLIENT_URL}${url}`;
@@ -147,8 +147,8 @@ export function useSendFormV2() {
             setMeta(json?.meta)
             return json;
         } catch (err) {
-            if (err instanceof TypeError) {
-                setIsOnline(false);
+            if (error instanceof TypeError) {
+                await retryConnection();
             }
             setError(err);
             throw err;

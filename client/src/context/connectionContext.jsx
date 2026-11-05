@@ -3,26 +3,33 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { API_CLIENT_URL } from "../services/Api.js";
 import OfflinePage from "../page/usuarios/OfflinePage.jsx";
 
+
 const ConnectionContext = createContext(null);
 
 export function ConnectionProvider({ children }) {
 
-    const [isOnline, setIsOnline] = useState(
+    const [isInternetOnline, setIsInternetOnline] = useState(
         () => navigator.onLine
     );
+
+    const [isBackendOnline, setIsBackendOnline] = useState(true);
 
     useEffect(() => {
 
         function handleOnline() {
-            setIsOnline(true);
+            setIsInternetOnline(true);
+            retryConnection();
         }
 
         function handleOffline() {
-            setIsOnline(false);
+            setIsInternetOnline(false);
         }
 
         window.addEventListener("online", handleOnline);
         window.addEventListener("offline", handleOffline);
+
+        // Comprobar el backend al iniciar la aplicación.
+        retryConnection();
 
         return () => {
             window.removeEventListener("online", handleOnline);
@@ -31,37 +38,81 @@ export function ConnectionProvider({ children }) {
 
     }, []);
 
-    // Comprueba si el backend vuelve a responder.
+    // Comprueba si el backend responde.
     async function retryConnection() {
 
-        try {
-            const response = await fetch(
-                `${API_CLIENT_URL}/api/usuarios/rol`,
-                {
-                    method: "GET",
-                    credentials: "include",
-                    cache: "no-store"
-                }
-            );
+        if (!navigator.onLine) {
+            setIsInternetOnline(false);
+            return false;
+        }
 
-            // Cualquier respuesta HTTP indica que el servidor respondió.
-            setIsOnline(true);
+        try {
+            const controller = new AbortController();
+
+            const timeout = setTimeout(() => {
+                controller.abort();
+            }, 8000);
+
+            try {
+                const response = await fetch(
+                    `${API_CLIENT_URL}/api/usuarios/rol`,
+                    {
+                        method: "GET",
+                        credentials: "include",
+                        cache: "no-store",
+                        signal: controller.signal
+                    }
+                );
+
+                // Cualquier respuesta HTTP significa que
+                // conseguimos comunicarnos con el servidor.
+                setIsBackendOnline(true);
+                setIsInternetOnline(true);
+
+                return true;
+
+            } finally {
+                clearTimeout(timeout);
+            }
 
         } catch (error) {
-            setIsOnline(false);
+
+            setIsBackendOnline(false);
+
+            // No asumir que se perdió Internet.
+            setIsInternetOnline(navigator.onLine);
+
+            return false;
         }
     }
 
     return (
         <ConnectionContext.Provider
-            value={{ isOnline, setIsOnline, retryConnection }}
+            value={{
+                isInternetOnline,
+                isBackendOnline,
+                retryConnection
+            }}
         >
-            {isOnline ? children : <OfflinePage onRetry={retryConnection} />}
+            {!isInternetOnline ? (
+                <OfflinePage
+                    onRetry={retryConnection}
+                    type="internet"
+                />
+            ) : !isBackendOnline ? (
+                <OfflinePage
+                    onRetry={retryConnection}
+                    type="backend"
+                />
+            ) : (
+                children
+            )}
         </ConnectionContext.Provider>
     );
 }
 
 export function useConnection() {
+
     const context = useContext(ConnectionContext);
 
     if (!context) {
