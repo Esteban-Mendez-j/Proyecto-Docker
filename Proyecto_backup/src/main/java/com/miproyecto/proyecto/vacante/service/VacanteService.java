@@ -15,6 +15,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.hibernate.Hibernate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +28,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.benmanes.caffeine.cache.Cache;
 import com.miproyecto.proyecto.aptitudes.model.Aptitudes;
 import com.miproyecto.proyecto.aptitudes.service.AptitudesService;
 import com.miproyecto.proyecto.candidato.model.Candidato;
@@ -41,6 +48,7 @@ import com.miproyecto.proyecto.util.NotFoundException;
 import com.miproyecto.proyecto.util.response.ApiResponseBody;
 import com.miproyecto.proyecto.util.response.Meta;
 import com.miproyecto.proyecto.util.response.Pagination;
+import com.miproyecto.proyecto.vacante.dto.BloqueVacantesCache;
 import com.miproyecto.proyecto.vacante.dto.FiltroVacanteDTO;
 import com.miproyecto.proyecto.vacante.dto.VacanteDTO;
 import com.miproyecto.proyecto.vacante.dto.VacanteResumenDTO;
@@ -55,6 +63,7 @@ import com.miproyecto.proyecto.vacante.repository.VacanteSpecifications;
 @Transactional
 public class VacanteService {
 
+    private final VacantesCacheService vacantesCacheService;
     private final VacanteFavoritaRepository vacanteFavoritaRepository;
     private final VacanteRepository vacanteRepository;
     private final EmpresaRepository empresaRepository;
@@ -66,24 +75,31 @@ public class VacanteService {
     private final CargoService cargoService;
     private final RequisitoService requisitoService;
     private final SupabaseStorageService supabaseStorageService;
+    @Qualifier("vacantesOptimizadasCache")
+    private final Cache<String, BloqueVacantesCache> vacantesOptimizadasCache;
+    private final ObjectMapper objectMapper;
+    private static final Logger log = LoggerFactory.getLogger(VacanteService.class);
 
     public VacanteService(VacanteFavoritaRepository vacanteFavoritaRepository, VacanteRepository vacanteRepository,
             EmpresaRepository empresaRepository, PostuladoRepository postuladoRepository,
-            AptitudesService aptitudesService, PrediccionService prediccionService,
-            OptimizationService optimizationService, RequisitoService requisitoService,
-            CargoService cargoService, SupabaseStorageService supabaseStorageService,
-            CandidatoRepository candidatoRepository) {
+            CandidatoRepository candidatoRepository, AptitudesService aptitudesService,
+            PrediccionService prediccionService, OptimizationService optimizationService, CargoService cargoService,
+            RequisitoService requisitoService, SupabaseStorageService supabaseStorageService,
+            Cache<String, BloqueVacantesCache> vacantesOptimizadasCache, ObjectMapper objectMapper, VacantesCacheService vacantesCacheService) {
         this.vacanteFavoritaRepository = vacanteFavoritaRepository;
         this.vacanteRepository = vacanteRepository;
         this.empresaRepository = empresaRepository;
         this.postuladoRepository = postuladoRepository;
+        this.candidatoRepository = candidatoRepository;
         this.aptitudesService = aptitudesService;
         this.prediccionService = prediccionService;
         this.optimizationService = optimizationService;
-        this.requisitoService = requisitoService;
         this.cargoService = cargoService;
+        this.requisitoService = requisitoService;
         this.supabaseStorageService = supabaseStorageService;
-        this.candidatoRepository = candidatoRepository;
+        this.vacantesOptimizadasCache = vacantesOptimizadasCache;
+        this.objectMapper = objectMapper;
+        this.vacantesCacheService = vacantesCacheService;
     }
 
     public String guardarVideo(MultipartFile file) throws IOException {
@@ -204,113 +220,222 @@ public class VacanteService {
 
     // Obtiene 200 vacantes, calcula la afinidad y ordena usando Pyomo
     public ApiResponseBody<List<VacanteDTO>> buscarVacantesConFiltrosAndOrdenByOptimizacion(
-            Long idPsotulacion, FiltroVacanteDTO filtro, Pageable pageableFront) {
+        Long idPsotulacion,
+        FiltroVacanteDTO filtro,
+        Pageable pageableFront) {
 
-        // 1. Definir el número de bloque del backend (cada bloque = 200 vacantes)
-        int pageNumber = pageableFront.getPageNumber() / 10;
-        Pageable pageableBackend = PageRequest.of(pageNumber, 200);
+        final int TAMANO_BLOQUE = 200;
 
-        // 2. Consultar vacantes del bloque de forma eficiente en lote
-        Page<VacanteDTO> page;
+        // Este cálculo funciona si el tamaño de página divide exactamente 200.
+        int pageSize = pageableFront.getPageSize();
 
-        if (Boolean.TRUE.equals(filtro.getIsFavorita())) {
-            Specification<VacanteFavorita> specFav = VacanteSpecifications.favoritaConFiltros(idPsotulacion, filtro);
-            Page<VacanteFavorita> favPage = vacanteFavoritaRepository.findAll(specFav, pageableBackend);
-            page = mapPageVacanteFavoritaToDTO(favPage, idPsotulacion, idPsotulacion);
-        } else {
-            Specification<Vacante> specification = VacanteSpecifications.conFiltros(idPsotulacion, filtro);
-            Page<Vacante> vacPage = vacanteRepository.findAll(specification, pageableBackend);
-            page = mapPageVacanteToDTO(vacPage, idPsotulacion, idPsotulacion);
+        if (TAMANO_BLOQUE % pageSize != 0) {
+            throw new IllegalArgumentException("El tamaño de página debe dividir exactamente el bloque de 200 vacantes.");
         }
 
-        List<VacanteDTO> vacantes = new ArrayList<>(page.getContent());
-        long totalResultados = page.getTotalElements();
+        // Posición global de la primera vacante solicitada.
+        long posicionInicial = pageableFront.getOffset();
 
-        if (vacantes.isEmpty()) {
-            return mapResponse(new PageImpl<>(Collections.emptyList(), pageableFront, totalResultados));
+        // Determinar el bloque que contiene la página solicitada.
+        int numeroBloque = (int) (posicionInicial / TAMANO_BLOQUE);
+
+        // Obtener las vacantes optimizadas del bloque.
+        BloqueVacantesCache bloque = obtenerBloqueOptimizado( idPsotulacion, filtro, numeroBloque);
+
+        // Estadísticas de Caffeine
+        log.info("========== ESTADÍSTICAS DE CACHÉ ==========");
+        log.info("Entradas almacenadas: {}", vacantesOptimizadasCache.estimatedSize());
+        log.info("Hits: {}", vacantesOptimizadasCache.stats().hitCount());
+        log.info("Misses: {}", vacantesOptimizadasCache.stats().missCount());
+        log.info("Hit Rate: {}", vacantesOptimizadasCache.stats().hitRate());
+        log.info("Cargas exitosas: {}", vacantesOptimizadasCache.stats().loadSuccessCount());
+        log.info("Cargas fallidas: {}", vacantesOptimizadasCache.stats().loadFailureCount());
+        log.info("Eliminaciones: {}", vacantesOptimizadasCache.stats().evictionCount());
+        log.info("============================================");
+
+        List<VacanteDTO> vacantes = bloque.vacantes();
+
+        // Calcular qué posiciones del bloque corresponden a esta página.
+        int inicio = (int) (posicionInicial % TAMANO_BLOQUE);
+        int fin = Math.min(inicio + pageSize, vacantes.size());
+
+        if (inicio >= fin) {
+            return mapResponse(new PageImpl<>( Collections.emptyList(), pageableFront, bloque.totalResultados()));
         }
 
-        // 3. Obtener aptitudes del candidato UNA SOLA VEZ antes del bucle
+        List<VacanteDTO> contenido = new ArrayList<>(vacantes.subList(inicio, fin));
+
+        return mapResponse(new PageImpl<>( contenido, pageableFront, bloque.totalResultados()));
+    }
+
+    private List<VacanteDTO> optimizarVacantes(
+            Long idPsotulacion,
+            List<VacanteDTO> vacantes) {
+
+        // 1. Obtener las aptitudes del candidato una sola vez.
         Set<String> aptitudesCandidato = Collections.emptySet();
+
         if (idPsotulacion != null && idPsotulacion > 0) {
-            Candidato candidato = candidatoRepository.findById(idPsotulacion).orElse(null);
+
+            Candidato candidato = candidatoRepository
+                    .findById(idPsotulacion)
+                    .orElse(null);
+
             if (candidato != null && candidato.getAptitudes() != null) {
-                aptitudesCandidato = candidato.getAptitudes().stream()
+
+                aptitudesCandidato = candidato.getAptitudes()
+                        .stream()
                         .map(Aptitudes::getNombreAptitud)
                         .collect(Collectors.toSet());
             }
         }
 
-        // 4. Calcular afinidad directamente en memoria para las 200 vacantes (sin Weka ni queries redundantes)
+        // 2. Calcular afinidad y preparar los datos para Pyomo.
         List<VacanteOptimizacionDTO> vacantesParaOptimizar = new ArrayList<>();
+
         LocalDate hoy = LocalDate.now();
 
         for (VacanteDTO v : vacantes) {
-            double prediccion = prediccionService.calcularPorcentajeMatch(aptitudesCandidato, v.getAptitudes());
+
+            double prediccion = prediccionService.calcularPorcentajeMatch( aptitudesCandidato, v.getAptitudes());
+
             v.setPrediccion(prediccion);
 
-            // Armar el DTO para la API en Python
             VacanteOptimizacionDTO optDto = new VacanteOptimizacionDTO();
+
             optDto.setId(v.getNvacantes());
-            optDto.setCompatibility(prediccion / 100.0); // Ajuste a escala 0-1
+            optDto.setCompatibility(prediccion / 100.0);
             optDto.setSalary(v.getSueldo() != null ? v.getSueldo() : 0.0);
             optDto.setTipo(v.getTipo());
 
             if (v.getFechaPublicacion() != null) {
-                optDto.setDays((int) ChronoUnit.DAYS.between(v.getFechaPublicacion(), hoy));
+                optDto.setDays((int) ChronoUnit.DAYS.between( v.getFechaPublicacion(), hoy));
             } else {
                 optDto.setDays(0);
             }
+
             optDto.setPostulations(v.getTotalpostulaciones());
 
             vacantesParaOptimizar.add(optDto);
         }
 
-        // 5. Llamar al optimizador Pyomo
+        // 3. Ejecutar la optimización con Pyomo.
         OptimizationResponse optResponse = optimizationService.optimizePool(vacantesParaOptimizar);
 
+        // 4. Relacionar los resultados de Pyomo con los DTO originales.
         Map<Long, VacanteDTO> vacantesMap = vacantes.stream()
-                .collect(Collectors.toMap(VacanteDTO::getNvacantes, vac -> vac));
+                .collect(Collectors.toMap( VacanteDTO::getNvacantes, vac -> vac));
 
         List<VacanteDTO> vacantesOptimizadas = new ArrayList<>();
 
         if (optResponse != null && optResponse.getVacantes_recomendadas() != null) {
+
             for (VacanteOptimizacionDTO dtoPyomo : optResponse.getVacantes_recomendadas()) {
+
                 Long id = dtoPyomo.getId();
 
                 if (vacantesMap.containsKey(id)) {
+
                     VacanteDTO vacanteDto = vacantesMap.get(id);
+
                     vacanteDto.setRecomendado(dtoPyomo.isIs_optimized());
+
                     vacantesOptimizadas.add(vacanteDto);
                 }
             }
-            vacantes = vacantesOptimizadas;
+            return vacantesOptimizadas;
         }
 
-        // 6. Si el total es MENOR a 200, paginar normalmente
-        if (totalResultados < 200) {
-            int start = (int) pageableFront.getOffset();
-            int end = Math.min(start + pageableFront.getPageSize(), vacantes.size());
+        // Si Pyomo no devuelve resultados, conservamos las vacantes
+        // con su afinidad calculada, como hacía tu método original.
+        return vacantes;
+    }
 
-            if (start >= end) {
-                return mapResponse(new PageImpl<>(Collections.emptyList(), pageableFront, totalResultados));
-            }
+    private BloqueVacantesCache cargarYOptimizarBloque(
+            Long idPsotulacion,
+            FiltroVacanteDTO filtro,
+            int numeroBloque) {
 
-            List<VacanteDTO> manualPage = vacantes.subList(start, end);
-            return mapResponse(new PageImpl<>(manualPage, pageableFront, totalResultados));
+        log.info("EJECUTANDO CONSULTA Y OPTIMIZACIÓN");
+        log.info("Bloque solicitado: {}", numeroBloque);
+
+        final int TAMANO_BLOQUE = 200;
+
+        Pageable pageableBackend = PageRequest.of( numeroBloque, TAMANO_BLOQUE);
+
+        Page<VacanteDTO> page;
+
+        // Consultar vacantes favoritas o todas las vacantes filtradas.
+        if (Boolean.TRUE.equals(filtro.getIsFavorita())) {
+
+            Specification<VacanteFavorita> specFav = VacanteSpecifications.favoritaConFiltros(
+                    idPsotulacion,
+                    filtro);
+
+            Page<VacanteFavorita> favPage = vacanteFavoritaRepository.findAll(
+                    specFav,
+                    pageableBackend);
+
+            page = mapPageVacanteFavoritaToDTO( favPage, idPsotulacion, idPsotulacion);
+
+        } else {
+
+            Specification<Vacante> specification = VacanteSpecifications.conFiltros(
+                    idPsotulacion,
+                    filtro);
+
+            Page<Vacante> vacPage = vacanteRepository.findAll(
+                    specification,
+                    pageableBackend);
+
+            page = mapPageVacanteToDTO( vacPage, idPsotulacion, idPsotulacion);
         }
 
-        // 7. Paginación normal para bloques de 200 (más de 200 resultados totales)
-        int pageInsideBlock = pageableFront.getPageNumber() % 10;
-        int start = pageInsideBlock * pageableFront.getPageSize();
-        int end = Math.min(start + pageableFront.getPageSize(), vacantes.size());
+        List<VacanteDTO> vacantes = new ArrayList<>(page.getContent());
 
-        if (start >= end) {
-            return mapResponse(new PageImpl<>(Collections.emptyList(), pageableFront, totalResultados));
+        long totalResultados = page.getTotalElements();
+
+        if (vacantes.isEmpty()) {
+            return new BloqueVacantesCache( Collections.emptyList(), totalResultados);
         }
 
-        List<VacanteDTO> pageContent = vacantes.subList(start, end);
-        return mapResponse(new PageImpl<>(pageContent, pageableFront, totalResultados));
+        // Optimizar las vacantes del bloque.
+        List<VacanteDTO> vacantesOptimizadas = optimizarVacantes(idPsotulacion, vacantes);
+
+        return new BloqueVacantesCache( vacantesOptimizadas, totalResultados);
+    }
+
+    private BloqueVacantesCache obtenerBloqueOptimizado(
+            Long idPsotulacion,
+            FiltroVacanteDTO filtro,
+            int numeroBloque) {
+
+        try {
+            // Convertimos los filtros a JSON para construir una clave estable.
+            String filtrosJson = objectMapper.writeValueAsString(filtro);
+
+            // La caché se diferencia por usuario, bloque y filtros.
+            String cacheKey = idPsotulacion+ "|" + numeroBloque + "|" + filtrosJson;
+
+            log.info("`\n========== DEBUG CACHÉ ==========");
+            log.info("Usuario: {}", idPsotulacion);
+            log.info("Número de bloque: {}", numeroBloque);
+            log.info("Filtros JSON: {}", filtrosJson);
+            log.info("Clave de caché: {}", cacheKey);
+            log.info("================================");
+
+            // Si existe, devuelve el resultado.
+            // Si no existe, ejecuta la consulta y optimización.
+            return vacantesCacheService.obtenerBloque(
+                    idPsotulacion,
+                    cacheKey,
+                    () -> cargarYOptimizarBloque( idPsotulacion, filtro, numeroBloque)
+            );
+
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException(
+                    "No fue posible generar la clave de caché de las vacantes.", e);
+        }
     }
 
     public List<VacanteDTO> TopVacantesPorPostulados(Long idEmpresa) {
