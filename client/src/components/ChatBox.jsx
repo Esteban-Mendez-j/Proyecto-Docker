@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useSendFormV2 } from "../hooks/useFetch.jsx";
 import exceptionControl from "../services/exceptionControl.js";
 
-const ChatBox = ({ chatId, setChats }) => {
+const ChatBox = ({ chatId, setChats, onBack}) => {
   const navigate = useNavigate()
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -21,7 +21,7 @@ const ChatBox = ({ chatId, setChats }) => {
 
   useEffect(() => {
     const fetchChatInfo = async () => {
-      if(chatId === "candidato" || chatId === "empresa"){return}
+      if(chatId === "candidato" || chatId === "empresa" || !chatId){return}
       const mensajeGuardado = localStorage.getItem(`chat-mensaje-${chatId}`);
       setChatChange(mensajeGuardado)
       try {
@@ -164,14 +164,31 @@ const ChatBox = ({ chatId, setChats }) => {
           </div>
           <h3>Tus mensajes</h3>
           <p>Selecciona una conversación para ver tus mensajes o inicia una nueva</p>
+          <div className="flex justify-center items-center">
+            <button
+              onClick={onBack}
+              className="mobile-back-button"
+              aria-label="Volver a conversaciones"
+            >
+              <ListSvg name={"atras"} width={22} height={22} />
+            </button>
+          </div>
         </div>
       </div>
     );
     
   return (
-    <div className="flex flex-col w-full h-full border-l border-blue-200 bg-white">
+    <div className="chat-panel flex flex-col w-full h-full border-l border-blue-200 bg-white">
       {/* Header del chat */}
-      <div className="p-4 border-b bg-blue-50 shadow-sm flex justify-between items-center">
+      <div className="p-4 border-b bg-blue-50 shadow-sm flex flex-wrap justify-between items-center gap-3">
+        <button
+          onClick={onBack}
+          className="mobile-back-button"
+          aria-label="Volver a conversaciones"
+        >
+          <ListSvg name={"atras"} width={22} height={22} />
+        </button>
+        
         <h2 className="text-xl font-semibold text-blue-800">
           Conversación con{" "}
           {rol === "EMPRESA"
@@ -194,7 +211,7 @@ const ChatBox = ({ chatId, setChats }) => {
       </div>
 
       {/* Área de mensajes */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-4 bg-blue-100 space-y-3">
+      <div className="flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden p-4 bg-blue-100 space-y-3">
         {messages.length === 0 && (
           <p className="text-center text-blue-400 mt-10">No hay mensajes aún. ¡Comienza la conversación!</p>
         )}
@@ -207,7 +224,7 @@ const ChatBox = ({ chatId, setChats }) => {
               className={`flex ${isOwn ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`min-w-[100px] max-w-sm px-5 py-3 rounded-xl shadow-md text-base relative break-words overflow-hidden ${
+                className={`min-w-[100px] max-w-[min(85%,32rem)] px-4 sm:px-5 py-3 rounded-xl shadow-md text-base relative break-words overflow-hidden ${
                   isOwn
                     ? "bg-blue-500 text-white rounded-br-none"
                     : "bg-white text-blue-900 rounded-bl-none border border-blue-200"
@@ -236,11 +253,11 @@ const ChatBox = ({ chatId, setChats }) => {
       )}
 
       {chatInfo.isActive && (
-        <div className="p-4 border-t bg-white">
-          <div className="flex items-center gap-3">
+        <div className="p-3 sm:p-4 border-t bg-white">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <input
               type="text"
-              className="flex-1 resize-none border border-blue-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="flex-1 min-w-0 resize-none border border-blue-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Escribe tu mensaje..."

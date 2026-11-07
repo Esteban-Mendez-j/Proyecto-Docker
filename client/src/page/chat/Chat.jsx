@@ -58,8 +58,10 @@ export default function ChatPage() {
 
     <div className="chat-layout">
       <Header />
-      <div className="h-screen flex">
-        <aside className="w-1/4 flex flex-col border-r border-gray-200 bg-white pt-20">
+      <div className="chat-page-content flex flex-1 min-h-0 min-w-0 overflow-hidden">
+        <aside
+          className={`chat-sidebar w-1/4 min-w-0 min-h-0 flex flex-col border-r border-gray-200 bg-white pt-20 ${(chatId || chatType === "chatBot") ? "mobile-chat-hidden" : ""}`}
+        >
           <header className="p-4 border-b flex flex-row justify-between">
             <h2 className="text-lg font-semibold text-blue-700">Conversaciones</h2>
             <button onClick={()=> setChatType("chatBot")}> 
@@ -139,11 +141,18 @@ export default function ChatPage() {
           </div>
         </aside>
 
-        <main className="flex flex-col flex-1">
+        <main className={`flex flex-col flex-1 min-w-0 min-h-0 overflow-hidden ${(chatId || chatType === "chatBot") ? "mobile-chat-active" : "mobile-list-only"}`}>
           {chatType == "chatBot" ?
-            <ChatBot />
+            <ChatBot onBack={() => {
+              setChatId(null);
+              setChatType(null);
+            }} />
             :
-            <ChatBox chatId={chatId} setChats={setChats} />
+            <ChatBox chatId={chatId} setChats={setChats} onBack={() => {
+              setChatId(null);
+              setChatType(null);
+            }} 
+            />
           }
         </main>
       </div>

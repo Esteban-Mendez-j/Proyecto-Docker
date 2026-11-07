@@ -8,7 +8,7 @@ import { ListSvg } from "../../components/icons.jsx"
 import { modal, modalTime } from "../../services/Modal.js";
 import { API_CLIENT_URL } from "../../services/Api.js";
 
-export default function ChatBot() {
+export default function ChatBot({ onBack }) {
     const navigate = useNavigate();
     const [viewFileWindow, setViewFileWindow] = useState(false);
     const [nameFiles, setNameFiles] = useState([]);
@@ -212,9 +212,16 @@ export default function ChatBot() {
     };
 
     return (
-        <div className="flex flex-col w-full h-full border-l border-blue-200 bg-white">
+        <div className="flex flex-col w-full h-full min-w-0 min-h-0 overflow-hidden border-l border-blue-200 bg-white chat-panel">
             {/* Header del chat */}
-            <div className="p-4 border-b bg-blue-50 shadow-sm flex justify-between items-center">
+            <div className="p-4 border-b bg-blue-50 shadow-sm flex flex-wrap justify-between items-center gap-3">
+                <button
+                    onClick={onBack}
+                    className="mobile-back-button"
+                    aria-label="Volver a conversaciones"
+                >
+                    <ListSvg name={"atras"} width={22} height={22} />
+                </button>
                 <h2 className="text-xl font-semibold text-blue-800">
                     ChatBot
                 </h2>
@@ -240,7 +247,7 @@ export default function ChatBot() {
                     <div className="flex-1 min-h-0 flex flex-col bg-blue-100 p-5">
 
                         {/* Header fijo */}
-                        <div className="flex items-center justify-between mb-5 flex-shrink-0">
+                        <div className="flex flex-wrap items-center justify-between gap-3 mb-5 flex-shrink-0">
                             <div>
                                 <h2 className="text-2xl font-bold text-blue-900">
                                     Archivos guardados
@@ -282,7 +289,7 @@ export default function ChatBot() {
                         </div>
 
                         {/* Lista scrolleable */}
-                        <div className="flex-1 overflow-y-auto pr-2 bg-white/70 backdrop-blur-sm border border-blue-200 shadow-inner p-5">
+                        <div className="flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden pr-2 bg-white/70 backdrop-blur-sm border border-blue-200 shadow-inner p-5">
 
                                 <div className="space-y-4">
 
@@ -299,7 +306,7 @@ export default function ChatBot() {
                                             key={index}
                                             className="bg-white border border-blue-100 rounded-2xl p-4 shadow-sm hover:shadow-lg hover:border-blue-300 transition-all duration-200"
                                         >
-                                            <div className="flex items-center justify-between gap-4">
+                                            <div className="flex flex-wrap items-center justify-between gap-3">
 
                                                 {/* Info archivo */}
                                                 <div className="flex items-center gap-3 overflow-hidden">
@@ -325,7 +332,7 @@ export default function ChatBot() {
                                                 </div>
 
                                                 {/* Acciones */}
-                                                <div className="flex items-center gap-2 flex-shrink-0">
+                                                <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
 
                                                     {/* Descargar */}
                                                     <button
@@ -364,7 +371,7 @@ export default function ChatBot() {
 
             {/* Área de mensajes */}
             {!viewFileWindow && <>
-                <div className="flex-1 min-h-0 overflow-y-auto p-4 bg-blue-100 space-y-3">
+                <div className="flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden p-4 bg-blue-100 space-y-3">
                     {messages.length === 0 && (
                         <p className="text-center text-blue-400 mt-10">No hay mensajes aún. ¡Comienza la conversación!</p>
                     )}
@@ -377,7 +384,7 @@ export default function ChatBot() {
                                 className={`flex ${isOwn ? "justify-end" : "justify-start"}`}
                             >
                                 <div
-                                    className={`min-w-[100px] max-w-sm px-5 py-3 rounded-xl shadow-md text-base relative break-words overflow-hidden ${isOwn
+                                    className={`min-w-[100px] max-w-[min(85%,32rem)] px-4 sm:px-5 py-3 rounded-xl shadow-md text-base relative break-words overflow-hidden ${isOwn
                                         ? "bg-blue-500 text-white rounded-br-none"
                                         : "bg-white text-blue-900 rounded-bl-none border border-blue-200"
                                         }`}
@@ -411,8 +418,8 @@ export default function ChatBot() {
                 </div>
 
 
-                <div className="p-4 border-t bg-white">
-                    <div className="flex items-center gap-3">
+                <div className="p-3 sm:p-4 border-t bg-white">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                         <label className="inline-flex w-max cursor-pointer items-center gap-2 rounded-full bg-blue-500 px-4 py-2 font-medium text-white shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
                             <ListSvg name={"subir_archivo"} width={20} height={20} />
                             <input
@@ -426,7 +433,7 @@ export default function ChatBot() {
                         </label>
                         <input
                             type="text"
-                            className="flex-1 resize-none border border-blue-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            className="flex-1 min-w-0 resize-none border border-blue-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder="Escribe tu mensaje..."
