@@ -16,7 +16,10 @@ export default function ChatPage() {
   const navigate = useNavigate();
   const { logout, rol, userDataSession } = useContext(RoleContext);
   const { loading, send } = useSendFormV2();
-  const [chatId, setChatId] = useState(id);
+  const [chatId, setChatId] = useState( () => {
+    if (id === "candidato" || id == "empresa") return null;
+    return id;
+  });
   const [chatType, setChatType] = useState("chatPersona")
   const [searchText, setSearchText] = useState("");
   const [searchTextLocal, setSearchTextLocal] = useState("");
