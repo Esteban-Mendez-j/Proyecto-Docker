@@ -13,6 +13,7 @@ import exceptionControl from "../../services/exceptionControl.js";
 const ShortsPage = () => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [shortsData, setShortsData] = useState([]);
+  const [showInfo, setShowInfo] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPage, setTotalPage] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
@@ -78,6 +79,7 @@ const ShortsPage = () => {
       setCurrentPage(prev => prev + 1);
       setCurrentVideoIndex(0)
     }
+    setShowInfo(false);
   };
 
   // ► Ir al anterior video
@@ -88,6 +90,7 @@ const ShortsPage = () => {
       setCurrentPage(prev => prev - 1);
       setCurrentVideoIndex(shortsData.length-1)
     }
+    setShowInfo(false);
   };
 
   useEffect(() => {
@@ -109,7 +112,7 @@ const ShortsPage = () => {
   }, [shortsData, currentVideoIndex]);
 
   // función de la postulación
-  async function handleOnClick(i) {
+  async function handleOnClick() {
     try {
       const id = currentShort.nvacantes;
       await send(`/api/postulados/add/${id}`, "POST");
@@ -177,16 +180,38 @@ const ShortsPage = () => {
 
   return (
     <div className="shorts-container">
-      
-      {/* Botón atrás */}
-      <button className="back-btn" onClick={() => navigate(-1)}>←</button>
 
-      {/* Panel principal */}
-      <div className="shorts-wrapper">
+      {/* HEADER COMPACTO */}
+      <header className="shorts-header">
 
-        {/* VIDEO PANEL */}
+        <button
+          className="shorts-back-btn"
+          onClick={() => navigate(-1)}
+          aria-label="Regresar"
+        >
+          ←
+        </button>
+
+        <div className="text-2xl font-extrabold">
+          <span className="bg-gradient-primary bg-clip-text text-transparent">
+            SearchJobs
+          </span>
+        </div>
+
+        <span className="shorts-section">
+          Reels
+        </span>
+
+      </header>
+
+      {/* CONTENEDOR PRINCIPAL */}
+      <div className={`shorts-wrapper ${showInfo ? "info-open" : ""}`}>
+
+        {/* PANEL VIDEO */}
         <div className="video-panel">
+
           <div className="video-container">
+
             <video
               ref={videoRef}
               src={`${URL_VIDEO}${currentShort.videoLink}`}
@@ -196,45 +221,106 @@ const ShortsPage = () => {
               loop
             />
 
-            <button className="mute-btn" onClick={toggleMute}>
+            {/* BOTÓN SONIDO */}
+            <button
+              className="mute-btn"
+              onClick={toggleMute}
+            >
               {isMuted ? "🔇" : "🔊"}
             </button>
 
+            {/* NAVEGACIÓN */}
             <div className="arrows">
-              <button disabled={currentVideoIndex === 0 && currentPage === 0  } onClick={prevVideo}>▲</button>
-              <button disabled={currentVideoIndex === shortsData.length-1 || currentPage === totalPage } onClick={nextVideo}>▼</button>
-            </div>
-          </div>
-        </div>
-
-        {/* INFO PANEL */}
-        <div className="info-panel">
-            <div>
-              <Link to={`/perfil/empresa/${currentShort.idUsuario}`} className="profile-header">
-                <img
-                  src={
-                    currentShort.imagenEmpresa
-                      ? `${URL_IMAGEN}${currentShort.imagenEmpresa}`
-                      : `/imgEmpresa.png`
-                  }
-                  className="profile-icon"
-                />
-                <div>
-                  <h1>{currentShort.nameEmpresa}</h1>
-                </div>
-              </Link>
-
-              <h2 className="title">{currentShort.titulo}</h2>
-              <p className="description">{currentShort.descripcion}</p>
-
-              <button className="more-btn"
-                onClick={() => navigate(`/empleos/${currentShort.nvacantes}`)}
+              <button
+                disabled={currentVideoIndex === 0 && currentPage === 0}
+                onClick={prevVideo}
               >
-                Ver más información →
+                ▲
+              </button>
+
+              <button
+                disabled={
+                  currentVideoIndex === shortsData.length - 1 &&
+                  currentPage >= totalPage - 1
+                }
+                onClick={nextVideo}
+              >
+                ▼
               </button>
             </div>
 
-            <div className="actions">
+            {/* BOTÓN INFORMACIÓN: SOLO MÓVIL */}
+            <button
+              className="show-info-btn"
+              onClick={() => setShowInfo(!showInfo)}
+              aria-expanded={showInfo}
+            >
+              <ListSvg
+                name="estrella"
+                height={20}
+                width={20}
+              />
+              <span>
+                {showInfo ? "Ocultar información" : "Ver información"}
+              </span>
+              <span>{showInfo ? "↓" : "↑"}</span>
+            </button>
+
+          </div>
+        </div>
+
+        {/* PANEL INFORMACIÓN */}
+        <div className="info-panel">
+
+          {/* BOTÓN CERRAR: SOLO MÓVIL */}
+          <button
+            className="close-info-btn"
+            onClick={() => setShowInfo(false)}
+            aria-label="Cerrar información"
+          >
+            <span></span>
+          </button>
+
+          {/* AQUÍ CONSERVAS TODO TU CONTENIDO ACTUAL */}
+
+          <div>
+            <Link
+              to={`/perfil/empresa/${currentShort.idUsuario}`}
+              className="profile-header"
+            >
+              <img
+                src={
+                  currentShort.imagenEmpresa
+                    ? `${URL_IMAGEN}${currentShort.imagenEmpresa}`
+                    : "/imgEmpresa.png"
+                }
+                className="profile-icon"
+                alt="Empresa"
+              />
+
+              <div>
+                <h1>{currentShort.nameEmpresa}</h1>
+              </div>
+            </Link>
+
+            <h2 className="title">
+              {currentShort.titulo}
+            </h2>
+
+            <p className="description">
+              {currentShort.descripcion}
+            </p>
+
+            <button
+              className="more-btn"
+              onClick={() => navigate(`/empleos/${currentShort.nvacantes}`)}
+            >
+              Ver más información →
+            </button>
+          </div>
+
+        {/* CONSERVA AQUÍ TU BLOQUE ACTIONS ACTUAL */}
+        <div className="actions">
               {rol === "CANDIDATO" &&<button
                 className={`like-btn ${currentShort.vacanteGuardada ? "liked" : ""}`}
                 onClick={handleLike}
@@ -291,14 +377,11 @@ const ShortsPage = () => {
                     Inicia sesión para postularte
                   </Link>
                 ) : null}
-              </div>
-
             </div>
-
+          </div>
         </div>
       </div>
     </div>
   );
-};
-
+}
 export default ShortsPage;
