@@ -96,8 +96,6 @@
   }
 
   .filters-container {
-    background-color: rgba(255, 255, 255, 0.8);
-    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     border-radius: var(--radius);
     padding: 24px;
@@ -280,6 +278,56 @@
     border-color: var(--primary);
   }
 
+  /* Encabezado de filtros */
+  .filters-header-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .filters-header-toggle .filter-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .filter-toggle-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: white;
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .filter-toggle-button:hover {
+    background-color: var(--primary);
+    color: white;
+  }
+
+  .filters-collapsed {
+    padding-bottom: 12px;
+  }
+
+  .filters-collapsed .filters-header-toggle {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
   @media (max-width: 992px) {
     .content-container {
       grid-template-columns: 1fr;
@@ -306,7 +354,7 @@
     .page-title {
       font-size: 28px;
     }
-    
+
     .jobs-column {
       width: 100%;
       min-width: 0;
