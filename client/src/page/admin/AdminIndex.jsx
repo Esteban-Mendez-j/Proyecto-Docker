@@ -12,16 +12,27 @@ export default function AdminIndex() {
           <div className="flex-1">
             <h1 className="mb-6 text-2xl font-bold">Panel de Administrador</h1>
 
-            <div className="p-6 mb-8 bg-white border border-gray-200 rounded-2xl shadow-md">
-              <h2 className="mb-6 text-2xl font-bold text-gray-800">
-                📊 Análisis de Datos
-              </h2>
+            {/* Análisis de datos */}
+            <div className="p-4 sm:p-6 mb-8 bg-white border border-gray-200 rounded-2xl shadow-md w-full min-w-0">
 
-              <div className="relative w-full aspect-video overflow-hidden rounded-xl shadow-inner bg-gray-200 hover:shadow-lg transition-shadow">
-                <iframe title="DataSet SearchJobs" className="absolute inset-0 w-full h-full rounded-xl"
-                src="https://app.powerbi.com/view?r=eyJrIjoiY2M5MDI2MTktODA2NS00NjRiLWIzZjUtYjAxZmUyNTU5YTU2IiwidCI6IjlkMTJiZjNmLWU0ZjYtNDdhYi05MTJmLTFhMmYwZmM0OGFhNCIsImMiOjR9&pageName=5dddc9d19e754385b330" 
-                frameborder="0" allowFullScreen="true">
-                </iframe>
+              <div className="mb-5">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+                  📊 Análisis de Datos
+                </h2>
+
+                <p className="text-sm text-gray-500 mt-2">
+                  Estadísticas generales de la plataforma SearchJobs.
+                </p>
+              </div>
+
+              {/* Contenedor responsive del iframe */}
+              <div className=" relative w-full h-[550px] sm:h-[600px] lg:h-[700px] overflow-hidden rounded-xl shadow-inner bg-gray-100">
+                <iframe
+                  title="DataSet SearchJobs"
+                  className="absolute inset-0 w-full h-full border-0 rounded-xl"
+                  src="https://app.powerbi.com/view?r=eyJrIjoiY2M5MDI2MTktODA2NS00NjRiLWIzZjUtYjAxZmUyNTU5YTU2IiwidCI6IjlkMTJiZjNmLWU0ZjYtNDdhYi05MTJmLTFhMmYwZmM0OGFhNCIsImMiOjR9&pageName=5dddc9d19e754385b330"
+                  allowFullScreen
+                />
               </div>
             </div>
           </div>

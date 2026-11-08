@@ -10,6 +10,7 @@ import useFiltro from "../../hooks/useFiltro.jsx";
 import Table from "../../components/Table.jsx";
 import { inputModal, modalResponse, modal, modalTime } from "../../services/Modal.js";
 import SinResultados from "../../components/SinResultados.jsx"
+import "../../style/usuarios/filtros.css"
 
 export default function AdminVacantes() {
   const navigate = useNavigate();
@@ -123,78 +124,114 @@ export default function AdminVacantes() {
           <div className="flex-1">
             <div className="flex-1 max-w-7xl mx-auto px-4">
               <h1 className="text-2xl font-bold">Gestión de Vacantes</h1>
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-                <div className="flex flex-wrap gap-2 md:items-center ">
-                  <div className="flex flex-col">
-                    <label className="text-sm font-medium text-gray-700 mb-1" htmlFor="nameEmpresa">Nombre Empresa</label>
+              {/* Filtros de vacantes */}
+              <div className="admin-filtros">
+                <h2 className="admin-filtros-titulo">
+                  Filtrar vacantes
+                </h2>
+                <div className="admin-filtros-grid">
+
+                  {/* Filtro por empresa */}
+                  <div className="admin-filtro-campo">
+                    <label htmlFor="nameEmpresa">Nombre de la empresa</label>
                     <input
+                      id="nameEmpresa"
                       type="text"
-                      placeholder="Buscar Empresa..."
+                      placeholder="Buscar empresa..."
                       name="nameEmpresa"
                       value={filtrosLocal.nameEmpresa}
                       onChange={handleOnFilters}
-                      className="w-44 py-2 pl-4 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="admin-filtro-control"
                     />
                   </div>
-                  <div className="flex flex-col">
-                    <label className="text-sm font-medium text-gray-700 mb-1" htmlFor="ciudad">Ciudad</label>
+
+                  {/* Filtro por ciudad */}
+                  <div className="admin-filtro-campo">
+                    <label htmlFor="ciudad">Ciudad</label>
                     <input
+                      id="ciudad"
                       type="text"
-                      placeholder="Buscar por Ciudad..."
+                      placeholder="Buscar por ciudad..."
                       name="ciudad"
                       value={filtrosLocal.ciudad}
                       onChange={handleOnFilters}
-                      className="w-44 py-2 pl-4 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="admin-filtro-control"
                     />
                   </div>
-                  <div className="flex flex-col">
-                    <label className="text-sm font-medium text-gray-700 mb-1" htmlFor="titulo">Titulo</label>
+
+                  {/* Filtro por título */}
+                  <div className="admin-filtro-campo">
+                    <label htmlFor="titulo">Título</label>
                     <input
+                      id="titulo"
                       type="text"
-                      placeholder="Buscar por Título..."
+                      placeholder="Buscar por título..."
                       name="titulo"
                       value={filtrosLocal.titulo}
                       onChange={handleOnFilters}
-                      className="w-44 py-2 pl-4 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="admin-filtro-control"
                     />
                   </div>
-                  <div className="flex flex-col">
-                    <label className="text-sm font-medium text-gray-700 mb-1" htmlFor="tipo">Tipo</label>
+
+                  {/* Filtro por tipo */}
+                  <div className="admin-filtro-campo">
+                    <label htmlFor="tipo">Tipo</label>
                     <select
-                    name="tipo"
-                    value={filtrosLocal.tipo}
-                    onChange={handleOnFilters}
-                    className="w-44 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="todos">
-                      Todos los tipos
-                    </option>
-                    <option value="Vacante">Vacante</option>
-                    <option value="Practica">Práctica</option>
-                  </select>
+                      id="tipo"
+                      name="tipo"
+                      value={filtrosLocal.tipo}
+                      onChange={handleOnFilters}
+                      className="admin-filtro-control"
+                    >
+                      <option value="todos">Todos los tipos</option>
+                      <option value="Vacante">Vacante</option>
+                      <option value="Practica">Práctica</option>
+                    </select>
                   </div>
-                  <div className="flex flex-col">
-                    <label className="text-sm font-medium text-gray-700 mb-1" htmlFor="totalpostulaciones">Minimo de Postulaciones</label>
+
+                  {/* Filtro por postulaciones */}
+                  <div className="admin-filtro-campo">
+                    <label htmlFor="totalpostulaciones">
+                      Mínimo de postulaciones
+                    </label>
                     <input
-                    placeholder="Buscar por Postulacion.."
-                    type="number"
-                    name="totalpostulaciones"
-                    value={filtrosLocal.totalpostulaciones}
-                    onChange={handleOnFilters}
-                    min="0" // mínimo valor permitido
-                    className="w-44 py-2 pl-4 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                      id="totalpostulaciones"
+                      type="number"
+                      name="totalpostulaciones"
+                      placeholder="Mínimo de postulaciones..."
+                      value={filtrosLocal.totalpostulaciones}
+                      onChange={handleOnFilters}
+                      min="0"
+                      className="admin-filtro-control"
+                    />
                   </div>
-                  
-                  <div className="flex gap-3">
-                    <button onClick={searchFilters} className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700">
+
+                  {/* Botones */}
+                  <div className="admin-filtros-botones">
+                    <button
+                      type="button"
+                      onClick={searchFilters}
+                      className="admin-btn-buscar"
+                    >
                       Buscar
                     </button>
-                    <button onClick={handleOnIsActive} className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
-                      {filtrosAplicados.isActive ? 'Ver Baneados' : 'Ver Activos'}
-                    </button>
-                    <button onClick={clearFilters} className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-gray-600">
-                      Limpiar Filtros
+                    <button
+                      type="button"
+                      onClick={clearFilters}
+                      className="admin-btn-limpiar"
+                    >
+                      Limpiar
+                    </button>  
+                  </div>
+                  <div className="admin-filtros-botones">
+                    <button
+                      type="button"
+                      onClick={handleOnIsActive}
+                      className="admin-btn-estado"
+                    >
+                      {filtrosAplicados.isActive
+                        ? "Ver Desactivadas"
+                        : "Ver Activas"}
                     </button>
                   </div>
 
@@ -227,7 +264,8 @@ export default function AdminVacantes() {
                       subTitulo={"Revisa los Filtros o espera a que se registre una Vacante"} />
                     )
                     :
-                    (<Table listEncabezados={listHeaders} listObjetos={vacantes} action={[
+                    (<Table listEncabezados={listHeaders} listObjetos={vacantes} mobileCards={true}
+                      action={[
                       { text: "Ver", funcion: (vacantes) => navigate(`/empleos/${vacantes.nvacantes}`), clase: "mr-3 text-blue-600 hover:text-blue-900" },
                       { text: "Postulados", funcion: (vacantes) => navigate(`/empresa/postulados/${vacantes.nvacantes}`), clase: "text-blue-600 hover:text-blue-900" },
                       filtrosAplicados.isActive ?
@@ -256,6 +294,7 @@ export default function AdminVacantes() {
           </div>
         </div>
       </div>
+      <br />
     </Layout>
   );
 }
