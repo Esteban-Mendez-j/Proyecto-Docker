@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Layout from "../../layouts/layout.jsx";
 import "../../style/invitado/empleos.css";
 import "../../style/invitado/postulados.css";
@@ -11,6 +11,7 @@ import { modalTime, QuestionModal } from "../../services/Modal.js";
 import SinResultados from "../../components/SinResultados.jsx";
 import { useSendFormV2 } from "../../hooks/useFetch.jsx";
 import exceptionControl from "../../services/exceptionControl.js";
+import { RoleContext } from "../../services/RoleContext.jsx";
 
 export default function PostuladosPage() {
   const initialFiltro = {
@@ -44,6 +45,7 @@ export default function PostuladosPage() {
   const [ filtrosLocal, filtrosAplicados, handleOnFilters, clearFilters, searchFilters ] = useFiltro(initialFiltro, setCurrentPage, "FiltrosCandidatoPostulado");
   const itemsPerPage = 10;
   const navigate = useNavigate();
+  const { logout } = useContext(RoleContext)
 
   const fetchPostulaciones = async (page = 1) => {
     try {
@@ -94,12 +96,12 @@ export default function PostuladosPage() {
 
         <div>
           {/* Filtros */}
-          <div className="mb-8 p-6 bg-white rounded-2xl shadow-md border border-gray-200">
+          <div className="filtros-postulaciones mb-8 bg-white rounded-2xl shadow-md border border-gray-200">
             <h2 className="text-xl font-semibold text-gray-800 mb-6">Filtrar Postulaciones</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="filtros-postulaciones-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Vacante */}
-              <div className="flex flex-col">
+              <div className="filtro-campo flex flex-col">
                 <label className="text-sm font-medium text-gray-700 mb-1">Vacante</label>
                 <input
                   type="text"
@@ -107,12 +109,12 @@ export default function PostuladosPage() {
                   value={filtrosLocal.tituloVacante}
                   onChange={handleOnFilters}
                   placeholder="Ej. Desarrollador"
-                  className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="filtro-control px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
 
               {/* Empresa */}
-              <div className="flex flex-col">
+              <div className="filtro-campo flex flex-col">
                 <label className="text-sm font-medium text-gray-700 mb-1">Empresa</label>
                 <input
                   type="text"
@@ -120,18 +122,18 @@ export default function PostuladosPage() {
                   value={filtrosLocal.empresa}
                   onChange={handleOnFilters}
                   placeholder="Ej. Google"
-                  className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="filtro-control px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
 
               {/* Estado */}
-              <div className="flex flex-col">
+              <div className="filtro-campo flex flex-col">
                 <label className="text-sm font-medium text-gray-700 mb-1">Estado</label>
                 <select
                   name="estado"
                   value={filtrosLocal.estado}
                   onChange={handleOnFilters}
-                  className="px-4 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="filtro-control px-4 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 >
                   <option value="">Todos</option>
                   <option value="Espera">En Espera</option>
@@ -141,7 +143,7 @@ export default function PostuladosPage() {
               </div>
 
               {/* Fecha mínima */}
-              <div className="flex flex-col">
+              <div className="filtro-campo flex flex-col">
                 <label className="text-sm font-medium text-gray-700 mb-1 flex items-center">
                   Fecha desde
                   <span
@@ -157,7 +159,7 @@ export default function PostuladosPage() {
                   name="fechaMinima"
                   value={filtrosLocal.fechaMinima}
                   onChange={handleOnFilters}
-                  className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="filtro-control px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -189,10 +191,12 @@ export default function PostuladosPage() {
           ) : (
             <>
               <div className="overflow-x-auto">
-                <Table listEncabezados={listHeader} listObjetos={postulaciones} action={[
-                  { text: "Ver vacante", funcion: (p) => irADetalleVacante(p.vacante.id), clase: "bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition-transform duration-200 hover:scale-105 w-32 text-center" },
-                  { text: "Cancelar", funcion: (p) => cancelarPostulacion(p.nPostulacion, false, p.vacante.id), clase: "bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition-transform duration-200 hover:scale-105" },
-                ]} />
+                <Table listEncabezados={listHeader} listObjetos={postulaciones} mobileCards={true}
+                  action={[
+                    { text: "Ver vacante", funcion: (p) => irADetalleVacante(p.vacante.id), clase: "bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition-transform duration-200 hover:scale-105 w-32 text-center" },
+                    { text: "Cancelar", funcion: (p) => cancelarPostulacion(p.nPostulacion, false, p.vacante.id), clase: "bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition-transform duration-200 hover:scale-105" },
+                  ]} 
+                />
               </div>
               <Paginacion
                 currentPage={currentPage}

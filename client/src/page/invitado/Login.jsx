@@ -98,6 +98,7 @@ export default function Login (){
                         />
 
                         <div className="form-group">
+                            <br />
                             <label htmlFor="password">Contraseña</label>
                             <div className="password-input">
                                 <input 
@@ -126,7 +127,7 @@ export default function Login (){
                                     }
                                 </button>                          
                             </div>
-                        </div>
+                        </div> <br />
 
                         <button type="submit" className="btn btn-primary submit-button">
                             Iniciar Sesión

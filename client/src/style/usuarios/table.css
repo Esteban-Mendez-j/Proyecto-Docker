@@ -1,0 +1,202 @@
+/* =========================================
+   TABLA GENERAL
+========================================= */
+
+.tabla-contenedor {
+    width: 100%;
+}
+
+.tabla-escritorio {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.tabla-escritorio table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.tabla-escritorio th,
+.tabla-escritorio td {
+    vertical-align: middle;
+}
+
+.tabla-tarjetas {
+    display: none;
+}
+
+/* =========================================
+   LISTA DESPLEGABLE PARA MÓVILES
+========================================= */
+
+@media (max-width: 768px) {
+
+    .tabla-con-tarjetas .tabla-escritorio {
+        display: none;
+    }
+
+    .tabla-con-tarjetas .tabla-tarjetas {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .tabla-tarjeta {
+        width: 100%;
+        box-sizing: border-box;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 13px;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.045);
+        transition: box-shadow 0.2s ease;
+    }
+
+    .tabla-tarjeta.expandida {
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Resumen visible siempre */
+    .tabla-tarjeta-resumen {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 15px;
+    }
+
+    .tabla-tarjeta-vacante {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .tabla-tarjeta-label {
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.35px;
+    }
+
+    .tabla-tarjeta-titulo {
+        color: #1f2937;
+        font-size: 15px;
+        font-weight: 650;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+    }
+
+    /* Botón desplegar */
+    .tabla-tarjeta-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        flex-shrink: 0;
+        padding: 8px 10px;
+        border: 1px solid #dbeafe;
+        border-radius: 9px;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+    .tabla-tarjeta-toggle:hover {
+        background: #dbeafe;
+    }
+
+    .tabla-tarjeta-flecha {
+        display: flex;
+        align-items: center;
+        transition: transform 0.2s ease;
+    }
+
+    .tabla-tarjeta-flecha.abierta {
+        transform: rotate(180deg);
+    }
+
+    /* Detalles desplegados */
+    .tabla-tarjeta-detalles {
+        padding: 0 15px 15px;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .tabla-tarjeta-contenido {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .tabla-tarjeta-fila {
+        display: grid;
+        grid-template-columns: minmax(85px, 0.8fr) minmax(0, 1.4fr);
+        align-items: start;
+        gap: 12px;
+        padding: 11px 0;
+        border-bottom: 1px solid #f1f1f1;
+    }
+
+    .tabla-tarjeta-valor {
+        color: #1f2937;
+        font-size: 13px;
+        font-weight: 500;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+    /* Acciones */
+    .tabla-tarjeta-acciones {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-top: 14px;
+    }
+
+    .tabla-tarjeta-acciones button {
+        flex: 1 1 120px;
+        min-width: 0;
+        width: auto;
+        padding: 10px 12px;
+        border-radius: 9px;
+        font-size: 13px;
+        text-align: center;
+    }
+}
+
+/* =========================================
+   MÓVILES PEQUEÑOS
+========================================= */
+
+@media (max-width: 380px) {
+
+    .tabla-tarjeta-resumen {
+        padding: 13px 11px;
+        gap: 8px;
+    }
+
+    .tabla-tarjeta-titulo {
+        font-size: 14px;
+    }
+
+    .tabla-tarjeta-toggle {
+        padding: 7px 8px;
+        font-size: 11px;
+    }
+
+    .tabla-tarjeta-detalles {
+        padding: 0 11px 13px;
+    }
+
+    .tabla-tarjeta-fila {
+        grid-template-columns: minmax(75px, 0.8fr) minmax(0, 1.2fr);
+        gap: 8px;
+    }
+}
