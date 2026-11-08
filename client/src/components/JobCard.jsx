@@ -4,6 +4,7 @@ import { API_CLIENT_URL, URL_IMAGEN } from '../services/Api.js';
 import { RoleContext } from "../services/RoleContext.jsx";
 import { toggleFavoritoRequest } from '../services/ToggleFavoritosRequest.js';
 import { ListSvg } from "./icons.jsx";
+import "../style/invitado/jobcard.css"
 
 export default function JobCard({ job, cambiarEstado, verSeccionEdit, presentaion, verPrediccion, onToggleFavorito}) {
 
@@ -154,117 +155,175 @@ export default function JobCard({ job, cambiarEstado, verSeccionEdit, presentaio
         )
     }
     // Muestra los empleos en filas
+    
     if (presentaion == 2) {
         return (
-            <div className="flex flex-col divide-y">
+            <div className="job-row-card">
+
+                {/* Información principal */}
                 <div
-                    key={job.nvacantes}
-                    /*  MODIFICACIÓN 3: Cambiamos dinámicamente el fondo de la fila completa si es recomendada */
-                    className={`flex items-center justify-between gap-4 py-4 px-3 transition-colors cursor-pointer border-b border-gray-400 ${job.recomendado
-                            ? "bg-blue-50/70 hover:bg-blue-100/90 border-l-4 border-l-blue-500"
-                            : "hover:bg-blue-100"
+                    className={`job-row-main ${job.recomendado ? "job-row-recommended" : ""
                         }`}
-                    onClick={() => (window.location.href = `/empleos/${job.nvacantes}`)}
+                    onClick={() => navigate(`/empleos/${job.nvacantes}`)}
                 >
-                    <div className="flex items-center gap-4">
-                        <img
-                            src={
-                                job.imagenEmpresa? `${URL_IMAGEN}${job.imagenEmpresa}` : `/imgEmpresa.png`
-                            }
-                            alt={job.nameEmpresa}
-                            className="w-14 h-14 rounded-md object-cover"
-                        />
-                        <div>
-                            {/*  MODIFICACIÓN 4: Añadimos un pequeño indicador de texto al lado del título en la fila */}
-                            <div className="flex flex-row items-center gap-2 mb-1 w-full">
-                                <h3 className="title m-0 inline-block font-semibold text-gray-900">{job.titulo}</h3>
-                                {job.recomendado && (
-                                    <span className="inline-block bg-blue-600 text-white font-bold text-[9px] px-2 py-0.5 rounded shadow-sm uppercase tracking-wider whitespace-nowrap min-w-max h-auto leading-none">
-                                        Recomendada
-                                    </span>
-                                )}
-                            </div>
-                            <p className="detail">
-                                <ListSvg name={"empresa"} width={18} height={18} /> {job.nameEmpresa}
-                                <ListSvg name={"ubicacion"} width={16} height={16} /> {job.ciudad}
-                                <ListSvg name={"usuario"} width={16} height={16} /> {job.totalpostulaciones}
-                                <ListSvg name={"maleta"} width={16} height={16} /> {job.tipo}
-                                <ListSvg name={"reloj"} width={16} height={16} /> {job.experiencia} años de experiencia
-                                {(rol === "CANDIDATO" && verPrediccion) && (
-                                    <>
-                                        <ListSvg name={"prediccion"} height={18} width={18} />
-                                        {job.prediccion}%
-                                    </>
-                                )}
-                            </p>
+                    <img
+                        src={
+                            job.imagenEmpresa
+                                ? `${URL_IMAGEN}${job.imagenEmpresa}`
+                                : `/imgEmpresa.png`
+                        }
+                        alt={job.nameEmpresa}
+                        className="job-row-logo"
+                    />
+
+                    <div className="job-row-info">
+
+                        {/* Título y recomendación */}
+                        <div className="job-row-title-container">
+                            <h3 className="job-row-title">
+                                {job.titulo}
+                            </h3>
+
+                            {job.recomendado && (
+                                <span className="job-row-badge">
+                                    Recomendada
+                                </span>
+                            )}
+                        </div>
+
+                        {/* Información de la vacante */}
+                        <div className="job-row-details">
+
+                            <span className="job-row-detail">
+                                <ListSvg name={"empresa"} width={18} height={18} />
+                                <span>{job.nameEmpresa}</span>
+                            </span>
+
+                            <span className="job-row-detail">
+                                <ListSvg name={"ubicacion"} width={16} height={16} />
+                                <span>{job.ciudad}</span>
+                            </span>
+
+                            <span className="job-row-detail">
+                                <ListSvg name={"usuario"} width={16} height={16} />
+                                <span>{job.totalpostulaciones} postulados</span>
+                            </span>
+
+                            <span className="job-row-detail">
+                                <ListSvg name={"maleta"} width={16} height={16} />
+                                <span>{job.tipo}</span>
+                            </span>
+
+                            <span className="job-row-detail">
+                                <ListSvg name={"reloj"} width={16} height={16} />
+                                <span>{job.experiencia} años de experiencia</span>
+                            </span>
+
+                            {(rol === "CANDIDATO" && verPrediccion) && (
+                                <span className="job-row-detail">
+                                    <ListSvg name={"prediccion"} height={18} width={18} />
+                                    <span>{job.prediccion}% de afinidad</span>
+                                </span>
+                            )}
+
                         </div>
                     </div>
+                </div>
 
-                    <div className="flex flex-col items-end">
-                        <span className="text-sm text-gray-500">
-                            {"CANDIDATO" == rol && <button
-                                className="flex items-center justify-center w-8 h-8 rounded-md bg-gray-100 border border-gray-300 hover:bg-gray-200 transition-colors duration-200 ml-auto z-[100]"
+                {/* Acciones y estados */}
+                <div className="job-row-actions">
+
+                    <div className="job-row-status">
+
+                        {rol === "CANDIDATO" && (
+                            <button
+                                className="job-row-favorite"
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    handleToggleFavorito(job.nvacantes);
+                                    handleToggleFavorito();
                                 }}
                                 title="Agregar a favoritos"
                             >
-                                <ListSvg name={"estrella"} height={10} width={10} nameClass={`w-5 h-5 transition-colors duration-200 ${isFavorite ? "text-yellow-400 fill-yellow-400" : "text-gray-400 fill-gray-100 "}`} />
-                            </button>}
-                        </span>
+                                <ListSvg
+                                    name={"estrella"}
+                                    height={10}
+                                    width={10}
+                                    nameClass={`w-5 h-5 transition-colors duration-200 ${isFavorite
+                                            ? "text-yellow-400 fill-yellow-400"
+                                            : "text-gray-400 fill-gray-100"
+                                        }`}
+                                />
+                            </button>
+                        )}
 
-                        <div className="flex flex-wrap items-center gap-2 mt-2">
-                            {job.candidatoPostulado && (
-                                <span
-                                    className={`text-xs font-semibold px-2 py-1 rounded-full ${job.estadoPostulacion === "Aceptada"
+                        {job.candidatoPostulado && (
+                            <span
+                                className={`text-xs font-semibold px-2 py-1 rounded-full ${job.estadoPostulacion === "Aceptada"
                                         ? "bg-green-100 text-green-700"
                                         : job.estadoPostulacion === "Rechazada"
                                             ? "bg-red-100 text-red-700"
                                             : "bg-blue-100 text-blue-700"
-                                        }`}
-                                >
-                                    {job.estadoPostulacion}
-                                </span>
-                            )}
+                                    }`}
+                            >
+                                {job.estadoPostulacion}
+                            </span>
+                        )}
 
-                            {!job.active && (
-                                <span className="bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-md">
-                                    {rol === "EMPRESA" ? "Desactivada por Admin" : "Desactivada"}
-                                </span>
-                            )}
+                        {!job.active && (
+                            <span className="bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-md">
+                                {rol === "EMPRESA"
+                                    ? "Desactivada por Admin"
+                                    : "Desactivada"}
+                            </span>
+                        )}
 
-                            {rol === "EMPRESA" && verSeccionEdit && (
-                                <div className="flex items-center gap-2 ml-auto">
-                                    <button
-                                        className="px-3 py-1.5 text-sm font-medium border border-gray-300 rounded-md hover:text-white hover:bg-blue-500 transition"
-                                        onClick={(e) => {
-                                            e.preventDefault()
-                                            e.stopPropagation();
-                                            navigate(`/empresa/editar/vacantes/${job.nvacantes}`)
-                                        }}>
-                                        Editar
-                                    </button>
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            cambiarEstado(job.nvacantes, !job.activaPorEmpresa)
-                                        }}
-                                        className={`px-3 py-1.5 text-sm font-semibold rounded-md shadow ${job.activaPorEmpresa
-                                            ? "bg-red-500 hover:bg-red-600 text-white"
-                                            : "bg-green-500 hover:bg-green-600 text-white"
-                                            }`}
-                                    >
-                                        {job.activaPorEmpresa ? "Desactivar" : "Activar"}
-                                    </button>
-                                </div>
-                            )}
-                        </div>
+                        {!job.activaPorEmpresa && job.active && (
+                            <span className="bg-yellow-500 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-md">
+                                {rol === "EMPRESA"
+                                    ? "Desactivada por ti"
+                                    : "Desactivada"}
+                            </span>
+                        )}
+
                     </div>
+
+                    {rol === "EMPRESA" && verSeccionEdit && (
+                        <div className="job-row-company-actions">
+
+                            <button
+                                className="job-row-edit"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    navigate(`/empresa/editar/vacantes/${job.nvacantes}`);
+                                }}
+                            >
+                                Editar
+                            </button>
+
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    cambiarEstado(
+                                        job.nvacantes,
+                                        !job.activaPorEmpresa
+                                    );
+                                }}
+                                className={`px-3 py-1.5 text-sm font-semibold rounded-md shadow ${job.activaPorEmpresa
+                                        ? "bg-red-500 hover:bg-red-600 text-white"
+                                        : "bg-green-500 hover:bg-green-600 text-white"
+                                    }`}
+                            >
+                                {job.activaPorEmpresa ? "Desactivar" : "Activar"}
+                            </button>
+
+                        </div>
+                    )}
 
                 </div>
             </div>
-        )
+        );
     }
+
 }

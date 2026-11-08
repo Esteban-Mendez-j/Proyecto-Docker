@@ -203,10 +203,18 @@
     margin-bottom: 40px;
   }
 
-  .jobs-column{
+  .jobs-column {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    min-width: 0;
     margin-bottom: 40px;
+    gap: 16px;
+  }
+
+  .jobs-column > * {
+    min-width: 0;
+    max-width: 100%;
   }
 
   .pagination {
@@ -278,11 +286,11 @@
     }
 
     .filters-container {
-      order: 1;
+      order: 0;
     }
 
     .jobs-container {
-      order: 0;
+      order: 1;
     }
   }
 
@@ -297,5 +305,21 @@
 
     .page-title {
       font-size: 28px;
+    }
+    
+    .jobs-column {
+      width: 100%;
+      min-width: 0;
+      overflow-x: hidden;
+    }
+
+    .jobs-column > * {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .jobs-container {
+      min-width: 0;
+      width: 100%;
     }
   }

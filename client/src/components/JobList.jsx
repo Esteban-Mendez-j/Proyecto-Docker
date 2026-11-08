@@ -211,7 +211,7 @@ const JobList = ({
       <div className={presentacion == 1 ? "jobs-grid" : "jobs-column"}>
         {presentacion == 3 ? (
           <div className="w-full overflow-x-auto">
-            <Table listEncabezados={listHeader} listObjetos={jobs} action={rol === "EMPRESA" ? [
+            <Table listEncabezados={listHeader} listObjetos={jobs} mobileCards={true} action={rol === "EMPRESA" ? [
               {
                 text: "Editar",
                 funcion: (job) => { navigate(`/empresa/editar/vacantes/${job.nvacantes}`) },
