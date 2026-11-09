@@ -14,13 +14,11 @@ import org.springframework.stereotype.Service;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.miproyecto.proyecto.vacante.dto.BloqueVacantesCache;
 
-import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
-@Slf4j
 public class VacantesCacheService {
 
     private static final int MAX_ENTRADAS_CANDIDATO = 3;
@@ -122,11 +120,6 @@ public class VacantesCacheService {
             fechasCreacion.remove(masAntigua);
             claves.remove(masAntigua);
 
-            log.info(
-                "Entrada antigua eliminada. Candidato: {}, clave: {}",
-                idCandidato,
-                masAntigua
-            );
         }
     }
 
@@ -178,11 +171,6 @@ public class VacantesCacheService {
                 fechasCreacion.keySet()
                         .removeIf(key -> key.startsWith(prefijo));
 
-                log.info(
-                    "Caché invalidada para candidato {}. Entradas eliminadas: {}",
-                    idCandidato,
-                    eliminadas
-                );
             }
         });
     }
@@ -191,13 +179,6 @@ public class VacantesCacheService {
      * Invalida todos los bloques de todos los candidatos.
      */
     public void invalidarTodas() {
-
-        ejecutarDespuesDelCommit(() -> {
-
-            cache.invalidateAll();
-            fechasCreacion.clear();
-
-            log.info("Caché global invalidada");
-        });
+        ejecutarDespuesDelCommit(() -> { cache.invalidateAll(); fechasCreacion.clear();});
     }
 }

@@ -20,4 +20,12 @@ public interface AptitudesRepository extends JpaRepository<Aptitudes, Long> {
         WHERE v.nvacantes IN :idsVacantes
     """)
     List<Object[]> findAptitudesByVacantes(@Param("idsVacantes") List<Long> idsVacantes);
+
+    @Query("""
+        SELECT a.nombreAptitud
+        FROM Vacante v
+        LEFT JOIN v.aptitudes a
+        WHERE v.nvacantes = :idsVacantes
+    """)
+    List<String> findNombresAptitudesByVacanteId(@Param("idsVacantes") Long idsVacantes);
 } 

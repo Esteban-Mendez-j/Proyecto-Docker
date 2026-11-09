@@ -9,10 +9,10 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.miproyecto.proyecto.aptitudes.repository.AptitudesRepository;
 import com.miproyecto.proyecto.candidato.repository.CandidatoRepository;
 import com.miproyecto.proyecto.ml.service.PrediccionService;
 import com.miproyecto.proyecto.postulacion.repository.PostuladoRepository;
-import com.miproyecto.proyecto.vacante.repository.VacanteRepository;
 
 class PrediccionServiceTest {
 
@@ -21,9 +21,9 @@ class PrediccionServiceTest {
     @BeforeEach
     void setUp() {
         CandidatoRepository candidatoRepo = mock(CandidatoRepository.class);
-        VacanteRepository vacanteRepo = mock(VacanteRepository.class);
+        AptitudesRepository aptitudRepo = mock(AptitudesRepository.class);
         PostuladoRepository postuladoRepo = mock(PostuladoRepository.class);
-        prediccionService = new PrediccionService(candidatoRepo, vacanteRepo, postuladoRepo);
+        prediccionService = new PrediccionService(candidatoRepo, aptitudRepo, postuladoRepo);
     }
 
     @Test

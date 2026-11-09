@@ -15,8 +15,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.hibernate.Hibernate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -75,17 +73,14 @@ public class VacanteService {
     private final CargoService cargoService;
     private final RequisitoService requisitoService;
     private final SupabaseStorageService supabaseStorageService;
-    @Qualifier("vacantesOptimizadasCache")
-    private final Cache<String, BloqueVacantesCache> vacantesOptimizadasCache;
     private final ObjectMapper objectMapper;
-    private static final Logger log = LoggerFactory.getLogger(VacanteService.class);
 
     public VacanteService(VacanteFavoritaRepository vacanteFavoritaRepository, VacanteRepository vacanteRepository,
             EmpresaRepository empresaRepository, PostuladoRepository postuladoRepository,
             CandidatoRepository candidatoRepository, AptitudesService aptitudesService,
             PrediccionService prediccionService, OptimizationService optimizationService, CargoService cargoService,
             RequisitoService requisitoService, SupabaseStorageService supabaseStorageService,
-            Cache<String, BloqueVacantesCache> vacantesOptimizadasCache, ObjectMapper objectMapper, VacantesCacheService vacantesCacheService) {
+            ObjectMapper objectMapper, VacantesCacheService vacantesCacheService) {
         this.vacanteFavoritaRepository = vacanteFavoritaRepository;
         this.vacanteRepository = vacanteRepository;
         this.empresaRepository = empresaRepository;
@@ -97,7 +92,6 @@ public class VacanteService {
         this.cargoService = cargoService;
         this.requisitoService = requisitoService;
         this.supabaseStorageService = supabaseStorageService;
-        this.vacantesOptimizadasCache = vacantesOptimizadasCache;
         this.objectMapper = objectMapper;
         this.vacantesCacheService = vacantesCacheService;
     }
@@ -242,17 +236,6 @@ public class VacanteService {
         // Obtener las vacantes optimizadas del bloque.
         BloqueVacantesCache bloque = obtenerBloqueOptimizado( idPsotulacion, filtro, numeroBloque);
 
-        // Estadísticas de Caffeine
-        log.info("========== ESTADÍSTICAS DE CACHÉ ==========");
-        log.info("Entradas almacenadas: {}", vacantesOptimizadasCache.estimatedSize());
-        log.info("Hits: {}", vacantesOptimizadasCache.stats().hitCount());
-        log.info("Misses: {}", vacantesOptimizadasCache.stats().missCount());
-        log.info("Hit Rate: {}", vacantesOptimizadasCache.stats().hitRate());
-        log.info("Cargas exitosas: {}", vacantesOptimizadasCache.stats().loadSuccessCount());
-        log.info("Cargas fallidas: {}", vacantesOptimizadasCache.stats().loadFailureCount());
-        log.info("Eliminaciones: {}", vacantesOptimizadasCache.stats().evictionCount());
-        log.info("============================================");
-
         List<VacanteDTO> vacantes = bloque.vacantes();
 
         // Calcular qué posiciones del bloque corresponden a esta página.
@@ -356,9 +339,6 @@ public class VacanteService {
             FiltroVacanteDTO filtro,
             int numeroBloque) {
 
-        log.info("EJECUTANDO CONSULTA Y OPTIMIZACIÓN");
-        log.info("Bloque solicitado: {}", numeroBloque);
-
         final int TAMANO_BLOQUE = 200;
 
         Pageable pageableBackend = PageRequest.of( numeroBloque, TAMANO_BLOQUE);
@@ -416,13 +396,6 @@ public class VacanteService {
 
             // La caché se diferencia por usuario, bloque y filtros.
             String cacheKey = idPsotulacion+ "|" + numeroBloque + "|" + filtrosJson;
-
-            log.info("`\n========== DEBUG CACHÉ ==========");
-            log.info("Usuario: {}", idPsotulacion);
-            log.info("Número de bloque: {}", numeroBloque);
-            log.info("Filtros JSON: {}", filtrosJson);
-            log.info("Clave de caché: {}", cacheKey);
-            log.info("================================");
 
             // Si existe, devuelve el resultado.
             // Si no existe, ejecuta la consulta y optimización.
