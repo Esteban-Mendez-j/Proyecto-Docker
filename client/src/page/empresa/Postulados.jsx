@@ -4,7 +4,7 @@ import "../../style/invitado/empleos.css"
 import "../../style/invitado/postulados.css"
 import { useContext, useEffect, useState } from "react";
 import Pagination from "../../components/Paginacion.jsx";
-import { URL_IMAGEN } from "../../services/Api.js";
+import { URL_PDF } from "../../services/Api.js";
 import { modal, QuestionModal } from "../../services/Modal.js";
 import {sendMessage} from "../../services/Websocket.js"
 import { mensajesNotificaciones } from "../../services/data.js";
@@ -74,7 +74,7 @@ export default function Postulados() {
             nameAtributo: "candidato.curriculo", modificacion: (p) => {
                 return (
                     <a
-                        href={`${URL_IMAGEN}${p.candidato.curriculo}`}
+                        href={`${URL_PDF}${p.candidato.curriculo}`}
                         target="_blank"
                         className="text-blue-500 hover:underline font-medium"
                     >
