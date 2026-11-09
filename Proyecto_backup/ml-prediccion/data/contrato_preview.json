@@ -1,0 +1,1634 @@
+{
+  "data": {
+    "success": true,
+    "mensaje": "Prediccion generada correctamente",
+    "fecha_generacion": "2026-11-09T07:20:46+00:00",
+    "horizonte_prediccion": {
+      "inicio": 2027,
+      "fin": 2027
+    },
+    "cargos": [
+      {
+        "id": 127,
+        "nombre": "Desarrolladores de software",
+        "posicion": 1,
+        "success": true,
+        "motivo_sin_prediccion": "",
+        "demanda_historica": [
+          {
+            "periodo": 2024,
+            "cantidad": 567
+          },
+          {
+            "periodo": 2025,
+            "cantidad": 741
+          },
+          {
+            "periodo": 2026,
+            "cantidad": 840
+          }
+        ],
+        "prediccion": [
+          {
+            "periodo": 2027,
+            "cantidad_predicha": 1038,
+            "limite_inferior": 885,
+            "limite_superior": 1251
+          }
+        ],
+        "crecimiento_estimado": 23.57,
+        "requisitos": [
+          {
+            "id": 55,
+            "nombre": "Spring Boot",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 466
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 648
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 774
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 1012,
+                "limite_inferior": 863,
+                "limite_superior": 1220
+              }
+            ],
+            "crecimiento_estimado": 30.75
+          },
+          {
+            "id": 40,
+            "nombre": "MySQL",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 556
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 716
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 819
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 1010,
+                "limite_inferior": 861,
+                "limite_superior": 1217
+              }
+            ],
+            "crecimiento_estimado": 23.32
+          },
+          {
+            "id": 25,
+            "nombre": "Git",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 556
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 717
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 816
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 1009,
+                "limite_inferior": 860,
+                "limite_superior": 1216
+              }
+            ],
+            "crecimiento_estimado": 23.65
+          },
+          {
+            "id": 36,
+            "nombre": "Linux",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 550
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 723
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 809
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 1003,
+                "limite_inferior": 855,
+                "limite_superior": 1208
+              }
+            ],
+            "crecimiento_estimado": 23.98
+          },
+          {
+            "id": 47,
+            "nombre": "Python",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 231
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 420
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 563
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 921,
+                "limite_inferior": 785,
+                "limite_superior": 1109
+              }
+            ],
+            "crecimiento_estimado": 63.59
+          },
+          {
+            "id": 33,
+            "nombre": "Java",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 497
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 616
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 702
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 840,
+                "limite_inferior": 716,
+                "limite_superior": 1013
+              }
+            ],
+            "crecimiento_estimado": 19.66
+          },
+          {
+            "id": 34,
+            "nombre": "JavaScript",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 164
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 304
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 375
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 601,
+                "limite_inferior": 512,
+                "limite_superior": 725
+              }
+            ],
+            "crecimiento_estimado": 60.27
+          }
+        ]
+      },
+      {
+        "id": 121,
+        "nombre": "Administradores de comunidades virtuales",
+        "posicion": 2,
+        "success": true,
+        "motivo_sin_prediccion": "",
+        "demanda_historica": [
+          {
+            "periodo": 2024,
+            "cantidad": 534
+          },
+          {
+            "periodo": 2025,
+            "cantidad": 633
+          },
+          {
+            "periodo": 2026,
+            "cantidad": 749
+          }
+        ],
+        "prediccion": [
+          {
+            "periodo": 2027,
+            "cantidad_predicha": 895,
+            "limite_inferior": 763,
+            "limite_superior": 1078
+          }
+        ],
+        "crecimiento_estimado": 19.49,
+        "requisitos": [
+          {
+            "id": 50,
+            "nombre": "SEO y SEM",
+            "tipo": "Conocimientos técnicos",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 433
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 562
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 721
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 879,
+                "limite_inferior": 749,
+                "limite_superior": 1059
+              }
+            ],
+            "crecimiento_estimado": 21.91
+          },
+          {
+            "id": 26,
+            "nombre": "Google Analytics",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 468
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 557
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 705
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 876,
+                "limite_inferior": 747,
+                "limite_superior": 1056
+              }
+            ],
+            "crecimiento_estimado": 24.26
+          },
+          {
+            "id": 9,
+            "nombre": "CRM",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 520
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 617
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 725
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 862,
+                "limite_inferior": 735,
+                "limite_superior": 1039
+              }
+            ],
+            "crecimiento_estimado": 18.9
+          },
+          {
+            "id": 28,
+            "nombre": "Herramientas digitales",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 520
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 614
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 724
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 861,
+                "limite_inferior": 734,
+                "limite_superior": 1038
+              }
+            ],
+            "crecimiento_estimado": 18.92
+          }
+        ]
+      },
+      {
+        "id": 53,
+        "nombre": "Ingenieros civiles",
+        "posicion": 3,
+        "success": true,
+        "motivo_sin_prediccion": "",
+        "demanda_historica": [
+          {
+            "periodo": 2024,
+            "cantidad": 563
+          },
+          {
+            "periodo": 2025,
+            "cantidad": 656
+          },
+          {
+            "periodo": 2026,
+            "cantidad": 557
+          }
+        ],
+        "prediccion": [
+          {
+            "periodo": 2027,
+            "cantidad_predicha": 670,
+            "limite_inferior": 571,
+            "limite_superior": 807
+          }
+        ],
+        "crecimiento_estimado": 20.29,
+        "requisitos": [
+          {
+            "id": 49,
+            "nombre": "Revit",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 551
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 643
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 539
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 670,
+                "limite_inferior": 571,
+                "limite_superior": 807
+              }
+            ],
+            "crecimiento_estimado": 24.3
+          },
+          {
+            "id": 91,
+            "nombre": "Matrícula profesional de ingeniería",
+            "tipo": "Licencias y certificaciones",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 546
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 637
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 545
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 659,
+                "limite_inferior": 562,
+                "limite_superior": 794
+              }
+            ],
+            "crecimiento_estimado": 20.92
+          },
+          {
+            "id": 7,
+            "nombre": "AutoCAD",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 546
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 633
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 547
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 654,
+                "limite_inferior": 557,
+                "limite_superior": 788
+              }
+            ],
+            "crecimiento_estimado": 19.56
+          },
+          {
+            "id": 115,
+            "nombre": "Análisis geoespacial",
+            "tipo": "Investigación y análisis",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 402
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 474
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 435
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 564,
+                "limite_inferior": 481,
+                "limite_superior": 680
+              }
+            ],
+            "crecimiento_estimado": 29.66
+          }
+        ]
+      },
+      {
+        "id": 78,
+        "nombre": "Diseñadores gráficos",
+        "posicion": 4,
+        "success": true,
+        "motivo_sin_prediccion": "",
+        "demanda_historica": [
+          {
+            "periodo": 2024,
+            "cantidad": 478
+          },
+          {
+            "periodo": 2025,
+            "cantidad": 568
+          },
+          {
+            "periodo": 2026,
+            "cantidad": 584
+          }
+        ],
+        "prediccion": [
+          {
+            "periodo": 2027,
+            "cantidad_predicha": 642,
+            "limite_inferior": 547,
+            "limite_superior": 774
+          }
+        ],
+        "crecimiento_estimado": 9.93,
+        "requisitos": [
+          {
+            "id": 21,
+            "nombre": "Figma",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 396
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 478
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 554
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 642,
+                "limite_inferior": 552,
+                "limite_superior": 774
+              }
+            ],
+            "crecimiento_estimado": 15.88
+          },
+          {
+            "id": 2,
+            "nombre": "Adobe Illustrator",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 461
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 546
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 570
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 631,
+                "limite_inferior": 538,
+                "limite_superior": 760
+              }
+            ],
+            "crecimiento_estimado": 10.7
+          },
+          {
+            "id": 3,
+            "nombre": "Adobe Photoshop",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 408
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 457
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 446
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 469,
+                "limite_inferior": 400,
+                "limite_superior": 565
+              }
+            ],
+            "crecimiento_estimado": 5.16
+          }
+        ]
+      },
+      {
+        "id": 69,
+        "nombre": "Arquitecto",
+        "posicion": 5,
+        "success": true,
+        "motivo_sin_prediccion": "",
+        "demanda_historica": [
+          {
+            "periodo": 2024,
+            "cantidad": 472
+          },
+          {
+            "periodo": 2025,
+            "cantidad": 567
+          },
+          {
+            "periodo": 2026,
+            "cantidad": 495
+          }
+        ],
+        "prediccion": [
+          {
+            "periodo": 2027,
+            "cantidad_predicha": 590,
+            "limite_inferior": 503,
+            "limite_superior": 711
+          }
+        ],
+        "crecimiento_estimado": 19.19,
+        "requisitos": [
+          {
+            "id": 22,
+            "nombre": "Título profesional universitario",
+            "tipo": "Formación académica",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 458
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 546
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 482
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 573,
+                "limite_inferior": 488,
+                "limite_superior": 691
+              }
+            ],
+            "crecimiento_estimado": 18.88
+          },
+          {
+            "id": 45,
+            "nombre": "Organización y planificación",
+            "tipo": "Gestión y administración",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 459
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 548
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 475
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 570,
+                "limite_inferior": 486,
+                "limite_superior": 687
+              }
+            ],
+            "crecimiento_estimado": 20.0
+          },
+          {
+            "id": 49,
+            "nombre": "Revit",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 389
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 494
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 464
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 564,
+                "limite_inferior": 481,
+                "limite_superior": 680
+              }
+            ],
+            "crecimiento_estimado": 21.55
+          },
+          {
+            "id": 7,
+            "nombre": "AutoCAD",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 416
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 468
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 423
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 495,
+                "limite_inferior": 422,
+                "limite_superior": 596
+              }
+            ],
+            "crecimiento_estimado": 17.02
+          }
+        ]
+      },
+      {
+        "id": 113,
+        "nombre": "Analistas financieros",
+        "posicion": 6,
+        "success": true,
+        "motivo_sin_prediccion": "",
+        "demanda_historica": [
+          {
+            "periodo": 2024,
+            "cantidad": 544
+          },
+          {
+            "periodo": 2025,
+            "cantidad": 554
+          },
+          {
+            "periodo": 2026,
+            "cantidad": 500
+          }
+        ],
+        "prediccion": [
+          {
+            "periodo": 2027,
+            "cantidad_predicha": 565,
+            "limite_inferior": 482,
+            "limite_superior": 681
+          }
+        ],
+        "crecimiento_estimado": 13.0,
+        "requisitos": [
+          {
+            "id": 109,
+            "nombre": "Análisis estadístico",
+            "tipo": "Investigación y análisis",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 527
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 544
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 490
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 553,
+                "limite_inferior": 472,
+                "limite_superior": 667
+              }
+            ],
+            "crecimiento_estimado": 12.86
+          },
+          {
+            "id": 122,
+            "nombre": "Análisis financiero cuantitativo",
+            "tipo": "Investigación y análisis",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 526
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 537
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 488
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 553,
+                "limite_inferior": 471,
+                "limite_superior": 666
+              }
+            ],
+            "crecimiento_estimado": 13.32
+          },
+          {
+            "id": 5,
+            "nombre": "Análisis financiero",
+            "tipo": "Conocimientos técnicos",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 531
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 535
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 484
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 547,
+                "limite_inferior": 466,
+                "limite_superior": 659
+              }
+            ],
+            "crecimiento_estimado": 13.02
+          },
+          {
+            "id": 4,
+            "nombre": "Análisis de datos",
+            "tipo": "Investigación y análisis",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 472
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 486
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 470
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 546,
+                "limite_inferior": 465,
+                "limite_superior": 658
+              }
+            ],
+            "crecimiento_estimado": 16.17
+          },
+          {
+            "id": 19,
+            "nombre": "Excel avanzado",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 528
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 542
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 475
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 541,
+                "limite_inferior": 461,
+                "limite_superior": 652
+              }
+            ],
+            "crecimiento_estimado": 13.89
+          }
+        ]
+      },
+      {
+        "id": 105,
+        "nombre": "profesores de idiomas",
+        "posicion": 7,
+        "success": true,
+        "motivo_sin_prediccion": "",
+        "demanda_historica": [
+          {
+            "periodo": 2024,
+            "cantidad": 469
+          },
+          {
+            "periodo": 2025,
+            "cantidad": 504
+          },
+          {
+            "periodo": 2026,
+            "cantidad": 521
+          }
+        ],
+        "prediccion": [
+          {
+            "periodo": 2027,
+            "cantidad_predicha": 515,
+            "limite_inferior": 439,
+            "limite_superior": 621
+          }
+        ],
+        "crecimiento_estimado": -1.15,
+        "requisitos": [
+          {
+            "id": 102,
+            "nombre": "Inglés B2",
+            "tipo": "Idiomas",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 462
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 486
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 507
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 501,
+                "limite_inferior": 427,
+                "limite_superior": 604
+              }
+            ],
+            "crecimiento_estimado": -1.18
+          },
+          {
+            "id": 22,
+            "nombre": "Título profesional universitario",
+            "tipo": "Formación académica",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 462
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 489
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 504
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 499,
+                "limite_inferior": 425,
+                "limite_superior": 602
+              }
+            ],
+            "crecimiento_estimado": -0.99
+          }
+        ]
+      },
+      {
+        "id": 110,
+        "nombre": "Contadores",
+        "posicion": 8,
+        "success": true,
+        "motivo_sin_prediccion": "",
+        "demanda_historica": [
+          {
+            "periodo": 2024,
+            "cantidad": 455
+          },
+          {
+            "periodo": 2025,
+            "cantidad": 488
+          },
+          {
+            "periodo": 2026,
+            "cantidad": 431
+          }
+        ],
+        "prediccion": [
+          {
+            "periodo": 2027,
+            "cantidad_predicha": 453,
+            "limite_inferior": 386,
+            "limite_superior": 546
+          }
+        ],
+        "crecimiento_estimado": 5.1,
+        "requisitos": [
+          {
+            "id": 5,
+            "nombre": "Análisis financiero",
+            "tipo": "Conocimientos técnicos",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 448
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 479
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 422
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 445,
+                "limite_inferior": 379,
+                "limite_superior": 537
+              }
+            ],
+            "crecimiento_estimado": 5.45
+          },
+          {
+            "id": 53,
+            "nombre": "Software contable",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 442
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 473
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 420
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 440,
+                "limite_inferior": 375,
+                "limite_superior": 530
+              }
+            ],
+            "crecimiento_estimado": 4.76
+          },
+          {
+            "id": 88,
+            "nombre": "Matrícula profesional de contador público",
+            "tipo": "Licencias y certificaciones",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 452
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 477
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 417
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 440,
+                "limite_inferior": 375,
+                "limite_superior": 530
+              }
+            ],
+            "crecimiento_estimado": 5.52
+          },
+          {
+            "id": 41,
+            "nombre": "NIIF",
+            "tipo": "Conocimientos técnicos",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 446
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 474
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 414
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 439,
+                "limite_inferior": 374,
+                "limite_superior": 529
+              }
+            ],
+            "crecimiento_estimado": 6.04
+          },
+          {
+            "id": 19,
+            "nombre": "Excel avanzado",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 444
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 469
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 415
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 433,
+                "limite_inferior": 369,
+                "limite_superior": 521
+              }
+            ],
+            "crecimiento_estimado": 4.34
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "nombre": "Directores y gerentes de gestión de talento humano",
+        "posicion": 9,
+        "success": true,
+        "motivo_sin_prediccion": "",
+        "demanda_historica": [
+          {
+            "periodo": 2024,
+            "cantidad": 422
+          },
+          {
+            "periodo": 2025,
+            "cantidad": 389
+          },
+          {
+            "periodo": 2026,
+            "cantidad": 391
+          }
+        ],
+        "prediccion": [
+          {
+            "periodo": 2027,
+            "cantidad_predicha": 381,
+            "limite_inferior": 325,
+            "limite_superior": 459
+          }
+        ],
+        "crecimiento_estimado": -2.56,
+        "requisitos": [
+          {
+            "id": 24,
+            "nombre": "Gestión documental",
+            "tipo": "Gestión y administración",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 412
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 378
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 382
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 372,
+                "limite_inferior": 317,
+                "limite_superior": 448
+              }
+            ],
+            "crecimiento_estimado": -2.62
+          },
+          {
+            "id": 19,
+            "nombre": "Excel avanzado",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 411
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 374
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 382
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 370,
+                "limite_inferior": 316,
+                "limite_superior": 446
+              }
+            ],
+            "crecimiento_estimado": -3.14
+          },
+          {
+            "id": 44,
+            "nombre": "Nómina",
+            "tipo": "Conocimientos técnicos",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 411
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 376
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 377
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 367,
+                "limite_inferior": 313,
+                "limite_superior": 442
+              }
+            ],
+            "crecimiento_estimado": -2.65
+          },
+          {
+            "id": 22,
+            "nombre": "Título profesional universitario",
+            "tipo": "Formación académica",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 408
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 371
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 374
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 364,
+                "limite_inferior": 310,
+                "limite_superior": 439
+              }
+            ],
+            "crecimiento_estimado": -2.67
+          },
+          {
+            "id": 30,
+            "nombre": "Indicadores de gestión",
+            "tipo": "Gestión y administración",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 413
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 380
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 374
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 363,
+                "limite_inferior": 310,
+                "limite_superior": 438
+              }
+            ],
+            "crecimiento_estimado": -2.94
+          }
+        ]
+      },
+      {
+        "id": 152,
+        "nombre": "Editores y redactores",
+        "posicion": 10,
+        "success": true,
+        "motivo_sin_prediccion": "",
+        "demanda_historica": [
+          {
+            "periodo": 2024,
+            "cantidad": 398
+          },
+          {
+            "periodo": 2025,
+            "cantidad": 380
+          },
+          {
+            "periodo": 2026,
+            "cantidad": 330
+          }
+        ],
+        "prediccion": [
+          {
+            "periodo": 2027,
+            "cantidad_predicha": 300,
+            "limite_inferior": 255,
+            "limite_superior": 361
+          }
+        ],
+        "crecimiento_estimado": -9.09,
+        "requisitos": [
+          {
+            "id": 50,
+            "nombre": "SEO y SEM",
+            "tipo": "Conocimientos técnicos",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 393
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 368
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 320
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 294,
+                "limite_inferior": 251,
+                "limite_superior": 355
+              }
+            ],
+            "crecimiento_estimado": -8.12
+          },
+          {
+            "id": 26,
+            "nombre": "Google Analytics",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 390
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 371
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 317
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 292,
+                "limite_inferior": 249,
+                "limite_superior": 352
+              }
+            ],
+            "crecimiento_estimado": -7.89
+          },
+          {
+            "id": 27,
+            "nombre": "HTML y CSS",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 385
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 364
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 321
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 292,
+                "limite_inferior": 249,
+                "limite_superior": 352
+              }
+            ],
+            "crecimiento_estimado": -9.03
+          },
+          {
+            "id": 28,
+            "nombre": "Herramientas digitales",
+            "tipo": "Herramientas y tecnologías",
+            "success": true,
+            "motivo_sin_prediccion": "",
+            "demanda_historica": [
+              {
+                "periodo": 2024,
+                "cantidad": 393
+              },
+              {
+                "periodo": 2025,
+                "cantidad": 361
+              },
+              {
+                "periodo": 2026,
+                "cantidad": 323
+              }
+            ],
+            "prediccion": [
+              {
+                "periodo": 2027,
+                "cantidad_predicha": 292,
+                "limite_inferior": 249,
+                "limite_superior": 351
+              }
+            ],
+            "crecimiento_estimado": -9.6
+          }
+        ]
+      },
+      {
+        "id": 394,
+        "nombre": "Auxiliares en enfermería",
+        "posicion": 11,
+        "success": false,
+        "motivo_sin_prediccion": "Sin prediccion: historial insuficiente (total < 100) (1 vacante registrada).",
+        "demanda_historica": [],
+        "prediccion": [],
+        "crecimiento_estimado": 0.0,
+        "requisitos": []
+      }
+    ]
+  }
+}
