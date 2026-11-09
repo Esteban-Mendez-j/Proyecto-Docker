@@ -34,11 +34,13 @@ export default function Header () {
             { name: "Inicio", path: "/admin/index" },
             { name: "Empleos", path: "/admin/vacantes" },
             { name: "Usuarios", path: "/admin/usuarios" },
+            { name: "Prediccion", path: "/prediccion" },
         ],
         ADMIN: [
             { name: "Inicio", path: "/admin/index" },
             { name: "Empleos", path: "/admin/vacantes" },
             { name: "Usuarios", path: "/admin/usuarios" },
+            { name: "Prediccion", path: "/prediccion" },
         ],
         CANDIDATO: [
             { name: "Inicio", path: "/" },
@@ -47,6 +49,7 @@ export default function Header () {
             { name: "Empleos", path: "/empleos" },
             { name: "Postulaciones", path: "/postulaciones" },
             { name: "Precios", path: "/suscripciones" },
+            { name: "Prediccion", path: "/prediccion" },
         ],
         EMPRESA: [
             { name: "Inicio", path: "/" },
@@ -54,6 +57,7 @@ export default function Header () {
             { name: "Mis Vacantes", path: "/empresa/listado/vacantes" },
             { name: "Publicar oferta", path: "/empresa/vacantes" },
             { name: "Chats", path: "/chat/empresa" },
+            { name: "Prediccion", path: "/prediccion" },
         ],
         ROLE_INVITADO: [
             { name: "Inicio", path: "/" },

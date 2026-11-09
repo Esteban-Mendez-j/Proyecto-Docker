@@ -147,7 +147,7 @@ export function useSendFormV2() {
             setMeta(json?.meta)
             return json;
         } catch (err) {
-            if (error instanceof TypeError) {
+            if (err instanceof TypeError) {
                 await retryConnection();
             }
             setError(err);
