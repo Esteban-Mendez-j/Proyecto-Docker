@@ -23,10 +23,6 @@ import com.miproyecto.proyecto.aptitudes.repository.AptitudesRepository;
 import com.miproyecto.proyecto.candidato.model.Candidato;
 import com.miproyecto.proyecto.candidato.repository.CandidatoRepository;
 import com.miproyecto.proyecto.ml.WekaWrapper;
-import com.miproyecto.proyecto.ml.dto.demandaLaboral.CargoPrediccion;
-import com.miproyecto.proyecto.ml.dto.demandaLaboral.DemandaHistorica;
-import com.miproyecto.proyecto.ml.dto.demandaLaboral.PrediccionPeriodo;
-import com.miproyecto.proyecto.ml.dto.demandaLaboral.RequisitoPrediccion;
 import com.miproyecto.proyecto.postulacion.model.Postulado;
 import com.miproyecto.proyecto.postulacion.repository.PostuladoRepository;
 import com.miproyecto.proyecto.util.NotFoundException;
@@ -39,7 +35,6 @@ public class PrediccionService {
     private CandidatoRepository candidatoRepository;
     private AptitudesRepository aptitudesRepository;
     private PostuladoRepository postuladoRepository;
-    private final int ANIO_PREDICCION = 2027;
 
     public PrediccionService(CandidatoRepository candidatoRepository, AptitudesRepository aptitudesRepository,
             PostuladoRepository postuladoRepository) {
@@ -311,173 +306,6 @@ public class PrediccionService {
         }
 
         return String.valueOf(resultado);
-    }
-
-
-    /* 
-        PREDICCION DEMANDA DE CARGOS MOCK
-    */
-
-    // =====================================================
-    // DATOS SIMULADOS
-    // =====================================================
-
-    public List<CargoPrediccion> crearDatosSimulados() {
-        return List.of(
-            crearCargo(
-                1, "Desarrollador de software",
-                850, 15.29,
-                List.of("Python", "Java", "Spring Boot"), 1,
-                true, ""
-            ),
-            crearCargo(
-                2, "Analista de datos",
-                620, 18.50,
-                List.of("Python", "SQL", "Power BI"), 3,
-                true, ""
-            ),
-            crearCargo(
-                3, "Desarrollador web",
-                720, 14.20,
-                List.of("JavaScript", "React", "Git"), 2,
-                true, ""
-            ),
-            crearCargo(
-                4, "Ingeniero de datos",
-                480, 20.10,
-                List.of("SQL", "Python", "Apache Spark"), 4,
-                true, ""
-            ),
-            crearCargo(
-                5, "Desarrollador de aplicaciones móviles",
-                390, 17.30,
-                List.of("Flutter", "Dart", "Firebase"), 5,
-                true, "" 
-            ),
-            crearCargo(
-                6, "Especialista en ciberseguridad",
-                350, 22.40,
-                List.of("Linux", "Redes", "SIEM"), 6,
-                true, ""
-            )
-        );
-    }
-
-    private CargoPrediccion crearCargo(
-        int id,
-        String nombre,
-        int demanda2026,
-        double crecimiento,
-        List<String> nombresRequisitos,
-        int posicion,
-        Boolean success,
-        String motivoSinPrediccion
-    ) {
-        List<DemandaHistorica> historico = List.of(
-            new DemandaHistorica(
-                2024, redondear(demanda2026 * 0.61)
-            ),
-            new DemandaHistorica(
-                2025, redondear(demanda2026 * 0.76)
-            ),
-            new DemandaHistorica(
-                2026, demanda2026
-            )
-        );
-
-        int cantidadPredicha = redondear(
-            demanda2026 * (1 + crecimiento / 100.0)
-        );
-
-        List<PrediccionPeriodo> prediccion = List.of(
-            new PrediccionPeriodo(
-                ANIO_PREDICCION,
-                cantidadPredicha, cantidadPredicha, cantidadPredicha
-            )
-        );
-
-        List<RequisitoPrediccion> requisitos =
-            new ArrayList<>();
-
-        for (int i = 0; i < nombresRequisitos.size(); i++) {
-            int demandaRequisito = redondear(
-                demanda2026 * (0.85 - i * 0.12)
-            );
-
-            requisitos.add(
-                crearRequisito(
-                    id * 100 + i + 1,
-                    nombresRequisitos.get(i),
-                    demandaRequisito,
-                    crecimiento + (i * 1.5),
-                    true,
-                    ""
-                )
-            );
-        }
-
-        return new CargoPrediccion(
-            id,
-            nombre,
-            posicion,
-            success,
-            motivoSinPrediccion,
-            historico,
-            prediccion,
-            crecimiento,
-            requisitos
-        );
-    }
-
-    private RequisitoPrediccion crearRequisito(
-        int id,
-        String nombre,
-        int demanda2026,
-        double crecimiento,
-        Boolean success,
-        String motivoSinPrediccion
-    ) {
-        List<DemandaHistorica> historico = List.of(
-            new DemandaHistorica(
-                2024, redondear(demanda2026 * 0.60)
-            ),
-            new DemandaHistorica(
-                2025, redondear(demanda2026 * 0.78)
-            ),
-            new DemandaHistorica(
-                2026, demanda2026
-            )
-        );
-
-        int cantidadPredicha = redondear(
-            demanda2026 * (1 + crecimiento / 100.0)
-        );
-
-        List<PrediccionPeriodo> prediccion = List.of(
-            new PrediccionPeriodo(
-                ANIO_PREDICCION,
-                cantidadPredicha, cantidadPredicha, cantidadPredicha
-            )
-        );
-
-        return new RequisitoPrediccion(
-            id,
-            nombre,
-            "TECNOLOGIA",
-            success,
-            motivoSinPrediccion,
-            historico,
-            prediccion,
-            crecimiento
-        );
-    }
-
-    private int redondear(double valor) {
-        return (int) Math.round(valor);
-    }
-
-    public int getANIO_PREDICCION() {
-        return ANIO_PREDICCION;
     }
 
 }

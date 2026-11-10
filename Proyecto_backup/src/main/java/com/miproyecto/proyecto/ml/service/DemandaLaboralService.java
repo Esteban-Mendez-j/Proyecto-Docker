@@ -14,7 +14,6 @@ import com.miproyecto.proyecto.ml.dto.demandaLaboral.CargoPrediccion;
 import com.miproyecto.proyecto.ml.dto.demandaLaboral.HorizontePrediccion;
 import com.miproyecto.proyecto.ml.dto.demandaLaboral.PrediccionPeriodo;
 import com.miproyecto.proyecto.ml.fuente.DemandaLaboralFuente;
-// import de tu excepción BadRequest (ajusta el paquete)
 import com.miproyecto.proyecto.util.response.BadRequest;
 
 @Service
@@ -61,6 +60,6 @@ public class DemandaLaboralService {
     }
     
     public LocalDateTime fechaGeneracion() {
-    return fuente.fechaGeneracion().orElseGet(LocalDateTime::now);
-}
+        return fuente.fechaGeneracion().orElse(null);
+    }
 }

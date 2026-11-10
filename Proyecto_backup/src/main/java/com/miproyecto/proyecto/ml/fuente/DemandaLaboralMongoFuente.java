@@ -20,7 +20,6 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
 
 @Component
-@ConditionalOnProperty(name = "prediccion.fuente", havingValue = "mongo")
 public class DemandaLaboralMongoFuente implements DemandaLaboralFuente {
 
     /** Corrida vigente ya convertida: se recarga solo cuando el puntero cambia. */
@@ -66,8 +65,11 @@ public class DemandaLaboralMongoFuente implements DemandaLaboralFuente {
 
         List<CargoPrediccion> cargos = new ArrayList<>();
         for (Document doc : db.getCollection("predicciones_cargo")
-                .find(Filters.eq("ejecucion_id", ejecucionId))
+                .find(Filters.and(
+                        Filters.eq("ejecucion_id", ejecucionId),
+                        Filters.eq("datos.success", true)))
                 .sort(Sorts.ascending("datos.posicion"))) {
+
             cargos.add(aCargo(objectMapper, doc.get("datos", Document.class)));
         }
         Document ejecucion = db.getCollection("ejecuciones").find(Filters.eq("_id", ejecucionId)).first();

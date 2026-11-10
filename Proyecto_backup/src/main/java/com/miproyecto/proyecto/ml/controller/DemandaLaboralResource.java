@@ -27,7 +27,7 @@ public class DemandaLaboralResource {
         this.service = service;
     }
 
-    @GetMapping({"", "/simulacion"})
+    @GetMapping
     public ResponseEntity<ApiResponseBody<PrediccionResponse>> obtenerPredicciones(
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "5") int limite,
@@ -36,7 +36,7 @@ public class DemandaLaboralResource {
         Page<CargoPrediccion> resultado = service.obtenerCargos(pagina, limite, cargoName);
 
         PrediccionResponse data = new PrediccionResponse(
-            true, "Predicción generada correctamente", LocalDateTime.now(),
+            true, "Predicción generada correctamente", service.fechaGeneracion(),
             service.horizonte(), resultado.getContent());
 
         Meta meta = new Meta(new Pagination(
