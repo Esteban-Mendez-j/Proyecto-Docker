@@ -392,7 +392,7 @@ public class PrediccionService {
         List<PrediccionPeriodo> prediccion = List.of(
             new PrediccionPeriodo(
                 ANIO_PREDICCION,
-                cantidadPredicha
+                cantidadPredicha, cantidadPredicha, cantidadPredicha
             )
         );
 
@@ -456,7 +456,7 @@ public class PrediccionService {
         List<PrediccionPeriodo> prediccion = List.of(
             new PrediccionPeriodo(
                 ANIO_PREDICCION,
-                cantidadPredicha
+                cantidadPredicha, cantidadPredicha, cantidadPredicha
             )
         );
 
