@@ -13,7 +13,7 @@ import Layout from "../../layouts/layout.jsx";
 import { ListSvg } from "../../components/icons.jsx";
 import Loading from "../../components/Loading.jsx";
 
-const ENDPOINT = "/api/prediccion/demanda-laboral/simulacion";
+const ENDPOINT = "/api/prediccion/demanda-laboral";
 const LIMITE = 5;
 const INITIAL_FILTERS = { cargo_name: "" };
 const NAME_FILTERS = "filtrosPrediccionDemanda";
