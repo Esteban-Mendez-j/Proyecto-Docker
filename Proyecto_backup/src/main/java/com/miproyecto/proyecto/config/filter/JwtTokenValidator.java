@@ -40,7 +40,7 @@ public class JwtTokenValidator extends OncePerRequestFilter {
         String jwtToken = request.getHeader(HttpHeaders.AUTHORIZATION);
         
         try {
-            if (jwtToken != null) {
+            if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
         
                 jwtToken = jwtToken.substring(7); 
 

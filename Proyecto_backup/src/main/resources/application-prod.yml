@@ -124,3 +124,10 @@ info:
     name: Searchjobs API
     description: Backend de la plataforma Searchjobs
     version: 1.0.0
+
+firebase:
+  service-account-base64: ${FIREBASE_SERVICE_ACCOUNT_BASE64:}
+  project-id: ${FIREBASE_PROJECT_ID:}
+
+notificaciones:
+  internal-secret: ${SEARCHJOBS_NOTIFICATION_SECRET:}
