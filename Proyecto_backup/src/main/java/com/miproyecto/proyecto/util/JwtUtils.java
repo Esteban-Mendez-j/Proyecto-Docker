@@ -5,13 +5,12 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.miproyecto.proyecto.usuario.dto.UsuarioDTO;
+import com.miproyecto.proyecto.usuario.model.UsuarioPrincipal;
 import com.miproyecto.proyecto.usuario.service.UsuarioService;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -44,13 +43,10 @@ public class JwtUtils {
     public String createToken(Authentication authentication) {
         Algorithm algorithm = Algorithm.HMAC256(this.privateKey);
 
-        User user = (User) authentication.getPrincipal();
-        UsuarioDTO usuarioDTO = usuarioService.findByCorreo(user.getUsername());
-        String username = usuarioDTO.getIdUsuario().toString();
-        String rolPrincipal = usuarioDTO.getRolPrinciapl();
-        usuarioDTO.setFechaInicioSesion(LocalDate.now());
-        usuarioService.update(usuarioDTO.getIdUsuario(), usuarioDTO);
-
+        UsuarioPrincipal usuario = (UsuarioPrincipal) authentication.getPrincipal();
+        String username = usuario.getIdUsuario().toString();
+        String rolPrincipal = usuario.getRolPrincipal();
+        usuarioService.updateFechaInicioSesion(usuario.getIdUsuario(),LocalDate.now());
         
         String authorities = authentication.getAuthorities()
                 .stream()

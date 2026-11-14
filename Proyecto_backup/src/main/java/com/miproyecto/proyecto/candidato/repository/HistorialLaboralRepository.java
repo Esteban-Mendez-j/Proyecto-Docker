@@ -3,6 +3,8 @@ package com.miproyecto.proyecto.candidato.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.miproyecto.proyecto.candidato.model.Candidato;
 import com.miproyecto.proyecto.candidato.model.HistorialLaboral;
@@ -17,5 +19,14 @@ public interface HistorialLaboralRepository extends JpaRepository<HistorialLabor
     List<HistorialLaboral> findByIdUsuarioAndVisible(Candidato candidato, Boolean visible);
 
     void deleteByIdUsuario_IdUsuario(Long idUsuario);
+
+    @Query("""
+        SELECT h
+        FROM HistorialLaboral h
+        WHERE h.idUsuario.idUsuario = :idUsuario
+        AND h.visible = :visible
+    """)
+    List<HistorialLaboral> findByUsuarioIdAndVisible( @Param("idUsuario") Long idUsuario, 
+        @Param("visible") Boolean visible);
 
 }

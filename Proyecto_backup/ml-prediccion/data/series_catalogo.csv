@@ -1,0 +1,60 @@
+cargo_id,requisito_id,total,volumen_reciente,meses_activos,nivel,serie_id,motivo_exclusion,incluida,cargo,requisito,categoria
+5,0,2993,1202,84,cargo,c5,,True,Directores y gerentes de gestión de talento humano,(total del cargo),
+5,19,2918,1167,84,requisito,c5-r19,,True,Directores y gerentes de gestión de talento humano,Excel avanzado,Herramientas y tecnologías
+5,22,2909,1153,84,requisito,c5-r22,,True,Directores y gerentes de gestión de talento humano,Título profesional universitario,Formación académica
+5,24,2918,1172,84,requisito,c5-r24,,True,Directores y gerentes de gestión de talento humano,Gestión documental,Gestión y administración
+5,30,2908,1167,84,requisito,c5-r30,,True,Directores y gerentes de gestión de talento humano,Indicadores de gestión,Gestión y administración
+5,44,2923,1164,84,requisito,c5-r44,,True,Directores y gerentes de gestión de talento humano,Nómina,Conocimientos técnicos
+53,0,3368,1776,84,cargo,c53,,True,Ingenieros civiles,(total del cargo),
+53,7,3280,1726,84,requisito,c53-r7,,True,Ingenieros civiles,AutoCAD,Herramientas y tecnologías
+53,49,3284,1733,84,requisito,c53-r49,,True,Ingenieros civiles,Revit,Herramientas y tecnologías
+53,91,3286,1728,84,requisito,c53-r91,,True,Ingenieros civiles,Matrícula profesional de ingeniería,Licencias y certificaciones
+53,115,2217,1311,84,requisito,c53-r115,,True,Ingenieros civiles,Análisis geoespacial,Investigación y análisis
+69,0,2988,1534,84,cargo,c69,,True,Arquitecto,(total del cargo),
+69,7,2671,1307,84,requisito,c69-r7,,True,Arquitecto,AutoCAD,Herramientas y tecnologías
+69,22,2907,1486,84,requisito,c69-r22,,True,Arquitecto,Título profesional universitario,Formación académica
+69,45,2903,1482,84,requisito,c69-r45,,True,Arquitecto,Organización y planificación,Gestión y administración
+69,49,2361,1347,84,requisito,c69-r49,,True,Arquitecto,Revit,Herramientas y tecnologías
+78,0,3141,1630,84,cargo,c78,,True,Diseñadores gráficos,(total del cargo),
+78,2,3040,1577,84,requisito,c78-r2,,True,Diseñadores gráficos,Adobe Illustrator,Herramientas y tecnologías
+78,3,2730,1311,84,requisito,c78-r3,,True,Diseñadores gráficos,Adobe Photoshop,Herramientas y tecnologías
+78,21,2449,1428,84,requisito,c78-r21,,True,Diseñadores gráficos,Figma,Herramientas y tecnologías
+105,0,3171,1494,84,cargo,c105,,True,profesores de idiomas,(total del cargo),
+105,22,3095,1455,84,requisito,c105-r22,,True,profesores de idiomas,Título profesional universitario,Formación académica
+105,102,3081,1455,84,requisito,c105-r102,,True,profesores de idiomas,Inglés B2,Idiomas
+110,0,3260,1374,84,cargo,c110,,True,Contadores,(total del cargo),
+110,5,3192,1349,84,requisito,c110-r5,,True,Contadores,Análisis financiero,Conocimientos técnicos
+110,19,3165,1328,84,requisito,c110-r19,,True,Contadores,Excel avanzado,Herramientas y tecnologías
+110,41,3176,1334,84,requisito,c110-r41,,True,Contadores,NIIF,Conocimientos técnicos
+110,53,3182,1335,84,requisito,c110-r53,,True,Contadores,Software contable,Herramientas y tecnologías
+110,88,3190,1346,84,requisito,c110-r88,,True,Contadores,Matrícula profesional de contador público,Licencias y certificaciones
+113,0,3431,1598,84,cargo,c113,,True,Analistas financieros,(total del cargo),
+113,4,2778,1428,84,requisito,c113-r4,,True,Analistas financieros,Análisis de datos,Investigación y análisis
+113,5,3341,1550,84,requisito,c113-r5,,True,Analistas financieros,Análisis financiero,Conocimientos técnicos
+113,19,3336,1545,84,requisito,c113-r19,,True,Analistas financieros,Excel avanzado,Herramientas y tecnologías
+113,109,3343,1561,84,requisito,c113-r109,,True,Analistas financieros,Análisis estadístico,Investigación y análisis
+113,122,3332,1551,84,requisito,c113-r122,,True,Analistas financieros,Análisis financiero cuantitativo,Investigación y análisis
+121,0,3219,1916,84,cargo,c121,,True,Administradores de comunidades virtuales,(total del cargo),
+121,9,3135,1862,84,requisito,c121-r9,,True,Administradores de comunidades virtuales,CRM,Herramientas y tecnologías
+121,26,2749,1730,84,requisito,c121-r26,,True,Administradores de comunidades virtuales,Google Analytics,Herramientas y tecnologías
+121,28,3130,1858,84,requisito,c121-r28,,True,Administradores de comunidades virtuales,Herramientas digitales,Herramientas y tecnologías
+121,50,2716,1716,84,requisito,c121-r50,,True,Administradores de comunidades virtuales,SEO y SEM,Conocimientos técnicos
+127,0,3578,2148,84,cargo,c127,,True,Desarrolladores de software,(total del cargo),
+127,25,3485,2089,84,requisito,c127-r25,,True,Desarrolladores de software,Git,Herramientas y tecnologías
+127,33,3170,1815,84,requisito,c127-r33,,True,Desarrolladores de software,Java,Herramientas y tecnologías
+127,34,1070,843,83,requisito,c127-r34,,True,Desarrolladores de software,JavaScript,Herramientas y tecnologías
+127,36,3484,2082,84,requisito,c127-r36,,True,Desarrolladores de software,Linux,Herramientas y tecnologías
+127,40,3471,2091,84,requisito,c127-r40,,True,Desarrolladores de software,MySQL,Herramientas y tecnologías
+127,47,1548,1214,81,requisito,c127-r47,,True,Desarrolladores de software,Python,Herramientas y tecnologías
+127,55,2943,1888,84,requisito,c127-r55,,True,Desarrolladores de software,Spring Boot,Herramientas y tecnologías
+152,0,3192,1108,84,cargo,c152,,True,Editores y redactores,(total del cargo),
+152,26,3118,1078,84,requisito,c152-r26,,True,Editores y redactores,Google Analytics,Herramientas y tecnologías
+152,27,3098,1070,84,requisito,c152-r27,,True,Editores y redactores,HTML y CSS,Herramientas y tecnologías
+152,28,3102,1077,84,requisito,c152-r28,,True,Editores y redactores,Herramientas digitales,Herramientas y tecnologías
+152,50,3109,1081,84,requisito,c152-r50,,True,Editores y redactores,SEO y SEM,Conocimientos técnicos
+394,0,1,1,1,cargo,c394,historial insuficiente (total < 100),False,Auxiliares en enfermería,(total del cargo),
+394,8,1,1,1,requisito,c394-r8,historial insuficiente (total < 100),False,Auxiliares en enfermería,Bioseguridad,Normativa y seguridad
+394,15,1,1,1,requisito,c394-r15,historial insuficiente (total < 100),False,Auxiliares en enfermería,Cuidado del paciente,Conocimientos técnicos
+394,29,1,1,1,requisito,c394-r29,historial insuficiente (total < 100),False,Auxiliares en enfermería,Historia clínica,Herramientas y tecnologías
+394,60,1,1,1,requisito,c394-r60,historial insuficiente (total < 100),False,Auxiliares en enfermería,Valoración clínica,Conocimientos técnicos
+394,90,1,1,1,requisito,c394-r90,historial insuficiente (total < 100),False,Auxiliares en enfermería,Inscripción en ReTHUS,Licencias y certificaciones

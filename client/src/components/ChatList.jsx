@@ -15,13 +15,13 @@ const ChatList = ({ onSelectChat, chats, loading, userRole, setChatType }) => {
       </div>
     );
   return (
-    <div className=" h-full overflow-y-auto bg-white border border-blue-200 rounded-lg shadow-sm custom-scroll">
+    <div className="w-full min-w-0 bg-white border border-blue-200 rounded-lg shadow-sm custom-scroll">
       <ul className="divide-y divide-blue-100">
         {chats.map((chat) => (
           <li key={chat.id}>
             <button
               onClick={() => {onSelectChat(chat.id), setChatType("chatPersona")}}
-              className="w-full text-left px-4 py-3 hover:bg-blue-50 transition duration-200 group"
+              className="w-full min-w-0 text-left px-3 sm:px-4 py-3 hover:bg-blue-50 transition duration-200 group"
             >
               <div className="flex justify-between items-center mb-1">
                 {chat.tipoChat === 'Privado' ? (

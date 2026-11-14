@@ -6,7 +6,9 @@ import { useFetchV2 } from "../../hooks/useFetch.jsx";
 import Layout from "../../layouts/layout.jsx";
 import { RoleContext } from "../../services/RoleContext.jsx";
 import "../../style/invitado/index.css";
+import "../../style/invitado/jobcard.css"
 import exceptionControl from "../../services/exceptionControl.js";
+
 export default function Index (){
 
     const { rol, logout } = useContext(RoleContext);

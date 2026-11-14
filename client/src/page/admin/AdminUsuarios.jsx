@@ -10,6 +10,7 @@ import Table from "../../components/Table.jsx";
 import { useNavigate } from "react-router-dom";
 import { inputModal, modal, modalTime, QuestionModal } from "../../services/Modal.js";
 import SinResultados from "../../components/SinResultados.jsx"
+import "../../style/usuarios/filtros.css"
 
 export default function AdminUsuarios() {
   const listHeaders = {
@@ -189,38 +190,51 @@ export default function AdminUsuarios() {
           <div className="flex-1">
             <h1 className="text-2xl font-bold">Gestión de Usuarios</h1>
             <div className="flex-1">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex gap-2">
-                  <div className="flex flex-col">
+              {/* Filtros de usuarios */}
+              <div className="admin-filtros">
+                <h2 className="admin-filtros-titulo">
+                  Filtrar usuarios
+                </h2>
+
+                <div className="admin-filtros-grid">
+
+                  {/* Filtro por nombre */}
+                  <div className="admin-filtro-campo">
                     <label htmlFor="nombre">Nombre</label>
                     <input
+                      id="nombre"
                       type="text"
-                      placeholder="Buscar por Nombre ..."
+                      placeholder="Buscar por nombre..."
                       name="nombre"
                       value={filtrosLocal.nombre}
                       onChange={handleOnFilters}
-                      className="py-2 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="admin-filtro-control"
                     />
                   </div>
 
-                  <div className="flex flex-col">
-                    <label htmlFor="correo">Correo electronico</label>
+                  {/* Filtro por correo */}
+                  <div className="admin-filtro-campo">
+                    <label htmlFor="correo">Correo electrónico</label>
                     <input
+                      id="correo"
                       type="text"
-                      placeholder="Buscar por correo ..."
+                      placeholder="Buscar por correo..."
                       name="correo"
                       value={filtrosLocal.correo}
                       onChange={handleOnFilters}
-                      className="py-2 pl-10 pr-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="admin-filtro-control"
                     />
                   </div>
-                  <div className="flex flex-col">
+
+                  {/* Filtro por rol */}
+                  <div className="admin-filtro-campo">
                     <label htmlFor="rol">Rol</label>
                     <select
+                      id="rol"
                       name="rol"
                       value={filtrosLocal.rol}
                       onChange={handleOnFilters}
-                      className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="admin-filtro-control"
                     >
                       <option value="">Todos los tipos</option>
 
@@ -233,24 +247,32 @@ export default function AdminUsuarios() {
                     </select>
                   </div>
 
-                  <div className="flex gap-3 items-center">
+                  {/* Botones */}
+                  <div className="admin-filtros-botones">
                     <button
+                      type="button"
                       onClick={searchFilters}
-                      className="px-4 py-2 h-10 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                      className="admin-btn-buscar"
                     >
                       Buscar
                     </button>
+
                     <button
+                      type="button"
                       onClick={handleOnEstado}
-                      className="px-4 py-2 h-10 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                      className="admin-btn-estado"
                     >
-                      {!filtrosAplicados.estado ? "Ver Activos" : "Ver Baneados"}
+                      {!filtrosAplicados.estado
+                        ? "Activos"
+                        : "Baneados"}
                     </button>
+
                     <button
+                      type="button"
                       onClick={clearFilters}
-                      className="px-4 py-2 h-10 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                      className="admin-btn-limpiar"
                     >
-                      Eliminar Filtros
+                      Limpiar
                     </button>
                   </div>
                 </div>
@@ -269,6 +291,7 @@ export default function AdminUsuarios() {
                     <Table
                       listObjetos={usuarios}
                       listEncabezados={listHeaders}
+                      mobileCards={true}
                       action={[
                         (userRol !== "ADMIN" && filtrosAplicados.estado) && {
                           text: "+Admin",
@@ -320,6 +343,7 @@ export default function AdminUsuarios() {
           </div>
         </div>
       </div>
+      <br />
     </Layout>
   );
 }

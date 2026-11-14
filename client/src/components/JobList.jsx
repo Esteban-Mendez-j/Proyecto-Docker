@@ -23,18 +23,41 @@ const JobList = ({
   loading,
   verPrediccion,
   setVerPrediccion,
-  setFilteredJobs
+  setFilteredJobs,
+  filtroFavoritosActivo,
+  setTotalElement
 }) => {
   const { rol, logout } = useContext(RoleContext);
   const { data, send } = useSendFormV2();
   const navigate = useNavigate();
 
   const handleToggleFavorito = async (nvacantes) => {
-    await toggleFavoritoRequest(nvacantes);
-    fetchAllJobs()
-    // setFilteredJobs( prev => prev.map((job) => 
-    //   job.nvacantes === nvacantes? {...job, vacanteGuardada: !job.vacanteGuardada} : job
-    // ))
+    try {
+      const vacante = jobs.find(j => j.nvacantes === nvacantes);
+      if (!vacante) return;
+      await toggleFavoritoRequest(nvacantes);
+      setFilteredJobs(prev => {
+        // Si estamos viendo favoritos y se desmarca uno,
+        // eliminamos esa vacante de la lista.
+        if (filtroFavoritosActivo && vacante.vacanteGuardada) {
+          setTotalElement(jobs.length -1)
+          return prev.filter(
+            j => j.nvacantes !== nvacantes
+          );
+        }
+
+        // Si estamos en el listado normal,
+        // solamente actualizamos su estado de favorito.
+        return prev.map(j =>
+          j.nvacantes === nvacantes
+            ? { ...j, vacanteGuardada: !vacante.vacanteGuardada }
+            : j
+        );
+      });
+
+    } catch (error) {
+      console.error("Error al cambiar favorito:", error);
+    }
   };
 
   const listHeader = {
@@ -188,7 +211,7 @@ const JobList = ({
       <div className={presentacion == 1 ? "jobs-grid" : "jobs-column"}>
         {presentacion == 3 ? (
           <div className="w-full overflow-x-auto">
-            <Table listEncabezados={listHeader} listObjetos={jobs} action={rol === "EMPRESA" ? [
+            <Table listEncabezados={listHeader} listObjetos={jobs} mobileCards={true} action={rol === "EMPRESA" ? [
               {
                 text: "Editar",
                 funcion: (job) => { navigate(`/empresa/editar/vacantes/${job.nvacantes}`) },
@@ -215,8 +238,9 @@ const JobList = ({
               cambiarEstado={cambiarEstado}
               verSeccionEdit={true}
               presentaion={presentacion}
-              fetchAllJobs={fetchAllJobs}
               verPrediccion={verPrediccion}
+              setFilteredJobs={setFilteredJobs}
+              onToggleFavorito={handleToggleFavorito}
             />
           ))
         )}

@@ -25,14 +25,21 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.miproyecto.proyecto.aptitudes.service.AptitudesService;
+import com.miproyecto.proyecto.candidato.repository.CandidatoRepository;
 import com.miproyecto.proyecto.empresa.model.Empresa;
 import com.miproyecto.proyecto.empresa.repository.EmpresaRepository;
+import com.miproyecto.proyecto.ml.service.PrediccionService;
+import com.miproyecto.proyecto.optimizacion.service.OptimizationService;
 import com.miproyecto.proyecto.postulacion.repository.PostuladoRepository;
+import com.miproyecto.proyecto.usuario.service.SupabaseStorageService;
 import com.miproyecto.proyecto.util.NotFoundException;
 import com.miproyecto.proyecto.util.response.ApiResponseBody;
 import com.miproyecto.proyecto.vacante.dto.VacanteDTO;
 import com.miproyecto.proyecto.vacante.model.Vacante;
+import com.miproyecto.proyecto.vacante.repository.VacanteFavoritaRepository;
 import com.miproyecto.proyecto.vacante.repository.VacanteRepository;
+import com.miproyecto.proyecto.vacante.service.CargoService;
+import com.miproyecto.proyecto.vacante.service.RequisitoService;
 import com.miproyecto.proyecto.vacante.service.VacanteService;
 
 /**
@@ -52,6 +59,20 @@ class VacanteServiceTest {
     private PostuladoRepository postuladoRepository;
     @Mock
     private AptitudesService aptitudesService;
+    @Mock
+    private PrediccionService prediccionService;
+    @Mock
+    private OptimizationService optimizationService;
+    @Mock
+    private CargoService cargoService;
+    @Mock
+    private RequisitoService requisitoService;
+    @Mock
+    private SupabaseStorageService supabaseStorageService;
+    @Mock
+    private VacanteFavoritaRepository vacanteFavoritaRepository;
+    @Mock
+    private CandidatoRepository candidatoRepository;
 
     @InjectMocks
     private VacanteService vacanteService;
@@ -88,10 +109,9 @@ class VacanteServiceTest {
     /**
      * Verifica que findAllByEstado devuelva un mapa con los elementos paginados.
      *
-     * Caso de prueba: Hay dos vacantes activas.
-     * Resultado esperado: El mapa contiene la lista y metadatos de paginación.
+     * Caso de prueba: Hay vacantes activas en la base de datos.
+     * Resultado esperado: La respuesta contiene las vacantes mapeadas a DTO.
      */
-    
     @Test
     void testFindAllByEstado_debeRetornarMapaDeVacantes() {
         Vacante vacante1 = new Vacante();
@@ -153,11 +173,16 @@ class VacanteServiceTest {
         dto.setTitulo("Desarrollador Java");
         dto.setIdUsuario(1L); 
 
+        Vacante vGuardada = new Vacante();
+        vGuardada.setNvacantes(1L);
+
         when(aptitudesService.mapToListEntity(any())).thenReturn(Collections.emptyList());
         when(empresaRepository.findById(1L)).thenReturn(Optional.of(new Empresa()));
+        when(vacanteRepository.save(any(Vacante.class))).thenReturn(vGuardada);
 
-        vacanteService.create(dto);
+        Long idCreado = vacanteService.create(dto);
 
+        assertEquals(1L, idCreado);
         verify(vacanteRepository).save(any(Vacante.class));
     }
 

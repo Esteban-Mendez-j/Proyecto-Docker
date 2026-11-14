@@ -1,5 +1,6 @@
 package com.miproyecto.proyecto.vacante.controller;
 
+import com.miproyecto.proyecto.vacante.service.VacantesCacheService;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -43,14 +44,16 @@ import jakarta.validation.Valid;
 @RequestMapping(value = "/api/vacantes", produces = MediaType.APPLICATION_JSON_VALUE)
 public class VacanteResource {
 
+    private final VacantesCacheService vacantesCacheService;
     private final CandidatoService candidatoService;
     private final VacanteService vacanteService;
     private final JwtUtils jwtUtils;
 
-    public VacanteResource(VacanteService vacanteService, JwtUtils jwtUtils, CandidatoService candidatoService) {
+    public VacanteResource(VacanteService vacanteService, JwtUtils jwtUtils, CandidatoService candidatoService, VacantesCacheService vacantesCacheService) {
         this.vacanteService = vacanteService;
         this.jwtUtils = jwtUtils;
         this.candidatoService = candidatoService;
+        this.vacantesCacheService = vacantesCacheService;
     }
 
     // 🔥 NUEVO: Endpoint para registrar visitas
@@ -245,6 +248,7 @@ public class VacanteResource {
             vacanteDTO.setIdUsuario(idUsuario);
             Long id = vacanteService.create(vacanteDTO);
             response.setData(id);
+            vacantesCacheService.invalidarTodas();
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (IOException e) {
             error.setCode(ResponseCode.ERROR);
@@ -295,7 +299,7 @@ public class VacanteResource {
                 vacanteDTO.setVideoLink(null);
             }
 
-            // 2️⃣ Si enviaron un video nuevo → reemplazarlo
+            //  Si enviaron un video nuevo → reemplazarlo
             else if (video != null && !video.isEmpty()) {
 
                 // si antes ya había uno → eliminarlo
@@ -307,10 +311,11 @@ public class VacanteResource {
                 vacanteDTO.setVideoLink(rutaVideo);
             }
 
-            // 3️⃣ Si no enviaron video y no quieren eliminar → mantener el existente
+            // Si no enviaron video y no quieren eliminar → mantener el existente
 
             vacanteService.update(nvacantes, vacanteDTO);
             response.setData(nvacantes);
+            vacantesCacheService.invalidarTodas();
             return ResponseEntity.ok(response);
         }catch (IOException e) {
             error.setCode(ResponseCode.ERROR);
@@ -331,6 +336,7 @@ public class VacanteResource {
             @PathVariable Long idVacante,
             @RequestParam boolean estado) {
         vacanteService.cambiarEstado(idVacante, estado);
+        vacantesCacheService.invalidarTodas();
         return ResponseEntity.noContent().build();
     }
 

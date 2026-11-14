@@ -31,9 +31,8 @@ public class HistorialLaboralService {
     }
 
     public List<HistorialLaboralDTO> getHistorialByIdUsuarioAndVisible(final Long idUsuario, final Boolean visible ) {
-        final Candidato candidato = candidatoRepository.findById(idUsuario)
-                .orElseThrow(NotFoundException::new);
-        final List<HistorialLaboral> idUsuarioHistorialLaboral =  historialLaboralRepository.findByIdUsuarioAndVisible(candidato, visible);
+        
+        final List<HistorialLaboral> idUsuarioHistorialLaboral =  historialLaboralRepository.findByUsuarioIdAndVisible(idUsuario, visible);
         if (idUsuarioHistorialLaboral != null) {
             return idUsuarioHistorialLaboral.stream()
             .map(historialLaboral -> mapToDTO(historialLaboral, new HistorialLaboralDTO()))

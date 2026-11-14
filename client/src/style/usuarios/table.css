@@ -1,0 +1,139 @@
+/* Contenedor general */
+.tabla-contenedor {
+    width: 100%;
+}
+
+/* Presentación de escritorio */
+.tabla-escritorio {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.tabla-escritorio table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.tabla-escritorio th,
+.tabla-escritorio td {
+    vertical-align: middle;
+}
+
+/* Las tarjetas permanecen ocultas en escritorio */
+.tabla-tarjetas {
+    display: none;
+}
+
+/* =====================================
+   DISEÑO PARA DISPOSITIVOS MÓVILES
+===================================== */
+
+@media (max-width: 768px) {
+
+    /* Si está habilitado mobileCards,
+       ocultamos la tabla tradicional */
+    .tabla-con-tarjetas .tabla-escritorio {
+        display: none;
+    }
+
+    .tabla-con-tarjetas .tabla-tarjetas {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        width: 100%;
+    }
+
+    /* Tarjeta individual */
+    .tabla-tarjeta {
+        width: 100%;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Información de la tarjeta */
+    .tabla-tarjeta-contenido {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    /* Cada campo: etiqueta + valor */
+    .tabla-tarjeta-fila {
+        display: grid;
+        grid-template-columns: minmax(95px, 0.8fr) minmax(0, 1.4fr);
+        align-items: start;
+        gap: 12px;
+        padding: 11px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .tabla-tarjeta-fila:first-child {
+        padding-top: 0;
+    }
+
+    .tabla-tarjeta-fila:last-child {
+        border-bottom: none;
+    }
+
+    /* Nombre del campo */
+    .tabla-tarjeta-label {
+        color: #6b7280;
+        font-size: 13px;
+        font-weight: 600;
+        text-align: left;
+    }
+
+    /* Valor del campo */
+    .tabla-tarjeta-valor {
+        color: #1f2937;
+        font-size: 14px;
+        font-weight: 500;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+    /* Acciones */
+    .tabla-tarjeta-acciones {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 14px;
+        padding-top: 13px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .tabla-tarjeta-acciones button {
+        flex: 1 1 120px;
+        min-width: 0;
+        width: auto;
+        padding: 10px 12px;
+        font-size: 13px;
+        text-align: center;
+        border-radius: 9px;
+    }
+}
+
+/* Móviles pequeños */
+@media (max-width: 380px) {
+    .tabla-tarjeta {
+        padding: 13px;
+    }
+
+    .tabla-tarjeta-fila {
+        grid-template-columns: minmax(85px, 0.8fr) minmax(0, 1.2fr);
+        gap: 8px;
+    }
+
+    .tabla-tarjeta-label {
+        font-size: 12px;
+    }
+
+    .tabla-tarjeta-valor {
+        font-size: 13px;
+    }
+}

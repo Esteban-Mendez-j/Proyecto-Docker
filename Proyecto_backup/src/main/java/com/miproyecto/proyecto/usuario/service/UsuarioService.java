@@ -2,6 +2,7 @@ package com.miproyecto.proyecto.usuario.service;
 
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -129,6 +130,12 @@ public class UsuarioService {
         final Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(NotFoundException::new);
         mapToEntity(usuarioDTO, usuario);
+        usuarioRepository.save(usuario);
+    }
+    
+    public void updateFechaInicioSesion(final Long id, final LocalDate fecha) {
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(NotFoundException::new);
+        usuario.setFechaInicioSesion(fecha);
         usuarioRepository.save(usuario);
     }
 

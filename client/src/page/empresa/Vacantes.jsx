@@ -11,6 +11,7 @@ import { useSendFormV2 } from '../../hooks/useFetch.jsx';
 import { RoleContext } from '../../services/RoleContext.jsx';
 import exceptionControl from '../../services/exceptionControl.js';
 import AutocompleteInput from '../../components/AutocompleteInput.jsx';
+import "../../style/invitado/registroEmpresa.css"
 
 export default function CrearVacante() {
 

@@ -40,5 +40,32 @@ public interface VacanteRepository extends JpaRepository<Vacante, Long>, JpaSpec
             """)
     List<String> findTituloByTitulo(@Param("titulo") String titulo);
 
+    @Query(value = """
+        (
+            SELECT *
+            FROM vacante
+            WHERE is_active = :isActive
+            ORDER BY fecha_publicacion DESC, nvacantes DESC
+            LIMIT 2
+        )
+        UNION
+        (
+            SELECT *
+            FROM vacante
+            WHERE is_active = :isActive
+            ORDER BY experiencia ASC, nvacantes DESC
+            LIMIT 2
+        )
+        UNION
+        (
+            SELECT *
+            FROM vacante
+            WHERE is_active = :isActive
+            ORDER BY sueldo DESC, nvacantes DESC
+            LIMIT 2
+        )
+        """, nativeQuery = true
+    )
+    List<Vacante> findTopVacantesCombinadas(@Param("isActive") Boolean isActive);
     
 }

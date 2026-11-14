@@ -1,7 +1,10 @@
 package com.miproyecto.proyecto.vacante.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -38,6 +41,26 @@ public class RequisitoService {
                 .stream()
                 .map(requisito -> requisito.getNombre())
                 .toList();
+    }
+
+    public Map<Long, List<String>> obtenerRequisitosPorVacante(
+            List<Long> idsVacantes) {
+
+        List<Object[]> resultados = requisitoRepository.findNombresByVacantes(idsVacantes);
+
+        Map<Long, List<String>> requisitosPorVacante = new HashMap<>();
+
+        for (Object[] fila : resultados) {
+
+            Long idVacante = (Long) fila[0];
+            String nombreRequisito = (String) fila[1];
+
+            requisitosPorVacante
+                    .computeIfAbsent(idVacante, k -> new ArrayList<>())
+                    .add(nombreRequisito);
+        }
+
+        return requisitosPorVacante;
     }
     
 }

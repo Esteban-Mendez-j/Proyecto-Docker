@@ -5,12 +5,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 
 import com.miproyecto.proyecto.usuario.model.Usuario;
+import com.miproyecto.proyecto.usuario.model.UsuarioPrincipal;
 import com.miproyecto.proyecto.util.NotFoundException;
 
 @Service
@@ -32,18 +34,19 @@ public class CustomUserDetailsService implements UserDetailsService {
                 return new UsernameNotFoundException("Usuario no encontrado");
             });
             
-            
-            return new User(
-                usuario.getCorreo(),
-                usuario.getContrasena(),
-                usuario.getIsActive(), 
-                true,           
-                true,       
-                true,            
-                usuario.getRoles().stream()
-                    .map(rol -> new SimpleGrantedAuthority("ROLE_" + rol.getRol()))
-                    .collect(Collectors.toList())
-            );
+            List<GrantedAuthority> authorities = usuario.getRoles()
+            .stream()
+            .map(rol -> new SimpleGrantedAuthority("ROLE_" + rol.getRol()))
+            .collect(Collectors.toList());
+
+            return new UsuarioPrincipal(
+                    usuario.getIdUsuario(),
+                    usuario.getCorreo(),
+                    usuario.getContrasena(),
+                    usuario.getIsActive(),
+                    usuario.getRoles().get(0).getRol(),
+                    authorities);
+
         } catch (NotFoundException e) {
             throw new UsernameNotFoundException("Usuario no encontrado");
         }

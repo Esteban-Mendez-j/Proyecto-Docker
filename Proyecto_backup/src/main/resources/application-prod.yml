@@ -26,6 +26,7 @@ spring:
             non_contextual_creation: true
         id:
           new_generator_mappings: true
+        default_batch_fetch_size: 50
   data:
     mongodb:
         uri: ${MONGODB_URI}
@@ -99,4 +100,34 @@ security:
     user:
       generator: SEARCHJOBS-BACKEND
     expiration: ${JWT_EXPIRATION}
-  
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - metrics
+
+  endpoint:
+    health:
+      show-details: when-authorized
+
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: Searchjobs API
+    description: Backend de la plataforma Searchjobs
+    version: 1.0.0
+
+firebase:
+  service-account-base64: ${FIREBASE_SERVICE_ACCOUNT_BASE64:}
+  project-id: ${FIREBASE_PROJECT_ID:}
+
+notificaciones:
+  internal-secret: ${SEARCHJOBS_NOTIFICATION_SECRET:}

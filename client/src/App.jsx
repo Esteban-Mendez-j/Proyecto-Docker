@@ -34,6 +34,8 @@ const Notificaciones = lazy(() => import("./page/candidato/Notificaciones.jsx"))
 const ShortsPage = lazy(() => import('./page/candidato/ShortsPage.jsx'));
 const FormEducation = lazy(() => import("./page/candidato/FormEducation.jsx"));
 const FormHistorial = lazy(() => import("./page/candidato/FormHistorial.jsx"));
+const SubscriptionPage = lazy(() => import("./page/invitado/SubscriptionPage.jsx"))
+const AnalisisPredictivo = lazy(() => import("./page/candidato/AnalisisPredictivo.jsx"))
 
 function App() {
 
@@ -75,6 +77,9 @@ function App() {
           <Route element={<RouteProtection accessRole={["EMPRESA","ADMIN","SUPER_ADMIN"]} />}> 
             <Route path="/empresa/postulados/:vacanteId" element={<Postulados/>} />
           </Route>
+          <Route element={<RouteProtection accessRole={["CANDIDATO","EMPRESA","ADMIN","SUPER_ADMIN"]} />}> 
+            <Route path="/prediccion" element={<AnalisisPredictivo/>}/>
+          </Route>
           <Route path="/login" element={<Login/>} />
           <Route path="/empleos/:id" element={<InfoVacante />} />
           <Route path="/empleos" element={<ListadoVacantes/>} />
@@ -83,6 +88,7 @@ function App() {
           <Route path="/perfil/candidato/editar" element={<PerfilCandidatoEditar/>}/>
           <Route path="/politicas/privacidad" element={<PoliticaPrivacidad/>}/>
           <Route path="/terminos/condiciones" element={<TerminosCondiciones/>}/>
+          <Route path="/suscripciones" element={<SubscriptionPage/>}/>
           <Route path="*" element={<NotFound/>} />
         </Routes>
       </Suspense>

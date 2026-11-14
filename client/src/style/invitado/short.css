@@ -1,19 +1,25 @@
-/* --- CONTENEDOR GENERAL --- */
+
+/* =====================================================
+   CONTENEDOR GENERAL
+===================================================== */
+
 .shorts-container {
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh;
   background: #f4f6f9;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
-  padding: 20px;
-  overflow: hidden;
+  padding: 25px;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .loading {
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -21,19 +27,28 @@
   color: #555;
 }
 
-/* --- WRAPPER --- */
+/* =====================================================
+   WRAPPER PRINCIPAL
+===================================================== */
+
 .shorts-wrapper {
   display: flex;
   width: 100%;
   max-width: 1100px;
   height: 90vh;
+  height: 90dvh;
+  min-height: 550px;
+  max-height: 900px;
   background: white;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
 }
 
-/* --- BOTÓN ATRÁS --- */
+/* =====================================================
+   BOTÓN ATRÁS
+===================================================== */
+
 .back-btn {
   position: absolute;
   top: 25px;
@@ -48,38 +63,56 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   z-index: 20;
+  transition: transform 0.2s ease;
 }
 
-/* --- VIDEO PANEL --- */
+.back-btn:hover {
+  transform: scale(1.08);
+}
+
+/* =====================================================
+   PANEL DEL VIDEO
+===================================================== */
+
 .video-panel {
   flex: 0 0 55%;
-  background: black;
+  min-width: 0;
+  background: #000;
   position: relative;
+  overflow: hidden;
 }
 
 .video-container {
   width: 100%;
   height: 100%;
   position: relative;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .video-container video {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  border-radius: 0px;
+  object-fit: contain;
+  display: block;
+  background: #000;
 }
 
-/* --- BOTONES --- */
+/* =====================================================
+   BOTÓN DE SONIDO
+===================================================== */
+
 .mute-btn {
   position: absolute;
   top: 15px;
   right: 15px;
-  width: 40px;
-  height: 40px;
-  background: rgba(0,0,0,0.7);
+  width: 42px;
+  height: 42px;
+  background: rgba(0, 0, 0, 0.7);
   border: none;
   border-radius: 50%;
   color: white;
@@ -87,7 +120,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 5;
+  font-size: 1.1rem;
 }
+
+/* =====================================================
+   FLECHAS DE NAVEGACIÓN
+===================================================== */
 
 .arrows {
   position: absolute;
@@ -96,18 +135,28 @@
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  z-index: 5;
 }
 
 .arrows button {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.65);
   border: none;
   color: white;
   font-size: 1.2em;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.arrows button:hover:not(:disabled) {
+  background: rgba(0, 123, 255, 0.85);
+  transform: scale(1.08);
 }
 
 .arrows button:disabled {
@@ -115,32 +164,51 @@
   cursor: not-allowed;
 }
 
-/* --- PANEL DE INFORMACIÓN --- */
+/* =====================================================
+   PANEL DE INFORMACIÓN
+===================================================== */
+
 .info-panel {
   flex: 1;
-  padding: 25px;
+  min-width: 0;
+  padding: 30px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
-/* --- HEADER PERFIL --- */
+/* =====================================================
+   PERFIL DE LA EMPRESA
+===================================================== */
+
 .profile-header {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
   border-bottom: 1px solid #eee;
-  padding-bottom: 15px;
+  padding-bottom: 18px;
+  text-decoration: none;
+  color: inherit;
+  min-width: 0;
 }
 
 .profile-header:hover {
   color: var(--primary);
 }
 
+.profile-header h1 {
+  font-size: 1.1rem;
+  overflow-wrap: anywhere;
+}
+
 .profile-icon {
   width: 55px;
   height: 55px;
+  min-width: 55px;
+  object-fit: cover;
   background: #007bff;
   color: white;
   font-size: 1.6em;
@@ -150,33 +218,59 @@
   align-items: center;
 }
 
-/* --- TEXTO --- */
+/* =====================================================
+   INFORMACIÓN DE LA VACANTE
+===================================================== */
+
 .title {
   font-size: 1.4em;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  overflow-wrap: anywhere;
 }
 
 .description {
   font-size: 1em;
   color: #555;
   margin-bottom: 20px;
-  line-height: 1.5em;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
 }
 
-.hashtags {
+/* =====================================================
+   BOTÓN VER MÁS
+===================================================== */
+
+.more-btn {
+  padding: 10px 16px;
+  border: 1px solid #007bff;
+  background: white;
   color: #007bff;
-  font-size: 0.85em;
-  margin-top: auto;
+  border-radius: 6px;
+  cursor: pointer;
   margin-bottom: 20px;
+  width: fit-content;
+  max-width: 100%;
+  transition: all 0.2s ease;
 }
 
-/* --- BOTONES ACCIONES --- */
+.more-btn:hover {
+  background: #007bff;
+  color: white;
+}
+
+/* =====================================================
+   ACCIONES
+===================================================== */
+
 .actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-top: 20px;
 }
 
 .like-btn {
@@ -184,11 +278,26 @@
   background: transparent;
   font-size: 1.8em;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .like-btn.liked {
   color: #ff4444;
-  transform: scale(1.2);
+  transform: scale(1.1);
+}
+
+.actions > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.actions > div button,
+.actions > div a {
+  box-sizing: border-box;
+  display: inline-block;
+  max-width: 100%;
+  text-align: center;
+  text-decoration: none;
 }
 
 .apply-btn {
@@ -202,38 +311,46 @@
   font-weight: bold;
 }
 
-.more-btn {
-  padding: 8px 14px;
-  border: 1px solid #007bff;
-  background: white;
-  color: #007bff;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-bottom: 20px;
-  width: fit-content;
+/* =====================================================
+   ESTADOS DE POSTULACIÓN
+===================================================== */
+
+.actions span {
+  display: inline-block;
+  max-width: 100%;
+  text-align: center;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
 }
+
+/* =====================================================
+   SIN VIDEOS DISPONIBLES
+===================================================== */
 
 .no-shorts-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 80vh; /* Centrado vertical */
+  min-height: 80vh;
   text-align: center;
   padding: 20px;
+  box-sizing: border-box;
 }
 
 .no-shorts-card {
   background: #fff;
   padding: 40px;
   border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   max-width: 400px;
   width: 100%;
+  box-sizing: border-box;
   animation: fadeIn 0.5s ease-in-out;
 }
 
 .no-shorts-img {
   width: 150px;
+  max-width: 100%;
   margin-bottom: 20px;
   animation: bounce 1.2s infinite;
 }
@@ -257,21 +374,305 @@
   border-radius: 10px;
   font-weight: bold;
   transition: transform 0.2s, box-shadow 0.2s;
+  border: none;
+  cursor: pointer;
 }
 
-.no-shorts-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-}
+/* =====================================================
+   ANIMACIONES
+===================================================== */
 
-/* Animaciones */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px);}
-  to { opacity: 1; transform: translateY(0);}
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes bounce {
-  0%, 100% { transform: translateY(0);}
-  50% { transform: translateY(-10px);}
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
+
+/* =========================================
+   HEADER EXCLUSIVO DE REELS
+========================================= */
+
+.shorts-container {
+  flex-direction: column;
+  gap: 15px;
+}
+
+.shorts-header {
+  width: 100%;
+  max-width: 1100px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.shorts-back-btn {
+  width: 42px;
+  height: 42px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
+  color: #333;
+  font-size: 1.3rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.shorts-back-btn:hover {
+  background: #eef4ff;
+  transform: translateX(-2px);
+}
+
+.shorts-brand {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #1f2937;
+}
+
+.shorts-section {
+  margin-left: auto;
+  background: #eaf2ff;
+  color: #007bff;
+  padding: 7px 15px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* =========================================
+   BOTÓN VER INFORMACIÓN
+========================================= */
+
+.show-info-btn,
+.close-info-btn {
+  display: none;
+}
+
+/* =========================================
+   TABLET Y CELULAR
+========================================= */
+
+@media (max-width: 768px) {
+
+  .shorts-container {
+    padding: 10px 0 0;
+    gap: 0;
+    justify-content: flex-start;
+    min-height: 100dvh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .shorts-header {
+    width: 100%;
+    min-height: 52px;
+    padding: 0 15px;
+    background: white;
+    border-bottom: 1px solid #eee;
+    z-index: 10;
+  }
+
+  .shorts-back-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .shorts-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: none;
+    height: calc(100dvh - 52px);
+    min-height: 0;
+    max-height: none;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: hidden;
+    flex: 1;
+  }
+
+  /* VIDEO A PANTALLA COMPLETA */
+
+  .video-panel {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    flex: none;
+    background: #000;
+    z-index: 1;
+  }
+
+  .video-container {
+    width: 100%;
+    height: 100%;
+  }
+
+  .video-container video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* BOTÓN INFORMACIÓN */
+
+  .show-info-btn {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: calc(100% - 35px);
+    padding: 12px 20px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 30px;
+    background: rgba(0,0,0,0.72);
+    backdrop-filter: blur(10px);
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    z-index: 5;
+    white-space: nowrap;
+  }
+
+  .show-info-btn:active {
+    transform: translateX(-50%) scale(0.96);
+  }
+
+  /* =====================================
+     PANEL INFERIOR DE INFORMACIÓN
+  ===================================== */
+
+  .info-panel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-height: 78%;
+    height: auto;
+    min-height: 0;
+    padding: 28px 22px 25px;
+    box-sizing: border-box;
+    background: white;
+    border-radius: 22px 22px 0 0;
+    box-shadow: 0 -8px 35px rgba(0,0,0,0.25);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    z-index: 8;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 15px;
+
+    transform: translateY(105%);
+    visibility: hidden;
+    pointer-events: none;
+
+    transition:
+      transform 0.35s ease,
+      visibility 0.35s;
+  }
+
+  /* PANEL ABIERTO */
+
+  .shorts-wrapper.info-open .info-panel {
+    transform: translateY(0);
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  /* BOTÓN CERRAR */
+
+  .close-info-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 15px;
+    min-height: 15px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    margin-bottom: 5px;
+  }
+
+  .close-info-btn span {
+    width: 42px;
+    height: 5px;
+    border-radius: 10px;
+    background: #d1d5db;
+  }
+
+  /* INFORMACIÓN */
+
+  .info-panel .profile-header {
+    margin-bottom: 16px;
+  }
+
+  .info-panel .title {
+    font-size: 1.2rem;
+  }
+
+  .info-panel .description {
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+
+  .info-panel .more-btn {
+    width: 100%;
+  }
+
+  .info-panel .actions {
+    margin-top: 10px;
+  }
+
+  /* AL ABRIR INFORMACIÓN, EL BOTÓN DEJA DE SER NECESARIO */
+
+  .shorts-wrapper.info-open .show-info-btn {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* =========================================
+   CELULARES PEQUEÑOS
+========================================= */
+
+@media (max-width: 380px) {
+
+  .info-panel {
+    padding: 22px 16px 20px;
+    max-height: 82%;
+  }
+
+  .show-info-btn {
+    bottom: 15px;
+    padding: 11px 16px;
+    font-size: 0.85rem;
+  }
+}

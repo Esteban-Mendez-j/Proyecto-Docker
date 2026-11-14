@@ -47,7 +47,7 @@ public class Candidato extends Usuario {
     @OneToMany(mappedBy = "idUsuario")
     private Set<HistorialLaboral> listarHistorial;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(name = "candidato_aptitudes", joinColumns = @JoinColumn(name = "idCandidato"), inverseJoinColumns = @JoinColumn(name = "Id_aptitud"))
     private List<Aptitudes> aptitudes;
 

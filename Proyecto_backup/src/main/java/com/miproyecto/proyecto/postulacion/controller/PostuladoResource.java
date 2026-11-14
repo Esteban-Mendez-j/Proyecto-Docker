@@ -1,5 +1,6 @@
 package com.miproyecto.proyecto.postulacion.controller;
 
+import com.miproyecto.proyecto.vacante.service.VacantesCacheService;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -41,17 +42,19 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping(value = "/api/postulados", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PostuladoResource {
 
+    private final VacantesCacheService vacantesCacheService;
     private final PostuladoService postuladoService;
     private final CandidatoService candidatoService;
     private final JwtUtils jwtUtils;
     private final VacanteService vacanteService;
 
     public PostuladoResource(PostuladoService postuladoService, CandidatoService candidatoService, JwtUtils jwtUtils,
-            VacanteService vacanteService) {
+            VacanteService vacanteService, VacantesCacheService vacantesCacheService) {
         this.postuladoService = postuladoService;
         this.candidatoService = candidatoService;
         this.jwtUtils = jwtUtils;
         this.vacanteService = vacanteService;
+        this.vacantesCacheService = vacantesCacheService;
     }
 
     @Operation(summary = "Obtener todas las postulaciones", description = "Devuelve la lista completa de postulaciones registradas.")
@@ -169,6 +172,7 @@ public class PostuladoResource {
             nuevo.setCandidato(candidatoResumenDTO);
             idPostulacion = postuladoService.create(nuevo, candidatoResumenDTO, nvacantes);
         }
+        vacantesCacheService.invalidarTodas();
 
         response.setData(idPostulacion);
         return new ResponseEntity<>(response, HttpStatus.CREATED);

@@ -158,3 +158,237 @@
   .btn-edit:hover {
     background-color: #60a5fa;
   }
+
+/* =========================================
+   PRESENTACIÓN HORIZONTAL DE VACANTES
+========================================= */
+
+.job-row-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  min-width: 0;
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background-color 0.2s ease;
+}
+
+.job-row-card:hover {
+  background-color: rgba(37, 100, 235, 0.178);
+}
+
+/* Información principal */
+
+.job-row-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.job-row-logo {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.job-row-info {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Título */
+
+.job-row-title-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+  min-width: 0;
+}
+
+.job-row-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.job-row-badge {
+  display: inline-block;
+  background-color: #2563eb;
+  color: white;
+  font-size: 9px;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Información de la vacante */
+
+.job-row-details {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  min-width: 0;
+}
+
+.job-row-detail {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-light);
+  font-size: 13px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.job-row-detail svg {
+  flex-shrink: 0;
+}
+
+/* Acciones */
+
+.job-row-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.job-row-status {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.job-row-favorite {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 7px;
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  cursor: pointer;
+}
+
+.job-row-company-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.job-row-edit {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.job-row-edit:hover {
+  background-color: #3b82f6;
+  color: white;
+}
+
+/* =========================================
+   RESPONSIVE - PRESENTACIÓN HORIZONTAL
+========================================= */
+
+@media (max-width: 768px) {
+
+  .job-row-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    padding: 16px 12px;
+  }
+
+  .job-row-main {
+    width: 100%;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .job-row-logo {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+  }
+
+  .job-row-info {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .job-row-title-container {
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .job-row-title {
+    font-size: 16px;
+    line-height: 1.4;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .job-row-details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 9px;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .job-row-detail {
+    width: 100%;
+    font-size: 13px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .job-row-actions {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .job-row-status {
+    justify-content: flex-start;
+  }
+
+  .job-row-company-actions {
+    justify-content: flex-end;
+  }
+
+}

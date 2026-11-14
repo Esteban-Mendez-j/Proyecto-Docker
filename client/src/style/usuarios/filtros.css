@@ -1,0 +1,195 @@
+/* ================================
+   CONTENEDOR DE FILTROS
+================================ */
+
+.admin-filtros {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 24px;
+    margin-bottom: 20px;
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.admin-filtros-titulo {
+    margin: 0 0 22px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* ================================
+   GRID DE FILTROS
+================================ */
+
+.admin-filtros-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+    align-items: end;
+    width: 100%;
+}
+
+.admin-filtro-campo {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    width: 100%;
+}
+
+.admin-filtro-campo label {
+    margin-bottom: 7px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.admin-filtro-control {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    box-sizing: border-box;
+    padding: 10px 13px;
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+    background-color: white;
+    color: #374151;
+    font-size: 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-filtro-control:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+/* ================================
+   BOTONES
+================================ */
+
+.admin-filtros-botones {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    width: 100%;
+}
+
+.admin-filtros-botones button {
+    flex: 1;
+    min-width: 0;
+    min-height: 42px;
+    padding: 9px 12px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+}
+
+.admin-btn-buscar {
+    background-color: #2563eb;
+}
+
+.admin-btn-buscar:hover {
+    background-color: #1d4ed8;
+}
+
+.admin-btn-estado {
+    background-color: #6b7280;
+}
+
+.admin-btn-estado:hover {
+    background-color: #4b5563;
+}
+
+.admin-btn-limpiar {
+    background-color: #2563eb;
+}
+
+.admin-btn-limpiar:hover {
+    background-color: #1d4ed8;
+}
+
+/* ================================
+   TABLETS
+================================ */
+
+@media (max-width: 1100px) {
+    .admin-filtros-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-filtros-botones {
+        grid-column: span 2;
+    }
+}
+
+/* ================================
+   MÓVILES
+================================ */
+
+@media (max-width: 768px) {
+    .admin-filtros {
+        padding: 18px 16px;
+        border-radius: 14px;
+    }
+
+    .admin-filtros-titulo {
+        font-size: 18px;
+        margin-bottom: 18px;
+    }
+
+    .admin-filtros-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+
+    .admin-filtro-control {
+        min-height: 44px;
+        font-size: 14px;
+    }
+
+    .admin-filtros-botones {
+        grid-column: auto;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        margin-top: 4px;
+    }
+
+    .admin-filtros-botones button {
+        width: 100%;
+        min-height: 43px;
+        font-size: 14px;
+    }
+}
+
+/* ================================
+   MÓVILES PEQUEÑOS
+================================ */
+
+@media (max-width: 380px) {
+    .admin-filtros {
+        padding: 15px 12px;
+    }
+
+    .admin-filtros-grid {
+        gap: 14px;
+    }
+
+    .admin-filtro-control {
+        font-size: 13px;
+    }
+
+    .admin-filtros-botones button {
+        font-size: 13px;
+    }
+}

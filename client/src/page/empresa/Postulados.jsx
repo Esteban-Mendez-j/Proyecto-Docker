@@ -4,8 +4,8 @@ import "../../style/invitado/empleos.css"
 import "../../style/invitado/postulados.css"
 import { useContext, useEffect, useState } from "react";
 import Pagination from "../../components/Paginacion.jsx";
-import { API_CLIENT_URL } from "../../services/Api.js";
-import { QuestionModal } from "../../services/Modal.js";
+import { URL_PDF } from "../../services/Api.js";
+import { modal, QuestionModal } from "../../services/Modal.js";
 import {sendMessage} from "../../services/Websocket.js"
 import { mensajesNotificaciones } from "../../services/data.js";
 import useFiltro from "../../hooks/useFiltro.jsx";
@@ -74,7 +74,7 @@ export default function Postulados() {
             nameAtributo: "candidato.curriculo", modificacion: (p) => {
                 return (
                     <a
-                        href={`${API_CLIENT_URL}/pdf/${p.candidato.curriculo}`}
+                        href={`${URL_PDF}${p.candidato.curriculo}`}
                         target="_blank"
                         className="text-blue-500 hover:underline font-medium"
                     >
@@ -158,7 +158,7 @@ export default function Postulados() {
 
         try {
             await send(`/api/postulados/edit/${nPostulacion}`, "PUT", JSON.stringify({ estado: nuevoEstado }));
-            modal(`Postulación ${nuevoEstado.toLowerCase()} correctamente`, "success");
+            await modal(`Postulación ${nuevoEstado.toLowerCase()} correctamente`, "success");
             fetchPostulados(currentPage);
             sendNotificacion(nuevoEstado.toLowerCase(), nPostulacion)
         } catch (error) {
@@ -170,62 +170,89 @@ export default function Postulados() {
         <Layout>
             <section className="pagina">
                 <h1>Postulados</h1>
-                <p>Lista de candidatos que han aplicado a vacantes.</p>
+                <p>{postulados[0]?.vacante?.titulo
+                    ? "Lista de candidatos que han aplicado a la vacante " + postulados[0]?.vacante?.titulo
+                    : "Lista de candidatos que han aplicado"
+                }
+                </p>
 
                 <div className="p-4 space-y-6">
                     {/* Filtros */}
-                    <div className="bg-white shadow-md rounded-lg p-4 flex flex-wrap gap-4 items-end">
-                        <div className="flex flex-col">
-                            <label className="text-sm font-semibold mb-1">Estado:</label>
-                            <select
-                                name="estado"
-                                onChange={handleOnFilters}
-                                value={filtrosLocal.estado}
-                                className="border border-gray-300 rounded-md px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="">Todos</option>
-                                <option value="Espera">En Espera</option>
-                                <option value="Aceptada">Aceptada</option>
-                                <option value="Rechazada">Rechazada</option>
-                                <option value="Cancelada">Canceladas</option>
-                            </select>
-                        </div>
+                    <div className="filtros-postulaciones mb-8 bg-white rounded-2xl shadow-md border border-gray-200">
 
-                        <div className="flex flex-col">
-                            <label className="text-sm font-semibold mb-1">Fecha mínima:</label>
-                            <input
-                                type="date"
-                                name="fechaMinima"
-                                value={filtrosLocal.fechaMinima}
-                                onChange={handleOnFilters}
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
+                        <h2 className="text-xl font-semibold text-gray-800 mb-6">
+                            Filtrar postulaciones
+                        </h2>
 
-                        <div className="flex flex-col">
-                            <label className="text-sm font-semibold mb-1">Nombre Candidato:</label>
-                            <input
-                                type="text"
-                                name="nombreCandidato"
-                                value={filtrosLocal.nombreCandidato}
-                                onChange={handleOnFilters}
-                                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
+                        <div className="filtros-postulaciones-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-                        <div className="flex gap-2">
-                            <button
-                                onClick={searchFilters}
-                                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md"
-                            >
-                                Buscar
-                            </button>
-                            <button
-                                onClick={clearFilters}
-                                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-md"
-                            >
-                                Borrar filtros
-                            </button>
+                            {/* Estado */}
+                            <div className="filtro-campo flex flex-col">
+                                <label className="text-sm font-semibold mb-1">
+                                    Estado:
+                                </label>
+
+                                <select
+                                    name="estado"
+                                    onChange={handleOnFilters}
+                                    value={filtrosLocal.estado}
+                                    className="filtro-control"
+                                >
+                                    <option value="">Todos</option>
+                                    <option value="Espera">En Espera</option>
+                                    <option value="Aceptada">Aceptada</option>
+                                    <option value="Rechazada">Rechazada</option>
+                                    <option value="Cancelada">Canceladas</option>
+                                </select>
+                            </div>
+
+                            {/* Fecha mínima */}
+                            <div className="filtro-campo flex flex-col">
+                                <label className="text-sm font-semibold mb-1">
+                                    Fecha mínima:
+                                </label>
+
+                                <input
+                                    type="date"
+                                    name="fechaMinima"
+                                    value={filtrosLocal.fechaMinima}
+                                    onChange={handleOnFilters}
+                                    className="filtro-control"
+                                />
+                            </div>
+
+                            {/* Nombre candidato */}
+                            <div className="filtro-campo flex flex-col">
+                                <label className="text-sm font-semibold mb-1">
+                                    Nombre candidato:
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="nombreCandidato"
+                                    value={filtrosLocal.nombreCandidato}
+                                    onChange={handleOnFilters}
+                                    placeholder="Ej. Juan Pérez"
+                                    className="filtro-control"
+                                />
+                            </div>
+
+                            {/* Botones */}
+                            <div className="filtros-postulaciones-botones">
+                                <button
+                                    onClick={searchFilters}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-transform duration-200 hover:scale-105"
+                                >
+                                    Buscar
+                                </button>
+
+                                <button
+                                    onClick={clearFilters}
+                                    className="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-transform duration-200 hover:scale-105"
+                                >
+                                    Limpiar
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -237,13 +264,14 @@ export default function Postulados() {
                     ) : (
                         <>
                             <div className="overflow-x-auto">
-                            
-                            <Table listEncabezados={listHeader} listObjetos={postulados} action={[
-                                {text:"Ver perfil", funcion: (p) => navigate(`/perfil/candidato/${p.candidato.id}?nPostulacion=${p.nPostulacion}`), clase:"bg-orange-100 hover:bg-orange-200 text-orange-700 font-semibold py-1 px-3 rounded-md"},
-                                rol === "EMPRESA" && {text:"abrir Chat", funcion: (p) => abrirChat(p.candidato.id, p.vacante.id) , ocultar: (p)=> (p.estado === 'Espera' || p.estado === 'Aceptada') && p.active && p.vacanteIsActive, clase:"bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold py-1 px-3 rounded-md"},
-                                rol === "EMPRESA" && {text:"Rechazar", funcion: (p) => actualizarEstadoPostulacion(p.nPostulacion, 'Rechazada'), ocultar: (p) =>  p.estado === 'Espera' && p.active && p.vacanteIsActive , clase:" bg-red-100 hover:bg-red-200 text-red-700 font-semibold py-1 px-3 rounded-md"},
-                                rol === "EMPRESA" && {text:"Aceptar", funcion: (p) => actualizarEstadoPostulacion(p.nPostulacion, 'Aceptada'), ocultar: (p) => p.estado === 'Espera' && p.active && p.vacanteIsActive  , clase:"bg-green-100 hover:bg-green-200 text-green-700 font-semibold py-1 px-3 rounded-md"} 
-                            ]}/>
+                                <Table listEncabezados={listHeader} listObjetos={postulados} mobileCards={true}
+                                    action={[
+                                        {text:"Ver perfil", funcion: (p) => navigate(`/perfil/candidato/${p.candidato.id}?nPostulacion=${p.nPostulacion}`), clase:"bg-orange-100 hover:bg-orange-200 text-orange-700 font-semibold py-1 px-3 rounded-md"},
+                                        rol === "EMPRESA" && {text:"abrir Chat", funcion: (p) => abrirChat(p.candidato.id, p.vacante.id) , ocultar: (p)=> (p.estado === 'Espera' || p.estado === 'Aceptada') && p.active && p.vacanteIsActive, clase:"bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold py-1 px-3 rounded-md"},
+                                        rol === "EMPRESA" && {text:"Rechazar", funcion: (p) => actualizarEstadoPostulacion(p.nPostulacion, 'Rechazada'), ocultar: (p) =>  p.estado === 'Espera' && p.active && p.vacanteIsActive , clase:" bg-red-100 hover:bg-red-200 text-red-700 font-semibold py-1 px-3 rounded-md"},
+                                        rol === "EMPRESA" && {text:"Aceptar", funcion: (p) => actualizarEstadoPostulacion(p.nPostulacion, 'Aceptada'), ocultar: (p) => p.estado === 'Espera' && p.active && p.vacanteIsActive  , clase:"bg-green-100 hover:bg-green-200 text-green-700 font-semibold py-1 px-3 rounded-md"} 
+                                    ]}
+                                />
                             </div>
 
                             <Pagination

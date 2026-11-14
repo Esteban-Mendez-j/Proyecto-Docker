@@ -118,6 +118,8 @@ const JobBoard = ({ fetchUrl }) => {
                         verPrediccion={verPrediccion}
                         setVerPrediccion={setVerPrediccion}
                         setFilteredJobs={setFilteredJobs}
+                        filtroFavoritosActivo={filtrosAplicados.isFavorita}
+                        setTotalElement={setTotalElement}
                     />
                 </div>
             </div>

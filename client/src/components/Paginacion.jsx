@@ -1,5 +1,32 @@
+import { useEffect, useState } from "react";
+
 const Pagination = ({ currentPage, setCurrentPage, totalPages }) => {
-  const pageWindow = 5; // Máximo de botones visibles
+  const [pageWindow, setPageWindow] = useState(5);
+
+  // Detectar el tamaño de pantalla
+  useEffect(() => {
+      const handleResize = () => {
+          const width = window.innerWidth;
+
+          if (width <= 480) {
+              setPageWindow(1);
+          } else if (width <= 768) {
+              setPageWindow(3);
+          } else {
+              setPageWindow(5);
+          }
+      };
+
+      // Ejecutar al cargar
+      handleResize();
+
+      // Escuchar cambios de tamaño
+      window.addEventListener("resize", handleResize);
+
+      return () => {
+          window.removeEventListener("resize", handleResize);
+      };
+  }, []);
 
   const getPageNumbers = () => {
     let start = Math.max(1, currentPage - Math.floor(pageWindow / 2));

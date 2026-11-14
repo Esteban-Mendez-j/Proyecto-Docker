@@ -19,6 +19,7 @@ import com.miproyecto.proyecto.ml.service.PrediccionService;
 import com.miproyecto.proyecto.usuario.model.Roles;
 import com.miproyecto.proyecto.usuario.repository.RolesRepository;
 import com.miproyecto.proyecto.util.NotFoundException;
+import com.miproyecto.proyecto.vacante.service.VacantesCacheService;
 
 
 @Service
@@ -30,14 +31,17 @@ public class CandidatoService{
     private final PasswordEncoder passwordEncoder;
     private final RolesRepository rolesRepository;
     private final AptitudesService aptitudesService;
+    private final VacantesCacheService vacantesCacheService;
 
     public CandidatoService(PrediccionService prediccionService, CandidatoRepository candidatoRepository,
-            PasswordEncoder passwordEncoder, RolesRepository rolesRepository, AptitudesService aptitudesService) {
+            PasswordEncoder passwordEncoder, RolesRepository rolesRepository, AptitudesService aptitudesService,
+            VacantesCacheService vacantesCacheService) {
         this.prediccionService = prediccionService;
         this.candidatoRepository = candidatoRepository;
         this.passwordEncoder = passwordEncoder;
         this.rolesRepository = rolesRepository;
         this.aptitudesService = aptitudesService;
+        this.vacantesCacheService = vacantesCacheService;
     }
 
     // busca un candidato por su id
@@ -83,6 +87,7 @@ public class CandidatoService{
         candidatoRepository.save(candidato);
 
         prediccionService.ActualizarAfinidad(idUsuario);
+        vacantesCacheService.invalidarPorCandidato(idUsuario);
     }
 
     public void delete(final Long idUsuario) {
