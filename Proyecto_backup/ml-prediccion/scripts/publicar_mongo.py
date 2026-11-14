@@ -16,7 +16,8 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RAIZ / "src"))
 
-from searchjobs_ml import contrato, db  # noqa: E402
+from searchjobs_ml.notificaciones import notificar_nueva_prediccion
+from searchjobs_ml import contrato, db
 
 DATA = RAIZ / "data"
 
@@ -51,8 +52,26 @@ def main() -> int:
     print(f"\nVista previa del contrato guardada en {DATA / 'contrato_preview.json'}")
 
     if not args.publicar:
-        print("SIMULACRO: no se escribio nada en MongoDB. Usa --publicar para publicar.")
-        return 0
+        print("\nMODO DE PRUEBA: no se publicara nada en MongoDB.")
+
+        # Cargar variables de entorno para la notificación.
+        db.cargar_env(args.env)
+
+        # Identificador ficticio para identificar esta prueba.
+        eid = "PRUEBA-SIN-MONGO-20261114"
+
+        # Enviar la notificación al backend.
+        resultado = notificar_nueva_prediccion(
+            ejecucion_id=eid,
+            anio_predicho=resumen["anio_prediccion"]
+        )
+
+        if resultado:
+            print("\nNotificación de Prueba enviada correctamente a Spring Boot.")
+        else:
+            print("\nNo se pudo confirmar el envío de la notificación.")
+
+        return 0 if resultado else 1
 
     db.cargar_env(args.env)
     try:
@@ -68,6 +87,12 @@ def main() -> int:
     finally:
         cliente.close()
     print(f"\nPublicado en MongoDB (base '{base.name}'): ejecucion {eid} ahora es la vigente.")
+
+    # Notificar solamente después de una publicación exitosa.
+    notificar_nueva_prediccion(
+        ejecucion_id=eid,
+        anio_predicho=resumen["anio_prediccion"]
+    )
     return 0
 
 
